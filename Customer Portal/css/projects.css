@@ -1,0 +1,80 @@
+/**
+ * VOSTOKPRIBOR Enterprise Customer Portal - Industrial Projects Stylesheet
+ * Page-specific styles for milestone progress tracks, RFQ modals, and CAD schematic viewports.
+ */
+
+/* ==========================================================================
+   Milestone Progress Track
+   ========================================================================== */
+
+.milestone-progress-bar {
+    position: relative;
+    height: 6px;
+    background-color: var(--portal-surface-high);
+    border-radius: 9999px;
+    overflow: hidden;
+}
+
+.milestone-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--portal-secondary) 0%, var(--portal-primary) 100%);
+    border-radius: 9999px;
+    transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.milestone-node {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 9999px;
+    font-size: 10px;
+    font-family: var(--portal-font-mono);
+    border: 2px solid var(--portal-surface-lowest);
+}
+
+/* ==========================================================================
+   CAD Schematic & Blueprint Viewport
+   ========================================================================== */
+
+.cad-blueprint-viewport {
+    background-color: #0b1726;
+    background-image: 
+        linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+    background-size: 20px 20px;
+    border: 1px solid rgba(67, 96, 132, 0.3);
+    border-radius: 0.375rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.cad-grid-watermark {
+    position: absolute;
+    bottom: 0.75rem;
+    right: 0.75rem;
+    font-family: var(--portal-font-mono);
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.35);
+    letter-spacing: 0.05em;
+    pointer-events: none;
+}
+
+/* ==========================================================================
+   RFQ Scope Change & Specification Form
+   ========================================================================== */
+
+.rfq-form-card {
+    border: 1px solid rgba(116, 119, 125, 0.25);
+    background-color: #ffffff;
+    border-radius: 0.375rem;
+    box-shadow: var(--portal-shadow-sm);
+}
+
+.rfq-chip-selected {
+    background-color: var(--portal-tertiary);
+    color: var(--portal-primary);
+    border-color: var(--portal-warning);
+    font-weight: 600;
+}

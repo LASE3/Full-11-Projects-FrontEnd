@@ -14,35 +14,13 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
         rel="stylesheet">
-    <style>
-        @layer base {
-
-            html,
-            body {
-                margin: 0;
-                padding: 0;
-            }
-
-            body {
-                overscroll-behavior: none;
-            }
-
-            main>:first-child {
-                margin-top: 0 !important;
-            }
-
-            main>:last-child {
-                margin-bottom: 0 !important;
-            }
-        }
-
-        ::-webkit-scrollbar {
-            display: none;
-        }
-    </style>
+    <link rel="stylesheet" href="css/common.css" />
+    <link rel="stylesheet" href="css/documents.css" />
     <script src="https://cdn.tailwindcss.com"></script>
     <script
         id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { colors: { "on-surface-variant": "#43474c", "on-tertiary": "#ffffff", "on-primary": "#ffffff", "secondary-fixed": "#d2e4ff", "primary-fixed-dim": "#b4c8e3", "on-secondary-fixed": "#001c38", "outline": "#74777d", "surface-bright": "#f8f9fb", "on-surface": "#191c1e", "surface": "#f8f9fb", "primary-container": "#0f2438", "secondary-container": "#b6d4fe", "on-error": "#ffffff", "on-secondary-container": "#3f5b7f", "inverse-primary": "#b4c8e3", "inverse-surface": "#2d3133", "error": "#ba1a1a", "tertiary-fixed": "#ffddb5", "on-tertiary-fixed": "#2a1800", "on-primary-fixed": "#071d30", "primary-fixed": "#d0e4ff", "on-error-container": "#93000a", "secondary-fixed-dim": "#abc9f2", "surface-container-low": "#f2f4f6", "surface-dim": "#d8dadc", "surface-container-high": "#e6e8ea", "on-secondary": "#ffffff", "secondary": "#436084", "surface-container": "#eceef0", "background": "#f8f9fb", "tertiary-fixed-dim": "#ffb956", "on-primary-fixed-variant": "#35485e", "primary": "#000e1d", "on-background": "#191c1e", "tertiary": "#150a00", "surface-variant": "#e0e3e5", "on-tertiary-container": "#bb7d16", "on-tertiary-fixed-variant": "#643f00", "error-container": "#ffdad6", "surface-container-highest": "#e0e3e5", "inverse-on-surface": "#eff1f3", "surface-tint": "#4d6077", "outline-variant": "#c4c6cd", "on-primary-container": "#788ca4", "surface-container-lowest": "#ffffff", "on-secondary-fixed-variant": "#2b486b", "tertiary-container": "#331e00" }, borderRadius: { "DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem" }, spacing: { "unit-md": "0.75rem", "unit-xs": "0.25rem", "grid-gutter": "1rem", "grid-margin": "1.5rem", "unit-xl": "2rem", "unit-sm": "0.5rem", "unit-2xs": "0.125rem", "unit-lg": "1.5rem", "unit-2xl": "3rem", "unit-base": "1rem" }, fontFamily: { "data-mono-md": ["JetBrains Mono"], "body-md": ["IBM Plex Sans"], "label-caps": ["IBM Plex Sans"], "technical-tag": ["JetBrains Mono"], "display-lg": ["IBM Plex Sans"], "data-mono-lg": ["JetBrains Mono"], "display-lg-mobile": ["IBM Plex Sans"], "headline-sm": ["IBM Plex Sans"], "headline-lg": ["IBM Plex Sans"], "headline-md": ["IBM Plex Sans"], "body-lg": ["IBM Plex Sans"], "body-sm": ["IBM Plex Sans"] }, fontSize: { "data-mono-md": ["12px", { "lineHeight": "16px", "letterSpacing": "-0.01em", "fontWeight": "500" }], "body-md": ["13px", { "lineHeight": "18px", "letterSpacing": "0em", "fontWeight": "400" }], "label-caps": ["11px", { "lineHeight": "14px", "letterSpacing": "0.06em", "fontWeight": "700" }], "technical-tag": ["10px", { "lineHeight": "12px", "letterSpacing": "0.02em", "fontWeight": "500" }], "display-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700" }], "data-mono-lg": ["14px", { "lineHeight": "20px", "letterSpacing": "-0.02em", "fontWeight": "600" }], "display-lg-mobile": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700" }], "headline-sm": ["16px", { "lineHeight": "24px", "letterSpacing": "-0.005em", "fontWeight": "600" }], "headline-lg": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.015em", "fontWeight": "600" }], "headline-md": ["20px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600" }], "body-lg": ["15px", { "lineHeight": "22px", "letterSpacing": "0em", "fontWeight": "400" }], "body-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.005em", "fontWeight": "400" }] } } } };</script>
+    <script src="js/portal.js"></script>
+    <script src="js/documents.js"></script>
 </head>
 
 <body class="bg-background font-body-md text-body-md text-on-background">
@@ -83,7 +61,7 @@
             <div class="relative flex items-center text-on-primary-container hover:text-on-primary cursor-pointer"><span
                     class="material-symbols-outlined">notifications</span><span
                     class="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-tertiary-fixed ring-2 ring-primary-container"></span>
-            </div><a class="flex items-center text-on-primary-container hover:text-on-primary" href="#"
+            </div><a class="flex items-center text-on-primary-container hover:text-on-primary" href="Documents.html"
                 title="Technical Documentation"><span class="material-symbols-outlined">menu_book</span></a>
             <div class="h-6 w-px bg-on-primary-container/30"></div>
             <div class="flex items-center gap-unit-sm">
@@ -105,7 +83,7 @@
             <nav class="flex flex-col gap-0.5"
                 data-active-classes="bg-surface-container-high/10 text-on-primary font-semibold border-l-4 border-on-tertiary-container">
                 <a class="flex items-center gap-unit-sm px-unit-base py-unit-sm text-on-primary-container hover:bg-surface-container-high/5 hover:text-on-primary transition-colors font-headline-sm text-headline-sm font-normal"
-                    data-path="dashboard" href="#"><svg class="w-5 h-5 flex-shrink-0 text-current" fill="none"
+                    data-path="dashboard" href="Dashboard.html"><svg class="w-5 h-5 flex-shrink-0 text-current" fill="none"
                         stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75"
                         viewBox="0 0 24 24">
                         <rect height="7" width="7" x="3" y="3" rx="1"></rect>
@@ -114,7 +92,7 @@
                         <rect height="7" width="7" x="3" y="14" rx="1"></rect>
                     </svg><span class="">Dashboard</span></a><a
                     class="flex items-center gap-unit-sm px-unit-base py-unit-sm text-on-primary-container hover:bg-surface-container-high/5 hover:text-on-primary transition-colors font-headline-sm text-headline-sm font-normal"
-                    data-path="orders" href="#"><svg class="w-5 h-5 flex-shrink-0 text-current" fill="none"
+                    data-path="orders" href="Orders.html"><svg class="w-5 h-5 flex-shrink-0 text-current" fill="none"
                         stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75"
                         viewBox="0 0 24 24">
                         <path
@@ -124,7 +102,7 @@
                         <path d="M12 22V12"></path>
                     </svg><span class="">Orders</span></a><a
                     class="flex items-center gap-unit-sm px-unit-base py-unit-sm text-on-primary-container hover:bg-surface-container-high/5 hover:text-on-primary transition-colors font-headline-sm text-headline-sm font-normal"
-                    data-path="projects" href="#"><svg class="w-5 h-5 flex-shrink-0 text-current" fill="none"
+                    data-path="projects" href="ProjectListAndDetail.html"><svg class="w-5 h-5 flex-shrink-0 text-current" fill="none"
                         stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75"
                         viewBox="0 0 24 24">
                         <path d="M3 3h7v7H3z"></path>
@@ -133,7 +111,7 @@
                         <path d="M6.5 10v7a2 2 0 0 0 2 2H14"></path>
                     </svg><span class="">Projects</span></a><a
                     class="flex items-center gap-unit-sm px-unit-base py-unit-sm text-on-primary-container hover:bg-surface-container-high/5 hover:text-on-primary transition-colors font-headline-sm text-headline-sm font-normal"
-                    data-path="invoices" href="#"><svg class="w-5 h-5 flex-shrink-0 text-current" fill="none"
+                    data-path="invoices" href="Invoices.html"><svg class="w-5 h-5 flex-shrink-0 text-current" fill="none"
                         stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75"
                         viewBox="0 0 24 24">
                         <path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"></path>
@@ -141,8 +119,8 @@
                         <path d="M8 11h8"></path>
                         <path d="M8 15h4"></path>
                     </svg><span class="">Invoices</span></a><a aria-current="page"
-                    class="flex items-center gap-unit-sm px-unit-base py-unit-sm transition-colors bg-surface-container-high/10 text-on-primary font-semibold border-l-4 border-on-tertiary-container"
-                    data-path="documents" href="#"><svg class="w-5 h-5 flex-shrink-0 text-current" fill="none"
+                    class="flex items-center gap-unit-sm px-unit-base py-unit-sm transition-colors bg-surface-container-high/10 text-on-primary font-semibold border-l-4 border-on-tertiary-container font-headline-sm text-headline-sm"
+                    data-path="documents" href="Documents.html"><svg class="w-5 h-5 flex-shrink-0 text-current" fill="none"
                         stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75"
                         viewBox="0 0 24 24">
                         <path
@@ -151,7 +129,7 @@
                         <path d="M2 10h20"></path>
                     </svg><span class="">Documents</span></a><a
                     class="flex items-center gap-unit-sm px-unit-base py-unit-sm text-on-primary-container hover:bg-surface-container-high/5 hover:text-on-primary transition-colors font-headline-sm text-headline-sm font-normal"
-                    data-path="support" href="#"><svg class="w-5 h-5 flex-shrink-0 text-current" fill="none"
+                    data-path="support" href="SupportTicketView.html"><svg class="w-5 h-5 flex-shrink-0 text-current" fill="none"
                         stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75"
                         viewBox="0 0 24 24">
                         <path d="M3 18v-6a9 9 0 0 1 18 0v6"></path>
@@ -160,7 +138,7 @@
                         </path>
                     </svg><span class="">Support</span></a><a
                     class="flex items-center gap-unit-sm px-unit-base py-unit-sm text-on-primary-container hover:bg-surface-container-high/5 hover:text-on-primary transition-colors font-headline-sm text-headline-sm font-normal"
-                    data-path="account-settings" href="#"><svg class="w-5 h-5 flex-shrink-0 text-current" fill="none"
+                    data-path="account-settings" href="AccountSettings.html"><svg class="w-5 h-5 flex-shrink-0 text-current" fill="none"
                         stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75"
                         viewBox="0 0 24 24">
                         <path
@@ -175,7 +153,11 @@
                     class="font-label-caps text-label-caps text-tertiary-fixed uppercase">Assigned Manager</span><span
                     class="px-1.5 py-0.5 rounded bg-surface-container-high/10 text-on-primary-container font-technical-tag text-technical-tag">SLA
                     TIER 1</span></div>
-            <div class="font-headline-sm text-headline-sm text-on-primary font-medium leading-tight">Viktor Morozov
+            <div class="font-headline-sm text-headline-sm text-on-primary font-medium leading-tight flex items-center justify-between">
+                <span>Viktor Morozov</span>
+                <a href="SupportTicketView.html?ticket=TCK-9482" class="text-tertiary-fixed hover:text-white transition-colors" title="Message Viktor">
+                    <span class="material-symbols-outlined text-sm">chat</span>
+                </a>
             </div>
             <div class="font-technical-tag text-technical-tag text-on-primary-container mb-unit-sm">Sr. Industrial
                 Systems Eng.</div>
@@ -183,25 +165,15 @@
                 class="flex flex-col gap-1 border-t border-white/10 pt-unit-xs text-on-primary-container font-data-mono-md text-data-mono-md">
                 <div class="flex items-center justify-between"><span class="">Hotline:</span><span
                         class="text-on-primary">+7 812 409-22-11</span></div>
-                <div class="flex items-center justify-between"><span class="">Direct:</span><span
-                        class="text-on-primary">v.morozov@vostokpribor.ru</span></div>
+                <div class="flex items-center justify-between"><span class="">Direct:</span><a href="mailto:v.morozov@vostokpribor.ru"
+                        class="text-on-primary hover:underline">v.morozov@vostokpribor.ru</a></div>
             </div>
         </div>
     </aside>
     <div class="pl-64">
         <main class="w-full min-h-screen pt-16 bg-surface px-unit-lg py-unit-lg">
             <div class="flex flex-col w-full">
-                <script>
-                    document.addEventListener('DOMContentLoaded', () => {
-                        const activeLink = document.querySelector('aside nav a[data-path="documents"]');
-                        if (activeLink) {
-                            document.querySelectorAll('aside nav a').forEach(el => {
-                                el.className = 'flex items-center px-unit-base py-unit-sm text-on-primary-container hover:bg-surface-container-high/5 hover:text-on-primary transition-colors font-headline-sm text-headline-sm font-normal';
-                            });
-                            activeLink.className = 'flex items-center px-unit-base py-unit-sm bg-surface-container-high/10 text-on-primary font-semibold border-l-4 border-on-tertiary-container transition-colors font-headline-sm text-headline-sm';
-                        }
-                    });
-                </script>
+
                 <!-- Breadcrumb & System Operational Banner -->
                 <div class="flex flex-col gap-unit-xs mb-unit-md">
                     <div
@@ -223,13 +195,13 @@
                             </p>
                         </div>
                         <div class="flex items-center gap-unit-sm">
-                            <button
+                            <button onclick="batchDownloadDocs()"
                                 class="flex items-center gap-unit-xs px-unit-md py-2 bg-surface-container text-primary font-headline-sm text-headline-sm font-semibold rounded hover:bg-surface-container-high transition-colors shadow-sm"
                                 type="button">
                                 <span class="material-symbols-outlined text-base">archive</span>
                                 <span class="">Batch Download (.ZIP)</span>
                             </button>
-                            <button
+                            <button onclick="showUploadPassportModal()"
                                 class="flex items-center gap-unit-xs px-unit-md py-2 bg-tertiary-container text-tertiary-fixed font-headline-sm text-headline-sm font-semibold rounded hover:opacity-95 transition-opacity shadow-sm"
                                 type="button">
                                 <span
@@ -286,28 +258,28 @@
                 <!-- Filter & Tab Navigation Strip -->
                 <div class="flex flex-col gap-unit-sm mb-unit-md">
                     <div class="flex items-center gap-unit-xs overflow-x-auto pb-1">
-                        <button
-                            class="px-unit-md py-1.5 rounded font-label-caps text-label-caps bg-primary text-on-primary whitespace-nowrap shadow-sm">
+                        <button onclick="filterDocCategory(this, 'all')"
+                            class="doc-tab-btn px-unit-md py-1.5 rounded font-label-caps text-label-caps bg-primary text-on-primary whitespace-nowrap shadow-sm">
                             All Documents (54)
                         </button>
-                        <button
-                            class="px-unit-md py-1.5 rounded font-label-caps text-label-caps bg-surface-container text-on-surface-variant hover:bg-surface-container-high transition-colors whitespace-nowrap">
+                        <button onclick="filterDocCategory(this, 'calibration')"
+                            class="doc-tab-btn px-unit-md py-1.5 rounded font-label-caps text-label-caps bg-surface-container text-on-surface-variant hover:bg-surface-container-high transition-colors whitespace-nowrap">
                             Calibration &amp; Rostest (18)
                         </button>
-                        <button
-                            class="px-unit-md py-1.5 rounded font-label-caps text-label-caps bg-surface-container text-on-surface-variant hover:bg-surface-container-high transition-colors whitespace-nowrap">
+                        <button onclick="filterDocCategory(this, 'pid')"
+                            class="doc-tab-btn px-unit-md py-1.5 rounded font-label-caps text-label-caps bg-surface-container text-on-surface-variant hover:bg-surface-container-high transition-colors whitespace-nowrap">
                             P&amp;ID &amp; Schematics (14)
                         </button>
-                        <button
-                            class="px-unit-md py-1.5 rounded font-label-caps text-label-caps bg-surface-container text-on-surface-variant hover:bg-surface-container-high transition-colors whitespace-nowrap">
+                        <button onclick="filterDocCategory(this, 'fat')"
+                            class="doc-tab-btn px-unit-md py-1.5 rounded font-label-caps text-label-caps bg-surface-container text-on-surface-variant hover:bg-surface-container-high transition-colors whitespace-nowrap">
                             Factory Acceptance [FAT/SAT] (10)
                         </button>
-                        <button
-                            class="px-unit-md py-1.5 rounded font-label-caps text-label-caps bg-surface-container text-on-surface-variant hover:bg-surface-container-high transition-colors whitespace-nowrap">
+                        <button onclick="filterDocCategory(this, 'contracts')"
+                            class="doc-tab-btn px-unit-md py-1.5 rounded font-label-caps text-label-caps bg-surface-container text-on-surface-variant hover:bg-surface-container-high transition-colors whitespace-nowrap">
                             Contracts &amp; Addenda (8)
                         </button>
-                        <button
-                            class="px-unit-md py-1.5 rounded font-label-caps text-label-caps bg-surface-container text-on-surface-variant hover:bg-surface-container-high transition-colors whitespace-nowrap">
+                        <button onclick="filterDocCategory(this, 'hse')"
+                            class="doc-tab-btn px-unit-md py-1.5 rounded font-label-caps text-label-caps bg-surface-container text-on-surface-variant hover:bg-surface-container-high transition-colors whitespace-nowrap">
                             Safety Compliance &amp; HSE (4)
                         </button>
                     </div>
@@ -316,37 +288,37 @@
                         <div class="col-span-12 lg:col-span-5 relative">
                             <span
                                 class="material-symbols-outlined absolute left-3 top-2 text-outline text-lg">search</span>
-                            <input
+                            <input id="docSearchInput" oninput="filterDocTable()"
                                 class="w-full h-9 pl-9 pr-3 bg-surface-container-lowest text-on-surface font-body-sm text-body-sm rounded outline-none placeholder:text-outline-variant shadow-sm"
                                 placeholder="Search by document tag, serial number, or cryptographic signature hash..."
                                 type="text">
                         </div>
                         <div class="col-span-12 sm:col-span-4 lg:col-span-3">
-                            <select
+                            <select id="docFacilitySelect" onchange="filterDocTable()"
                                 class="w-full h-9 px-3 bg-surface-container-lowest text-on-surface font-body-sm text-body-sm rounded outline-none shadow-sm cursor-pointer">
-                                <option>Facility: Severstal Plant #4 (All Sectors)</option>
-                                <option>Blast Furnace Division (BF-5)</option>
-                                <option>Continuous Casting Unit #3</option>
-                                <option>Gas Chromatography Facility</option>
+                                <option value="all">Facility: Severstal Plant #4 (All Sectors)</option>
+                                <option value="bf5">Blast Furnace Division (BF-5)</option>
+                                <option value="casting">Continuous Casting Unit #3</option>
+                                <option value="chromatography">Gas Chromatography Facility</option>
                             </select>
                         </div>
                         <div class="col-span-12 sm:col-span-4 lg:col-span-2">
-                            <select
+                            <select id="docEquipmentSelect" onchange="filterDocTable()"
                                 class="w-full h-9 px-3 bg-surface-container-lowest text-on-surface font-body-sm text-body-sm rounded outline-none shadow-sm cursor-pointer">
-                                <option>All Equipment Types</option>
-                                <option>Flowmeters (HPF)</option>
-                                <option>Optical Pyrometers</option>
-                                <option>Laser Profilers</option>
-                                <option>Gas Skids</option>
+                                <option value="all">All Equipment Types</option>
+                                <option value="flowmeters">Flowmeters (HPF)</option>
+                                <option value="pyrometers">Optical Pyrometers</option>
+                                <option value="profilers">Laser Profilers</option>
+                                <option value="skids">Gas Skids</option>
                             </select>
                         </div>
                         <div class="col-span-12 sm:col-span-4 lg:col-span-2">
-                            <select
+                            <select id="docPKISelect" onchange="filterDocTable()"
                                 class="w-full h-9 px-3 bg-surface-container-lowest text-on-surface font-body-sm text-body-sm rounded outline-none shadow-sm cursor-pointer">
-                                <option>PKI: All Statuses</option>
-                                <option>Valid Electronic Signature</option>
-                                <option>Pending Counter-Signature</option>
-                                <option>Archived Version</option>
+                                <option value="all">PKI: All Statuses</option>
+                                <option value="valid">Valid Electronic Signature</option>
+                                <option value="pending">Pending Counter-Signature</option>
+                                <option value="archived">Archived Version</option>
                             </select>
                         </div>
                     </div>
@@ -365,7 +337,8 @@
                                 <div class="col-span-2 text-right">Actions</div>
                             </div>
                             <!-- Document Item 1 -->
-                            <div class="grid grid-cols-12 gap-unit-sm px-unit-md py-unit-sm items-center bg-surface-container-lowest hover:bg-surface-container-low transition-colors cursor-pointer group"
+                            <div id="doc-row-1" data-doc-id="1" data-category="calibration" data-facility="all plant4" data-equipment="flowmeters" data-pki="valid"
+                                class="doc-item grid grid-cols-12 gap-unit-sm px-unit-md py-unit-sm items-center bg-surface-container-lowest hover:bg-surface-container-low transition-colors cursor-pointer group"
                                 onclick="selectDoc(1)">
                                 <div class="col-span-5 flex items-start gap-unit-sm min-w-0">
                                     <span
@@ -400,12 +373,12 @@
                                     PDF • 2.8 MB
                                 </div>
                                 <div class="col-span-2 flex items-center justify-end gap-unit-xs">
-                                    <button
+                                    <button onclick="event.stopPropagation(); verifyHash('0x8F9A83BC902E4D2')"
                                         class="p-1.5 rounded bg-surface-container text-on-surface hover:bg-surface-container-high transition-colors"
                                         title="Verify Cryptographic Hash">
                                         <span class="material-symbols-outlined text-base">lock</span>
                                     </button>
-                                    <button
+                                    <button onclick="event.stopPropagation(); window.previewDocument('CERT-2024-HPF-0994', 'High-Pressure Flowmeter HPF-900X Calibration Certificate', 'PDF Calibration Certificate')"
                                         class="p-1.5 rounded bg-surface-container text-on-surface hover:bg-surface-container-high transition-colors"
                                         title="Download Document">
                                         <span class="material-symbols-outlined text-base">download</span>
@@ -413,7 +386,8 @@
                                 </div>
                             </div>
                             <!-- Document Item 2 -->
-                            <div class="grid grid-cols-12 gap-unit-sm px-unit-md py-unit-sm items-center bg-surface-container-lowest hover:bg-surface-container-low transition-colors cursor-pointer group"
+                            <div id="doc-row-2" data-doc-id="2" data-category="pid" data-facility="bf5" data-equipment="all" data-pki="valid"
+                                class="doc-item grid grid-cols-12 gap-unit-sm px-unit-md py-unit-sm items-center bg-surface-container-lowest hover:bg-surface-container-low transition-colors cursor-pointer group"
                                 onclick="selectDoc(2)">
                                 <div class="col-span-5 flex items-start gap-unit-sm min-w-0">
                                     <span class="material-symbols-outlined text-secondary text-2xl mt-0.5">schema</span>
@@ -443,12 +417,12 @@
                                     DWG/PDF • 28.2 MB
                                 </div>
                                 <div class="col-span-2 flex items-center justify-end gap-unit-xs">
-                                    <button
+                                    <button onclick="event.stopPropagation(); window.previewDocument('DWG-7721-PND-V3', 'Blast Furnace #5 Automation Wiring Schematic & P&ID Diagram', 'AutoCAD P&ID Technical Schematic')"
                                         class="p-1.5 rounded bg-surface-container text-on-surface hover:bg-surface-container-high transition-colors"
                                         title="Open Interactive CAD Viewer">
                                         <span class="material-symbols-outlined text-base">visibility</span>
                                     </button>
-                                    <button
+                                    <button onclick="event.stopPropagation(); window.previewDocument('DWG-7721-PND-V3', 'Blast Furnace #5 Wiring Schematic', 'CAD Payload Archive')"
                                         class="p-1.5 rounded bg-surface-container text-on-surface hover:bg-surface-container-high transition-colors"
                                         title="Download Payload">
                                         <span class="material-symbols-outlined text-base">download</span>
@@ -456,7 +430,8 @@
                                 </div>
                             </div>
                             <!-- Document Item 3 -->
-                            <div class="grid grid-cols-12 gap-unit-sm px-unit-md py-unit-sm items-center bg-surface-container-lowest hover:bg-surface-container-low transition-colors cursor-pointer group"
+                            <div id="doc-row-3" data-doc-id="3" data-category="fat" data-facility="chromatography" data-equipment="skids" data-pki="valid"
+                                class="doc-item grid grid-cols-12 gap-unit-sm px-unit-md py-unit-sm items-center bg-surface-container-lowest hover:bg-surface-container-low transition-colors cursor-pointer group"
                                 onclick="selectDoc(3)">
                                 <div class="col-span-5 flex items-start gap-unit-sm min-w-0">
                                     <span
@@ -488,12 +463,12 @@
                                     PDF • 14.8 MB
                                 </div>
                                 <div class="col-span-2 flex items-center justify-end gap-unit-xs">
-                                    <button
+                                    <button onclick="event.stopPropagation(); verifyHash('0x10B45C9921DF883')"
                                         class="p-1.5 rounded bg-surface-container text-on-surface hover:bg-surface-container-high transition-colors"
                                         title="Verify Signatures">
                                         <span class="material-symbols-outlined text-base">verified</span>
                                     </button>
-                                    <button
+                                    <button onclick="event.stopPropagation(); window.previewDocument('DOC-7721-FAT.pdf', 'Factory Acceptance Test (FAT) Protocol - Gas Skid #4', 'PDF FAT Protocol')"
                                         class="p-1.5 rounded bg-surface-container text-on-surface hover:bg-surface-container-high transition-colors"
                                         title="Download Document">
                                         <span class="material-symbols-outlined text-base">download</span>
@@ -501,7 +476,8 @@
                                 </div>
                             </div>
                             <!-- Document Item 4 (Confidential Indicator) -->
-                            <div class="grid grid-cols-12 gap-unit-sm px-unit-md py-unit-sm items-center bg-surface-container-lowest hover:bg-surface-container-low transition-colors cursor-pointer group relative pl-5"
+                            <div id="doc-row-4" data-doc-id="4" data-category="contracts" data-facility="all plant4" data-equipment="all" data-pki="pending"
+                                class="doc-item grid grid-cols-12 gap-unit-sm px-unit-md py-unit-sm items-center bg-surface-container-lowest hover:bg-surface-container-low transition-colors cursor-pointer group relative pl-5"
                                 onclick="selectDoc(4)">
                                 <div class="absolute left-0 top-0 bottom-0 w-1 bg-on-tertiary-container"></div>
                                 <div class="col-span-5 flex items-start gap-unit-sm min-w-0">
@@ -536,14 +512,15 @@
                                     PDF • 1.9 MB
                                 </div>
                                 <div class="col-span-2 flex items-center justify-end gap-unit-xs">
-                                    <button
+                                    <button onclick="event.stopPropagation(); signConfidentialAddendum('ADDENDUM-CA-402')"
                                         class="px-2 py-1 rounded bg-tertiary-container text-tertiary-fixed font-label-caps text-label-caps hover:opacity-90 transition-opacity whitespace-nowrap shadow-sm">
                                         Sign Key
                                     </button>
                                 </div>
                             </div>
                             <!-- Document Item 5 -->
-                            <div class="grid grid-cols-12 gap-unit-sm px-unit-md py-unit-sm items-center bg-surface-container-lowest hover:bg-surface-container-low transition-colors cursor-pointer group"
+                            <div id="doc-row-5" data-doc-id="5" data-category="hse" data-facility="all plant4" data-equipment="pyrometers" data-pki="valid"
+                                class="doc-item grid grid-cols-12 gap-unit-sm px-unit-md py-unit-sm items-center bg-surface-container-lowest hover:bg-surface-container-low transition-colors cursor-pointer group"
                                 onclick="selectDoc(5)">
                                 <div class="col-span-5 flex items-start gap-unit-sm min-w-0">
                                     <span class="material-symbols-outlined text-secondary text-2xl mt-0.5">shield</span>
@@ -573,7 +550,7 @@
                                     PDF • 6.4 MB
                                 </div>
                                 <div class="col-span-2 flex items-center justify-end gap-unit-xs">
-                                    <button
+                                    <button onclick="event.stopPropagation(); window.previewDocument('HSE-OP-402-REV1', 'Optical Pyrometer Array Installation Manual & Safety Cert', 'PDF Safety Dossier')"
                                         class="p-1.5 rounded bg-surface-container text-on-surface hover:bg-surface-container-high transition-colors"
                                         title="Download">
                                         <span class="material-symbols-outlined text-base">download</span>
@@ -581,7 +558,8 @@
                                 </div>
                             </div>
                             <!-- Document Item 6 -->
-                            <div class="grid grid-cols-12 gap-unit-sm px-unit-md py-unit-sm items-center bg-surface-container-lowest hover:bg-surface-container-low transition-colors cursor-pointer group"
+                            <div id="doc-row-6" data-doc-id="6" data-category="calibration" data-facility="casting" data-equipment="profilers" data-pki="valid"
+                                class="doc-item grid grid-cols-12 gap-unit-sm px-unit-md py-unit-sm items-center bg-surface-container-lowest hover:bg-surface-container-low transition-colors cursor-pointer group"
                                 onclick="selectDoc(6)">
                                 <div class="col-span-5 flex items-start gap-unit-sm min-w-0">
                                     <span
@@ -612,7 +590,7 @@
                                     PDF • 4.1 MB
                                 </div>
                                 <div class="col-span-2 flex items-center justify-end gap-unit-xs">
-                                    <button
+                                    <button onclick="event.stopPropagation(); window.previewDocument('VP-LP-400-CAL-2024', 'Continuous Casting Machine #3 Laser Profiler Accuracy Verification', 'PDF Calibration Report')"
                                         class="p-1.5 rounded bg-surface-container text-on-surface hover:bg-surface-container-high transition-colors"
                                         title="Download">
                                         <span class="material-symbols-outlined text-base">download</span>
@@ -779,17 +757,17 @@
                         </div>
                         <!-- Contextual Action Bar -->
                         <div class="flex items-center gap-unit-sm pt-unit-xs">
-                            <button
+                            <button onclick="downloadActiveDoc()"
                                 class="flex-1 py-2 rounded bg-tertiary-container text-tertiary-fixed font-headline-sm text-headline-sm font-semibold flex items-center justify-center gap-unit-xs shadow-sm hover:opacity-95 transition-opacity">
                                 <span class="material-symbols-outlined text-base">download</span>
                                 <span class="">Download PDF</span>
                             </button>
-                            <button
+                            <button onclick="shareDocLink()"
                                 class="p-2 rounded bg-surface-container text-primary hover:bg-surface-container-high transition-colors"
                                 title="Export Public Verification Link">
                                 <span class="material-symbols-outlined text-lg">share</span>
                             </button>
-                            <button
+                            <button onclick="window.print()"
                                 class="p-2 rounded bg-surface-container text-primary hover:bg-surface-container-high transition-colors"
                                 title="Print Technical Passport Copy">
                                 <span class="material-symbols-outlined text-lg">print</span>
@@ -797,62 +775,7 @@
                         </div>
                     </div>
                 </div>
-                <script>
-                    const dossierData = {
-                        1: {
-                            id: 'CERT-2024-HPF-0994',
-                            title: 'High-Pressure Flowmeter HPF-900X Calibration Certificate',
-                            badge: 'ROSTEST CERTIFIED',
-                            badgeClass: 'bg-secondary-fixed text-on-secondary-fixed',
-                            hash: '0x8F9A83BC902E4D2'
-                        },
-                        2: {
-                            id: 'DWG-7721-PND-V3',
-                            title: 'Blast Furnace #5 Automation Wiring Schematic & P&ID Diagram',
-                            badge: 'ACTIVE ENGINEERING SPEC',
-                            badgeClass: 'bg-primary-fixed text-on-primary-fixed',
-                            hash: '0x33CD71EE99A814B'
-                        },
-                        3: {
-                            id: 'DOC-7721-FAT.pdf',
-                            title: 'Factory Acceptance Test (FAT) Protocol - Gas Skid #4',
-                            badge: 'FAT PASSED / SIGNED',
-                            badgeClass: 'bg-secondary-fixed text-on-secondary-fixed',
-                            hash: '0x10B45C9921DF883'
-                        },
-                        4: {
-                            id: 'ADDENDUM-CA-402',
-                            title: 'Spare Parts Consignment Agreement Q4 2024',
-                            badge: 'PENDING CLIENT SIGNATURE',
-                            badgeClass: 'bg-tertiary-fixed text-on-tertiary-fixed',
-                            hash: '0xEE3344BC556A102'
-                        },
-                        5: {
-                            id: 'HSE-OP-402-REV1',
-                            title: 'Optical Pyrometer Array Installation Manual & Safety Cert',
-                            badge: 'COMPLIANT',
-                            badgeClass: 'bg-secondary-fixed text-on-secondary-fixed',
-                            hash: '0x77AF223910CC029'
-                        },
-                        6: {
-                            id: 'VP-LP-400-CAL-2024',
-                            title: 'Continuous Casting Machine #3 Laser Profiler Accuracy Verification',
-                            badge: 'VALID',
-                            badgeClass: 'bg-secondary-fixed text-on-secondary-fixed',
-                            hash: '0x992BCC184029EA1'
-                        }
-                    };
 
-                    function selectDoc(docIndex) {
-                        const item = dossierData[docIndex];
-                        if (!item) return;
-                        document.getElementById('inspect-id').textContent = item.id;
-                        document.getElementById('inspect-title').textContent = item.title;
-                        const badgeEl = document.getElementById('inspect-badge');
-                        badgeEl.textContent = item.badge;
-                        badgeEl.className = `px-2 py-0.5 rounded font-technical-tag text-technical-tag font-bold ${item.badgeClass}`;
-                    }
-                </script>
             </div>
         </main>
     </div>

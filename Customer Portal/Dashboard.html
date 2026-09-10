@@ -15,35 +15,13 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
         rel="stylesheet" />
-    <style>
-        @layer base {
-
-            html,
-            body {
-                margin: 0;
-                padding: 0;
-            }
-
-            body {
-                overscroll-behavior: none;
-            }
-
-            main>:first-child {
-                margin-top: 0 !important;
-            }
-
-            main>:last-child {
-                margin-bottom: 0 !important;
-            }
-        }
-
-        ::-webkit-scrollbar {
-            display: none;
-        }
-    </style>
+    <link rel="stylesheet" href="css/common.css" />
+    <link rel="stylesheet" href="css/dashboard.css" />
     <script src="https://cdn.tailwindcss.com"></script>
     <script
         id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { colors: { "primary": "#000e1d", "secondary": "#436084", "primary-container": "#0f2438", "surface-container-highest": "#e0e3e5", "inverse-primary": "#b4c8e3", "secondary-fixed": "#d2e4ff", "on-secondary-container": "#3f5b7f", "surface-bright": "#f8f9fb", "primary-fixed-dim": "#b4c8e3", "on-secondary-fixed-variant": "#2b486b", "on-tertiary-fixed-variant": "#643f00", "surface-container-low": "#f2f4f6", "on-error": "#ffffff", "tertiary-fixed": "#ffddb5", "tertiary-container": "#331e00", "inverse-on-surface": "#eff1f3", "on-tertiary-fixed": "#2a1800", "on-secondary-fixed": "#001c38", "on-background": "#191c1e", "secondary-container": "#b6d4fe", "inverse-surface": "#2d3133", "tertiary": "#150a00", "error-container": "#ffdad6", "on-primary-fixed": "#071d30", "secondary-fixed-dim": "#abc9f2", "error": "#ba1a1a", "primary-fixed": "#d0e4ff", "surface-container": "#eceef0", "on-primary-fixed-variant": "#35485e", "on-error-container": "#93000a", "surface-variant": "#e0e3e5", "on-primary": "#ffffff", "on-tertiary-container": "#bb7d16", "on-secondary": "#ffffff", "background": "#f8f9fb", "surface-container-lowest": "#ffffff", "on-surface-variant": "#43474c", "surface": "#f8f9fb", "surface-tint": "#4d6077", "tertiary-fixed-dim": "#ffb956", "outline": "#74777d", "on-primary-container": "#788ca4", "surface-dim": "#d8dadc", "outline-variant": "#c4c6cd", "surface-container-high": "#e6e8ea", "on-tertiary": "#ffffff", "on-surface": "#191c1e" }, borderRadius: { "DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem" }, spacing: { "unit-md": "0.75rem", "grid-gutter": "1rem", "unit-lg": "1.5rem", "unit-xl": "2rem", "unit-sm": "0.5rem", "unit-2xs": "0.125rem", "grid-margin": "1.5rem", "unit-2xl": "3rem", "unit-base": "1rem", "unit-xs": "0.25rem" }, fontFamily: { "body-md": ["IBM Plex Sans"], "technical-tag": ["JetBrains Mono"], "display-lg": ["IBM Plex Sans"], "headline-lg": ["IBM Plex Sans"], "body-sm": ["IBM Plex Sans"], "body-lg": ["IBM Plex Sans"], "headline-md": ["IBM Plex Sans"], "headline-sm": ["IBM Plex Sans"], "data-mono-md": ["JetBrains Mono"], "data-mono-lg": ["JetBrains Mono"], "label-caps": ["IBM Plex Sans"], "display-lg-mobile": ["IBM Plex Sans"] }, fontSize: { "body-md": ["13px", { "lineHeight": "18px", "letterSpacing": "0em", "fontWeight": "400" }], "technical-tag": ["10px", { "lineHeight": "12px", "letterSpacing": "0.02em", "fontWeight": "500" }], "display-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700" }], "headline-lg": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.015em", "fontWeight": "600" }], "body-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.005em", "fontWeight": "400" }], "body-lg": ["15px", { "lineHeight": "22px", "letterSpacing": "0em", "fontWeight": "400" }], "headline-md": ["20px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600" }], "headline-sm": ["16px", { "lineHeight": "24px", "letterSpacing": "-0.005em", "fontWeight": "600" }], "data-mono-md": ["12px", { "lineHeight": "16px", "letterSpacing": "-0.01em", "fontWeight": "500" }], "data-mono-lg": ["14px", { "lineHeight": "20px", "letterSpacing": "-0.02em", "fontWeight": "600" }], "label-caps": ["11px", { "lineHeight": "14px", "letterSpacing": "0.06em", "fontWeight": "700" }], "display-lg-mobile": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700" }] } } } };</script>
+    <script src="js/portal.js"></script>
+    <script src="js/dashboard.js"></script>
 </head>
 
 <body class="bg-background font-body-md text-body-md text-on-background">
@@ -83,7 +61,7 @@
             <div class="relative flex items-center text-on-primary-container hover:text-on-primary cursor-pointer"><span
                     class="material-symbols-outlined">notifications</span><span
                     class="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-tertiary-fixed ring-2 ring-primary-container"></span>
-            </div><a class="flex items-center text-on-primary-container hover:text-on-primary" href="#"
+            </div><a class="flex items-center text-on-primary-container hover:text-on-primary" href="Documents.html"
                 title="Technical Documentation"><span class="material-symbols-outlined">menu_book</span></a>
             <div class="h-6 w-px bg-outline/30"></div>
             <div class="flex items-center gap-unit-sm">
@@ -107,27 +85,27 @@
                 data-active-classes="bg-surface-container-high/10 text-on-primary font-semibold border-l-4 border-tertiary-fixed">
                 <a aria-current="page"
                     class="flex items-center gap-unit-md px-unit-base py-unit-sm transition-colors bg-surface-container-high/10 text-on-primary font-semibold border-l-4 border-tertiary-fixed"
-                    data-path="dashboard" href="#"><span class="material-symbols-outlined text-xl">dashboard</span><span
+                    data-path="dashboard" href="Dashboard.html"><span class="material-symbols-outlined text-xl">dashboard</span><span
                         class="font-headline-sm text-headline-sm font-normal">Dashboard</span></a><a
                     class="flex items-center gap-unit-md px-unit-base py-unit-sm text-on-primary-container hover:bg-surface-container-high/5 hover:text-on-primary transition-colors"
-                    data-path="orders" href="#"><span class="material-symbols-outlined text-xl">inventory_2</span><span
+                    data-path="orders" href="Orders.html"><span class="material-symbols-outlined text-xl">inventory_2</span><span
                         class="font-headline-sm text-headline-sm font-normal">Orders</span></a><a
                     class="flex items-center gap-unit-md px-unit-base py-unit-sm text-on-primary-container hover:bg-surface-container-high/5 hover:text-on-primary transition-colors"
-                    data-path="projects" href="#"><span
+                    data-path="projects" href="ProjectListAndDetail.html"><span
                         class="material-symbols-outlined text-xl">precision_manufacturing</span><span
                         class="font-headline-sm text-headline-sm font-normal">Projects</span></a><a
                     class="flex items-center gap-unit-md px-unit-base py-unit-sm text-on-primary-container hover:bg-surface-container-high/5 hover:text-on-primary transition-colors"
-                    data-path="invoices" href="#"><span
+                    data-path="invoices" href="Invoices.html"><span
                         class="material-symbols-outlined text-xl">receipt_long</span><span
                         class="font-headline-sm text-headline-sm font-normal">Invoices</span></a><a
                     class="flex items-center gap-unit-md px-unit-base py-unit-sm text-on-primary-container hover:bg-surface-container-high/5 hover:text-on-primary transition-colors"
-                    data-path="documents" href="#"><span class="material-symbols-outlined text-xl">folder</span><span
+                    data-path="documents" href="Documents.html"><span class="material-symbols-outlined text-xl">folder</span><span
                         class="font-headline-sm text-headline-sm font-normal">Documents</span></a><a
                     class="flex items-center gap-unit-md px-unit-base py-unit-sm text-on-primary-container hover:bg-surface-container-high/5 hover:text-on-primary transition-colors"
-                    data-path="support" href="#"><span class="material-symbols-outlined text-xl">headset_mic</span><span
+                    data-path="support" href="SupportTicketView.html"><span class="material-symbols-outlined text-xl">headset_mic</span><span
                         class="font-headline-sm text-headline-sm font-normal">Support</span></a><a
                     class="flex items-center gap-unit-md px-unit-base py-unit-sm text-on-primary-container hover:bg-surface-container-high/5 hover:text-on-primary transition-colors"
-                    data-path="account-settings" href="#"><span
+                    data-path="account-settings" href="AccountSettings.html"><span
                         class="material-symbols-outlined text-xl">settings</span><span
                         class="font-headline-sm text-headline-sm font-normal">Account Settings</span></a>
             </nav>
@@ -183,12 +161,14 @@
                     <div class="flex items-center gap-unit-sm shrink-0">
                         <button
                             class="inline-flex items-center gap-unit-xs px-unit-md py-2 bg-surface-container-lowest text-primary text-body-sm font-body-sm font-medium rounded shadow-sm hover:bg-surface-container transition-colors"
+                            onclick="window.showToast('Telemetry PDF Compiled', 'Plant #4 operational dossier exported successfully.', 'success')"
                             type="button">
                             <span class="material-symbols-outlined text-lg text-secondary">file_download</span>
                             <span>Export Telemetry PDF</span>
                         </button>
                         <button
                             class="inline-flex items-center gap-unit-xs px-unit-md py-2 bg-tertiary-fixed text-primary-container text-body-sm font-body-sm font-semibold rounded shadow-sm hover:bg-tertiary-fixed-dim transition-colors"
+                            onclick="window.showDispatchModal()"
                             type="button">
                             <span class="material-symbols-outlined text-lg text-primary-container">local_shipping</span>
                             <span>Request Urgent Equipment Dispatch</span>
@@ -196,9 +176,9 @@
                     </div>
                 </section>
                 <section class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-unit-base">
-                    <div
-                        class="flex flex-col justify-between p-unit-base bg-surface-container-lowest rounded-xl shadow-sm relative overflow-hidden">
-                        <div class="absolute top-0 left-0 right-0 h-1 bg-secondary"></div>
+                    <a href="ProjectListAndDetail.html"
+                        class="flex flex-col justify-between p-unit-base bg-surface-container-lowest rounded-xl shadow-sm relative overflow-hidden group hover:-translate-y-0.5 hover:shadow-md transition-all">
+                        <div class="absolute top-0 left-0 right-0 h-1 bg-secondary group-hover:h-1.5 transition-all"></div>
                         <div class="flex items-start justify-between">
                             <div class="flex flex-col">
                                 <span
@@ -207,7 +187,7 @@
                                 <span
                                     class="font-display-lg text-display-lg text-primary font-bold tracking-tight mt-unit-xs">14</span>
                             </div>
-                            <div class="p-2 rounded bg-primary-container text-inverse-primary">
+                            <div class="p-2 rounded bg-primary-container text-inverse-primary group-hover:scale-105 transition-transform">
                                 <span class="material-symbols-outlined text-xl">precision_manufacturing</span>
                             </div>
                         </div>
@@ -219,10 +199,10 @@
                                 <span class="material-symbols-outlined text-xs">trending_up</span>+2 Q/Q
                             </span>
                         </div>
-                    </div>
-                    <div
-                        class="flex flex-col justify-between p-unit-base bg-surface-container-lowest rounded-xl shadow-sm relative overflow-hidden">
-                        <div class="absolute top-0 bottom-0 left-0 w-1 bg-tertiary-fixed-dim"></div>
+                    </a>
+                    <a href="Invoices.html"
+                        class="flex flex-col justify-between p-unit-base bg-surface-container-lowest rounded-xl shadow-sm relative overflow-hidden group hover:-translate-y-0.5 hover:shadow-md transition-all">
+                        <div class="absolute top-0 bottom-0 left-0 w-1 bg-tertiary-fixed-dim group-hover:w-1.5 transition-all"></div>
                         <div class="flex items-start justify-between pl-unit-xs">
                             <div class="flex flex-col">
                                 <span
@@ -231,7 +211,7 @@
                                 <span
                                     class="font-display-lg text-display-lg text-primary font-bold tracking-tight mt-unit-xs">3</span>
                             </div>
-                            <div class="p-2 rounded bg-tertiary-container text-tertiary-fixed">
+                            <div class="p-2 rounded bg-tertiary-container text-tertiary-fixed group-hover:scale-105 transition-transform">
                                 <span class="material-symbols-outlined text-xl">payments</span>
                             </div>
                         </div>
@@ -244,10 +224,10 @@
                                 2 due ≤ 10d
                             </span>
                         </div>
-                    </div>
-                    <div
-                        class="flex flex-col justify-between p-unit-base bg-surface-container-lowest rounded-xl shadow-sm relative overflow-hidden">
-                        <div class="absolute top-0 left-0 right-0 h-1 bg-error"></div>
+                    </a>
+                    <a href="SupportTicketView.html?ticket=TCK-9482"
+                        class="flex flex-col justify-between p-unit-base bg-surface-container-lowest rounded-xl shadow-sm relative overflow-hidden group hover:-translate-y-0.5 hover:shadow-md transition-all">
+                        <div class="absolute top-0 left-0 right-0 h-1 bg-error group-hover:h-1.5 transition-all"></div>
                         <div class="flex items-start justify-between">
                             <div class="flex flex-col">
                                 <span
@@ -256,7 +236,7 @@
                                 <span
                                     class="font-display-lg text-display-lg text-primary font-bold tracking-tight mt-unit-xs">5</span>
                             </div>
-                            <div class="p-2 rounded bg-surface-container text-on-surface">
+                            <div class="p-2 rounded bg-surface-container text-on-surface group-hover:scale-105 transition-transform">
                                 <span class="material-symbols-outlined text-xl">headset_mic</span>
                             </div>
                         </div>
@@ -268,10 +248,10 @@
                                 1 CRITICAL (P1)
                             </span>
                         </div>
-                    </div>
-                    <div
-                        class="flex flex-col justify-between p-unit-base bg-surface-container-lowest rounded-xl shadow-sm relative overflow-hidden">
-                        <div class="absolute top-0 left-0 right-0 h-1 bg-secondary"></div>
+                    </a>
+                    <a href="Documents.html"
+                        class="flex flex-col justify-between p-unit-base bg-surface-container-lowest rounded-xl shadow-sm relative overflow-hidden group hover:-translate-y-0.5 hover:shadow-md transition-all">
+                        <div class="absolute top-0 left-0 right-0 h-1 bg-secondary group-hover:h-1.5 transition-all"></div>
                         <div class="flex items-start justify-between">
                             <div class="flex flex-col">
                                 <span
@@ -280,7 +260,7 @@
                                 <span
                                     class="font-display-lg text-display-lg text-primary font-bold tracking-tight mt-unit-xs">48</span>
                             </div>
-                            <div class="p-2 rounded bg-surface-container text-secondary">
+                            <div class="p-2 rounded bg-surface-container text-secondary group-hover:scale-105 transition-transform">
                                 <span class="material-symbols-outlined text-xl">verified</span>
                             </div>
                         </div>
@@ -292,7 +272,7 @@
                                 6 pending signature
                             </span>
                         </div>
-                    </div>
+                    </a>
                 </section>
                 <section class="grid grid-cols-1 lg:grid-cols-12 gap-unit-base items-start">
                     <div
@@ -342,9 +322,11 @@
                                 <div class="flex items-center gap-unit-xs shrink-0 self-end md:self-center">
                                     <button
                                         class="px-unit-sm py-1 rounded bg-surface-container-high hover:bg-surface-container-highest text-primary font-technical-tag text-technical-tag font-medium"
+                                        onclick="window.previewDocument('CERT-2024-HPF-0994', 'High-Pressure Flowmeter HPF-900X Calibration Certificate', 'ROSTEST CERTIFIED')"
                                         type="button">View PDF</button>
                                     <button
                                         class="px-unit-sm py-1 rounded bg-surface-container-high hover:bg-surface-container-highest text-primary font-technical-tag text-technical-tag font-medium"
+                                        onclick="window.showToast('SHA-256 Hash Valid', 'Signature 0x8F9A83BC902E4D2 matched state cadastre.', 'info')"
                                         type="button">Verify Hash</button>
                                 </div>
                             </div>
@@ -373,11 +355,13 @@
                                 <div class="flex items-center gap-unit-xs shrink-0 self-end md:self-center">
                                     <button
                                         class="px-unit-sm py-1 rounded bg-tertiary-fixed text-primary-container font-technical-tag text-technical-tag font-semibold hover:bg-tertiary-fixed-dim"
+                                        onclick="window.location.href='Invoices.html?invoice=INV-2024-6102'"
                                         type="button">Review Invoice</button>
                                 </div>
                             </div>
                             <div
-                                class="flex flex-col md:flex-row md:items-center justify-between p-unit-base gap-unit-sm bg-surface-container-lowest hover:bg-surface-container-low transition-colors relative pl-unit-lg">
+                                class="flex flex-col md:flex-row md:items-center justify-between p-unit-base gap-unit-sm bg-surface-container-lowest hover:bg-surface-container-low transition-colors relative pl-unit-lg cursor-pointer"
+                                onclick="window.location.href='ProjectListAndDetail.html?project=PRJ-VP-7721'">
                                 <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-primary-container"></div>
                                 <div class="flex flex-col gap-0.5 pr-unit-md">
                                     <div class="flex items-center gap-unit-xs">
@@ -423,6 +407,7 @@
                                 <div class="flex items-center gap-unit-xs shrink-0 self-end md:self-center">
                                     <button
                                         class="px-unit-sm py-1 rounded bg-error text-on-error font-technical-tag text-technical-tag font-semibold"
+                                        onclick="window.location.href='SupportTicketView.html?ticket=TCK-9482'"
                                         type="button">Track Dispatch</button>
                                 </div>
                             </div>
@@ -447,6 +432,7 @@
                                 <div class="flex items-center gap-unit-xs shrink-0 self-end md:self-center">
                                     <button
                                         class="px-unit-sm py-1 rounded bg-surface-container-high hover:bg-surface-container-highest text-primary font-technical-tag text-technical-tag font-semibold"
+                                        onclick="window.location.href='Documents.html?doc=4'"
                                         type="button">Sign Document</button>
                                 </div>
                             </div>
@@ -573,6 +559,7 @@
                             <div class="flex items-center gap-unit-xs pt-unit-xs">
                                 <button
                                     class="flex-1 py-2 bg-primary-container hover:bg-primary text-on-primary font-technical-tag text-technical-tag font-bold rounded inline-flex items-center justify-center gap-1.5 transition-colors"
+                                    onclick="window.location.href='SupportTicketView.html?ticket=TCK-9482'"
                                     type="button">
                                     <span class="material-symbols-outlined text-base">chat</span>
                                     <span>SECURE DISPATCH CHAT</span>
