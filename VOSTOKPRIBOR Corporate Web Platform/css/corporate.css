@@ -78,8 +78,15 @@
 }
 
 @keyframes dropdownSlideIn {
-    from { opacity: 0; transform: translateY(-8px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .ecosystem-item {
@@ -110,8 +117,8 @@
 .hero-stage {
     position: relative;
     background: radial-gradient(circle at 80% 20%, rgba(14, 124, 134, 0.12) 0%, transparent 50%),
-                radial-gradient(circle at 20% 80%, rgba(27, 58, 92, 0.18) 0%, transparent 50%),
-                linear-gradient(180deg, #0F2438 0%, #152E46 100%);
+        radial-gradient(circle at 20% 80%, rgba(27, 58, 92, 0.18) 0%, transparent 50%),
+        linear-gradient(180deg, #0F2438 0%, #152E46 100%);
     color: #FFFFFF;
     padding-top: 7rem;
     padding-bottom: 5rem;
@@ -122,7 +129,7 @@
 .hero-grid-pattern {
     position: absolute;
     inset: 0;
-    background-image: 
+    background-image:
         linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
         linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
     background-size: 40px 40px;
@@ -151,8 +158,13 @@
 }
 
 @keyframes radarRotate {
-    from { transform: translateY(-50%) rotate(0deg); }
-    to { transform: translateY(-50%) rotate(360deg); }
+    from {
+        transform: translateY(-50%) rotate(0deg);
+    }
+
+    to {
+        transform: translateY(-50%) rotate(360deg);
+    }
 }
 
 /* Live Operational Telemetry Bar */
@@ -185,7 +197,7 @@
     box-shadow: var(--shadow-card);
     transition: all var(--transition-normal);
     display: flex;
-    flex-col: column;
+    flex-direction: column;
     overflow: hidden;
 }
 
@@ -355,8 +367,15 @@
 }
 
 @keyframes modalPop {
-    from { opacity: 0; transform: scale(0.95) translateY(8px); }
-    to { opacity: 1; transform: scale(1) translateY(0); }
+    from {
+        opacity: 0;
+        transform: scale(0.95) translateY(8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
 }
 
 /* ==========================================================================
@@ -392,6 +411,13 @@
 }
 
 @keyframes toastSlideIn {
-    from { opacity: 0; transform: translateX(30px); }
-    to { opacity: 1; transform: translateX(0); }
+    from {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
 }
