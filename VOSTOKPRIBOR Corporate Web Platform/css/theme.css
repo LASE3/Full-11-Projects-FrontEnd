@@ -1,0 +1,293 @@
+/**
+ * VOSTOKPRIBOR UNIFIED ENTERPRISE DESIGN SYSTEM
+ * Shared Foundation & Design Tokens across all 11 Web Systems
+ * Est. 1968 • Almaty, Kazakhstan
+ */
+
+:root {
+    /* ==========================================================================
+       1. Core Brand Palette (Universal across all 11 systems)
+       ========================================================================== */
+    --brand-primary: #1B3A5C;          /* Steel Blue: Primary brand identity */
+    --brand-primary-dark: #0F2438;     /* Deep Navy: Headers, nav bars, footers */
+    --brand-secondary: #0E7C86;        /* Precision Teal: Accents, technical indicators */
+    --brand-accent: #E8A33D;           /* Signal Amber: Primary CTAs & high-visibility actions */
+    
+    /* Neutrals */
+    --neutral-900: #101418;            /* Primary high-contrast body & heading text */
+    --neutral-800: #1E252D;            /* Deep slate for card titles */
+    --neutral-700: #323B44;            /* Dark secondary neutral */
+    --neutral-600: #4A5560;            /* Secondary text, captions, form labels */
+    --neutral-500: #687482;            /* Subtle icons and metadata */
+    --neutral-400: #939FA8;            /* Placeholder text & inactive icons */
+    --neutral-300: #BDC6CF;            /* Mid-tone dividers */
+    --neutral-200: #DCE1E6;            /* Standard borders, dividers, subtle outlines */
+    --neutral-100: #EDF1F4;            /* Inactive chip fills, zebra row alternate */
+    --neutral-50: #F5F7F9;             /* Application canvas & section backgrounds */
+    --surface: #FFFFFF;                /* Pristine white card surfaces */
+
+    /* ==========================================================================
+       2. Data-Classification Accent System (Identical across all 11 systems)
+       ========================================================================== */
+    --class-public: #8A94A0;           /* Slate Gray: Public documents & catalogs */
+    --class-public-bg: #F0F2F5;
+    --class-internal: #3E7CB1;         /* Cool Blue: Internal operating procedures */
+    --class-internal-bg: #EAF2F9;
+    --class-confidential: #D9822B;     /* Amber-Orange: Commercial proposals & RFQs */
+    --class-confidential-bg: #FDF3E7;
+    --class-restricted: #B23A32;       /* Alert Red: Highly Confidential & Security */
+    --class-restricted-bg: #FBEAE9;
+
+    /* ==========================================================================
+       3. System Identity Accent: System 01 - Corporate Website
+       ========================================================================== */
+    --system-accent: #1B3A5C;          /* Steel Blue: System 01 4px Header Stripe */
+    --system-accent-glow: rgba(27, 58, 92, 0.25);
+
+    /* ==========================================================================
+       4. Typography & Metrics
+       ========================================================================== */
+    --font-sans: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --font-mono: 'JetBrains Mono', Consolas, Monaco, "Courier New", monospace;
+
+    /* Border Radii (Industrial & Clean) */
+    --radius-sm: 4px;
+    --radius-md: 8px;                  /* Standard 8px rounded corners for cards */
+    --radius-lg: 12px;
+    --radius-full: 9999px;
+
+    /* Shadows */
+    --shadow-subtle: 0 1px 3px rgba(15, 36, 56, 0.06), 0 1px 2px rgba(15, 36, 56, 0.04);
+    --shadow-card: 0 4px 6px -1px rgba(15, 36, 56, 0.07), 0 2px 4px -1px rgba(15, 36, 56, 0.04);
+    --shadow-hover: 0 10px 15px -3px rgba(15, 36, 56, 0.1), 0 4px 6px -2px rgba(15, 36, 56, 0.05);
+    --shadow-modal: 0 20px 25px -5px rgba(15, 36, 56, 0.2), 0 10px 10px -5px rgba(15, 36, 56, 0.1);
+
+    /* Transitions */
+    --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-normal: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ==========================================================================
+   Base Resets & Typography
+   ========================================================================== */
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+html {
+    font-family: var(--font-sans);
+    color: var(--neutral-900);
+    background-color: var(--neutral-50);
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    line-height: 1.5;
+    background-color: var(--neutral-50);
+    color: var(--neutral-900);
+    overflow-x: hidden;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: var(--neutral-900);
+    font-weight: 600;
+    line-height: 1.25;
+    margin: 0;
+    letter-spacing: -0.015em;
+}
+
+p {
+    margin: 0;
+    color: var(--neutral-600);
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+/* ==========================================================================
+   Shared UI Components: Data Classification Tags & Badges
+   ========================================================================== */
+.badge-classification {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    padding: 0.2rem 0.5rem;
+    border-radius: var(--radius-sm);
+    border: 1px solid transparent;
+    line-height: 1;
+    white-space: nowrap;
+}
+
+.badge-classification::before {
+    content: '';
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+}
+
+.badge-classification.public {
+    background-color: var(--class-public-bg);
+    color: var(--class-public);
+    border-color: rgba(138, 148, 160, 0.25);
+}
+.badge-classification.public::before {
+    background-color: var(--class-public);
+}
+
+.badge-classification.internal {
+    background-color: var(--class-internal-bg);
+    color: var(--class-internal);
+    border-color: rgba(62, 124, 177, 0.25);
+}
+.badge-classification.internal::before {
+    background-color: var(--class-internal);
+}
+
+.badge-classification.confidential {
+    background-color: var(--class-confidential-bg);
+    color: var(--class-confidential);
+    border-color: rgba(217, 130, 43, 0.25);
+}
+.badge-classification.confidential::before {
+    background-color: var(--class-confidential);
+}
+
+.badge-classification.restricted {
+    background-color: var(--class-restricted-bg);
+    color: var(--class-restricted);
+    border-color: rgba(178, 58, 50, 0.25);
+}
+.badge-classification.restricted::before {
+    background-color: var(--class-restricted);
+}
+
+/* Data Table Left-Border Strip */
+.table-classified tr {
+    position: relative;
+    border-bottom: 1px solid var(--neutral-200);
+    transition: background-color var(--transition-fast);
+}
+
+.table-classified tr:hover {
+    background-color: var(--neutral-100);
+}
+
+.table-classified td.classified-strip {
+    position: relative;
+    padding-left: 1rem;
+}
+
+.table-classified td.classified-strip::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+}
+
+.table-classified tr[data-classification="public"] td.classified-strip::before {
+    background-color: var(--class-public);
+}
+.table-classified tr[data-classification="internal"] td.classified-strip::before {
+    background-color: var(--class-internal);
+}
+.table-classified tr[data-classification="confidential"] td.classified-strip::before {
+    background-color: var(--class-confidential);
+}
+.table-classified tr[data-classification="restricted"] td.classified-strip::before {
+    background-color: var(--class-restricted);
+}
+
+/* ==========================================================================
+   Shared UI Components: Status Badges
+   ========================================================================== */
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.25rem 0.6rem;
+    border-radius: var(--radius-sm);
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.status-badge.paid,
+.status-badge.active,
+.status-badge.approved,
+.status-badge.resolved {
+    background-color: #E6F4EA;
+    color: #137333;
+    border: 1px solid rgba(19, 115, 51, 0.2);
+}
+
+.status-badge.pending,
+.status-badge.in-progress,
+.status-badge.escalated {
+    background-color: #FEF7E0;
+    color: #B06000;
+    border: 1px solid rgba(176, 96, 0, 0.2);
+}
+
+.status-badge.critical,
+.status-badge.danger {
+    background-color: #FCE8E6;
+    color: #C5221F;
+    border: 1px solid rgba(197, 34, 31, 0.2);
+}
+
+.status-badge.draft,
+.status-badge.archived {
+    background-color: var(--neutral-100);
+    color: var(--neutral-600);
+    border: 1px solid var(--neutral-200);
+}
+
+/* ==========================================================================
+   Shared UI Components: Standard Cards
+   ========================================================================== */
+.enterprise-card {
+    background-color: var(--surface);
+    border: 1px solid var(--neutral-200);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-subtle);
+    transition: transform var(--transition-normal), box-shadow var(--transition-normal), border-color var(--transition-normal);
+}
+
+.enterprise-card:hover {
+    box-shadow: var(--shadow-hover);
+    border-color: var(--neutral-300);
+}
+
+/* ==========================================================================
+   Per-System Accent Stripe Utility
+   ========================================================================== */
+.system-accent-stripe-top {
+    position: relative;
+}
+
+.system-accent-stripe-top::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background-color: var(--system-accent);
+    z-index: 60;
+}
