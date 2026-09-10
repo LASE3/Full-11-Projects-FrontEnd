@@ -638,6 +638,7 @@
         }
     };
 
+
     /**
      * Parse URL query parameters on load
      */
