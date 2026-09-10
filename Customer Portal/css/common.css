@@ -144,6 +144,53 @@ body.sidebar-collapsed .pl-64 {
     padding-left: 0 !important;
 }
 
+/* Hover-to-Open Desktop Flyout State */
+body.sidebar-collapsed.sidebar-hover-open aside,
+body.sidebar-collapsed.sidebar-hover-open #portal-sidebar {
+    transform: translateX(0) !important;
+    box-shadow: 8px 0 32px -4px rgba(0, 14, 29, 0.45) !important;
+    z-index: 55 !important;
+}
+
+/* Left-Edge Hover Detection Strip for Collapsed State */
+#sidebar-hover-trigger {
+    position: fixed;
+    top: 4rem;
+    left: 0;
+    width: 14px;
+    height: calc(100vh - 4rem);
+    z-index: 45;
+    display: none;
+    cursor: pointer;
+    background: transparent;
+}
+
+body.sidebar-collapsed #sidebar-hover-trigger {
+    display: block;
+}
+
+#sidebar-hover-trigger:hover::after {
+    content: '';
+    position: absolute;
+    top: 35%;
+    left: 2px;
+    width: 3px;
+    height: 64px;
+    border-radius: 3px;
+    background: var(--portal-tertiary);
+    opacity: 0.85;
+    box-shadow: 0 0 8px rgba(255, 221, 181, 0.6);
+}
+
+/* Assigned Manager Card Styling */
+.portal-manager-card {
+    transition: transform var(--portal-transition-fast), border-color var(--portal-transition-fast), box-shadow var(--portal-transition-fast);
+}
+
+.portal-manager-card:hover {
+    border-color: rgba(255, 221, 181, 0.35);
+}
+
 /* Mobile Off-Canvas Drawer Mode & Backdrop */
 #sidebar-backdrop {
     position: fixed;

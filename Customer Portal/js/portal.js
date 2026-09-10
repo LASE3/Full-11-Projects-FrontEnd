@@ -151,21 +151,22 @@
         }
 
         // Wire Assigned Manager box to Support page
-        const managerCard = document.querySelector('aside div.p-unit-base');
+        const managerCard = document.querySelector('aside .portal-manager-card') || document.querySelector('aside div.p-unit-base');
         if (managerCard) {
             managerCard.style.cursor = 'pointer';
             managerCard.title = 'Click to contact Assigned Manager Viktor Morozov in Support';
-            managerCard.addEventListener('click', () => {
+            managerCard.addEventListener('click', (e) => {
+                if (e.target.closest('a')) return;
                 window.location.href = 'SupportTicketView.html?ticket=TCK-9482';
             });
         }
 
-        // Setup Sliding Sidebar Menu (Open/Close)
+        // Setup Sliding Sidebar Menu (Open/Close & Hover-to-Open)
         setupSlidingSidebar();
     }
 
     /**
-     * Sliding Sidebar Controller (Desktop Collapse & Mobile Off-Canvas Drawer)
+     * Sliding Sidebar Controller (Desktop Collapse, Mobile Off-Canvas Drawer, & Hover-to-Open)
      */
     function setupSlidingSidebar() {
         const sidebar = document.querySelector('aside') || document.getElementById('portal-sidebar');
@@ -178,6 +179,15 @@
             backdrop = document.createElement('div');
             backdrop.id = 'sidebar-backdrop';
             document.body.appendChild(backdrop);
+        }
+
+        // Create left-edge hover trigger strip if not existing
+        let hoverTrigger = document.getElementById('sidebar-hover-trigger');
+        if (!hoverTrigger) {
+            hoverTrigger = document.createElement('div');
+            hoverTrigger.id = 'sidebar-hover-trigger';
+            hoverTrigger.title = 'Hover to reveal Navigation Menu';
+            document.body.appendChild(hoverTrigger);
         }
 
         // If sidebar-toggle-btn doesn't exist in markup, inject it at start of headerLeft
@@ -219,10 +229,56 @@
             }
         }
 
+        // ==========================================
+        // Hover-to-Open Controller
+        // ==========================================
+        let hoverCloseTimer = null;
+
+        function handleHoverEnter() {
+            if (window.innerWidth < 1024) return;
+            if (!document.body.classList.contains('sidebar-collapsed')) return;
+            if (hoverCloseTimer) {
+                clearTimeout(hoverCloseTimer);
+                hoverCloseTimer = null;
+            }
+            document.body.classList.add('sidebar-hover-open');
+        }
+
+        function handleHoverLeave() {
+            if (window.innerWidth < 1024) return;
+            if (!document.body.classList.contains('sidebar-collapsed')) return;
+            if (hoverCloseTimer) clearTimeout(hoverCloseTimer);
+            hoverCloseTimer = setTimeout(() => {
+                document.body.classList.remove('sidebar-hover-open');
+            }, 220);
+        }
+
+        // Wire hover listeners to hamburger button, left edge trigger, and sidebar itself
+        if (toggleBtn) {
+            toggleBtn.addEventListener('mouseenter', handleHoverEnter);
+            toggleBtn.addEventListener('mouseleave', handleHoverLeave);
+        }
+
+        if (hoverTrigger) {
+            hoverTrigger.addEventListener('mouseenter', handleHoverEnter);
+            hoverTrigger.addEventListener('mouseleave', handleHoverLeave);
+        }
+
+        if (sidebar) {
+            sidebar.addEventListener('mouseenter', handleHoverEnter);
+            sidebar.addEventListener('mouseleave', handleHoverLeave);
+        }
+
         /**
          * Global toggle function
          */
         window.toggleSidebar = function (forceOpen) {
+            if (hoverCloseTimer) {
+                clearTimeout(hoverCloseTimer);
+                hoverCloseTimer = null;
+            }
+            document.body.classList.remove('sidebar-hover-open');
+
             const isMobile = window.innerWidth < 1024;
             if (isMobile) {
                 const willOpen = typeof forceOpen === 'boolean' ? forceOpen : !document.body.classList.contains('sidebar-mobile-open');
@@ -258,6 +314,8 @@
         if (collapseBtn) {
             collapseBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
+                if (hoverCloseTimer) clearTimeout(hoverCloseTimer);
+                document.body.classList.remove('sidebar-hover-open');
                 window.toggleSidebar(false);
             });
         }
@@ -283,8 +341,13 @@
             if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'b') {
                 e.preventDefault();
                 window.toggleSidebar();
-            } else if (e.key === 'Escape' && document.body.classList.contains('sidebar-mobile-open')) {
-                window.toggleSidebar(false);
+            } else if (e.key === 'Escape') {
+                if (document.body.classList.contains('sidebar-hover-open')) {
+                    document.body.classList.remove('sidebar-hover-open');
+                }
+                if (document.body.classList.contains('sidebar-mobile-open')) {
+                    window.toggleSidebar(false);
+                }
             }
         });
 
