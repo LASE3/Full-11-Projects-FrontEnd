@@ -133,11 +133,11 @@
             }
         });
 
-        // Wire top logo to Dashboard
+        // Wire top logo to Dashboard (skip if toggle button clicked)
         const logoContainers = document.querySelectorAll('header > div:first-child');
         logoContainers.forEach(container => {
-            container.style.cursor = 'pointer';
             container.addEventListener('click', (e) => {
+                if (e.target.closest('#sidebar-toggle-btn')) return;
                 if (e.target.tagName !== 'A') {
                     window.location.href = 'Dashboard.html';
                 }
@@ -159,201 +159,151 @@
                 window.location.href = 'SupportTicketView.html?ticket=TCK-9482';
             });
         }
+
+        // Setup Sliding Sidebar Menu (Open/Close)
+        setupSlidingSidebar();
     }
 
     /**
-     * Build and inject Global Command Palette (Ctrl+K)
+     * Sliding Sidebar Controller (Desktop Collapse & Mobile Off-Canvas Drawer)
      */
-    function setupCommandPalette() {
-        // Create modal overlay
-        const overlay = document.createElement('div');
-        overlay.id = 'omni-search-modal';
-        overlay.className = 'fixed inset-0 z-[100] bg-primary/70 backdrop-blur-sm hidden items-start justify-center pt-20 px-4 transition-all duration-200';
-        overlay.innerHTML = `
-            <div class="w-full max-w-2xl bg-surface-container-lowest rounded-xl shadow-2xl border border-outline/30 overflow-hidden flex flex-col transform transition-all">
-                <!-- Search Input Header -->
-                <div class="flex items-center gap-3 px-4 py-3.5 border-b border-outline/20 bg-surface-container-low/60">
-                    <span class="material-symbols-outlined text-secondary text-2xl">search</span>
-                    <input id="omni-search-input" type="text" placeholder="Search orders, invoices, specs, tickets, serials... (e.g. 7721, HPF, TCK)" class="w-full bg-transparent outline-none text-primary font-body-md placeholder:text-outline text-base">
-                    <kbd class="px-2 py-0.5 rounded bg-surface-container text-xs font-mono text-outline border border-outline/30">ESC</kbd>
-                </div>
-                <!-- Filter Pills -->
-                <div class="flex items-center gap-1.5 px-4 py-2 border-b border-outline/10 bg-surface-container-low text-xs overflow-x-auto">
-                    <button class="omni-filter-pill px-2.5 py-1 rounded-full bg-primary text-on-primary font-medium" data-filter="ALL">All Items</button>
-                    <button class="omni-filter-pill px-2.5 py-1 rounded-full bg-surface-container-high text-on-surface hover:bg-surface-container font-medium" data-filter="Project">Projects</button>
-                    <button class="omni-filter-pill px-2.5 py-1 rounded-full bg-surface-container-high text-on-surface hover:bg-surface-container font-medium" data-filter="Order">Orders</button>
-                    <button class="omni-filter-pill px-2.5 py-1 rounded-full bg-surface-container-high text-on-surface hover:bg-surface-container font-medium" data-filter="Invoice">Invoices</button>
-                    <button class="omni-filter-pill px-2.5 py-1 rounded-full bg-surface-container-high text-on-surface hover:bg-surface-container font-medium" data-filter="Document">Documents</button>
-                    <button class="omni-filter-pill px-2.5 py-1 rounded-full bg-surface-container-high text-on-surface hover:bg-surface-container font-medium" data-filter="Support Ticket">Tickets</button>
-                </div>
-                <!-- Results Container -->
-                <div id="omni-search-results" class="max-h-96 overflow-y-auto divide-y divide-outline/10 p-2">
-                    <!-- Results rendered via renderSearchResults() -->
-                </div>
-                <!-- Footer -->
-                <div class="flex items-center justify-between px-4 py-2.5 bg-surface-container-low text-xs text-on-surface-variant border-t border-outline/10 font-mono">
-                    <div class="flex items-center gap-3">
-                        <span>↑↓ to navigate</span>
-                        <span>↵ to select</span>
-                    </div>
-                    <span>VOSTOKPRIBOR Portal Telemetry Index</span>
-                </div>
-            </div>
-        `;
-        document.body.appendChild(overlay);
+    function setupSlidingSidebar() {
+        const sidebar = document.querySelector('aside') || document.getElementById('portal-sidebar');
+        const mainWrapper = document.getElementById('portal-main-wrapper') || document.querySelector('.portal-content-wrapper') || document.querySelector('.pl-64');
+        const headerLeft = document.querySelector('header > div:first-child');
 
-        const searchInput = document.getElementById('omni-search-input');
-        const resultsContainer = document.getElementById('omni-search-results');
-        let currentFilter = 'ALL';
-        let selectedIndex = 0;
-        let currentFilteredList = [];
-
-        function renderResults() {
-            const query = (searchInput.value || '').trim().toLowerCase();
-            currentFilteredList = SEARCH_INDEX.filter(item => {
-                const matchesFilter = (currentFilter === 'ALL' || item.type === currentFilter);
-                const matchesQuery = !query ||
-                    item.title.toLowerCase().includes(query) ||
-                    item.id.toLowerCase().includes(query) ||
-                    item.meta.toLowerCase().includes(query) ||
-                    item.badge.toLowerCase().includes(query);
-                return matchesFilter && matchesQuery;
-            });
-
-            if (currentFilteredList.length === 0) {
-                resultsContainer.innerHTML = `
-                    <div class="p-8 text-center text-on-surface-variant flex flex-col items-center gap-2">
-                        <span class="material-symbols-outlined text-3xl text-outline">search_off</span>
-                        <p class="font-medium text-sm">No telemetry records match "${query}"</p>
-                        <p class="text-xs text-outline">Try searching by serial code (e.g. 7721), protocol, or invoice number.</p>
-                    </div>
-                `;
-                return;
-            }
-
-            if (selectedIndex >= currentFilteredList.length) {
-                selectedIndex = 0;
-            }
-
-            resultsContainer.innerHTML = currentFilteredList.map((item, idx) => {
-                const isSelected = idx === selectedIndex;
-                const bgClass = isSelected ? 'bg-surface-container text-primary font-medium' : 'hover:bg-surface-container-low text-on-surface';
-                return `
-                    <div class="omni-item flex items-center justify-between p-3 rounded-lg cursor-pointer transition-colors ${bgClass}" data-url="${item.url}" data-index="${idx}">
-                        <div class="flex items-center gap-3 min-w-0">
-                            <div class="p-2 rounded bg-primary-container text-tertiary-fixed shrink-0">
-                                <span class="material-symbols-outlined text-lg">${item.icon}</span>
-                            </div>
-                            <div class="flex flex-col min-w-0">
-                                <div class="flex items-center gap-2">
-                                    <span class="font-mono text-xs font-bold text-secondary">${item.id}</span>
-                                    <span class="font-headline-sm text-sm truncate">${item.title}</span>
-                                </div>
-                                <span class="text-xs text-on-surface-variant truncate">${item.meta}</span>
-                            </div>
-                        </div>
-                        <div class="flex items-center gap-2 shrink-0 ml-3">
-                            <span class="px-2 py-0.5 rounded text-[10px] font-mono font-semibold uppercase bg-surface-container-high text-on-surface border border-outline/20">${item.badge}</span>
-                            <span class="material-symbols-outlined text-sm text-outline">arrow_forward</span>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-
-            // Click listener
-            resultsContainer.querySelectorAll('.omni-item').forEach(el => {
-                el.addEventListener('click', () => {
-                    const url = el.getAttribute('data-url');
-                    if (url) window.location.href = url;
-                });
-            });
+        // Create mobile backdrop if not existing
+        let backdrop = document.getElementById('sidebar-backdrop');
+        if (!backdrop) {
+            backdrop = document.createElement('div');
+            backdrop.id = 'sidebar-backdrop';
+            document.body.appendChild(backdrop);
         }
 
-        // Filter pills listener
-        overlay.querySelectorAll('.omni-filter-pill').forEach(btn => {
-            btn.addEventListener('click', () => {
-                overlay.querySelectorAll('.omni-filter-pill').forEach(b => {
-                    b.className = 'omni-filter-pill px-2.5 py-1 rounded-full bg-surface-container-high text-on-surface hover:bg-surface-container font-medium';
-                });
-                btn.className = 'omni-filter-pill px-2.5 py-1 rounded-full bg-primary text-on-primary font-medium';
-                currentFilter = btn.getAttribute('data-filter');
-                selectedIndex = 0;
-                renderResults();
-            });
-        });
-
-        // Search input keydown
-        searchInput.addEventListener('input', () => {
-            selectedIndex = 0;
-            renderResults();
-        });
-
-        searchInput.addEventListener('keydown', (e) => {
-            if (e.key === 'ArrowDown') {
-                e.preventDefault();
-                selectedIndex = (selectedIndex + 1) % currentFilteredList.length;
-                renderResults();
-            } else if (e.key === 'ArrowUp') {
-                e.preventDefault();
-                selectedIndex = (selectedIndex - 1 + currentFilteredList.length) % currentFilteredList.length;
-                renderResults();
-            } else if (e.key === 'Enter') {
-                e.preventDefault();
-                if (currentFilteredList[selectedIndex]) {
-                    window.location.href = currentFilteredList[selectedIndex].url;
-                }
-            } else if (e.key === 'Escape') {
-                closeOmniSearch();
-            }
-        });
-
-        function openOmniSearch() {
-            overlay.classList.remove('hidden');
-            overlay.classList.add('flex');
-            searchInput.value = '';
-            selectedIndex = 0;
-            renderResults();
-            setTimeout(() => searchInput.focus(), 50);
+        // If sidebar-toggle-btn doesn't exist in markup, inject it at start of headerLeft
+        let toggleBtn = document.getElementById('sidebar-toggle-btn');
+        if (!toggleBtn && headerLeft) {
+            toggleBtn = document.createElement('button');
+            toggleBtn.id = 'sidebar-toggle-btn';
+            toggleBtn.className = 'p-1.5 -ml-1 mr-1 rounded text-on-primary-container hover:text-on-primary hover:bg-surface-container-high/10 transition-colors flex items-center justify-center cursor-pointer focus:outline-none';
+            toggleBtn.title = 'Toggle Navigation Menu (Slide Open/Close)';
+            toggleBtn.innerHTML = '<span class="material-symbols-outlined text-2xl" id="sidebar-toggle-icon">menu</span>';
+            headerLeft.insertBefore(toggleBtn, headerLeft.firstChild);
         }
 
-        function closeOmniSearch() {
-            overlay.classList.add('hidden');
-            overlay.classList.remove('flex');
+        // Collapse chevron button inside sidebar
+        let collapseBtn = document.getElementById('sidebar-collapse-btn');
+        if (!collapseBtn && sidebar) {
+            const opNavHeader = sidebar.querySelector('div.font-label-caps') || sidebar.querySelector('.px-unit-base');
+            if (opNavHeader) {
+                opNavHeader.classList.add('flex', 'items-center', 'justify-between');
+                collapseBtn = document.createElement('button');
+                collapseBtn.id = 'sidebar-collapse-btn';
+                collapseBtn.className = 'text-on-primary-container hover:text-on-primary p-0.5 rounded hover:bg-surface-container-high/10 transition-colors cursor-pointer';
+                collapseBtn.title = 'Collapse Menu';
+                collapseBtn.innerHTML = '<span class="material-symbols-outlined text-base">chevron_left</span>';
+                opNavHeader.appendChild(collapseBtn);
+            }
         }
 
-        // Close on background click
-        overlay.addEventListener('click', (e) => {
-            if (e.target === overlay) {
-                closeOmniSearch();
+        function updateToggleIcon() {
+            const icon = document.getElementById('sidebar-toggle-icon');
+            if (!icon) return;
+            const isMobile = window.innerWidth < 1024;
+            if (isMobile) {
+                const isOpen = document.body.classList.contains('sidebar-mobile-open');
+                icon.textContent = isOpen ? 'close' : 'menu';
+            } else {
+                const isCollapsed = document.body.classList.contains('sidebar-collapsed');
+                icon.textContent = isCollapsed ? 'menu' : 'menu_open';
             }
-        });
+        }
 
-        // Global hotkey Ctrl+K and /
-        window.addEventListener('keydown', (e) => {
-            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
-                e.preventDefault();
-                if (overlay.classList.contains('hidden')) {
-                    openOmniSearch();
+        /**
+         * Global toggle function
+         */
+        window.toggleSidebar = function (forceOpen) {
+            const isMobile = window.innerWidth < 1024;
+            if (isMobile) {
+                const willOpen = typeof forceOpen === 'boolean' ? forceOpen : !document.body.classList.contains('sidebar-mobile-open');
+                if (willOpen) {
+                    document.body.classList.add('sidebar-mobile-open');
+                    backdrop.classList.add('active');
                 } else {
-                    closeOmniSearch();
+                    document.body.classList.remove('sidebar-mobile-open');
+                    backdrop.classList.remove('active');
                 }
-            } else if (e.key === 'Escape') {
-                closeOmniSearch();
+            } else {
+                const willCollapse = typeof forceOpen === 'boolean' ? !forceOpen : !document.body.classList.contains('sidebar-collapsed');
+                if (willCollapse) {
+                    document.body.classList.add('sidebar-collapsed');
+                    localStorage.setItem('vstk_sidebar_collapsed', 'true');
+                } else {
+                    document.body.classList.remove('sidebar-collapsed');
+                    localStorage.setItem('vstk_sidebar_collapsed', 'false');
+                }
+            }
+            updateToggleIcon();
+        };
+
+        // Wire toggle button
+        if (toggleBtn) {
+            toggleBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                window.toggleSidebar();
+            });
+        }
+
+        // Wire collapse chevron button inside sidebar
+        if (collapseBtn) {
+            collapseBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                window.toggleSidebar(false);
+            });
+        }
+
+        // Clicking backdrop closes mobile drawer
+        backdrop.addEventListener('click', () => {
+            window.toggleSidebar(false);
+        });
+
+        // Clicking any nav link in mobile view closes mobile drawer
+        if (sidebar) {
+            sidebar.querySelectorAll('nav a').forEach(link => {
+                link.addEventListener('click', () => {
+                    if (window.innerWidth < 1024) {
+                        window.toggleSidebar(false);
+                    }
+                });
+            });
+        }
+
+        // Keyboard shortcut: Ctrl+B to toggle menu
+        window.addEventListener('keydown', (e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'b') {
+                e.preventDefault();
+                window.toggleSidebar();
+            } else if (e.key === 'Escape' && document.body.classList.contains('sidebar-mobile-open')) {
+                window.toggleSidebar(false);
             }
         });
 
-        // Hook into existing search input in top header
-        const headerSearchInputs = document.querySelectorAll('header input[placeholder*="Search"]');
-        headerSearchInputs.forEach(input => {
-            input.addEventListener('focus', (e) => {
-                e.preventDefault();
-                input.blur();
-                openOmniSearch();
-            });
-            input.parentElement.addEventListener('click', (e) => {
-                e.preventDefault();
-                openOmniSearch();
-            });
+        // Initialize state from localStorage (desktop)
+        if (window.innerWidth >= 1024) {
+            const savedCollapsed = localStorage.getItem('vstk_sidebar_collapsed');
+            if (savedCollapsed === 'true') {
+                document.body.classList.add('sidebar-collapsed');
+            }
+        }
+        updateToggleIcon();
+
+        // Handle resize events
+        window.addEventListener('resize', () => {
+            if (window.innerWidth >= 1024 && document.body.classList.contains('sidebar-mobile-open')) {
+                document.body.classList.remove('sidebar-mobile-open');
+                backdrop.classList.remove('active');
+            }
+            updateToggleIcon();
         });
     }
 
@@ -361,19 +311,29 @@
      * Build and inject Notifications Popover
      */
     function setupNotifications() {
-        const bellIcon = document.querySelector('header .material-symbols-outlined[class*="notifications"]')?.parentElement;
+        // Find bell container reliably across all pages
+        let bellIcon = document.getElementById('header-bell-btn');
+        if (!bellIcon) {
+            const iconSpan = Array.from(document.querySelectorAll('header span.material-symbols-outlined'))
+                .find(el => el.textContent.trim() === 'notifications');
+            bellIcon = iconSpan?.closest('div') || iconSpan?.parentElement;
+        }
         if (!bellIcon) return;
+
+        bellIcon.id = 'header-bell-btn';
+        bellIcon.style.cursor = 'pointer';
+        bellIcon.title = 'Operational Telemetry Alerts';
 
         const popover = document.createElement('div');
         popover.id = 'notifications-popover';
-        popover.className = 'fixed right-20 top-16 w-80 sm:w-96 bg-surface-container-lowest rounded-xl shadow-2xl border border-outline/30 z-[90] hidden flex-col overflow-hidden';
+        popover.className = 'fixed right-12 sm:right-24 top-16 w-80 sm:w-96 bg-surface-container-lowest rounded-xl shadow-2xl border border-outline/30 z-[90] hidden flex-col overflow-hidden';
         popover.innerHTML = `
             <div class="flex items-center justify-between px-4 py-3 bg-primary-container text-on-primary">
                 <div class="flex items-center gap-2">
                     <span class="material-symbols-outlined text-tertiary-fixed text-lg">notifications_active</span>
                     <span class="font-headline-sm text-sm font-semibold">Operational Telemetry Alerts</span>
                 </div>
-                <span class="px-1.5 py-0.5 rounded bg-tertiary-fixed text-primary font-mono text-[10px] font-bold">4 NEW</span>
+                <span id="notif-badge-count" class="px-1.5 py-0.5 rounded bg-tertiary-fixed text-primary font-mono text-[10px] font-bold">4 NEW</span>
             </div>
             <div class="max-h-80 overflow-y-auto divide-y divide-outline/10">
                 ${NOTIFICATIONS.map(n => `
@@ -392,7 +352,7 @@
                 `).join('')}
             </div>
             <div class="p-2.5 bg-surface-container-low border-t border-outline/10 flex items-center justify-between text-xs">
-                <button id="mark-all-read" class="text-secondary hover:underline font-medium">Mark all acknowledged</button>
+                <button id="mark-all-read" class="text-secondary hover:underline font-medium cursor-pointer">Mark all acknowledged</button>
                 <a href="SupportTicketView.html" class="text-primary font-semibold flex items-center gap-1 hover:underline">
                     View incident desk <span class="material-symbols-outlined text-xs">arrow_forward</span>
                 </a>
@@ -400,12 +360,17 @@
         `;
         document.body.appendChild(popover);
 
-        bellIcon.style.cursor = 'pointer';
         bellIcon.addEventListener('click', (e) => {
             e.stopPropagation();
-            popover.classList.toggle('hidden');
-            popover.classList.toggle('flex');
-            profileMenu?.classList.add('hidden');
+            const isHidden = popover.classList.contains('hidden');
+            if (isHidden) {
+                popover.classList.remove('hidden');
+                popover.classList.add('flex');
+                if (profileMenu) profileMenu.classList.add('hidden');
+            } else {
+                popover.classList.add('hidden');
+                popover.classList.remove('flex');
+            }
         });
 
         // Close when clicking outside
@@ -416,13 +381,25 @@
             }
         });
 
+        // Check session storage for acknowledged state
+        if (sessionStorage.getItem('vstk_notifications_read') === 'true') {
+            const badge = bellIcon.querySelector('.bg-tertiary-fixed') || document.getElementById('bell-unread-dot');
+            if (badge) badge.style.display = 'none';
+            const badgeCount = document.getElementById('notif-badge-count');
+            if (badgeCount) badgeCount.textContent = '0 NEW';
+        }
+
         const markReadBtn = document.getElementById('mark-all-read');
         if (markReadBtn) {
             markReadBtn.addEventListener('click', () => {
-                const badge = bellIcon.querySelector('.bg-tertiary-fixed');
+                const badge = bellIcon.querySelector('.bg-tertiary-fixed') || document.getElementById('bell-unread-dot');
                 if (badge) badge.style.display = 'none';
+                const badgeCount = document.getElementById('notif-badge-count');
+                if (badgeCount) badgeCount.textContent = '0 NEW';
+                sessionStorage.setItem('vstk_notifications_read', 'true');
                 window.showToast('Notifications Acknowledged', 'All live telemetry notices marked as reviewed.', 'info');
                 popover.classList.add('hidden');
+                popover.classList.remove('flex');
             });
         }
     }

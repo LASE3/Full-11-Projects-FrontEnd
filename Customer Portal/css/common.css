@@ -119,6 +119,68 @@ main > :last-child {
 }
 
 /* ==========================================================================
+   Sliding Sidebar Navigation
+   ========================================================================== */
+
+aside,
+#portal-sidebar {
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform;
+}
+
+.portal-content-wrapper,
+.pl-64 {
+    transition: padding-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Collapsed Desktop State */
+body.sidebar-collapsed aside,
+body.sidebar-collapsed #portal-sidebar {
+    transform: translateX(-100%) !important;
+}
+
+body.sidebar-collapsed .portal-content-wrapper,
+body.sidebar-collapsed .pl-64 {
+    padding-left: 0 !important;
+}
+
+/* Mobile Off-Canvas Drawer Mode & Backdrop */
+#sidebar-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 14, 29, 0.55);
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+    z-index: 35;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+#sidebar-backdrop.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+@media (max-width: 1023px) {
+    aside,
+    #portal-sidebar {
+        transform: translateX(-100%);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+    }
+
+    body.sidebar-mobile-open aside,
+    body.sidebar-mobile-open #portal-sidebar {
+        transform: translateX(0) !important;
+    }
+
+    .portal-content-wrapper,
+    .pl-64 {
+        padding-left: 0 !important;
+    }
+}
+
+/* ==========================================================================
    Deep Linking & Interaction Highlight Effect
    ========================================================================== */
 
