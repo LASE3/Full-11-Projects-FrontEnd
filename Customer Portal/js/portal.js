@@ -122,13 +122,17 @@
             if (dataPath && ROUTES[dataPath]) {
                 link.setAttribute('href', ROUTES[dataPath]);
 
-                // Reset and set active classes
+                const svg = link.querySelector('svg');
+
+                // Reset and set active classes matching Invoices screen
                 if (dataPath === currentKey) {
                     link.setAttribute('aria-current', 'page');
-                    link.className = 'flex items-center gap-unit-md px-unit-base py-unit-sm transition-colors bg-surface-container-high/10 text-on-primary font-semibold border-l-4 border-tertiary-fixed';
+                    link.className = 'flex items-center gap-unit-sm px-unit-base py-unit-sm transition-colors bg-surface-container-high/10 text-on-primary font-semibold border-l-4 border-on-tertiary-container font-headline-sm text-headline-sm';
+                    if (svg) svg.classList.add('text-tertiary-fixed');
                 } else {
                     link.removeAttribute('aria-current');
-                    link.className = 'flex items-center gap-unit-md px-unit-base py-unit-sm text-on-primary-container hover:bg-surface-container-high/5 hover:text-on-primary transition-colors';
+                    link.className = 'flex items-center gap-unit-sm px-unit-base py-unit-sm text-on-primary-container hover:bg-surface-container-high/5 hover:text-on-primary transition-colors font-headline-sm text-headline-sm font-normal';
+                    if (svg) svg.classList.remove('text-tertiary-fixed');
                 }
             }
         });
@@ -367,6 +371,240 @@
                 backdrop.classList.remove('active');
             }
             updateToggleIcon();
+        });
+    }
+
+    /**
+     * Helpers for Search Palette
+     */
+    function escapeHtml(str) {
+        return (str || '').replace(/[&<>"']/g, m => ({
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#39;'
+        }[m]));
+    }
+
+    function highlightMatch(text, query) {
+        if (!query) return escapeHtml(text);
+        const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const regex = new RegExp(`(${escaped})`, 'gi');
+        return escapeHtml(text).replace(regex, '<mark class="bg-tertiary-fixed/40 text-primary font-bold px-0.5 rounded">$1</mark>');
+    }
+
+    /**
+     * Build and inject Global Command Palette / Search Modal (Ctrl+K)
+     */
+    function setupCommandPalette() {
+        let palette = document.getElementById('portal-search-palette');
+        if (!palette) {
+            palette = document.createElement('div');
+            palette.id = 'portal-search-palette';
+            palette.className = 'fixed inset-0 z-[200] bg-primary/75 backdrop-blur-sm hidden items-start justify-center pt-16 sm:pt-20 px-4 transition-all duration-200';
+            palette.innerHTML = `
+                <div class="bg-surface-container-lowest border border-outline/30 rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[82vh]">
+                    <div class="p-3.5 border-b border-outline/20 flex items-center gap-3 bg-surface-container-low/70">
+                        <span class="material-symbols-outlined text-xl text-tertiary-fixed shrink-0">search</span>
+                        <input id="palette-search-input" type="text"
+                            class="w-full bg-transparent border-none outline-none font-body-sm text-sm text-primary placeholder:text-outline"
+                            placeholder="Search projects, orders, invoices, specs, tickets, serial numbers..." autocomplete="off" />
+                        <span class="font-technical-tag text-[10px] px-2 py-0.5 rounded bg-surface-container-high/40 text-on-surface-variant border border-outline/20 shrink-0">ESC</span>
+                        <button id="palette-close-btn" class="p-1 rounded-full hover:bg-surface-container text-outline hover:text-primary transition-colors cursor-pointer">
+                            <span class="material-symbols-outlined text-base">close</span>
+                        </button>
+                    </div>
+                    <div class="px-3.5 py-2 border-b border-outline/10 bg-surface-container-lowest flex items-center gap-1.5 overflow-x-auto text-xs font-mono select-none" id="palette-filter-chips">
+                        <button class="palette-chip px-2.5 py-1 rounded-full bg-primary text-tertiary-fixed font-medium cursor-pointer" data-type="ALL">All</button>
+                        <button class="palette-chip px-2.5 py-1 rounded-full text-on-surface-variant hover:bg-surface-container hover:text-primary cursor-pointer" data-type="Project">Projects</button>
+                        <button class="palette-chip px-2.5 py-1 rounded-full text-on-surface-variant hover:bg-surface-container hover:text-primary cursor-pointer" data-type="Order">Orders</button>
+                        <button class="palette-chip px-2.5 py-1 rounded-full text-on-surface-variant hover:bg-surface-container hover:text-primary cursor-pointer" data-type="Invoice">Invoices</button>
+                        <button class="palette-chip px-2.5 py-1 rounded-full text-on-surface-variant hover:bg-surface-container hover:text-primary cursor-pointer" data-type="Document">Documents</button>
+                        <button class="palette-chip px-2.5 py-1 rounded-full text-on-surface-variant hover:bg-surface-container hover:text-primary cursor-pointer" data-type="Support Ticket">Support</button>
+                        <button class="palette-chip px-2.5 py-1 rounded-full text-on-surface-variant hover:bg-surface-container hover:text-primary cursor-pointer" data-type="Settings">Settings</button>
+                    </div>
+                    <div class="p-2 overflow-y-auto flex flex-col gap-1 divide-y divide-outline/10" id="palette-results-container">
+                        <!-- Results dynamically injected -->
+                    </div>
+                    <div class="px-4 py-2 bg-surface-container-low/70 border-t border-outline/15 flex items-center justify-between text-[11px] text-on-surface-variant font-mono select-none">
+                        <span>Navigate: <kbd class="px-1 py-0.5 rounded bg-surface-container border border-outline/20">↑</kbd> <kbd class="px-1 py-0.5 rounded bg-surface-container border border-outline/20">↓</kbd></span>
+                        <span>Open: <kbd class="px-1.5 py-0.5 rounded bg-surface-container border border-outline/20">↵ Enter</kbd></span>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(palette);
+        }
+
+        let currentFilterType = 'ALL';
+        let activeResultIndex = 0;
+        let currentMatches = [];
+
+        function renderResults(query = '') {
+            const container = document.getElementById('palette-results-container');
+            if (!container) return;
+
+            const q = query.trim().toLowerCase();
+            currentMatches = SEARCH_INDEX.filter(item => {
+                if (currentFilterType !== 'ALL' && item.type !== currentFilterType) {
+                    return false;
+                }
+                if (!q) return true;
+                return item.title.toLowerCase().includes(q) ||
+                       item.id.toLowerCase().includes(q) ||
+                       item.meta.toLowerCase().includes(q) ||
+                       item.type.toLowerCase().includes(q) ||
+                       item.badge.toLowerCase().includes(q);
+            });
+
+            if (currentMatches.length === 0) {
+                container.innerHTML = `
+                    <div class="py-8 text-center flex flex-col items-center justify-center text-on-surface-variant">
+                        <span class="material-symbols-outlined text-3xl text-outline mb-1.5">search_off</span>
+                        <div class="font-headline-sm text-sm text-primary font-medium">No results found for "${escapeHtml(query)}"</div>
+                        <div class="text-xs text-outline mt-0.5">Try searching by serial number, order ID, document name or equipment.</div>
+                    </div>
+                `;
+                return;
+            }
+
+            activeResultIndex = 0;
+            container.innerHTML = currentMatches.map((item, index) => {
+                return `
+                    <a href="${item.url}" data-index="${index}" class="palette-result-item flex items-start gap-3 p-2.5 rounded-lg hover:bg-surface-container transition-colors cursor-pointer group ${index === 0 ? 'bg-surface-container-high/50' : ''}">
+                        <div class="p-2 rounded bg-primary-container text-tertiary-fixed shrink-0 mt-0.5 group-hover:scale-105 transition-transform">
+                            <span class="material-symbols-outlined text-base">${item.icon || 'search'}</span>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-center gap-2 mb-0.5">
+                                <span class="px-1.5 py-0.2 rounded text-[10px] font-mono font-semibold bg-surface-container-high text-primary border border-outline/20">${item.type}</span>
+                                <span class="font-mono text-xs font-bold text-primary">${item.id}</span>
+                                <span class="px-1.5 py-0.2 rounded text-[9px] font-mono text-secondary ml-auto font-medium">${item.badge}</span>
+                            </div>
+                            <div class="font-body-sm text-xs font-semibold text-primary truncate leading-snug">${highlightMatch(item.title, q)}</div>
+                            <div class="text-[11px] text-on-surface-variant truncate font-mono mt-0.5">${item.meta}</div>
+                        </div>
+                    </a>
+                `;
+            }).join('');
+
+            container.querySelectorAll('.palette-result-item').forEach(itemEl => {
+                itemEl.addEventListener('mouseenter', () => {
+                    container.querySelectorAll('.palette-result-item').forEach(el => el.classList.remove('bg-surface-container-high/50'));
+                    itemEl.classList.add('bg-surface-container-high/50');
+                    activeResultIndex = parseInt(itemEl.getAttribute('data-index'), 10);
+                });
+            });
+        }
+
+        window.openSearchPalette = function (initialQuery = '') {
+            const p = document.getElementById('portal-search-palette');
+            if (!p) return;
+            p.classList.remove('hidden');
+            p.classList.add('flex');
+            const input = document.getElementById('palette-search-input');
+            if (input) {
+                if (typeof initialQuery === 'string') input.value = initialQuery;
+                renderResults(input.value);
+                setTimeout(() => input.focus(), 50);
+            }
+        };
+
+        window.closeSearchPalette = function () {
+            const p = document.getElementById('portal-search-palette');
+            if (!p) return;
+            p.classList.add('hidden');
+            p.classList.remove('flex');
+        };
+
+        // Wire input events
+        const searchInput = document.getElementById('palette-search-input');
+        if (searchInput) {
+            searchInput.addEventListener('input', (e) => {
+                renderResults(e.target.value);
+            });
+            searchInput.addEventListener('keydown', (e) => {
+                const items = document.querySelectorAll('.palette-result-item');
+                if (e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    if (items.length > 0) {
+                        items[activeResultIndex]?.classList.remove('bg-surface-container-high/50');
+                        activeResultIndex = (activeResultIndex + 1) % items.length;
+                        items[activeResultIndex]?.classList.add('bg-surface-container-high/50');
+                        items[activeResultIndex]?.scrollIntoView({ block: 'nearest' });
+                    }
+                } else if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    if (items.length > 0) {
+                        items[activeResultIndex]?.classList.remove('bg-surface-container-high/50');
+                        activeResultIndex = (activeResultIndex - 1 + items.length) % items.length;
+                        items[activeResultIndex]?.classList.add('bg-surface-container-high/50');
+                        items[activeResultIndex]?.scrollIntoView({ block: 'nearest' });
+                    }
+                } else if (e.key === 'Enter') {
+                    e.preventDefault();
+                    if (currentMatches[activeResultIndex]) {
+                        window.location.href = currentMatches[activeResultIndex].url;
+                    }
+                } else if (e.key === 'Escape') {
+                    window.closeSearchPalette();
+                }
+            });
+        }
+
+        // Filter chips
+        const chips = document.querySelectorAll('#palette-filter-chips .palette-chip');
+        chips.forEach(chip => {
+            chip.addEventListener('click', () => {
+                chips.forEach(c => {
+                    c.className = 'palette-chip px-2.5 py-1 rounded-full text-on-surface-variant hover:bg-surface-container hover:text-primary cursor-pointer';
+                });
+                chip.className = 'palette-chip px-2.5 py-1 rounded-full bg-primary text-tertiary-fixed font-medium cursor-pointer';
+                currentFilterType = chip.getAttribute('data-type');
+                renderResults(searchInput ? searchInput.value : '');
+            });
+        });
+
+        // Close on backdrop click
+        palette.addEventListener('click', (e) => {
+            if (e.target === palette) window.closeSearchPalette();
+        });
+
+        const closeBtn = document.getElementById('palette-close-btn');
+        if (closeBtn) {
+            closeBtn.addEventListener('click', window.closeSearchPalette);
+        }
+
+        // Global Ctrl+K / Cmd+K listener
+        window.addEventListener('keydown', (e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+                e.preventDefault();
+                window.openSearchPalette();
+            } else if (e.key === 'Escape') {
+                window.closeSearchPalette();
+            }
+        });
+
+        // Wire all top header search inputs and containers
+        const headerSearchElements = document.querySelectorAll('header .header-search-bar, header .header-search-input, header .w-64 > div, header .w-80 > div, header .w-96 > div');
+        headerSearchElements.forEach(el => {
+            el.style.cursor = 'pointer';
+            el.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const inp = el.querySelector('input') || el;
+                window.openSearchPalette(inp.value || '');
+            });
+        });
+
+        const headerInputs = document.querySelectorAll('header input[type="text"]');
+        headerInputs.forEach(inputEl => {
+            inputEl.style.cursor = 'pointer';
+            inputEl.addEventListener('focus', () => {
+                window.openSearchPalette(inputEl.value || '');
+            });
+            inputEl.addEventListener('input', (e) => {
+                window.openSearchPalette(e.target.value);
+            });
         });
     }
 
