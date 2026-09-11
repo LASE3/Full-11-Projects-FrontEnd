@@ -1,0 +1,36 @@
+/* ==========================================================================
+   VOSTOKPRIBOR SYSTEM 11 // GOV-CORE
+   Access Matrix & Role Boundary Stylesheet
+   ========================================================================== */
+
+.role-row {
+    transition: background-color 0.15s ease;
+}
+
+.role-row:hover {
+    background-color: rgba(0, 36, 68, 0.03);
+}
+
+.permission-pill {
+    transition: transform 0.15s ease, background-color 0.15s ease;
+}
+
+.permission-pill:hover {
+    transform: scale(1.05);
+}
+
+.tier-strip-l5 {
+    border-left: 4px solid #B23A32;
+}
+
+.tier-strip-l4 {
+    border-left: 4px solid #D9822B;
+}
+
+.tier-strip-l3 {
+    border-left: 4px solid #006972;
+}
+
+.tier-strip-l2 {
+    border-left: 4px solid #436084;
+}

@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Interactive API Sandbox &amp; Testing Console - VOSTOKPRIBOR Developer Portal</title>
+    <link rel="stylesheet" href="css/dev-tokens.css" />
+    <link rel="stylesheet" href="css/dev-common.css" />
+    <link rel="stylesheet" href="css/dev-sandbox.css" />
+</head>
+<body>
+    <!-- TOP NAVIGATION BAR -->
+    <header class="vk-top-navbar">
+        <div style="display: flex; align-items: center; gap: 24px;">
+            <a class="vk-brand-section" href="index.html">
+                <div class="vk-brand-logo-badge">VP</div>
+                <div style="display: flex; flex-direction: column;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span style="font-family: var(--font-heading); font-weight: 700; font-size: 15px; letter-spacing: -0.02em;">VOSTOKPRIBOR</span>
+                        <span class="vk-system-badge">SYS-10 // DEV-PORTAL</span>
+                    </div>
+                    <span style="font-family: var(--font-mono); font-size: 10px; color: #94A3B8;">ALMATY CENTRAL • EST. 1968 • API GATEWAY v4.12.0</span>
+                </div>
+            </a>
+            <div style="display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.06); padding: 4px 12px; border-radius: var(--radius-sm); border: 1px solid rgba(255,255,255,0.1);">
+                <span class="material-symbols-outlined text-[14px]" style="color: var(--vk-sys-accent);">code_blocks</span>
+                <span style="font-family: var(--font-mono); font-size: 11px; color: #E2E8F0;">SANDBOX: <strong>LIVE SIMULATION RUNNER</strong></span>
+            </div>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 16px;">
+            <div style="position: relative; width: 280px;">
+                <span class="material-symbols-outlined text-[16px]" style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: #64748B;">search</span>
+                <input class="search-trigger-input" type="text" placeholder="Search sandbox presets (Ctrl + K)" readonly
+                    style="width: 100%; height: 32px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: var(--radius-sm); padding-left: 32px; padding-right: 12px; font-family: var(--font-mono); font-size: 11px; color: #ffffff; cursor: pointer;" />
+            </div>
+            <div style="display: flex; align-items: center; gap: 6px; font-family: var(--font-mono); font-size: 11px; color: #94A3B8; background: rgba(0,0,0,0.25); padding: 4px 10px; border-radius: var(--radius-sm);">
+                <span class="material-symbols-outlined text-[14px]" style="color: var(--vk-secondary);">schedule</span>
+                <span class="station-live-clock">17:15:00 UTC+6</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px; padding-left: 12px; border-left: 1px solid rgba(255,255,255,0.15);">
+                <div style="text-align: right;">
+                    <div style="font-size: 12px; font-weight: 600; color: #ffffff;">Kristaps Ozols</div>
+                    <div style="font-family: var(--font-mono); font-size: 10px; color: var(--vk-sys-accent);">CUS-1002 • BaltNord</div>
+                </div>
+                <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--vk-primary); display: flex; align-items: center; justify-content: center; border: 1px solid var(--vk-sys-accent);">
+                    <span class="material-symbols-outlined text-[18px]" style="color: #ffffff;">person</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- LEFT SIDEBAR -->
+    <aside class="vk-sidebar">
+        <div class="vk-sidebar-nav">
+            <div class="vk-sidebar-header">Core Documentation</div>
+            <a class="vk-nav-item" href="index.html">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span class="material-symbols-outlined text-[18px]">menu_book</span>
+                    <span>API Reference</span>
+                </div>
+                <span style="font-family: var(--font-mono); font-size: 10px; color: var(--vk-neutral-600);">REST</span>
+            </a>
+            <a class="vk-nav-item" href="guides.html">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span class="material-symbols-outlined text-[18px]">architecture</span>
+                    <span>Integration Guides</span>
+                </div>
+                <span class="badge-classification badge-internal" style="font-size: 8px;">DOC-010</span>
+            </a>
+
+            <div class="vk-sidebar-header" style="margin-top: 16px;">Partner Enclave</div>
+            <a class="vk-nav-item" href="credentials.html">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span class="material-symbols-outlined text-[18px]">key</span>
+                    <span>API Credentials</span>
+                </div>
+                <span style="font-family: var(--font-mono); font-size: 10px; color: var(--vk-neutral-600);">Vault</span>
+            </a>
+            <a class="vk-nav-item active" href="sandbox.html">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span class="material-symbols-outlined text-[18px]">code_blocks</span>
+                    <span>Testing Sandbox</span>
+                </div>
+                <span class="vk-status-badge status-sandbox" style="padding: 1px 6px; font-size: 9px;">LIVE</span>
+            </a>
+            <a class="vk-nav-item" href="metrics.html">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span class="material-symbols-outlined text-[18px]">monitoring</span>
+                    <span>Usage &amp; Telemetry</span>
+                </div>
+                <span style="font-family: var(--font-mono); font-size: 10px; color: var(--vk-secondary); font-weight: 700;">99.98%</span>
+            </a>
+
+            <div class="vk-sidebar-header" style="margin-top: 16px;">Organization</div>
+            <a class="vk-nav-item" href="partner-registration.html">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span class="material-symbols-outlined text-[18px]">verified_user</span>
+                    <span>Partner Registration</span>
+                </div>
+                <span style="font-family: var(--font-mono); font-size: 10px; color: var(--vk-accent-cta);">NDA</span>
+            </a>
+        </div>
+
+        <div style="padding: 16px; border-top: 1px solid var(--vk-neutral-200); background-color: #F8FAFC; font-size: 11px;">
+            <div style="font-family: var(--font-mono); font-weight: 700; color: var(--vk-neutral-600); text-transform: uppercase; margin-bottom: 6px;">Mock Ingestion Engine</div>
+            <div style="color: var(--vk-neutral-600);">Target: Almaty Mock Cluster</div>
+            <div style="color: var(--vk-secondary); font-size: 10px; font-weight: 600; margin-top: 2px;">Latency: &lt;35ms Simulated</div>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="vk-app-body">
+        <div style="margin-bottom: 20px;">
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+                <span style="font-family: var(--font-mono); font-size: 11px; color: var(--vk-neutral-600);">ROOT / SYSTEM 10 / TESTING CONSOLE</span>
+                <span class="badge-classification badge-internal">Sandbox Mock Environment</span>
+            </div>
+            <h1 style="font-size: 26px; font-weight: 700; color: var(--vk-primary-dark); letter-spacing: -0.02em;">
+                Interactive API Request Runner &amp; Simulator
+            </h1>
+            <p style="color: var(--vk-neutral-600); font-size: 14px; margin-top: 4px;">
+                Directly dispatch test requests to VOSTOKPRIBOR sandbox nodes without impacting production SCADA telemetry or ERP records.
+            </p>
+        </div>
+
+        <!-- Quick Endpoint Presets -->
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;">
+            <span style="font-family: var(--font-mono); font-size: 11px; font-weight: 700; color: var(--vk-neutral-600); text-transform: uppercase;">Quick Presets:</span>
+            <button class="vk-btn vk-btn-outline btn-preset" data-method="GET" data-url="/v1/sensors/optical/telemetry?device_id=PROD-1001-KZ" data-body="">
+                <span class="endpoint-badge-get" style="padding: 1px 4px; font-size: 9px;">GET</span> PROD-1001 Optical Telemetry
+            </button>
+            <button class="vk-btn vk-btn-outline btn-preset" data-method="GET" data-url="/v1/devices/geodetic/measurements?unit=PROD-1002" data-body="">
+                <span class="endpoint-badge-get" style="padding: 1px 4px; font-size: 9px;">GET</span> PROD-1002 Geodetic Vectors
+            </button>
+            <button class="vk-btn vk-btn-outline btn-preset" data-method="POST" data-url="/v1/scada/ingest/frames" data-body='{"facility_id":"ALMATY-CENTRAL-01","protocol":"MODBUS-TCP","plc_register":"40001","payload_hex":"0A2B4C"}'>
+                <span class="endpoint-badge-post" style="padding: 1px 4px; font-size: 9px;">POST</span> PROD-1004 SCADA Frame
+            </button>
+            <button class="vk-btn vk-btn-outline btn-preset" data-method="POST" data-url="/v1/b2b/orders/create" data-body='{"customer_id":"CUS-1002","items":[{"prod_id":"PROD-1001","qty":4}]}'>
+                <span class="endpoint-badge-post" style="padding: 1px 4px; font-size: 9px;">POST</span> B2B Order Create
+            </button>
+        </div>
+
+        <!-- Sandbox Layout Grid -->
+        <div class="sandbox-container">
+            <!-- Left: Request Builder -->
+            <div class="vk-card tag-internal">
+                <div class="vk-card-header">
+                    <div style="font-weight: 700; font-size: 14px; color: var(--vk-primary);">HTTP Request Builder</div>
+                    <span class="badge-classification badge-internal">Sandbox Mode</span>
+                </div>
+                <div class="vk-card-body" style="display: flex; flex-direction: column; gap: 16px;">
+                    <!-- URL Bar -->
+                    <div class="request-bar">
+                        <select class="method-select" id="sandboxMethod">
+                            <option value="GET">GET</option>
+                            <option value="POST">POST</option>
+                            <option value="PUT">PUT</option>
+                            <option value="DELETE">DELETE</option>
+                        </select>
+                        <input class="url-input" id="sandboxUrl" type="text" value="/v1/sensors/optical/telemetry?device_id=PROD-1001-KZ" />
+                        <button class="vk-btn vk-btn-accent send-btn" id="btnSendSandbox">
+                            <span class="material-symbols-outlined text-[16px]">send</span> Send
+                        </button>
+                    </div>
+
+                    <!-- Authorization Token Preview -->
+                    <div>
+                        <label style="font-size: 11px; font-weight: 700; font-family: var(--font-mono); color: var(--vk-neutral-600); text-transform: uppercase;">Headers (Auto-injected)</label>
+                        <div style="background: #F8FAFC; border: 1px solid var(--vk-neutral-200); border-radius: var(--radius-sm); padding: 10px 14px; font-family: var(--font-mono); font-size: 11px; color: var(--vk-neutral-900); margin-top: 4px;">
+                            Authorization: Bearer vk_test_3f7b99c1e04a88bc92d110f<br />
+                            Accept: application/json<br />
+                            X-Client-Enclave: CUS-1002-BALTNORD
+                        </div>
+                    </div>
+
+                    <!-- JSON Body Builder -->
+                    <div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                            <label style="font-size: 11px; font-weight: 700; font-family: var(--font-mono); color: var(--vk-neutral-600); text-transform: uppercase;">Request Body (JSON)</label>
+                            <button class="vk-btn-outline" style="padding: 2px 6px; font-size: 10px;" onclick="document.getElementById('sandboxBody').value='{}'">Clear</button>
+                        </div>
+                        <textarea class="console-editor-box" id="sandboxBody" placeholder="Enter JSON payload for POST/PUT requests..."></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Response Inspector -->
+            <div class="response-pane">
+                <div class="response-header">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span id="responseStatusCode" class="vk-status-badge status-active">200 OK</span>
+                        <span style="color: #94A3B8;">Time: <strong id="responseTime" style="color: #38BDF8;">24ms</strong></span>
+                        <span style="color: #94A3B8;">Size: <strong id="responseSize" style="color: #E2E8F0;">842 B</strong></span>
+                    </div>
+                    <button class="vk-btn-outline" style="padding: 2px 8px; font-size: 10px; color: #94A3B8; border-color: rgba(255,255,255,0.2);" onclick="window.copyText(document.getElementById('responseBodyDisplay').textContent, 'Response JSON copied')">
+                        <span class="material-symbols-outlined text-[13px]">content_copy</span> Copy JSON
+                    </button>
+                </div>
+                <div class="response-body-scroll">
+                    <pre id="responseBodyDisplay">{
+  "device_id": "PROD-1001-KZ",
+  "sensor_series": "Industrial Optical Sensor Package",
+  "calibration_epoch": 1789128000,
+  "station": "ALMATY-CENTRAL",
+  "telemetry": {
+    "spectral_resolution_nm": 0.04,
+    "focal_plane_temp_c": 18.2,
+    "dispersion_coefficient": 1.0024,
+    "optical_throughput_percent": 99.82,
+    "snr_db": 68.4
+  },
+  "status": "NOMINAL_OPERATIONAL",
+  "jurisdiction_merkle_root": "0x4a8c911f...c892"
+}</pre>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="vk-footer">
+        <div class="vk-footer-bottom" style="border-top: none; padding-top: 0;">
+            <div>© 2026 VOSTOKPRIBOR Global Logistics &amp; Supply JSC. System 10: Developer &amp; API Portal.</div>
+            <div>Testing Sandbox Node: almaty-sbx-01.local • Isolated RAM Partition</div>
+        </div>
+    </footer>
+
+    <script src="js/dev-common.js"></script>
+    <script src="js/dev-sandbox.js"></script>
+</body>
+</html>

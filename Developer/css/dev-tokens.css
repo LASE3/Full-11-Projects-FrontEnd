@@ -1,0 +1,50 @@
+/* ==========================================================================
+   VOSTOKPRIBOR ENTERPRISE DESIGN SYSTEM
+   System 10: Developer & API Portal (developer.vostokpribor.local)
+   Design Tokens & Visual Identity Baseline
+   ========================================================================== */
+
+:root {
+    /* --- 1. Core Brand Palette (Shared Across All 11 Systems) --- */
+    --vk-primary: #1B3A5C;          /* Steel Blue */
+    --vk-primary-dark: #0F2438;     /* Deep Navy (headers, nav bars, footers) */
+    --vk-secondary: #0E7C86;        /* Precision Teal */
+    --vk-accent-cta: #E8A33D;       /* Signal Amber */
+    --vk-neutral-900: #101418;      /* High-contrast body text */
+    --vk-neutral-600: #4A5560;      /* Muted / secondary telemetry text */
+    --vk-neutral-200: #DCE1E6;      /* Industrial dividers and borders */
+    --vk-neutral-50: #F5F7F9;       /* Light canvas background */
+    --vk-surface: #FFFFFF;          /* Card & container surface */
+
+    /* --- 2. Data-Classification Accent System (Universal) --- */
+    --vk-class-public: #8A94A0;            /* Public -> Slate Gray */
+    --vk-class-internal: #3E7CB1;          /* Internal -> Cool Blue */
+    --vk-class-confidential: #D9822B;      /* Confidential -> Amber-Orange */
+    --vk-class-high-confidential: #B23A32; /* Highly Confidential -> Alert Red */
+
+    /* --- 3. Per-System Identity Accent (System 10: Developer/API Portal) --- */
+    --vk-sys-accent: #1E8FA6;              /* Cyan Identity Stripe */
+    --vk-sys-accent-dark: #167285;         /* Hover state */
+    --vk-sys-accent-light: rgba(30, 143, 166, 0.12);
+    --vk-sys-accent-border: rgba(30, 143, 166, 0.35);
+
+    /* --- 4. HTTP Method Palette --- */
+    --method-get: #0E7C86;
+    --method-post: #1B3A5C;
+    --method-put: #D9822B;
+    --method-delete: #B23A32;
+    --method-patch: #6E4C7C;
+
+    /* --- 5. Elevation & Radii --- */
+    --radius-sm: 4px;
+    --radius-md: 8px;                      /* Core card rounded corner standard */
+    --radius-lg: 12px;
+    --shadow-sm: 0 1px 3px rgba(16, 20, 24, 0.05);
+    --shadow-md: 0 4px 12px -2px rgba(16, 20, 24, 0.08);
+    --shadow-lg: 0 12px 28px -4px rgba(16, 20, 24, 0.12);
+
+    /* --- 6. Typography Stacks --- */
+    --font-heading: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-body: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+}

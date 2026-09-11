@@ -1,0 +1,276 @@
+/* ==========================================================================
+   VOSTOKPRIBOR ENTERPRISE DESIGN SYSTEM
+   System 09: File Center / Document Hub
+   Document Repository & Vault Explorer Stylesheet
+   ========================================================================== */
+
+.repo-header-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+}
+
+.repo-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.repo-stat-card {
+    background: #ffffff;
+    border: 1px solid var(--vk-neutral-200);
+    border-radius: var(--radius-md);
+    padding: 16px 20px;
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.repo-stat-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--vk-neutral-600);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.repo-stat-value {
+    font-family: var(--font-heading);
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--vk-primary);
+    margin-top: 8px;
+}
+
+.repo-stat-subtext {
+    font-size: 12px;
+    color: var(--vk-neutral-600);
+    margin-top: 4px;
+}
+
+/* Category & Classification Filter Tabs */
+.repo-filter-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    background: #ffffff;
+    border: 1px solid var(--vk-neutral-200);
+    border-radius: var(--radius-md);
+    padding: 8px 16px;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow-sm);
+    flex-wrap: wrap;
+}
+
+.filter-pills-group {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.filter-pill {
+    padding: 5px 12px;
+    border-radius: var(--radius-sm);
+    font-family: var(--font-heading);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--vk-neutral-600);
+    background: transparent;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.filter-pill:hover {
+    background-color: var(--vk-neutral-50);
+    color: var(--vk-primary);
+}
+
+.filter-pill.active {
+    background-color: var(--vk-primary);
+    color: #ffffff;
+}
+
+.filter-pill.pill-highly-confidential.active {
+    background-color: var(--vk-class-highly-confidential);
+    color: #ffffff;
+}
+
+.filter-pill.pill-confidential.active {
+    background-color: var(--vk-class-confidential);
+    color: #ffffff;
+}
+
+.filter-pill.pill-internal.active {
+    background-color: var(--vk-class-internal);
+    color: #ffffff;
+}
+
+.filter-pill.pill-public.active {
+    background-color: var(--vk-class-public);
+    color: #ffffff;
+}
+
+.repo-search-box {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--vk-neutral-50);
+    border: 1px solid var(--vk-neutral-200);
+    border-radius: var(--radius-sm);
+    padding: 6px 12px;
+    width: 260px;
+}
+
+.repo-search-input {
+    border: none;
+    background: transparent;
+    outline: none;
+    font-size: 12px;
+    color: var(--vk-neutral-900);
+    width: 100%;
+}
+
+/* Two-column layout: Folder navigation + Document table */
+.repo-workspace-grid {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    gap: 20px;
+}
+
+.folder-tree-card {
+    background: #ffffff;
+    border: 1px solid var(--vk-neutral-200);
+    border-radius: var(--radius-md);
+    padding: 16px;
+    box-shadow: var(--shadow-sm);
+    height: fit-content;
+}
+
+.folder-tree-title {
+    font-family: var(--font-heading);
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--vk-primary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.folder-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 10px;
+    border-radius: var(--radius-sm);
+    font-size: 12px;
+    color: var(--vk-neutral-600);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    margin-bottom: 2px;
+}
+
+.folder-item:hover {
+    background-color: var(--vk-neutral-50);
+    color: var(--vk-primary);
+}
+
+.folder-item.active {
+    background-color: var(--vk-sys-accent-light);
+    color: var(--vk-primary);
+    font-weight: 600;
+}
+
+/* Slide-Over Document Inspection Drawer */
+.doc-drawer-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 36, 56, 0.4);
+    backdrop-filter: blur(2px);
+    z-index: 2500;
+    justify-content: flex-end;
+}
+
+.doc-drawer {
+    width: 480px;
+    height: 100vh;
+    background: #ffffff;
+    box-shadow: -4px 0 24px rgba(0, 0, 0, 0.15);
+    display: flex;
+    flex-direction: column;
+    animation: drawerSlideIn 0.25s ease-out;
+    overflow-y: auto;
+}
+
+@keyframes drawerSlideIn {
+    from { transform: translateX(100%); }
+    to { transform: translateX(0); }
+}
+
+.doc-drawer-header {
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--vk-neutral-200);
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    background: #F8FAFC;
+}
+
+.doc-drawer-body {
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    flex: 1;
+}
+
+.doc-meta-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.doc-meta-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--vk-neutral-600);
+    text-transform: uppercase;
+}
+
+.doc-meta-val {
+    font-size: 13px;
+    color: var(--vk-neutral-900);
+    font-weight: 500;
+}
+
+.hash-code-block {
+    background: var(--vk-neutral-50);
+    border: 1px solid var(--vk-neutral-200);
+    padding: 8px 12px;
+    border-radius: var(--radius-sm);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--vk-neutral-900);
+    word-break: break-all;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
