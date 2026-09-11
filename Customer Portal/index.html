@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>VOSTOKPRIBOR Portal</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="css/common.css" />
+    <link rel="stylesheet" href="css/dashboard.css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script
+        id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { colors: { "primary": "#000e1d", "secondary": "#436084", "primary-container": "#0f2438", "surface-container-highest": "#e0e3e5", "inverse-primary": "#b4c8e3", "secondary-fixed": "#d2e4ff", "on-secondary-container": "#3f5b7f", "surface-bright": "#f8f9fb", "primary-fixed-dim": "#b4c8e3", "on-secondary-fixed-variant": "#2b486b", "on-tertiary-fixed-variant": "#643f00", "surface-container-low": "#f2f4f6", "on-error": "#ffffff", "tertiary-fixed": "#ffddb5", "tertiary-container": "#331e00", "inverse-on-surface": "#eff1f3", "on-tertiary-fixed": "#2a1800", "on-secondary-fixed": "#001c38", "on-background": "#191c1e", "secondary-container": "#b6d4fe", "inverse-surface": "#2d3133", "tertiary": "#150a00", "error-container": "#ffdad6", "on-primary-fixed": "#071d30", "secondary-fixed-dim": "#abc9f2", "error": "#ba1a1a", "primary-fixed": "#d0e4ff", "surface-container": "#eceef0", "on-primary-fixed-variant": "#35485e", "on-error-container": "#93000a", "surface-variant": "#e0e3e5", "on-primary": "#ffffff", "on-tertiary-container": "#bb7d16", "on-secondary": "#ffffff", "background": "#f8f9fb", "surface-container-lowest": "#ffffff", "on-surface-variant": "#43474c", "surface": "#f8f9fb", "surface-tint": "#4d6077", "tertiary-fixed-dim": "#ffb956", "outline": "#74777d", "on-primary-container": "#788ca4", "surface-dim": "#d8dadc", "outline-variant": "#c4c6cd", "surface-container-high": "#e6e8ea", "on-tertiary": "#ffffff", "on-surface": "#191c1e" }, borderRadius: { "DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem" }, spacing: { "unit-md": "0.75rem", "grid-gutter": "1rem", "unit-lg": "1.5rem", "unit-xl": "2rem", "unit-sm": "0.5rem", "unit-2xs": "0.125rem", "grid-margin": "1.5rem", "unit-2xl": "3rem", "unit-base": "1rem", "unit-xs": "0.25rem" }, fontFamily: { "body-md": ["IBM Plex Sans"], "technical-tag": ["JetBrains Mono"], "display-lg": ["IBM Plex Sans"], "headline-lg": ["IBM Plex Sans"], "body-sm": ["IBM Plex Sans"], "body-lg": ["IBM Plex Sans"], "headline-md": ["IBM Plex Sans"], "headline-sm": ["IBM Plex Sans"], "data-mono-md": ["JetBrains Mono"], "data-mono-lg": ["JetBrains Mono"], "label-caps": ["IBM Plex Sans"], "display-lg-mobile": ["IBM Plex Sans"] }, fontSize: { "body-md": ["13px", { "lineHeight": "18px", "letterSpacing": "0em", "fontWeight": "400" }], "technical-tag": ["10px", { "lineHeight": "12px", "letterSpacing": "0.02em", "fontWeight": "500" }], "display-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700" }], "headline-lg": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.015em", "fontWeight": "600" }], "body-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.005em", "fontWeight": "400" }], "body-lg": ["15px", { "lineHeight": "22px", "letterSpacing": "0em", "fontWeight": "400" }], "headline-md": ["20px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600" }], "headline-sm": ["16px", { "lineHeight": "24px", "letterSpacing": "-0.005em", "fontWeight": "600" }], "data-mono-md": ["12px", { "lineHeight": "16px", "letterSpacing": "-0.01em", "fontWeight": "500" }], "data-mono-lg": ["14px", { "lineHeight": "20px", "letterSpacing": "-0.02em", "fontWeight": "600" }], "label-caps": ["11px", { "lineHeight": "14px", "letterSpacing": "0.06em", "fontWeight": "700" }], "display-lg-mobile": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700" }] } } } };</script>
+    <script src="js/portal.js"></script>
+    <script src="js/dashboard.js"></script>
+</head>
+
+<body class="bg-background font-body-md text-body-md text-on-background">
+    <header
+        class="fixed top-0 left-0 right-0 h-16 bg-primary-container z-50 flex items-center justify-between px-unit-lg border-b border-outline/20">
+        <div class="flex items-center gap-unit-base">
+            <button id="sidebar-toggle-btn" class="p-1.5 -ml-1 mr-1 rounded text-on-primary-container hover:text-on-primary hover:bg-surface-container-high/10 transition-colors flex items-center justify-center cursor-pointer focus:outline-none" title="Toggle Navigation Menu (Ctrl+B)">
+                <span class="material-symbols-outlined text-2xl" id="sidebar-toggle-icon">menu</span>
+            </button>
+            <img alt="VOSTOKPRIBOR Logo" class="h-8 w-auto object-contain cursor-pointer" onclick="location.href='Dashboard.html'"
+                src="https://lh3.googleusercontent.com/aida/AEtjO1XMGDZ9meLzj0XkVJ6C4Xv2AoEzKtMyFqF7KQ8eMADmbywzsRZ7VF4Em6pQ7fZ8QRJExCZedCKEUUo1fN1LpEmGsQva25blyUsGhOPvX2vv2cHGkppzOp9iT33Xy2n4Nkr5e_YY_0J78vA8Q7vKUpViCouPJo13HFVvW5olf7QEFzU3EX-WCqc0SYyPXZb7E11PafOMC_KprpG6Tre6bN_DyZS-CI-J5qiCgBtikqVNYGueATNgWbi73Q" />
+            <div class="h-6 w-px bg-outline/30"></div>
+            <div class="flex flex-col">
+                <div class="flex items-center gap-unit-xs"><span
+                        class="font-headline-sm text-headline-sm text-on-primary font-semibold tracking-tight cursor-pointer" onclick="location.href='Dashboard.html'">VOSTOKPRIBOR</span><span
+                        class="px-unit-xs py-0.5 rounded bg-surface-container-high/10 text-tertiary-fixed font-technical-tag text-technical-tag border border-tertiary-fixed/30">PORTAL</span>
+                </div>
+                <div
+                    class="flex items-center gap-unit-xs text-on-primary-container font-technical-tag text-technical-tag">
+                    <span>Severstal Metallurgy Plant #4</span><span class="text-outline">|</span><span
+                        class="text-primary-fixed-dim">VP-88204-EU</span>
+                </div>
+            </div>
+        </div>
+        <div class="w-64 md:w-80 lg:w-96 max-w-md mx-2 shrink-1">
+            <div
+                class="header-search-bar flex items-center bg-primary px-unit-md py-1.5 rounded border border-outline/30 text-on-primary-container cursor-pointer transition-colors hover:border-outline/50">
+                <span class="material-symbols-outlined text-sm mr-unit-sm text-on-primary-container">search</span><input
+                    class="header-search-input bg-transparent border-none outline-none font-body-sm text-body-sm text-on-primary placeholder:text-on-primary-container w-full cursor-pointer"
+                    placeholder="Search projects, serial numbers, specs..." type="text" /><span
+                    class="font-technical-tag text-technical-tag px-1.5 py-0.5 rounded bg-surface-container-high/10 text-on-primary-container border border-outline/30">Ctrl+K</span>
+            </div>
+        </div>
+        <div class="flex items-center gap-2 sm:gap-4 lg:gap-unit-lg shrink-0">
+            <div
+                class="hidden md:flex items-center gap-unit-xs px-unit-sm py-1 rounded bg-primary border border-outline/20 font-technical-tag text-technical-tag text-on-primary">
+                <span class="w-2 h-2 rounded-full bg-tertiary-fixed animate-pulse"></span><span
+                    class="text-on-primary-container">Telemetry Node:</span><span class="text-tertiary-fixed">Online
+                    99.98%</span>
+            </div>
+            <div id="header-bell-btn" class="relative flex items-center text-on-primary-container hover:text-on-primary cursor-pointer" title="Operational Telemetry Alerts"><span
+                    class="material-symbols-outlined">notifications</span><span id="bell-unread-dot"
+                    class="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-tertiary-fixed ring-2 ring-primary-container"></span>
+            </div><a class="flex items-center text-on-primary-container hover:text-on-primary" href="Documents.html"
+                title="Technical Documentation"><span class="material-symbols-outlined">menu_book</span></a>
+            <div class="h-6 w-px bg-outline/30"></div>
+            <div class="flex items-center gap-unit-sm cursor-pointer" id="header-profile-btn">
+                <div class="flex flex-col text-right"><span
+                        class="font-headline-sm text-headline-sm text-on-primary font-medium leading-none">Alexey R.
+                        Danilov</span><span
+                        class="font-technical-tag text-technical-tag text-on-primary-container mt-0.5">Chief
+                        Instrumentation Eng.</span></div><img alt="Profile"
+                    class="w-8 h-8 rounded-full object-cover ring-1 ring-tertiary-fixed/50"
+                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuBxrM-O7aJYHYCDtkoA3WwbiOe6BxJ0vK7AcnogxwZN9MACsknTlpyGKyy-lWl2Hwn9IEZLPDCvVGrmxN2kvPEfzbJ5E4u5x6-38EP2exwXW8Dmm-7oMTzMG07_rmRLbT0xvZwQMFEwa4qJO5LcWbn58eWx3fSkVjAmSI3UWO8dCTgRg6GBgrY_MTUl-JF-JUf4K5CGPp0o4tvKoxbSqSysGT8r3j8de3w_sfk4F8p9ysiXXfbUkWPV" />
+            </div>
+        </div>
+    </header>
+    <aside id="portal-sidebar"
+        class="fixed left-0 top-16 bottom-0 w-64 bg-primary-container z-40 flex flex-col justify-between border-r border-outline/20">
+        <div class="py-unit-md">
+            <div
+                class="px-unit-base mb-unit-sm font-label-caps text-label-caps text-on-primary-container uppercase tracking-wider flex items-center justify-between">
+                <span>Operational Navigation</span>
+                <button id="sidebar-collapse-btn" class="text-on-primary-container hover:text-on-primary p-0.5 rounded hover:bg-surface-container-high/10 transition-colors cursor-pointer" title="Collapse Menu">
+                    <span class="material-symbols-outlined text-base">chevron_left</span>
+                </button>
+            </div>
+            <nav class="flex flex-col gap-0.5"
+                data-active-classes="bg-surface-container-high/10 text-on-primary font-semibold border-l-4 border-on-tertiary-container">
+                <a aria-current="page"
+                    class="flex items-center gap-unit-sm px-unit-base py-unit-sm transition-colors bg-surface-container-high/10 text-on-primary font-semibold border-l-4 border-on-tertiary-container font-headline-sm text-headline-sm"
+                    data-path="dashboard" href="Dashboard.html"><svg class="w-4 h-4 shrink-0 text-tertiary-fixed" fill="none" stroke="currentColor"
+                        stroke-width="1.75" viewBox="0 0 24 24">
+                        <rect height="7" rx="1" width="7" x="3" y="3"></rect>
+                        <rect height="7" rx="1" width="7" x="14" y="3"></rect>
+                        <rect height="7" rx="1" width="7" x="14" y="14"></rect>
+                        <rect height="7" rx="1" width="7" x="3" y="14"></rect>
+                    </svg><span class="">Dashboard</span></a><a
+                    class="flex items-center gap-unit-sm px-unit-base py-unit-sm text-on-primary-container hover:bg-surface-container-high/5 hover:text-on-primary transition-colors font-headline-sm text-headline-sm font-normal"
+                    data-path="orders" href="Orders.html"><svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor"
+                        stroke-width="1.75" viewBox="0 0 24 24">
+                        <path
+                            d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z">
+                        </path>
+                        <path d="m3.3 7 8.7 5 8.7-5"></path>
+                        <path d="M12 22V12"></path>
+                    </svg><span class="">Orders</span></a><a
+                    class="flex items-center gap-unit-sm px-unit-base py-unit-sm text-on-primary-container hover:bg-surface-container-high/5 hover:text-on-primary transition-colors font-headline-sm text-headline-sm font-normal"
+                    data-path="projects" href="ProjectListAndDetail.html"><svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor"
+                        stroke-width="1.75" viewBox="0 0 24 24">
+                        <rect height="18" rx="2" width="18" x="3" y="3"></rect>
+                        <path d="M3 9h18"></path>
+                        <path d="M9 21V9"></path>
+                    </svg><span class="">Projects</span></a><a
+                    class="flex items-center gap-unit-sm px-unit-base py-unit-sm text-on-primary-container hover:bg-surface-container-high/5 hover:text-on-primary transition-colors font-headline-sm text-headline-sm font-normal"
+                    data-path="invoices" href="Invoices.html"><svg class="w-4 h-4 shrink-0" fill="none"
+                        stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+                        <path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"></path>
+                        <path d="M8 7h8"></path>
+                        <path d="M8 11h8"></path>
+                        <path d="M8 15h5"></path>
+                    </svg><span class="">Invoices</span></a><a
+                    class="flex items-center gap-unit-sm px-unit-base py-unit-sm text-on-primary-container hover:bg-surface-container-high/5 hover:text-on-primary transition-colors font-headline-sm text-headline-sm font-normal"
+                    data-path="documents" href="Documents.html"><svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor"
+                        stroke-width="1.75" viewBox="0 0 24 24">
+                        <path
+                            d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z">
+                        </path>
+                    </svg><span class="">Documents</span></a><a
+                    class="flex items-center gap-unit-sm px-unit-base py-unit-sm text-on-primary-container hover:bg-surface-container-high/5 hover:text-on-primary transition-colors font-headline-sm text-headline-sm font-normal"
+                    data-path="support" href="SupportTicketView.html"><svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor"
+                        stroke-width="1.75" viewBox="0 0 24 24">
+                        <path d="M3 18v-6a9 9 0 0 1 18 0v6"></path>
+                        <path
+                            d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z">
+                        </path>
+                    </svg><span class="">Support</span></a><a
+                    class="flex items-center gap-unit-sm px-unit-base py-unit-sm text-on-primary-container hover:bg-surface-container-high/5 hover:text-on-primary transition-colors font-headline-sm text-headline-sm font-normal"
+                    data-path="account-settings" href="AccountSettings.html"><svg class="w-4 h-4 shrink-0" fill="none"
+                        stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+                        <path
+                            d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z">
+                        </path>
+                        <circle cx="12" cy="12" r="3"></circle>
+                    </svg><span class="">Account Settings</span></a>
+            </nav>
+        </div>
+        <div class="portal-manager-card p-3 m-3 rounded-lg bg-primary/95 border border-outline/25 shadow-sm text-xs select-none">
+            <div class="flex items-center justify-between mb-1.5">
+                <span class="font-label-caps text-[10px] text-tertiary-fixed uppercase font-bold tracking-wider">Assigned Manager</span>
+                <span class="px-1.5 py-0.5 rounded bg-surface-container-high/15 text-on-primary-container font-mono text-[10px] border border-outline/20 font-semibold">SLA TIER 1</span>
+            </div>
+            <div class="flex items-center justify-between mb-0.5">
+                <div>
+                    <div class="font-headline-sm text-sm text-on-primary font-semibold leading-tight">Viktor Morozov</div>
+                    <div class="text-[11px] text-on-primary-container/85 leading-snug">Sr. Industrial Systems Eng.</div>
+                </div>
+                <a href="SupportTicketView.html?ticket=TCK-9482" class="p-1 rounded bg-surface-container-high/15 text-tertiary-fixed hover:bg-surface-container-high/25 hover:text-on-primary transition-colors flex items-center justify-center shrink-0" title="Message Viktor Morozov in Support Desk">
+                    <span class="material-symbols-outlined text-base">chat</span>
+                </a>
+            </div>
+            <div class="mt-2 pt-2 border-t border-outline/20 flex flex-col gap-1.5 font-mono text-[11px]">
+                <div class="flex items-center justify-between text-on-primary-container">
+                    <span class="text-[10px] uppercase tracking-wider text-on-primary-container/70">Hotline:</span>
+                    <a href="tel:+78124092211" class="text-on-primary font-medium hover:text-tertiary-fixed transition-colors">+7 812 409-22-11</a>
+                </div>
+                <div class="flex flex-col gap-0.5">
+                    <div class="flex items-center justify-between">
+                        <span class="text-[10px] uppercase tracking-wider text-on-primary-container/70">Direct:</span>
+                        <span class="text-[9px] text-tertiary-fixed/80 font-normal">Encrypted SLA</span>
+                    </div>
+                    <a href="mailto:v.morozov@vostokpribor.ru" class="text-tertiary-fixed text-[11px] truncate block hover:underline hover:text-on-primary transition-colors" title="v.morozov@vostokpribor.ru">v.morozov@vostokpribor.ru</a>
+                </div>
+            </div>
+        </div>
+    </aside>
+    <div id="portal-main-wrapper" class="portal-content-wrapper pl-64">
+        <main class="w-full min-h-screen pt-16 bg-surface px-4 sm:px-6 lg:px-8 py-6">
+            <div class="portal-container flex flex-col gap-6">
+                <section class="flex flex-col xl:flex-row xl:items-end justify-between gap-4 pb-1">
+                    <div class="flex flex-col gap-unit-xs">
+                        <nav
+                            class="flex items-center gap-unit-xs font-technical-tag text-technical-tag text-on-surface-variant uppercase tracking-wider">
+                            <span>Enterprise Portal</span>
+                            <span class="text-outline-variant">/</span>
+                            <span>Client Space</span>
+                            <span class="text-outline-variant">/</span>
+                            <span class="text-primary font-semibold">Dashboard Overview</span>
+                        </nav>
+                        <div class="flex flex-wrap items-baseline gap-x-unit-md gap-y-unit-xs">
+                            <h1 class="font-headline-lg text-headline-lg text-primary tracking-tight font-bold">Welcome
+                                back, Severstal Engineering Division</h1>
+                            <span
+                                class="font-technical-tag text-technical-tag bg-surface-container-high text-primary px-unit-xs py-0.5 rounded">SYS-AUTH
+                                // PROD-STATION 04</span>
+                        </div>
+                        <p class="font-body-sm text-body-sm text-on-surface-variant max-w-4xl">
+                            Client Account <span
+                                class="font-data-mono-md text-data-mono-md text-on-surface font-medium">#VP-90214</span>
+                            • Primary Facility: <span class="font-medium text-on-surface">Cherepovets Hot Rolling Mill
+                                #2</span> • Assigned Lead: <span class="font-medium text-on-surface">Viktor
+                                Morozov</span> (Senior Lead Systems Engineer, ext. 4410 • <a
+                                class="text-secondary hover:underline"
+                                href="mailto:direct.contact@vostokpribor.com">direct.contact@vostokpribor.com</a>)
+                        </p>
+                    </div>
+                    <div class="flex items-center gap-unit-sm shrink-0">
+                        <button
+                            class="inline-flex items-center gap-unit-xs px-unit-md py-2 bg-surface-container-lowest text-primary text-body-sm font-body-sm font-medium rounded shadow-sm hover:bg-surface-container transition-colors"
+                            onclick="window.showToast('Telemetry PDF Compiled', 'Plant #4 operational dossier exported successfully.', 'success')"
+                            type="button">
+                            <span class="material-symbols-outlined text-lg text-secondary">file_download</span>
+                            <span>Export Telemetry PDF</span>
+                        </button>
+                        <button
+                            class="inline-flex items-center gap-unit-xs px-unit-md py-2 bg-tertiary-fixed text-primary-container text-body-sm font-body-sm font-semibold rounded shadow-sm hover:bg-tertiary-fixed-dim transition-colors"
+                            onclick="window.showDispatchModal()"
+                            type="button">
+                            <span class="material-symbols-outlined text-lg text-primary-container">local_shipping</span>
+                            <span>Request Urgent Equipment Dispatch</span>
+                        </button>
+                    </div>
+                </section>
+                <section class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-unit-base">
+                    <a href="ProjectListAndDetail.html"
+                        class="flex flex-col justify-between p-unit-base bg-surface-container-lowest rounded-xl shadow-sm relative overflow-hidden group hover:-translate-y-0.5 hover:shadow-md transition-all">
+                        <div class="absolute top-0 left-0 right-0 h-1 bg-secondary group-hover:h-1.5 transition-all"></div>
+                        <div class="flex items-start justify-between">
+                            <div class="flex flex-col">
+                                <span
+                                    class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider">Active
+                                    Projects</span>
+                                <span
+                                    class="font-display-lg text-display-lg text-primary font-bold tracking-tight mt-unit-xs">14</span>
+                            </div>
+                            <div class="p-2 rounded bg-primary-container text-inverse-primary group-hover:scale-105 transition-transform">
+                                <span class="material-symbols-outlined text-xl">precision_manufacturing</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between pt-unit-md mt-unit-sm">
+                            <span class="font-body-sm text-body-sm text-on-surface-variant">3 on-site integration, 2 in
+                                staging</span>
+                            <span
+                                class="inline-flex items-center gap-1 font-technical-tag text-technical-tag font-semibold text-primary px-1.5 py-0.5 rounded bg-surface-container-high">
+                                <span class="material-symbols-outlined text-xs">trending_up</span>+2 Q/Q
+                            </span>
+                        </div>
+                    </a>
+                    <a href="Invoices.html"
+                        class="flex flex-col justify-between p-unit-base bg-surface-container-lowest rounded-xl shadow-sm relative overflow-hidden group hover:-translate-y-0.5 hover:shadow-md transition-all">
+                        <div class="absolute top-0 bottom-0 left-0 w-1 bg-tertiary-fixed-dim group-hover:w-1.5 transition-all"></div>
+                        <div class="flex items-start justify-between pl-unit-xs">
+                            <div class="flex flex-col">
+                                <span
+                                    class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider">Pending
+                                    Invoices</span>
+                                <span
+                                    class="font-display-lg text-display-lg text-primary font-bold tracking-tight mt-unit-xs">3</span>
+                            </div>
+                            <div class="p-2 rounded bg-tertiary-container text-tertiary-fixed group-hover:scale-105 transition-transform">
+                                <span class="material-symbols-outlined text-xl">payments</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between pt-unit-md mt-unit-sm pl-unit-xs">
+                            <span
+                                class="font-data-mono-md text-data-mono-md text-on-surface-variant font-medium">$248,600.00
+                                USD total</span>
+                            <span
+                                class="font-technical-tag text-technical-tag font-semibold text-on-tertiary-fixed-variant bg-tertiary-fixed/30 px-1.5 py-0.5 rounded">
+                                2 due ≤ 10d
+                            </span>
+                        </div>
+                    </a>
+                    <a href="SupportTicketView.html?ticket=TCK-9482"
+                        class="flex flex-col justify-between p-unit-base bg-surface-container-lowest rounded-xl shadow-sm relative overflow-hidden group hover:-translate-y-0.5 hover:shadow-md transition-all">
+                        <div class="absolute top-0 left-0 right-0 h-1 bg-error group-hover:h-1.5 transition-all"></div>
+                        <div class="flex items-start justify-between">
+                            <div class="flex flex-col">
+                                <span
+                                    class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider">Open
+                                    Support Tickets</span>
+                                <span
+                                    class="font-display-lg text-display-lg text-primary font-bold tracking-tight mt-unit-xs">5</span>
+                            </div>
+                            <div class="p-2 rounded bg-surface-container text-on-surface group-hover:scale-105 transition-transform">
+                                <span class="material-symbols-outlined text-xl">headset_mic</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between pt-unit-md mt-unit-sm">
+                            <span class="font-body-sm text-body-sm text-on-surface-variant">2 High • 2 Med</span>
+                            <span
+                                class="inline-flex items-center gap-1.5 font-technical-tag text-technical-tag font-bold text-on-error bg-error px-2 py-0.5 rounded">
+                                <span class="w-1.5 h-1.5 rounded-full bg-surface-container-lowest animate-ping"></span>
+                                1 CRITICAL (P1)
+                            </span>
+                        </div>
+                    </a>
+                    <a href="Documents.html"
+                        class="flex flex-col justify-between p-unit-base bg-surface-container-lowest rounded-xl shadow-sm relative overflow-hidden group hover:-translate-y-0.5 hover:shadow-md transition-all">
+                        <div class="absolute top-0 left-0 right-0 h-1 bg-secondary group-hover:h-1.5 transition-all"></div>
+                        <div class="flex items-start justify-between">
+                            <div class="flex flex-col">
+                                <span
+                                    class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider">Approved
+                                    Documents</span>
+                                <span
+                                    class="font-display-lg text-display-lg text-primary font-bold tracking-tight mt-unit-xs">48</span>
+                            </div>
+                            <div class="p-2 rounded bg-surface-container text-secondary group-hover:scale-105 transition-transform">
+                                <span class="material-symbols-outlined text-xl">verified</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between pt-unit-md mt-unit-sm">
+                            <span class="font-body-sm text-body-sm text-on-surface-variant">100% passports &amp;
+                                certs</span>
+                            <span
+                                class="font-technical-tag text-technical-tag font-medium text-secondary bg-secondary-fixed/50 px-1.5 py-0.5 rounded">
+                                6 pending signature
+                            </span>
+                        </div>
+                    </a>
+                </section>
+                <section class="grid grid-cols-1 lg:grid-cols-12 gap-unit-base items-start">
+                    <div
+                        class="lg:col-span-8 flex flex-col bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden">
+                        <div
+                            class="flex flex-col sm:flex-row sm:items-center justify-between p-unit-base bg-surface-container-low gap-unit-sm">
+                            <div class="flex items-center gap-unit-sm">
+                                <span class="material-symbols-outlined text-xl text-secondary">dynamic_feed</span>
+                                <h2 class="font-headline-sm text-headline-sm text-primary font-semibold">Recent Portal
+                                    &amp; Facility Activity</h2>
+                            </div>
+                            <div class="flex items-center gap-1 bg-surface-container-highest p-1 rounded">
+                                <button
+                                    class="px-2.5 py-1 text-technical-tag font-technical-tag rounded font-semibold bg-surface-container-lowest text-primary shadow-xs"
+                                    type="button">ALL EVENTS</button>
+                                <button
+                                    class="px-2.5 py-1 text-technical-tag font-technical-tag rounded font-medium text-on-surface-variant hover:text-primary"
+                                    type="button">FINANCIAL</button>
+                                <button
+                                    class="px-2.5 py-1 text-technical-tag font-technical-tag rounded font-medium text-on-surface-variant hover:text-primary"
+                                    type="button">PROJECTS</button>
+                                <button
+                                    class="px-2.5 py-1 text-technical-tag font-technical-tag rounded font-medium text-on-surface-variant hover:text-primary"
+                                    type="button">FIELD SERVICE</button>
+                            </div>
+                        </div>
+                        <div class="flex flex-col">
+                            <div
+                                class="flex flex-col md:flex-row md:items-center justify-between p-unit-base gap-unit-sm bg-surface-container-lowest hover:bg-surface-container-low transition-colors relative pl-unit-lg">
+                                <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-secondary"></div>
+                                <div class="flex flex-col gap-0.5 pr-unit-md">
+                                    <div class="flex items-center gap-unit-xs">
+                                        <span
+                                            class="font-label-caps text-label-caps text-secondary font-bold uppercase tracking-wider">Calibration
+                                            Certificate</span>
+                                        <span
+                                            class="font-technical-tag text-technical-tag text-on-surface-variant">ROSTEST-CONFIRMED</span>
+                                    </div>
+                                    <p class="font-body-md text-body-md text-on-surface font-medium">
+                                        High-Pressure Flowmeter HPF-900X (SN: <span
+                                            class="font-data-mono-md text-data-mono-md">VP-2024-91823</span>). Verified
+                                        by Rostest Inspectorate.
+                                    </p>
+                                    <span class="font-data-mono-md text-data-mono-md text-on-surface-variant">Today,
+                                        11:42 AM • Protocol #VP-CAL-0994</span>
+                                </div>
+                                <div class="flex items-center gap-unit-xs shrink-0 self-end md:self-center">
+                                    <button
+                                        class="px-unit-sm py-1 rounded bg-surface-container-high hover:bg-surface-container-highest text-primary font-technical-tag text-technical-tag font-medium"
+                                        onclick="window.previewDocument('CERT-2024-HPF-0994', 'High-Pressure Flowmeter HPF-900X Calibration Certificate', 'ROSTEST CERTIFIED')"
+                                        type="button">View PDF</button>
+                                    <button
+                                        class="px-unit-sm py-1 rounded bg-surface-container-high hover:bg-surface-container-highest text-primary font-technical-tag text-technical-tag font-medium"
+                                        onclick="window.showToast('SHA-256 Hash Valid', 'Signature 0x8F9A83BC902E4D2 matched state cadastre.', 'info')"
+                                        type="button">Verify Hash</button>
+                                </div>
+                            </div>
+                            <div
+                                class="flex flex-col md:flex-row md:items-center justify-between p-unit-base gap-unit-sm bg-surface-container-lowest hover:bg-surface-container-low transition-colors relative pl-unit-lg">
+                                <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-tertiary-fixed-dim"></div>
+                                <div class="flex flex-col gap-0.5 pr-unit-md">
+                                    <div class="flex items-center gap-unit-xs">
+                                        <span
+                                            class="font-label-caps text-label-caps text-on-tertiary-fixed-variant font-bold uppercase tracking-wider">Commercial
+                                            Invoice</span>
+                                        <span
+                                            class="font-technical-tag text-technical-tag text-on-surface-variant">#INV-2024-8819</span>
+                                        <span
+                                            class="font-technical-tag text-technical-tag bg-tertiary-fixed/30 text-on-tertiary-fixed-variant px-1.5 rounded">PENDING
+                                            APPROVAL</span>
+                                    </div>
+                                    <p class="font-body-md text-body-md text-on-surface font-medium">
+                                        Phase 3 Automation Sensors delivery batch. Amount: <span
+                                            class="font-data-mono-md text-data-mono-md text-primary font-bold">$114,200.00
+                                            USD</span>. Terms: Net 30.
+                                    </p>
+                                    <span class="font-data-mono-md text-data-mono-md text-on-surface-variant">Today,
+                                        09:15 AM • Billing Unit Severstal-FIN-02</span>
+                                </div>
+                                <div class="flex items-center gap-unit-xs shrink-0 self-end md:self-center">
+                                    <button
+                                        class="px-unit-sm py-1 rounded bg-tertiary-fixed text-primary-container font-technical-tag text-technical-tag font-semibold hover:bg-tertiary-fixed-dim"
+                                        onclick="window.location.href='Invoices.html?invoice=INV-2024-6102'"
+                                        type="button">Review Invoice</button>
+                                </div>
+                            </div>
+                            <div
+                                class="flex flex-col md:flex-row md:items-center justify-between p-unit-base gap-unit-sm bg-surface-container-lowest hover:bg-surface-container-low transition-colors relative pl-unit-lg cursor-pointer"
+                                onclick="window.location.href='ProjectListAndDetail.html?project=PRJ-VP-7721'">
+                                <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-primary-container"></div>
+                                <div class="flex flex-col gap-0.5 pr-unit-md">
+                                    <div class="flex items-center gap-unit-xs">
+                                        <span
+                                            class="font-label-caps text-label-caps text-primary-container font-bold uppercase tracking-wider">Project
+                                            Milestone Completed</span>
+                                        <span
+                                            class="font-technical-tag text-technical-tag text-on-surface-variant">PRJ-VP-7721</span>
+                                    </div>
+                                    <p class="font-body-md text-body-md text-on-surface font-medium">
+                                        Automated Gas Chromatography Skid #4 FAT (Factory Acceptance Test) passed with
+                                        zero non-conformances.
+                                    </p>
+                                    <span class="font-data-mono-md text-data-mono-md text-on-surface-variant">Yesterday,
+                                        16:30 PM • Lead Inspector: K. Savin</span>
+                                </div>
+                                <div class="flex items-center gap-unit-xs shrink-0 self-end md:self-center">
+                                    <span
+                                        class="inline-flex items-center gap-1 font-technical-tag text-technical-tag text-secondary bg-secondary-fixed/30 px-unit-sm py-1 rounded font-medium">
+                                        <span class="material-symbols-outlined text-xs">check_circle</span> FAT PASSED
+                                    </span>
+                                </div>
+                            </div>
+                            <div
+                                class="flex flex-col md:flex-row md:items-center justify-between p-unit-base gap-unit-sm bg-error-container/20 hover:bg-error-container/30 transition-colors relative pl-unit-lg">
+                                <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-error"></div>
+                                <div class="flex flex-col gap-0.5 pr-unit-md">
+                                    <div class="flex items-center gap-unit-xs">
+                                        <span
+                                            class="font-label-caps text-label-caps text-error font-bold uppercase tracking-wider">Field
+                                            Incident Alert #INC-3091</span>
+                                        <span
+                                            class="font-technical-tag text-technical-tag bg-error text-on-error px-1.5 rounded font-bold">CRITICAL
+                                            ESCALATION</span>
+                                    </div>
+                                    <p class="font-body-md text-body-md text-primary font-medium">
+                                        Vibration telemetry anomaly on Turbine Bearing #2 (&gt;8.4 mm/s RMS). Dispatched
+                                        Tier-3 Field Specialist.
+                                    </p>
+                                    <span class="font-data-mono-md text-data-mono-md text-on-surface-variant">Oct 24,
+                                        14:10 PM • SLA Clock: 42m remaining</span>
+                                </div>
+                                <div class="flex items-center gap-unit-xs shrink-0 self-end md:self-center">
+                                    <button
+                                        class="px-unit-sm py-1 rounded bg-error text-on-error font-technical-tag text-technical-tag font-semibold"
+                                        onclick="window.location.href='SupportTicketView.html?ticket=TCK-9482'"
+                                        type="button">Track Dispatch</button>
+                                </div>
+                            </div>
+                            <div
+                                class="flex flex-col md:flex-row md:items-center justify-between p-unit-base gap-unit-sm bg-surface-container-lowest hover:bg-surface-container-low transition-colors relative pl-unit-lg">
+                                <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-tertiary-fixed-dim"></div>
+                                <div class="flex flex-col gap-0.5 pr-unit-md">
+                                    <div class="flex items-center gap-unit-xs">
+                                        <span
+                                            class="font-label-caps text-label-caps text-on-tertiary-fixed-variant font-bold uppercase tracking-wider">Contract
+                                            Addendum</span>
+                                        <span
+                                            class="font-technical-tag text-technical-tag text-on-surface-variant">#CA-402</span>
+                                    </div>
+                                    <p class="font-body-md text-body-md text-on-surface font-medium">
+                                        Spare parts consignment inventory agreement revision uploaded for Q4 2024 - Q2
+                                        2025.
+                                    </p>
+                                    <span class="font-data-mono-md text-data-mono-md text-on-surface-variant">Oct 23,
+                                        10:05 AM • Procurement Dept</span>
+                                </div>
+                                <div class="flex items-center gap-unit-xs shrink-0 self-end md:self-center">
+                                    <button
+                                        class="px-unit-sm py-1 rounded bg-surface-container-high hover:bg-surface-container-highest text-primary font-technical-tag text-technical-tag font-semibold"
+                                        onclick="window.location.href='Documents.html?doc=4'"
+                                        type="button">Sign Document</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-unit-sm bg-surface-container-low flex justify-between items-center px-unit-base">
+                            <span class="font-technical-tag text-technical-tag text-on-surface-variant">Showing 5 of 184
+                                system events</span>
+                            <button
+                                class="text-secondary hover:text-primary font-technical-tag text-technical-tag font-bold inline-flex items-center gap-1"
+                                type="button">
+                                <span>VIEW FULL AUDIT LOG</span>
+                                <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="lg:col-span-4 flex flex-col gap-unit-base">
+                        <div class="flex flex-col bg-surface-container-lowest rounded-xl shadow-sm p-unit-base">
+                            <div class="flex items-center justify-between pb-unit-sm">
+                                <div class="flex items-center gap-unit-xs">
+                                    <span class="material-symbols-outlined text-lg text-primary">sensors</span>
+                                    <h3 class="font-headline-sm text-headline-sm text-primary font-semibold">Telemetry
+                                        &amp; Node Health</h3>
+                                </div>
+                                <span
+                                    class="inline-flex items-center gap-1 text-technical-tag font-technical-tag font-bold text-secondary bg-secondary-fixed/40 px-1.5 py-0.5 rounded">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-secondary"></span> 100% ONLINE
+                                </span>
+                            </div>
+                            <div class="flex flex-col gap-unit-sm my-unit-xs">
+                                <div class="p-unit-sm rounded bg-surface-container-low flex flex-col gap-1">
+                                    <div class="flex justify-between items-center text-body-sm font-body-sm">
+                                        <span class="text-on-surface-variant">Field Operational Nodes</span>
+                                        <span class="font-data-mono-md text-data-mono-md font-bold text-primary">42 / 42
+                                            Active</span>
+                                    </div>
+                                    <div class="w-full bg-surface-container-highest h-1.5 rounded-full overflow-hidden">
+                                        <div class="bg-secondary h-full rounded-full" style="width: 100%"></div>
+                                    </div>
+                                </div>
+                                <div
+                                    class="p-unit-sm rounded bg-surface-container-low flex items-center justify-between">
+                                    <div class="flex flex-col">
+                                        <span
+                                            class="font-label-caps text-label-caps text-on-surface-variant uppercase">SCADA
+                                            Gateway VP-GW-09</span>
+                                        <span
+                                            class="font-data-mono-md text-data-mono-md text-primary font-semibold">Cherepovets
+                                            Unit #2</span>
+                                    </div>
+                                    <div class="text-right">
+                                        <span
+                                            class="font-technical-tag text-technical-tag font-bold text-secondary">LATENCY
+                                            4ms</span>
+                                        <div class="font-data-mono-md text-data-mono-md text-on-surface-variant">Modbus
+                                            TCP/IP</div>
+                                    </div>
+                                </div>
+                                <div
+                                    class="p-unit-sm rounded bg-surface-container-low flex items-center justify-between">
+                                    <div class="flex flex-col">
+                                        <span
+                                            class="font-label-caps text-label-caps text-on-surface-variant uppercase">Scheduled
+                                            Calibration Audit</span>
+                                        <span class="font-body-md text-body-md text-primary font-semibold">Nov 14,
+                                            2024</span>
+                                    </div>
+                                    <span
+                                        class="font-technical-tag text-technical-tag font-bold text-on-tertiary-fixed-variant bg-tertiary-fixed/40 px-2 py-1 rounded">
+                                        IN 18 DAYS
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-unit-xs pt-unit-sm">
+                                <button
+                                    class="flex-1 py-1.5 text-center bg-surface-container hover:bg-surface-container-high rounded text-primary font-technical-tag text-technical-tag font-semibold transition-colors"
+                                    type="button">
+                                    DOWNLOAD LEDGER (.CSV)
+                                </button>
+                                <button
+                                    class="flex-1 py-1.5 text-center bg-surface-container hover:bg-surface-container-high rounded text-primary font-technical-tag text-technical-tag font-semibold transition-colors"
+                                    type="button">
+                                    PDF REPORT
+                                </button>
+                            </div>
+                        </div>
+                        <div class="flex flex-col bg-surface-container-lowest rounded-xl shadow-sm p-unit-base">
+                            <div class="flex items-center justify-between pb-unit-sm">
+                                <h3 class="font-headline-sm text-headline-sm text-primary font-semibold">Dedicated
+                                    Engineering Contact</h3>
+                                <span
+                                    class="font-technical-tag text-technical-tag font-bold text-on-tertiary-fixed-variant bg-tertiary-fixed/30 px-1.5 py-0.5 rounded">
+                                    SLA TIER 1
+                                </span>
+                            </div>
+                            <div class="flex items-center gap-unit-md py-unit-xs">
+                                <img class="w-14 h-14 rounded-full object-cover shadow-sm ring-2 ring-tertiary-fixed/50"
+                                    data-alt="Professional portrait of Senior Lead Systems Engineer Viktor Morozov wearing high-tech corporate industrial uniform with precision instruments in blurred background, clean corporate lighting, dark navy and cool slate tones."
+                                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuDoVYMImYMOrFG-GImEjxCUij3YIwCjbxiUVg9-84NgNQUnx44rwhCbh4EVKLngwn6R5_hzNhRQkfTglEUz1jtP83GRGR8WbDdiIQblwg1fLV0mqc04y19GGKO27NGBpanqADz4vwO3ANY9KcZiOXBusZHAE_PU_FuuwKqChSLXXJsGo289bHOL3MFrKWoXXMoxnqoUIglg-NYsM99jg8cA3e1CeWhqlY0x7isLHdQfGbcFE_XiNNJg" />
+                                <div class="flex flex-col">
+                                    <span
+                                        class="font-headline-sm text-headline-sm text-primary font-bold leading-tight">Viktor
+                                        Morozov</span>
+                                    <span class="font-body-sm text-body-sm text-on-surface-variant">Senior Lead Systems
+                                        Engineer</span>
+                                    <span class="font-technical-tag text-technical-tag text-secondary mt-0.5">ID:
+                                        VP-ENG-4410 • Severstal Liaison</span>
+                                </div>
+                            </div>
+                            <div
+                                class="flex flex-col gap-1.5 py-unit-sm my-unit-xs font-data-mono-md text-data-mono-md text-on-surface-variant bg-surface-container-low p-unit-sm rounded">
+                                <div class="flex items-center justify-between">
+                                    <span>Direct Desk:</span>
+                                    <span class="font-semibold text-primary">+7 (812) 409-22-11 ext. 4410</span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span>Emergency Mobile:</span>
+                                    <span class="font-semibold text-primary">+7 (921) 880-14-99</span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span>SLA Response:</span>
+                                    <span class="font-semibold text-secondary">&lt; 15 min for P1 Critical</span>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-unit-xs pt-unit-xs">
+                                <button
+                                    class="flex-1 py-2 bg-primary-container hover:bg-primary text-on-primary font-technical-tag text-technical-tag font-bold rounded inline-flex items-center justify-center gap-1.5 transition-colors"
+                                    onclick="window.location.href='SupportTicketView.html?ticket=TCK-9482'"
+                                    type="button">
+                                    <span class="material-symbols-outlined text-base">chat</span>
+                                    <span>SECURE DISPATCH CHAT</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+</body>
+
+</html>

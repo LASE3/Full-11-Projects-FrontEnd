@@ -26,6 +26,8 @@
     --portal-warning-container: #ffddb5;
     --portal-info: #006494;
     --portal-info-container: #d0e4ff;
+    --portal-accent: #E8A33D;
+    --portal-accent-glow: rgba(232, 163, 61, 0.35);
 
     /* Typography */
     --portal-font-sans: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -351,4 +353,46 @@ body.sidebar-collapsed #sidebar-hover-trigger {
         color: #000000 !important;
         overflow: visible !important;
     }
+}
+
+/* ==========================================================================
+   Header 4px Amber Accent Stripe (Customer Portal System 03) & Sidebar Hover
+   ========================================================================== */
+header.fixed {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+}
+
+header.fixed::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #E8A33D 0%, #F59E0B 50%, #E8A33D 100%);
+    z-index: 60;
+}
+
+/* Sidebar Navigation Items Hover Animation */
+#portal-sidebar nav a {
+    transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    position: relative;
+    border-left: 3.5px solid transparent;
+}
+
+#portal-sidebar nav a:hover {
+    background: linear-gradient(90deg, rgba(232, 163, 61, 0.35) 0%, rgba(255, 255, 255, 0.1) 100%) !important;
+    color: #FFFFFF !important;
+    transform: translateX(6px) !important;
+    border-left: 3.5px solid #E8A33D !important;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35), 0 0 12px rgba(232, 163, 61, 0.4) !important;
+}
+
+#portal-sidebar nav a:hover svg,
+#portal-sidebar nav a:hover span.material-symbols-outlined {
+    transform: scale(1.18);
+    color: #FFD599 !important;
 }

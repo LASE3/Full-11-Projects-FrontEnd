@@ -205,3 +205,24 @@
         transform: scale(1) translateY(0);
     }
 }
+
+
+/* --- Sidebar Nav Item Hover Animation --- */
+aside nav a {
+    transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    position: relative;
+    border-left: 3.5px solid transparent;
+}
+
+aside nav a:hover {
+    background: linear-gradient(90deg, rgba(178, 58, 50, 0.35) 0%, rgba(255, 255, 255, 0.08) 100%) !important;
+    color: #FFFFFF !important;
+    transform: translateX(6px) !important;
+    border-left: 3.5px solid #FF7B72 !important;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4), 0 0 12px rgba(178, 58, 50, 0.4) !important;
+}
+
+aside nav a:hover .material-symbols-outlined {
+    transform: scale(1.18);
+    color: #FF7B72 !important;
+}

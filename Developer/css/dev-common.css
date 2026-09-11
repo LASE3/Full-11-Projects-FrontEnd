@@ -132,8 +132,16 @@ body {
 }
 
 .vk-nav-item:hover {
-    background-color: var(--vk-neutral-50);
+    background: linear-gradient(90deg, rgba(30, 143, 166, 0.2) 0%, rgba(245, 247, 249, 0.8) 100%);
     color: var(--vk-primary);
+    transform: translateX(6px);
+    border-left: 3.5px solid var(--vk-sys-accent);
+    box-shadow: 0 4px 12px rgba(15, 36, 56, 0.08);
+}
+
+.vk-nav-item:hover .material-symbols-outlined {
+    transform: scale(1.15);
+    color: var(--vk-sys-accent);
 }
 
 .vk-nav-item.active {
