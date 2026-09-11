@@ -299,20 +299,23 @@ body.sidebar-collapsed #sidebar-hover-trigger,
 
 /* Main Content Wrapper */
 .intranet-content-wrapper {
-    padding-left: 16rem;
+    padding-left: 0;
     min-height: 100vh;
     padding-top: 4rem;
     transition: padding-left 0.28s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.intranet-content-wrapper.expanded,
 body.sidebar-collapsed .intranet-content-wrapper {
     padding-left: 0;
 }
 
 @media (min-width: 1024px) {
-    .intranet-content-wrapper.compact-rail,
-    body.sidebar-collapsed .intranet-content-wrapper {
+    .intranet-content-wrapper {
+        padding-left: 16rem;
+    }
+    
+    body.sidebar-collapsed .intranet-content-wrapper,
+    .intranet-content-wrapper.compact-rail {
         padding-left: 4.5rem;
     }
 }
