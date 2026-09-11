@@ -1,0 +1,31 @@
+/* ==========================================================================
+   VOSTOKPRIBOR SYSTEM 11 // GOV-CORE
+   Board Risk Register & Executive Oversight Stylesheet
+   ========================================================================== */
+
+.risk-row {
+    transition: background-color 0.15s ease;
+    cursor: pointer;
+}
+
+.risk-row:hover {
+    background-color: rgba(0, 36, 68, 0.04);
+}
+
+.risk-score-critical {
+    background-color: rgba(186, 26, 26, 0.15);
+    color: #ba1a1a;
+    border-left: 4px solid #ba1a1a;
+}
+
+.risk-score-high {
+    background-color: rgba(215, 149, 48, 0.15);
+    color: #d79530;
+    border-left: 4px solid #d79530;
+}
+
+.risk-score-moderate {
+    background-color: rgba(0, 105, 114, 0.15);
+    color: #006972;
+    border-left: 4px solid #006972;
+}

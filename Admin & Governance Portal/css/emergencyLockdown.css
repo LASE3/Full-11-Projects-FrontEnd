@@ -1,0 +1,31 @@
+/* ==========================================================================
+   VOSTOKPRIBOR SYSTEM 11 // GOV-CORE
+   Emergency Lockdown & System Defensive Quarantine Stylesheet
+   ========================================================================== */
+
+.defcon1-banner {
+    background: repeating-linear-gradient(
+        -45deg,
+        #ba1a1a,
+        #ba1a1a 20px,
+        #93000a 20px,
+        #93000a 40px
+    );
+}
+
+#syslogConsole {
+    background-color: #00172e;
+    color: #f7f9ff;
+    font-family: "JetBrains Mono", monospace;
+    scrollbar-width: thin;
+    scrollbar-color: #436084 #00172e;
+}
+
+#syslogConsole::-webkit-scrollbar {
+    width: 6px;
+}
+
+#syslogConsole::-webkit-scrollbar-thumb {
+    background: #436084;
+    border-radius: 3px;
+}

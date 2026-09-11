@@ -1,0 +1,183 @@
+/* ==========================================================================
+   VOSTOKPRIBOR ENTERPRISE DESIGN SYSTEM
+   System 09: File Center / Document Hub
+   Document Approvals & Signoff Workflow Stylesheet
+   ========================================================================== */
+
+.approval-pipeline-card {
+    background: #ffffff;
+    border: 1px solid var(--vk-neutral-200);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+    padding: 24px;
+    margin-bottom: 24px;
+}
+
+.approval-stepper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+    margin: 20px 0 10px 0;
+}
+
+.approval-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    position: relative;
+    z-index: 2;
+    flex: 1;
+}
+
+.step-circle {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--vk-neutral-200);
+    color: var(--vk-neutral-600);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-mono);
+    font-weight: 700;
+    font-size: 13px;
+    margin-bottom: 8px;
+    transition: all 0.2s ease;
+    border: 2px solid #ffffff;
+    box-shadow: 0 0 0 2px var(--vk-neutral-200);
+}
+
+.approval-step.completed .step-circle {
+    background: var(--vk-secondary);
+    color: #ffffff;
+    box-shadow: 0 0 0 2px var(--vk-secondary);
+}
+
+.approval-step.active .step-circle {
+    background: var(--vk-accent-cta);
+    color: #ffffff;
+    box-shadow: 0 0 0 2px var(--vk-accent-cta);
+    animation: pulseStep 2s infinite;
+}
+
+@keyframes pulseStep {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.08); }
+    100% { transform: scale(1); }
+}
+
+.step-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--vk-neutral-900);
+}
+
+.step-subtext {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--vk-neutral-600);
+    margin-top: 2px;
+}
+
+.stepper-progress-bar {
+    position: absolute;
+    top: 18px;
+    left: 10%;
+    right: 10%;
+    height: 3px;
+    background: var(--vk-neutral-200);
+    z-index: 1;
+}
+
+.stepper-progress-fill {
+    height: 100%;
+    background: var(--vk-secondary);
+    width: 50%; /* Between Step 1 & Step 2 */
+    transition: width 0.3s ease;
+}
+
+/* Document Review Hero Card */
+.doc-review-hero {
+    border-left: 4px solid var(--vk-class-highly-confidential);
+    background: #ffffff;
+    border-radius: var(--radius-md);
+    border-top: 1px solid var(--vk-neutral-200);
+    border-right: 1px solid var(--vk-neutral-200);
+    border-bottom: 1px solid var(--vk-neutral-200);
+    padding: 24px;
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 24px;
+}
+
+.review-meta-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin: 16px 0;
+    padding: 16px;
+    background: var(--vk-neutral-50);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--vk-neutral-200);
+}
+
+/* Redaction / Preview Box */
+.redaction-preview-box {
+    border: 1px solid var(--vk-neutral-200);
+    border-radius: var(--radius-sm);
+    padding: 20px;
+    background: #ffffff;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    line-height: 1.8;
+    color: var(--vk-neutral-900);
+    max-height: 280px;
+    overflow-y: auto;
+}
+
+.redacted-bar {
+    background: #101418;
+    color: #101418;
+    padding: 1px 6px;
+    border-radius: 2px;
+    user-select: none;
+}
+
+/* Digital Signature Modal */
+.signoff-modal-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 36, 56, 0.6);
+    backdrop-filter: blur(4px);
+    z-index: 2500;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.signoff-modal-box {
+    width: 100%;
+    max-width: 560px;
+    background: #ffffff;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--vk-neutral-200);
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+    animation: modalScaleUp 0.2s ease-out;
+}
+
+@keyframes modalScaleUp {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+.signature-stamp-box {
+    border: 2px dashed var(--vk-secondary);
+    background: rgba(14, 124, 134, 0.05);
+    border-radius: var(--radius-sm);
+    padding: 16px;
+    text-align: center;
+    margin: 16px 0;
+}

@@ -1,0 +1,126 @@
+/* ==========================================================================
+   VOSTOKPRIBOR ENTERPRISE DESIGN SYSTEM
+   System 09: File Center / Document Hub
+   Document Intake & Metadata Taxonomy Stylesheet
+   ========================================================================== */
+
+.upload-container {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.dropzone-box {
+    border: 2px dashed var(--vk-sys-accent);
+    background: var(--vk-sys-accent-light);
+    border-radius: var(--radius-md);
+    padding: 36px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-bottom: 24px;
+}
+
+.dropzone-box:hover, .dropzone-box.drag-over {
+    background: rgba(90, 100, 112, 0.2);
+    border-color: var(--vk-primary);
+}
+
+.dropzone-icon {
+    font-size: 48px;
+    color: var(--vk-sys-accent);
+    margin-bottom: 8px;
+}
+
+.form-grid-2col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 16px;
+}
+
+.form-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--vk-neutral-900);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.form-label-required {
+    color: var(--vk-alert);
+}
+
+.form-input,
+.form-select,
+.form-textarea {
+    width: 100%;
+    border: 1px solid var(--vk-neutral-200);
+    border-radius: var(--radius-sm);
+    padding: 8px 12px;
+    font-family: var(--font-body);
+    font-size: 13px;
+    color: var(--vk-neutral-900);
+    background: #ffffff;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.form-input:focus,
+.form-select:focus,
+.form-textarea:focus {
+    outline: none;
+    border-color: var(--vk-sys-accent);
+    box-shadow: 0 0 0 3px var(--vk-sys-accent-light);
+}
+
+.classification-selector-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-top: 6px;
+}
+
+.class-option-card {
+    border: 1px solid var(--vk-neutral-200);
+    border-radius: var(--radius-sm);
+    padding: 10px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s ease;
+    background: #ffffff;
+}
+
+.class-option-card:hover {
+    border-color: var(--vk-sys-accent);
+}
+
+.class-option-card.selected {
+    border-width: 2px;
+    box-shadow: var(--shadow-sm);
+}
+
+.class-opt-public.selected {
+    border-color: var(--vk-class-public);
+    background: #F8FAFC;
+}
+
+.class-opt-internal.selected {
+    border-color: var(--vk-class-internal);
+    background: #F0F9FF;
+}
+
+.class-opt-confidential.selected {
+    border-color: var(--vk-class-confidential);
+    background: #FFFBEB;
+}
+
+.class-opt-highly-confidential.selected {
+    border-color: var(--vk-class-highly-confidential);
+    background: #FEF2F2;
+}

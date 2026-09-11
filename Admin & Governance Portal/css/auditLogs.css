@@ -1,0 +1,39 @@
+/* ==========================================================================
+   VOSTOKPRIBOR SYSTEM 11 // GOV-CORE
+   Audit Logs & Terminal Stream Stylesheet
+   ========================================================================== */
+
+#terminalStreamBox {
+    background-color: #00172e;
+    color: #d2e4ff;
+    font-family: "JetBrains Mono", monospace;
+}
+
+.log-entry-row {
+    transition: background-color 0.15s ease;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.log-entry-row:hover {
+    background-color: rgba(255, 255, 255, 0.04);
+}
+
+.badge-critical {
+    background-color: #ba1a1a;
+    color: #ffffff;
+}
+
+.badge-warn {
+    background-color: #d79530;
+    color: #ffffff;
+}
+
+.badge-info {
+    background-color: #006972;
+    color: #ffffff;
+}
+
+.badge-audit {
+    background-color: #1b3a5c;
+    color: #abc9f2;
+}
