@@ -1,101 +1,141 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VOSTOKPRIBOR Intranet • Home Feed</title>
     <meta name="description" content="VOSTOKPRIBOR Enterprise Employee Communications & Operational Hub">
-    
+
     <!-- Fonts: IBM Plex Sans & JetBrains Mono -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
-    
+    <link
+        href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500;600&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+
     <!-- Unified Stylesheet -->
     <link rel="stylesheet" href="css/intranet.css">
 </head>
+
 <body>
 
     <!-- ======================================================================
          TOP BAR: Deep Navy with 4px Slate Blue Accent Stripe
          ====================================================================== -->
     <header class="intranet-header" id="intranet-header">
-        <div style="height: 100%; display: flex; align-items: center; justify-content: space-between; padding: 0 1.25rem;">
-            
+        <div
+            style="height: 100%; display: flex; align-items: center; justify-content: space-between; padding: 0 1.25rem;">
+
             <!-- Left Brand & Sidebar Toggle -->
             <div style="display: flex; align-items: center; gap: 1rem;">
-                <button type="button" id="sidebar-toggle-btn" style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); color: #FFFFFF; width: 36px; height: 36px; border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background 0.15s;" title="Toggle Sidebar (Ctrl+B)">
+                <button type="button" id="sidebar-toggle-btn"
+                    style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); color: #FFFFFF; width: 36px; height: 36px; border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background 0.15s;"
+                    title="Toggle Sidebar (Ctrl+B)">
                     <span class="material-symbols-outlined" style="font-size: 1.25rem;">menu</span>
                 </button>
 
-                <a href="index.html" style="display: flex; align-items: center; gap: 0.75rem; text-decoration: none; cursor: pointer;">
-                    <img alt="VOSTOKPRIBOR Official Mark" style="height: 32px; width: auto; object-fit: contain;" src="https://lh3.googleusercontent.com/aida/AEtjO1XMGDZ9meLzj0XkVJ6C4Xv2AoEzKtMyFqF7KQ8eMADmbywzsRZ7VF4Em6pQ7fZ8QRJExCZedCKEUUo1fN1LpEmGsQva25blyUsGhOPvX2vv2cHGkppzOp9iT33Xy2n4Nkr5e_YY_0J78vA8Q7vKUpViCouPJo13HFVvW5olf7QEFzU3EX-WCqc0SYyPXZb7E11PafOMC_KprpG6Tre6bN_DyZS-CI-J5qiCgBtikqVNYGueATNgWbi73Q" />
+                <a href="index.html"
+                    style="display: flex; align-items: center; gap: 0.75rem; text-decoration: none; cursor: pointer;">
+                    <img alt="VOSTOKPRIBOR Official Mark" style="height: 32px; width: auto; object-fit: contain;"
+                        src="https://lh3.googleusercontent.com/aida/AEtjO1XMGDZ9meLzj0XkVJ6C4Xv2AoEzKtMyFqF7KQ8eMADmbywzsRZ7VF4Em6pQ7fZ8QRJExCZedCKEUUo1fN1LpEmGsQva25blyUsGhOPvX2vv2cHGkppzOp9iT33Xy2n4Nkr5e_YY_0J78vA8Q7vKUpViCouPJo13HFVvW5olf7QEFzU3EX-WCqc0SYyPXZb7E11PafOMC_KprpG6Tre6bN_DyZS-CI-J5qiCgBtikqVNYGueATNgWbi73Q" />
                     <div style="height: 24px; width: 1px; background: rgba(255,255,255,0.2);"></div>
                     <div style="display: flex; flex-direction: column;">
                         <div style="display: flex; align-items: center; gap: 0.5rem;">
-                            <span style="color: #FFFFFF; font-weight: 700; font-size: 0.9375rem; letter-spacing: 0.04em;">VOSTOKPRIBOR</span>
-                            <span style="background-color: var(--system-accent); color: #FFFFFF; font-family: var(--font-mono); font-size: 0.625rem; font-weight: 600; padding: 0.15rem 0.4rem; border-radius: 2px; letter-spacing: 0.06em;">INTRANET</span>
+                            <span
+                                style="color: #FFFFFF; font-weight: 700; font-size: 0.9375rem; letter-spacing: 0.04em;">VOSTOKPRIBOR</span>
+                            <span
+                                style="background-color: var(--system-accent); color: #FFFFFF; font-family: var(--font-mono); font-size: 0.625rem; font-weight: 600; padding: 0.15rem 0.4rem; border-radius: 2px; letter-spacing: 0.06em;">INTRANET</span>
                         </div>
-                        <span style="font-family: var(--font-mono); font-size: 0.625rem; color: #8A94A0;">intranet.vostokpribor.local • Est. 1968</span>
+                        <span
+                            style="font-family: var(--font-mono); font-size: 0.625rem; color: #8A94A0;">intranet.vostokpribor.local
+                            • Est. 1968</span>
                     </div>
                 </a>
             </div>
 
             <!-- Center Search Bar (Command Palette Launcher Ctrl+K) -->
             <div style="flex: 1; max-width: 32rem; margin: 0 1.5rem;">
-                <div class="header-search-bar" style="display: flex; align-items: center; padding: 0.375rem 0.75rem; gap: 0.5rem;">
+                <div class="header-search-bar"
+                    style="display: flex; align-items: center; padding: 0.375rem 0.75rem; gap: 0.5rem;">
                     <span class="material-symbols-outlined" style="color: #939FA8; font-size: 1.15rem;">search</span>
-                    <input type="text" id="header-search-input" placeholder="Search intranet, personnel, policies, or forms... (Ctrl+K)" style="background: transparent; border: none; outline: none; color: #FFFFFF; font-size: 0.8125rem; width: 100%; font-family: var(--font-sans);" readonly>
-                    <span style="background: rgba(255,255,255,0.1); color: #BDC6CF; font-family: var(--font-mono); font-size: 0.6875rem; padding: 0.1rem 0.35rem; border-radius: 2px;">⌘K</span>
+                    <input type="text" id="header-search-input"
+                        placeholder="Search intranet, personnel, policies, or forms... (Ctrl+K)"
+                        style="background: transparent; border: none; outline: none; color: #FFFFFF; font-size: 0.8125rem; width: 100%; font-family: var(--font-sans);"
+                        readonly>
+                    <span
+                        style="background: rgba(255,255,255,0.1); color: #BDC6CF; font-family: var(--font-mono); font-size: 0.6875rem; padding: 0.1rem 0.35rem; border-radius: 2px;">⌘K</span>
                 </div>
             </div>
 
             <!-- Right Actions & Profile -->
             <div style="display: flex; align-items: center; gap: 0.75rem;">
-                
+
                 <!-- Quick Submit Action -->
-                <button type="button" class="btn btn-primary" onclick="window.openQuickRequestModal('leave')" style="display: none; padding: 0.4rem 0.75rem; font-size: 0.75rem;">
+                <button type="button" class="btn btn-primary" onclick="window.openQuickRequestModal('leave')"
+                    style="display: none; padding: 0.4rem 0.75rem; font-size: 0.75rem;">
                     <span class="material-symbols-outlined" style="font-size: 1rem; margin-right: 0.25rem;">add</span>
                     Request Leave
                 </button>
 
                 <!-- Notifications Bell -->
                 <div style="position: relative;">
-                    <button type="button" id="notifications-toggle-btn" style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); color: #FFFFFF; width: 36px; height: 36px; border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; cursor: pointer; position: relative;">
+                    <button type="button" id="notifications-toggle-btn"
+                        style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); color: #FFFFFF; width: 36px; height: 36px; border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; cursor: pointer; position: relative;">
                         <span class="material-symbols-outlined" style="font-size: 1.25rem;">notifications</span>
-                        <span id="notif-unread-count" style="position: absolute; top: -3px; right: -3px; width: 15px; height: 15px; background-color: var(--brand-accent); color: #0F2438; border-radius: 50%; font-size: 0.625rem; font-weight: 700; display: flex; align-items: center; justify-content: center;">3</span>
+                        <span id="notif-unread-count"
+                            style="position: absolute; top: -3px; right: -3px; width: 15px; height: 15px; background-color: var(--brand-accent); color: #0F2438; border-radius: 50%; font-size: 0.625rem; font-weight: 700; display: flex; align-items: center; justify-content: center;">3</span>
                     </button>
 
                     <!-- Notifications Dropdown Popover -->
                     <div class="notifications-popover" id="notifications-popover" style="width: 20rem; right: 0;">
-                        <div style="padding: 0.75rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: space-between;">
-                            <span style="font-size: 0.8125rem; font-weight: 600; color: #FFFFFF;">System Notifications</span>
-                            <button type="button" id="clear-notifications-btn" style="background: transparent; border: none; color: var(--system-accent); font-size: 0.75rem; cursor: pointer; text-decoration: underline;">Mark All Read</button>
+                        <div
+                            style="padding: 0.75rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: space-between;">
+                            <span style="font-size: 0.8125rem; font-weight: 600; color: #FFFFFF;">System
+                                Notifications</span>
+                            <button type="button" id="clear-notifications-btn"
+                                style="background: transparent; border: none; color: var(--system-accent); font-size: 0.75rem; cursor: pointer; text-decoration: underline;">Mark
+                                All Read</button>
                         </div>
                         <div style="max-height: 18rem; overflow-y: auto;">
-                            <div style="padding: 0.75rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.06); display: flex; gap: 0.75rem;">
+                            <div
+                                style="padding: 0.75rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.06); display: flex; gap: 0.75rem;">
                                 <span class="dept-dot itd" style="margin-top: 5px;"></span>
                                 <div>
-                                    <div style="font-size: 0.8125rem; font-weight: 600; color: #FFFFFF;">MFA Hardware Token Requisition</div>
-                                    <div style="font-size: 0.75rem; color: #939FA8; margin-top: 2px;">Deadline approaching for L3/L4 staff.</div>
-                                    <div style="font-size: 0.6875rem; color: #5C7290; margin-top: 4px; font-family: var(--font-mono);">12m ago</div>
+                                    <div style="font-size: 0.8125rem; font-weight: 600; color: #FFFFFF;">MFA Hardware
+                                        Token Requisition</div>
+                                    <div style="font-size: 0.75rem; color: #939FA8; margin-top: 2px;">Deadline
+                                        approaching for L3/L4 staff.</div>
+                                    <div
+                                        style="font-size: 0.6875rem; color: #5C7290; margin-top: 4px; font-family: var(--font-mono);">
+                                        12m ago</div>
                                 </div>
                             </div>
-                            <div style="padding: 0.75rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.06); display: flex; gap: 0.75rem;">
+                            <div
+                                style="padding: 0.75rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.06); display: flex; gap: 0.75rem;">
                                 <span class="dept-dot hra" style="margin-top: 5px;"></span>
                                 <div>
-                                    <div style="font-size: 0.8125rem; font-weight: 600; color: #FFFFFF;">Annual Performance Review Cycle</div>
-                                    <div style="font-size: 0.75rem; color: #939FA8; margin-top: 2px;">Self-assessment form DOC-2026-009 is ready.</div>
-                                    <div style="font-size: 0.6875rem; color: #5C7290; margin-top: 4px; font-family: var(--font-mono);">2h ago</div>
+                                    <div style="font-size: 0.8125rem; font-weight: 600; color: #FFFFFF;">Annual
+                                        Performance Review Cycle</div>
+                                    <div style="font-size: 0.75rem; color: #939FA8; margin-top: 2px;">Self-assessment
+                                        form DOC-2026-009 is ready.</div>
+                                    <div
+                                        style="font-size: 0.6875rem; color: #5C7290; margin-top: 4px; font-family: var(--font-mono);">
+                                        2h ago</div>
                                 </div>
                             </div>
                             <div style="padding: 0.75rem 1rem; display: flex; gap: 0.75rem;">
                                 <span class="dept-dot eng" style="margin-top: 5px;"></span>
                                 <div>
-                                    <div style="font-size: 0.8125rem; font-weight: 600; color: #FFFFFF;">VP-900 Firmware Release v4.2</div>
-                                    <div style="font-size: 0.75rem; color: #939FA8; margin-top: 2px;">Testing suite deployed to Almaty Lab 1.</div>
-                                    <div style="font-size: 0.6875rem; color: #5C7290; margin-top: 4px; font-family: var(--font-mono);">5h ago</div>
+                                    <div style="font-size: 0.8125rem; font-weight: 600; color: #FFFFFF;">VP-900 Firmware
+                                        Release v4.2</div>
+                                    <div style="font-size: 0.75rem; color: #939FA8; margin-top: 2px;">Testing suite
+                                        deployed to Almaty Lab 1.</div>
+                                    <div
+                                        style="font-size: 0.6875rem; color: #5C7290; margin-top: 4px; font-family: var(--font-mono);">
+                                        5h ago</div>
                                 </div>
                             </div>
                         </div>
@@ -104,60 +144,86 @@
 
                 <!-- Ecosystem Switcher (11 Systems) -->
                 <div style="position: relative;">
-                    <button type="button" id="ecosystem-toggle-btn" style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); color: #FFFFFF; width: 36px; height: 36px; border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; cursor: pointer;" title="VOSTOKPRIBOR Ecosystem Switcher">
+                    <button type="button" id="ecosystem-toggle-btn"
+                        style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); color: #FFFFFF; width: 36px; height: 36px; border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; cursor: pointer;"
+                        title="VOSTOKPRIBOR Ecosystem Switcher">
                         <span class="material-symbols-outlined" style="font-size: 1.25rem;">apps</span>
                     </button>
 
                     <!-- 11-System Ecosystem Dropdown Menu -->
                     <div class="ecosystem-dropdown" id="ecosystem-dropdown" style="width: 22rem; right: 0;">
-                        <div style="padding: 0.75rem 1rem; border-bottom: 1px solid rgba(220,225,230,0.12); display: flex; align-items: center; justify-content: space-between;">
+                        <div
+                            style="padding: 0.75rem 1rem; border-bottom: 1px solid rgba(220,225,230,0.12); display: flex; align-items: center; justify-content: space-between;">
                             <div>
-                                <span style="font-size: 0.8125rem; font-weight: 700; color: #FFFFFF; letter-spacing: 0.04em;">VOSTOKPRIBOR ECOSYSTEM</span>
-                                <div style="font-size: 0.6875rem; color: #8A94A0; font-family: var(--font-mono);">11 Unified Systems</div>
+                                <span
+                                    style="font-size: 0.8125rem; font-weight: 700; color: #FFFFFF; letter-spacing: 0.04em;">VOSTOKPRIBOR
+                                    ECOSYSTEM</span>
+                                <div style="font-size: 0.6875rem; color: #8A94A0; font-family: var(--font-mono);">11
+                                    Unified Systems</div>
                             </div>
                             <span class="badge-classification internal">Enterprise SSO</span>
                         </div>
-                        <div style="padding: 0.5rem; max-height: 24rem; overflow-y: auto; display: flex; flex-direction: column; gap: 0.25rem;">
+                        <div
+                            style="padding: 0.5rem; max-height: 24rem; overflow-y: auto; display: flex; flex-direction: column; gap: 0.25rem;">
                             <a href="../VOSTOKPRIBOR Corporate Web Platform/index.html" class="ecosystem-item">
-                                <span class="material-symbols-outlined" style="color: #1B3A5C; font-size: 1.25rem;">language</span>
+                                <span class="material-symbols-outlined"
+                                    style="color: #1B3A5C; font-size: 1.25rem;">language</span>
                                 <div>
-                                    <div style="color: #FFFFFF; font-size: 0.8125rem; font-weight: 600;">Corporate Web Platform</div>
-                                    <div style="color: #8A94A0; font-size: 0.6875rem; font-family: var(--font-mono);">vostokpribor.kz • System 01</div>
+                                    <div style="color: #FFFFFF; font-size: 0.8125rem; font-weight: 600;">Corporate Web
+                                        Platform</div>
+                                    <div style="color: #8A94A0; font-size: 0.6875rem; font-family: var(--font-mono);">
+                                        vostokpribor.kz • System 01</div>
                                 </div>
                             </a>
                             <a href="../Customer Portal/Dashboard.html" class="ecosystem-item">
-                                <span class="material-symbols-outlined" style="color: #0E7C86; font-size: 1.25rem;">dashboard</span>
+                                <span class="material-symbols-outlined"
+                                    style="color: #0E7C86; font-size: 1.25rem;">dashboard</span>
                                 <div>
-                                    <div style="color: #FFFFFF; font-size: 0.8125rem; font-weight: 600;">Customer Portal</div>
-                                    <div style="color: #8A94A0; font-size: 0.6875rem; font-family: var(--font-mono);">portal.vostokpribor.local • System 03</div>
+                                    <div style="color: #FFFFFF; font-size: 0.8125rem; font-weight: 600;">Customer Portal
+                                    </div>
+                                    <div style="color: #8A94A0; font-size: 0.6875rem; font-family: var(--font-mono);">
+                                        portal.vostokpribor.local • System 03</div>
                                 </div>
                             </a>
                             <a href="../Online Shop B2B/index.html" class="ecosystem-item">
-                                <span class="material-symbols-outlined" style="color: #E8A33D; font-size: 1.25rem;">shopping_bag</span>
+                                <span class="material-symbols-outlined"
+                                    style="color: #E8A33D; font-size: 1.25rem;">shopping_bag</span>
                                 <div>
-                                    <div style="color: #FFFFFF; font-size: 0.8125rem; font-weight: 600;">B2B Online Shop</div>
-                                    <div style="color: #8A94A0; font-size: 0.6875rem; font-family: var(--font-mono);">shop.vostokpribor.local • System 02</div>
+                                    <div style="color: #FFFFFF; font-size: 0.8125rem; font-weight: 600;">B2B Online Shop
+                                    </div>
+                                    <div style="color: #8A94A0; font-size: 0.6875rem; font-family: var(--font-mono);">
+                                        shop.vostokpribor.local • System 02</div>
                                 </div>
                             </a>
-                            <a href="index.html" class="ecosystem-item" style="background-color: rgba(92,114,144,0.25); border-left-color: var(--system-accent);">
-                                <span class="material-symbols-outlined" style="color: var(--system-accent); font-size: 1.25rem;">hub</span>
+                            <a href="index.html" class="ecosystem-item"
+                                style="background-color: rgba(92,114,144,0.25); border-left-color: var(--system-accent);">
+                                <span class="material-symbols-outlined"
+                                    style="color: var(--system-accent); font-size: 1.25rem;">hub</span>
                                 <div>
-                                    <div style="color: #FFFFFF; font-size: 0.8125rem; font-weight: 600;">Employee Intranet</div>
-                                    <div style="color: #BDC6CF; font-size: 0.6875rem; font-family: var(--font-mono);">intranet.vostokpribor.local • Current</div>
+                                    <div style="color: #FFFFFF; font-size: 0.8125rem; font-weight: 600;">Employee
+                                        Intranet</div>
+                                    <div style="color: #BDC6CF; font-size: 0.6875rem; font-family: var(--font-mono);">
+                                        intranet.vostokpribor.local • Current</div>
                                 </div>
                             </a>
                             <a href="../IT Helpdesk/index.html" class="ecosystem-item">
-                                <span class="material-symbols-outlined" style="color: #137333; font-size: 1.25rem;">precision_manufacturing</span>
+                                <span class="material-symbols-outlined"
+                                    style="color: #137333; font-size: 1.25rem;">precision_manufacturing</span>
                                 <div>
-                                    <div style="color: #FFFFFF; font-size: 0.8125rem; font-weight: 600;">IT Helpdesk & Operations</div>
-                                    <div style="color: #8A94A0; font-size: 0.6875rem; font-family: var(--font-mono);">scada.vostokpribor.local • System 05</div>
+                                    <div style="color: #FFFFFF; font-size: 0.8125rem; font-weight: 600;">IT Helpdesk &
+                                        Operations</div>
+                                    <div style="color: #8A94A0; font-size: 0.6875rem; font-family: var(--font-mono);">
+                                        scada.vostokpribor.local • System 05</div>
                                 </div>
                             </a>
                             <a href="../Finance & Billing/index.html" class="ecosystem-item">
-                                <span class="material-symbols-outlined" style="color: #00796B; font-size: 1.25rem;">warehouse</span>
+                                <span class="material-symbols-outlined"
+                                    style="color: #00796B; font-size: 1.25rem;">warehouse</span>
                                 <div>
-                                    <div style="color: #FFFFFF; font-size: 0.8125rem; font-weight: 600;">Finance & Billing Platform</div>
-                                    <div style="color: #8A94A0; font-size: 0.6875rem; font-family: var(--font-mono);">wms.vostokpribor.local • System 06</div>
+                                    <div style="color: #FFFFFF; font-size: 0.8125rem; font-weight: 600;">Finance &
+                                        Billing Platform</div>
+                                    <div style="color: #8A94A0; font-size: 0.6875rem; font-family: var(--font-mono);">
+                                        wms.vostokpribor.local • System 06</div>
                                 </div>
                             </a>
                         </div>
@@ -165,14 +231,18 @@
                 </div>
 
                 <!-- Authenticated User Profile Avatar -->
-                <div style="display: flex; align-items: center; gap: 0.625rem; padding-left: 0.5rem; border-left: 1px solid rgba(255,255,255,0.12);">
-                    <div class="avatar-circle" style="background-color: #1A73E8; width: 34px; height: 34px; font-size: 0.8125rem;">
+                <div
+                    style="display: flex; align-items: center; gap: 0.625rem; padding-left: 0.5rem; border-left: 1px solid rgba(255,255,255,0.12);">
+                    <div class="avatar-circle"
+                        style="background-color: #1A73E8; width: 34px; height: 34px; font-size: 0.8125rem;">
                         EM
                         <span class="avatar-status-dot online"></span>
                     </div>
                     <div style="display: flex; flex-direction: column;" class="user-info-text">
-                        <span style="color: #FFFFFF; font-weight: 600; font-size: 0.8125rem; line-height: 1.2;">Elena Morozova</span>
-                        <span style="color: #8A94A0; font-size: 0.6875rem; font-family: var(--font-mono);">CTO • L4 Clear</span>
+                        <span style="color: #FFFFFF; font-weight: 600; font-size: 0.8125rem; line-height: 1.2;">Elena
+                            Morozova</span>
+                        <span style="color: #8A94A0; font-size: 0.6875rem; font-family: var(--font-mono);">CTO • L4
+                            Clear</span>
                     </div>
                 </div>
 
@@ -185,11 +255,12 @@
          LEFT SIDEBAR: Dark Navy with Slate Blue Accent (#5C7290)
          ====================================================================== -->
     <aside class="intranet-sidebar" id="intranet-sidebar">
-        
+
         <!-- Navigation Menu -->
         <div style="padding-top: 1rem; display: flex; flex-direction: column; gap: 0.25rem;">
-            
-            <div style="padding: 0 1rem 0.5rem; font-size: 0.6875rem; font-family: var(--font-mono); color: #687482; font-weight: 600; text-transform: uppercase;" class="sidebar-section-title">
+
+            <div style="padding: 0 1rem 0.5rem; font-size: 0.6875rem; font-family: var(--font-mono); color: #687482; font-weight: 600; text-transform: uppercase;"
+                class="sidebar-section-title">
                 COMMUNICATIONS & HUB
             </div>
 
@@ -203,7 +274,8 @@
             <a href="EmployeeDirectory.html" class="sidebar-link">
                 <span class="material-symbols-outlined" style="font-size: 1.25rem;">badge</span>
                 <span class="sidebar-label">Employee Directory</span>
-                <span class="sidebar-badge" style="margin-left: auto; background: rgba(92,114,144,0.3); color: #BDC6CF; font-family: var(--font-mono); font-size: 0.6875rem; padding: 0.1rem 0.4rem; border-radius: 999px;">95</span>
+                <span class="sidebar-badge"
+                    style="margin-left: auto; background: rgba(92,114,144,0.3); color: #BDC6CF; font-family: var(--font-mono); font-size: 0.6875rem; padding: 0.1rem 0.4rem; border-radius: 999px;">95</span>
             </a>
 
             <!-- Policies & Forms -->
@@ -212,7 +284,8 @@
                 <span class="sidebar-label">Policies & Forms</span>
             </a>
 
-            <div style="padding: 1rem 1rem 0.5rem; font-size: 0.6875rem; font-family: var(--font-mono); color: #687482; font-weight: 600; text-transform: uppercase;" class="sidebar-section-title">
+            <div style="padding: 1rem 1rem 0.5rem; font-size: 0.6875rem; font-family: var(--font-mono); color: #687482; font-weight: 600; text-transform: uppercase;"
+                class="sidebar-section-title">
                 EMPLOYEE SERVICES
             </div>
 
@@ -223,13 +296,15 @@
             </a>
 
             <!-- Company Calendar -->
-            <a href="javascript:void(0)" class="sidebar-link" onclick="window.showIntranetToast('Calendar Sync Active', 'Connected to Almaty Exchange CalDAV server.', 'info')">
+            <a href="javascript:void(0)" class="sidebar-link"
+                onclick="window.showIntranetToast('Calendar Sync Active', 'Connected to Almaty Exchange CalDAV server.', 'info')">
                 <span class="material-symbols-outlined" style="font-size: 1.25rem;">event</span>
                 <span class="sidebar-label">Company Calendar</span>
             </a>
 
             <!-- Room & Asset Booking -->
-            <a href="javascript:void(0)" class="sidebar-link" onclick="window.showIntranetToast('Resource Scheduler', 'Conference Rooms Alpha & Beta available today.', 'info')">
+            <a href="javascript:void(0)" class="sidebar-link"
+                onclick="window.showIntranetToast('Resource Scheduler', 'Conference Rooms Alpha & Beta available today.', 'info')">
                 <span class="material-symbols-outlined" style="font-size: 1.25rem;">meeting_room</span>
                 <span class="sidebar-label">Room Booking</span>
             </a>
@@ -237,55 +312,80 @@
         </div>
 
         <!-- Sidebar Footer: User Card -->
-        <div style="padding: 1rem; border-top: 1px solid rgba(220, 225, 230, 0.12); background-color: rgba(0, 0, 0, 0.15);">
+        <div
+            style="padding: 1rem; border-top: 1px solid rgba(220, 225, 230, 0.12); background-color: rgba(0, 0, 0, 0.15);">
             <div style="display: flex; align-items: center; gap: 0.75rem;">
                 <div class="avatar-circle" style="background-color: #1A73E8;">
                     EM
                     <span class="avatar-status-dot online"></span>
                 </div>
                 <div style="flex: 1; min-width: 0;" class="user-info-text">
-                    <div style="font-size: 0.8125rem; font-weight: 600; color: #FFFFFF; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                    <div
+                        style="font-size: 0.8125rem; font-weight: 600; color: #FFFFFF; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                         Elena Morozova
                     </div>
-                    <div style="font-size: 0.6875rem; color: #8A94A0; display: flex; align-items: center; gap: 0.25rem;">
+                    <div
+                        style="font-size: 0.6875rem; color: #8A94A0; display: flex; align-items: center; gap: 0.25rem;">
                         <span class="dept-badge itd" style="padding: 0 0.3rem;">ITD</span>
                         <span>Chief Tech Officer</span>
                     </div>
                 </div>
-                <button type="button" style="background: transparent; border: none; color: #8A94A0; cursor: pointer; padding: 0;" title="Lock Session" onclick="window.showIntranetToast('Security Notice', 'Session verified under ISO-27001 Zero-Trust policy.', 'info')">
+                <button type="button"
+                    style="background: transparent; border: none; color: #8A94A0; cursor: pointer; padding: 0;"
+                    title="Lock Session"
+                    onclick="window.showIntranetToast('Security Notice', 'Session verified under ISO-27001 Zero-Trust policy.', 'info')">
                     <span class="material-symbols-outlined" style="font-size: 1.1rem;">lock</span>
                 </button>
             </div>
         </div>
 
+
+        <!-- Log Out -->
+        <a href="login.html" class="sidebar-nav-item sidebar-nav-item--logout" id="btn-logout"
+            onclick="(function(){sessionStorage.clear();localStorage.clear();})()">
+            <div class="sidebar-item-left">
+                <span class="sidebar-icon">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                        <polyline points="16 17 21 12 16 7" />
+                        <line x1="21" y1="12" x2="9" y2="12" />
+                    </svg>
+                </span>
+                <span>Log Out</span>
+            </div>
+        </a>
     </aside>
 
     <!-- Left-edge hover detection strip for collapsed rail state -->
     <div id="sidebar-hover-trigger" title="Hover to expand menu"></div>
-         MAIN CONTENT WRAPPER
-         ====================================================================== -->
+    MAIN CONTENT WRAPPER
+    ====================================================================== -->
     <main class="intranet-content-wrapper" id="intranet-content-wrapper">
         <div style="padding: 1.5rem; max-width: 86rem; margin: 0 auto;">
-            
+
             <!-- Page Header Breadcrumb -->
             <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem;">
                 <div>
-                    <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.75rem; font-family: var(--font-mono); color: var(--neutral-600); margin-bottom: 0.25rem;">
+                    <div
+                        style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.75rem; font-family: var(--font-mono); color: var(--neutral-600); margin-bottom: 0.25rem;">
                         <span>INTRANET</span>
                         <span>/</span>
                         <span style="color: var(--system-accent); font-weight: 600;">NEWS & ANNOUNCEMENTS</span>
                     </div>
-                    <h1 style="margin: 0; font-size: 1.5rem; font-weight: 700; color: var(--neutral-900); letter-spacing: -0.02em;">
+                    <h1
+                        style="margin: 0; font-size: 1.5rem; font-weight: 700; color: var(--neutral-900); letter-spacing: -0.02em;">
                         Enterprise News & Communications
                     </h1>
                 </div>
 
                 <div style="display: flex; align-items: center; gap: 0.75rem;">
-                    <button type="button" class="btn btn-secondary" onclick="window.openQuickRequestModal('it')" style="display: inline-flex; align-items: center; gap: 0.375rem;">
+                    <button type="button" class="btn btn-secondary" onclick="window.openQuickRequestModal('it')"
+                        style="display: inline-flex; align-items: center; gap: 0.375rem;">
                         <span class="material-symbols-outlined" style="font-size: 1rem;">engineering</span>
                         IT Ticket
                     </button>
-                    <button type="button" class="btn btn-primary" onclick="window.openQuickRequestModal('leave')" style="display: inline-flex; align-items: center; gap: 0.375rem;">
+                    <button type="button" class="btn btn-primary" onclick="window.openQuickRequestModal('leave')"
+                        style="display: inline-flex; align-items: center; gap: 0.375rem;">
                         <span class="material-symbols-outlined" style="font-size: 1rem;">flight_takeoff</span>
                         Request Leave
                     </button>
@@ -295,28 +395,35 @@
             <!-- ==============================================================
                  FEATURED WIDE ANNOUNCEMENT CAROUSEL
                  ============================================================== -->
-            <section class="announcement-carousel-card" id="home-announcement-carousel" style="margin-bottom: 1.75rem; padding: 2.25rem;">
+            <section class="announcement-carousel-card" id="home-announcement-carousel"
+                style="margin-bottom: 1.75rem; padding: 2.25rem;">
                 <div style="position: relative; z-index: 2; max-width: 52rem;">
-                    
+
                     <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem;">
-                        <span class="badge-classification internal" id="carousel-slide-badge" style="background-color: rgba(255,255,255,0.15); color: #FFFFFF; border-color: rgba(255,255,255,0.25);">
+                        <span class="badge-classification internal" id="carousel-slide-badge"
+                            style="background-color: rgba(255,255,255,0.15); color: #FFFFFF; border-color: rgba(255,255,255,0.25);">
                             CORPORATE STRATEGY
                         </span>
-                        <span style="font-family: var(--font-mono); font-size: 0.75rem; color: #BDC6CF;" id="carousel-slide-date">
+                        <span style="font-family: var(--font-mono); font-size: 0.75rem; color: #BDC6CF;"
+                            id="carousel-slide-date">
                             September 08, 2026
                         </span>
                     </div>
 
-                    <h2 id="carousel-slide-title" style="margin: 0 0 0.75rem; font-size: 1.75rem; font-weight: 700; color: #FFFFFF; line-height: 1.25;">
+                    <h2 id="carousel-slide-title"
+                        style="margin: 0 0 0.75rem; font-size: 1.75rem; font-weight: 700; color: #FFFFFF; line-height: 1.25;">
                         Q3 Enterprise Assembly Modernization: Plant 2 Transition
                     </h2>
 
-                    <p id="carousel-slide-desc" style="margin: 0 0 1.5rem; font-size: 0.9375rem; color: #DCE1E6; line-height: 1.5; max-width: 44rem;">
-                        Beginning September 15, Assembly Plant 2 in Almaty will undergo planned calibration robotics retrofits. Field engineering operations will reroute through Hub Alpha.
+                    <p id="carousel-slide-desc"
+                        style="margin: 0 0 1.5rem; font-size: 0.9375rem; color: #DCE1E6; line-height: 1.5; max-width: 44rem;">
+                        Beginning September 15, Assembly Plant 2 in Almaty will undergo planned calibration robotics
+                        retrofits. Field engineering operations will reroute through Hub Alpha.
                     </p>
 
                     <div style="display: flex; align-items: center; gap: 1.25rem;">
-                        <button type="button" id="carousel-slide-btn" class="btn btn-primary" style="display: inline-flex; align-items: center; gap: 0.375rem;">
+                        <button type="button" id="carousel-slide-btn" class="btn btn-primary"
+                            style="display: inline-flex; align-items: center; gap: 0.375rem;">
                             Read Directive
                             <span class="material-symbols-outlined" style="font-size: 1.1rem;">arrow_forward</span>
                         </button>
@@ -328,19 +435,30 @@
                 </div>
 
                 <!-- Carousel Controls & Dots -->
-                <div style="position: absolute; bottom: 1.5rem; right: 1.5rem; z-index: 5; display: flex; align-items: center; gap: 1rem;">
+                <div
+                    style="position: absolute; bottom: 1.5rem; right: 1.5rem; z-index: 5; display: flex; align-items: center; gap: 1rem;">
                     <!-- Dots -->
                     <div style="display: flex; align-items: center; gap: 0.375rem;">
-                        <button type="button" class="carousel-dot" style="width: 24px; height: 8px; border-radius: 4px; background: #FFFFFF; border: none; cursor: pointer; transition: all 0.2s;" title="Slide 1"></button>
-                        <button type="button" class="carousel-dot" style="width: 8px; height: 8px; border-radius: 4px; background: rgba(255,255,255,0.4); border: none; cursor: pointer; transition: all 0.2s;" title="Slide 2"></button>
-                        <button type="button" class="carousel-dot" style="width: 8px; height: 8px; border-radius: 4px; background: rgba(255,255,255,0.4); border: none; cursor: pointer; transition: all 0.2s;" title="Slide 3"></button>
+                        <button type="button" class="carousel-dot"
+                            style="width: 24px; height: 8px; border-radius: 4px; background: #FFFFFF; border: none; cursor: pointer; transition: all 0.2s;"
+                            title="Slide 1"></button>
+                        <button type="button" class="carousel-dot"
+                            style="width: 8px; height: 8px; border-radius: 4px; background: rgba(255,255,255,0.4); border: none; cursor: pointer; transition: all 0.2s;"
+                            title="Slide 2"></button>
+                        <button type="button" class="carousel-dot"
+                            style="width: 8px; height: 8px; border-radius: 4px; background: rgba(255,255,255,0.4); border: none; cursor: pointer; transition: all 0.2s;"
+                            title="Slide 3"></button>
                     </div>
                     <!-- Arrows -->
                     <div style="display: flex; gap: 0.375rem;">
-                        <button type="button" id="carousel-prev-btn" style="width: 32px; height: 32px; border-radius: var(--radius-sm); background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.2); color: #FFFFFF; display: flex; align-items: center; justify-content: center; cursor: pointer;" title="Previous Slide">
+                        <button type="button" id="carousel-prev-btn"
+                            style="width: 32px; height: 32px; border-radius: var(--radius-sm); background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.2); color: #FFFFFF; display: flex; align-items: center; justify-content: center; cursor: pointer;"
+                            title="Previous Slide">
                             <span class="material-symbols-outlined" style="font-size: 1.1rem;">chevron_left</span>
                         </button>
-                        <button type="button" id="carousel-next-btn" style="width: 32px; height: 32px; border-radius: var(--radius-sm); background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.2); color: #FFFFFF; display: flex; align-items: center; justify-content: center; cursor: pointer;" title="Next Slide">
+                        <button type="button" id="carousel-next-btn"
+                            style="width: 32px; height: 32px; border-radius: var(--radius-sm); background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.2); color: #FFFFFF; display: flex; align-items: center; justify-content: center; cursor: pointer;"
+                            title="Next Slide">
                             <span class="material-symbols-outlined" style="font-size: 1.1rem;">chevron_right</span>
                         </button>
                     </div>
@@ -351,13 +469,14 @@
                  TWO-COLUMN LAYOUT: Feed (Left) & Widgets (Right)
                  ============================================================== -->
             <div style="display: grid; grid-template-columns: 1fr; gap: 1.75rem;" class="intranet-grid-layout">
-                
+
                 <style>
                     @media (min-width: 1024px) {
                         .intranet-grid-layout {
                             grid-template-columns: 1fr 340px !important;
                         }
                     }
+
                     @media (min-width: 1280px) {
                         .intranet-grid-layout {
                             grid-template-columns: 1fr 380px !important;
@@ -369,12 +488,16 @@
                      LEFT COLUMN: ANNOUNCEMENT FEED
                      ========================================================== -->
                 <div style="display: flex; flex-direction: column; gap: 1rem;">
-                    
+
                     <!-- Feed Filter Tabs -->
-                    <div style="display: flex; align-items: center; justify-content: space-between; padding-bottom: 0.5rem; border-bottom: 1px solid var(--neutral-200);">
+                    <div
+                        style="display: flex; align-items: center; justify-content: space-between; padding-bottom: 0.5rem; border-bottom: 1px solid var(--neutral-200);">
                         <div style="display: flex; gap: 0.5rem;">
-                            <span style="font-weight: 600; font-size: 0.875rem; color: var(--neutral-900);">All Updates</span>
-                            <span style="background: var(--neutral-100); color: var(--neutral-600); font-family: var(--font-mono); font-size: 0.75rem; padding: 0.1rem 0.4rem; border-radius: var(--radius-sm);">5 New</span>
+                            <span style="font-weight: 600; font-size: 0.875rem; color: var(--neutral-900);">All
+                                Updates</span>
+                            <span
+                                style="background: var(--neutral-100); color: var(--neutral-600); font-family: var(--font-mono); font-size: 0.75rem; padding: 0.1rem 0.4rem; border-radius: var(--radius-sm);">5
+                                New</span>
                         </div>
                         <span style="font-size: 0.75rem; color: var(--neutral-500); font-family: var(--font-mono);">
                             Live Feed • Synchronized
@@ -383,36 +506,47 @@
 
                     <!-- Feed Card 1: ITD Zero Trust -->
                     <article class="feed-card">
-                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.625rem;">
+                        <div
+                            style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.625rem;">
                             <div style="display: flex; align-items: center; gap: 0.5rem;">
                                 <span class="dept-dot itd"></span>
                                 <span class="dept-badge itd">ITD</span>
-                                <span style="font-size: 0.75rem; color: var(--neutral-500);">• Information Technology</span>
+                                <span style="font-size: 0.75rem; color: var(--neutral-500);">• Information
+                                    Technology</span>
                             </div>
                             <span class="badge-classification confidential">Confidential</span>
                         </div>
 
-                        <h3 style="margin: 0 0 0.5rem; font-size: 1.0625rem; font-weight: 600; color: var(--neutral-900);">
+                        <h3
+                            style="margin: 0 0 0.5rem; font-size: 1.0625rem; font-weight: 600; color: var(--neutral-900);">
                             Zero-Trust Boundary Implementation: VPN Access Migration Completed
                         </h3>
 
-                        <p style="margin: 0 0 1rem; font-size: 0.8125rem; color: var(--neutral-700); line-height: 1.45;">
-                            All remote telemetry endpoints and staff laptops have now migrated to WireGuard encrypted tunnels with certificate pinning. Legacy OpenVPN profiles will be decommissioned this Friday at 22:00 Almaty time. Please review DOC-2026-001 for updated routing settings.
+                        <p
+                            style="margin: 0 0 1rem; font-size: 0.8125rem; color: var(--neutral-700); line-height: 1.45;">
+                            All remote telemetry endpoints and staff laptops have now migrated to WireGuard encrypted
+                            tunnels with certificate pinning. Legacy OpenVPN profiles will be decommissioned this Friday
+                            at 22:00 Almaty time. Please review DOC-2026-001 for updated routing settings.
                         </p>
 
-                        <div style="display: flex; align-items: center; justify-content: space-between; padding-top: 0.75rem; border-top: 1px solid var(--neutral-200); font-size: 0.75rem;">
+                        <div
+                            style="display: flex; align-items: center; justify-content: space-between; padding-top: 0.75rem; border-top: 1px solid var(--neutral-200); font-size: 0.75rem;">
                             <div style="display: flex; align-items: center; gap: 0.5rem;">
-                                <div class="avatar-circle" style="background-color: #1A73E8; width: 28px; height: 28px; font-size: 0.6875rem;">RK</div>
+                                <div class="avatar-circle"
+                                    style="background-color: #1A73E8; width: 28px; height: 28px; font-size: 0.6875rem;">
+                                    RK</div>
                                 <span style="font-weight: 500; color: var(--neutral-800);">Ruslan Kim</span>
                                 <span style="color: var(--neutral-400);">•</span>
                                 <span style="color: var(--neutral-500);">3 hours ago • 2 min read</span>
                             </div>
                             <div style="display: flex; align-items: center; gap: 1rem; color: var(--neutral-500);">
-                                <span style="display: flex; align-items: center; gap: 0.25rem; cursor: pointer;" onclick="window.showIntranetToast('Feedback Logged', 'Acknowledgment registered.', 'info')">
+                                <span style="display: flex; align-items: center; gap: 0.25rem; cursor: pointer;"
+                                    onclick="window.showIntranetToast('Feedback Logged', 'Acknowledgment registered.', 'info')">
                                     <span class="material-symbols-outlined" style="font-size: 1rem;">thumb_up</span> 18
                                 </span>
                                 <span style="display: flex; align-items: center; gap: 0.25rem; cursor: pointer;">
-                                    <span class="material-symbols-outlined" style="font-size: 1rem;">chat_bubble_outline</span> 4
+                                    <span class="material-symbols-outlined"
+                                        style="font-size: 1rem;">chat_bubble_outline</span> 4
                                 </span>
                             </div>
                         </div>
@@ -420,7 +554,8 @@
 
                     <!-- Feed Card 2: ENG Calibration Firmware -->
                     <article class="feed-card">
-                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.625rem;">
+                        <div
+                            style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.625rem;">
                             <div style="display: flex; align-items: center; gap: 0.5rem;">
                                 <span class="dept-dot eng"></span>
                                 <span class="dept-badge eng">ENG</span>
@@ -429,27 +564,37 @@
                             <span class="badge-classification internal">Internal</span>
                         </div>
 
-                        <h3 style="margin: 0 0 0.5rem; font-size: 1.0625rem; font-weight: 600; color: var(--neutral-900);">
+                        <h3
+                            style="margin: 0 0 0.5rem; font-size: 1.0625rem; font-weight: 600; color: var(--neutral-900);">
                             Almaty Calibration Cleanroom Lab 2 Achieves ±0.02% Precision Baseline
                         </h3>
 
-                        <p style="margin: 0 0 1rem; font-size: 0.8125rem; color: var(--neutral-700); line-height: 1.45;">
-                            Through the integration of our VP-900 digital metrology suite, Cleanroom Lab 2 has officially passed Kazakhstan National Standard (KazInMetr) certification. The bench testing protocol for high-temperature turbine flow sensors is now available in the documentation archive.
+                        <p
+                            style="margin: 0 0 1rem; font-size: 0.8125rem; color: var(--neutral-700); line-height: 1.45;">
+                            Through the integration of our VP-900 digital metrology suite, Cleanroom Lab 2 has
+                            officially passed Kazakhstan National Standard (KazInMetr) certification. The bench testing
+                            protocol for high-temperature turbine flow sensors is now available in the documentation
+                            archive.
                         </p>
 
-                        <div style="display: flex; align-items: center; justify-content: space-between; padding-top: 0.75rem; border-top: 1px solid var(--neutral-200); font-size: 0.75rem;">
+                        <div
+                            style="display: flex; align-items: center; justify-content: space-between; padding-top: 0.75rem; border-top: 1px solid var(--neutral-200); font-size: 0.75rem;">
                             <div style="display: flex; align-items: center; gap: 0.5rem;">
-                                <div class="avatar-circle" style="background-color: #137333; width: 28px; height: 28px; font-size: 0.6875rem;">AZ</div>
+                                <div class="avatar-circle"
+                                    style="background-color: #137333; width: 28px; height: 28px; font-size: 0.6875rem;">
+                                    AZ</div>
                                 <span style="font-weight: 500; color: var(--neutral-800);">Arman Zhumabayev</span>
                                 <span style="color: var(--neutral-400);">•</span>
                                 <span style="color: var(--neutral-500);">Yesterday • 4 min read</span>
                             </div>
                             <div style="display: flex; align-items: center; gap: 1rem; color: var(--neutral-500);">
-                                <span style="display: flex; align-items: center; gap: 0.25rem; cursor: pointer;" onclick="window.showIntranetToast('Feedback Logged', 'Acknowledgment registered.', 'info')">
+                                <span style="display: flex; align-items: center; gap: 0.25rem; cursor: pointer;"
+                                    onclick="window.showIntranetToast('Feedback Logged', 'Acknowledgment registered.', 'info')">
                                     <span class="material-symbols-outlined" style="font-size: 1rem;">thumb_up</span> 32
                                 </span>
                                 <span style="display: flex; align-items: center; gap: 0.25rem; cursor: pointer;">
-                                    <span class="material-symbols-outlined" style="font-size: 1rem;">chat_bubble_outline</span> 9
+                                    <span class="material-symbols-outlined"
+                                        style="font-size: 1rem;">chat_bubble_outline</span> 9
                                 </span>
                             </div>
                         </div>
@@ -457,7 +602,8 @@
 
                     <!-- Feed Card 3: HRA Health & Benefits -->
                     <article class="feed-card">
-                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.625rem;">
+                        <div
+                            style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.625rem;">
                             <div style="display: flex; align-items: center; gap: 0.5rem;">
                                 <span class="dept-dot hra"></span>
                                 <span class="dept-badge hra">HRA</span>
@@ -466,27 +612,36 @@
                             <span class="badge-classification public">Public</span>
                         </div>
 
-                        <h3 style="margin: 0 0 0.5rem; font-size: 1.0625rem; font-weight: 600; color: var(--neutral-900);">
+                        <h3
+                            style="margin: 0 0 0.5rem; font-size: 1.0625rem; font-weight: 600; color: var(--neutral-900);">
                             Annual Health Screening & Corporate Medical Package 2026-2027
                         </h3>
 
-                        <p style="margin: 0 0 1rem; font-size: 0.8125rem; color: var(--neutral-700); line-height: 1.45;">
-                            All employees at the Almaty Central Facility and Regional Logistics Warehouses are eligible for comprehensive medical checkups starting October 1. Book your preferred clinical provider slot through the HR portal or visit Annex Suite 102.
+                        <p
+                            style="margin: 0 0 1rem; font-size: 0.8125rem; color: var(--neutral-700); line-height: 1.45;">
+                            All employees at the Almaty Central Facility and Regional Logistics Warehouses are eligible
+                            for comprehensive medical checkups starting October 1. Book your preferred clinical provider
+                            slot through the HR portal or visit Annex Suite 102.
                         </p>
 
-                        <div style="display: flex; align-items: center; justify-content: space-between; padding-top: 0.75rem; border-top: 1px solid var(--neutral-200); font-size: 0.75rem;">
+                        <div
+                            style="display: flex; align-items: center; justify-content: space-between; padding-top: 0.75rem; border-top: 1px solid var(--neutral-200); font-size: 0.75rem;">
                             <div style="display: flex; align-items: center; gap: 0.5rem;">
-                                <div class="avatar-circle" style="background-color: #6E4C7C; width: 28px; height: 28px; font-size: 0.6875rem;">GK</div>
+                                <div class="avatar-circle"
+                                    style="background-color: #6E4C7C; width: 28px; height: 28px; font-size: 0.6875rem;">
+                                    GK</div>
                                 <span style="font-weight: 500; color: var(--neutral-800);">Gulnara Kassymova</span>
                                 <span style="color: var(--neutral-400);">•</span>
                                 <span style="color: var(--neutral-500);">2 days ago • 1 min read</span>
                             </div>
                             <div style="display: flex; align-items: center; gap: 1rem; color: var(--neutral-500);">
-                                <span style="display: flex; align-items: center; gap: 0.25rem; cursor: pointer;" onclick="window.showIntranetToast('Feedback Logged', 'Acknowledgment registered.', 'info')">
+                                <span style="display: flex; align-items: center; gap: 0.25rem; cursor: pointer;"
+                                    onclick="window.showIntranetToast('Feedback Logged', 'Acknowledgment registered.', 'info')">
                                     <span class="material-symbols-outlined" style="font-size: 1rem;">thumb_up</span> 25
                                 </span>
                                 <span style="display: flex; align-items: center; gap: 0.25rem; cursor: pointer;">
-                                    <span class="material-symbols-outlined" style="font-size: 1rem;">chat_bubble_outline</span> 2
+                                    <span class="material-symbols-outlined"
+                                        style="font-size: 1rem;">chat_bubble_outline</span> 2
                                 </span>
                             </div>
                         </div>
@@ -494,36 +649,47 @@
 
                     <!-- Feed Card 4: OPS Logistics Pipeline -->
                     <article class="feed-card">
-                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.625rem;">
+                        <div
+                            style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.625rem;">
                             <div style="display: flex; align-items: center; gap: 0.5rem;">
                                 <span class="dept-dot ops"></span>
                                 <span class="dept-badge ops">OPS</span>
-                                <span style="font-size: 0.75rem; color: var(--neutral-500);">• Operations & Logistics</span>
+                                <span style="font-size: 0.75rem; color: var(--neutral-500);">• Operations &
+                                    Logistics</span>
                             </div>
                             <span class="badge-classification internal">Internal</span>
                         </div>
 
-                        <h3 style="margin: 0 0 0.5rem; font-size: 1.0625rem; font-weight: 600; color: var(--neutral-900);">
+                        <h3
+                            style="margin: 0 0 0.5rem; font-size: 1.0625rem; font-weight: 600; color: var(--neutral-900);">
                             Cross-Border Freight Clearance Timetable: Aktau Port Corridor
                         </h3>
 
-                        <p style="margin: 0 0 1rem; font-size: 0.8125rem; color: var(--neutral-700); line-height: 1.45;">
-                            Maritime container shipments carrying heavy automation actuators through Caspian Transit Corridor B have resumed full maritime schedules. Customs documentation manifests must be signed via System 06 (WMS) prior to dispatch.
+                        <p
+                            style="margin: 0 0 1rem; font-size: 0.8125rem; color: var(--neutral-700); line-height: 1.45;">
+                            Maritime container shipments carrying heavy automation actuators through Caspian Transit
+                            Corridor B have resumed full maritime schedules. Customs documentation manifests must be
+                            signed via System 06 (WMS) prior to dispatch.
                         </p>
 
-                        <div style="display: flex; align-items: center; justify-content: space-between; padding-top: 0.75rem; border-top: 1px solid var(--neutral-200); font-size: 0.75rem;">
+                        <div
+                            style="display: flex; align-items: center; justify-content: space-between; padding-top: 0.75rem; border-top: 1px solid var(--neutral-200); font-size: 0.75rem;">
                             <div style="display: flex; align-items: center; gap: 0.5rem;">
-                                <div class="avatar-circle" style="background-color: #00796B; width: 28px; height: 28px; font-size: 0.6875rem;">SL</div>
+                                <div class="avatar-circle"
+                                    style="background-color: #00796B; width: 28px; height: 28px; font-size: 0.6875rem;">
+                                    SL</div>
                                 <span style="font-weight: 500; color: var(--neutral-800);">Sofia Lindqvist</span>
                                 <span style="color: var(--neutral-400);">•</span>
                                 <span style="color: var(--neutral-500);">3 days ago • 3 min read</span>
                             </div>
                             <div style="display: flex; align-items: center; gap: 1rem; color: var(--neutral-500);">
-                                <span style="display: flex; align-items: center; gap: 0.25rem; cursor: pointer;" onclick="window.showIntranetToast('Feedback Logged', 'Acknowledgment registered.', 'info')">
+                                <span style="display: flex; align-items: center; gap: 0.25rem; cursor: pointer;"
+                                    onclick="window.showIntranetToast('Feedback Logged', 'Acknowledgment registered.', 'info')">
                                     <span class="material-symbols-outlined" style="font-size: 1rem;">thumb_up</span> 14
                                 </span>
                                 <span style="display: flex; align-items: center; gap: 0.25rem; cursor: pointer;">
-                                    <span class="material-symbols-outlined" style="font-size: 1rem;">chat_bubble_outline</span> 1
+                                    <span class="material-symbols-outlined"
+                                        style="font-size: 1rem;">chat_bubble_outline</span> 1
                                 </span>
                             </div>
                         </div>
@@ -535,70 +701,110 @@
                      RIGHT COLUMN: STACKED WIDGETS
                      ========================================================== -->
                 <div style="display: flex; flex-direction: column; gap: 1.25rem;">
-                    
+
                     <!-- WIDGET 1: TODAY'S CALENDAR -->
                     <div class="intranet-card" style="padding: 1.25rem;">
-                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
+                        <div
+                            style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
                             <div style="display: flex; align-items: center; gap: 0.5rem;">
-                                <span class="material-symbols-outlined" style="color: var(--system-accent); font-size: 1.25rem;">event</span>
-                                <h3 style="margin: 0; font-size: 0.875rem; font-weight: 700; color: var(--neutral-900); text-transform: uppercase; letter-spacing: 0.04em;">Today's Calendar</h3>
+                                <span class="material-symbols-outlined"
+                                    style="color: var(--system-accent); font-size: 1.25rem;">event</span>
+                                <h3
+                                    style="margin: 0; font-size: 0.875rem; font-weight: 700; color: var(--neutral-900); text-transform: uppercase; letter-spacing: 0.04em;">
+                                    Today's Calendar</h3>
                             </div>
-                            <span style="font-family: var(--font-mono); font-size: 0.6875rem; color: var(--neutral-500);">Thu, Sep 10</span>
+                            <span
+                                style="font-family: var(--font-mono); font-size: 0.6875rem; color: var(--neutral-500);">Thu,
+                                Sep 10</span>
                         </div>
 
                         <div style="display: flex; flex-direction: column; gap: 0.75rem;">
-                            
+
                             <!-- Event 1 -->
-                            <div style="padding: 0.75rem; background: var(--neutral-50); border: 1px solid var(--neutral-200); border-radius: var(--radius-sm); border-left: 3px solid var(--system-accent);">
-                                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.25rem;">
-                                    <span style="font-family: var(--font-mono); font-size: 0.6875rem; font-weight: 600; color: var(--brand-primary);">10:00 - 11:00</span>
-                                    <span class="badge-classification internal" style="font-size: 0.625rem; padding: 0.1rem 0.35rem;">Conf C-302</span>
+                            <div
+                                style="padding: 0.75rem; background: var(--neutral-50); border: 1px solid var(--neutral-200); border-radius: var(--radius-sm); border-left: 3px solid var(--system-accent);">
+                                <div
+                                    style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.25rem;">
+                                    <span
+                                        style="font-family: var(--font-mono); font-size: 0.6875rem; font-weight: 600; color: var(--brand-primary);">10:00
+                                        - 11:00</span>
+                                    <span class="badge-classification internal"
+                                        style="font-size: 0.625rem; padding: 0.1rem 0.35rem;">Conf C-302</span>
                                 </div>
-                                <div style="font-size: 0.8125rem; font-weight: 600; color: var(--neutral-900); margin-bottom: 0.375rem;">
+                                <div
+                                    style="font-size: 0.8125rem; font-weight: 600; color: var(--neutral-900); margin-bottom: 0.375rem;">
                                     Executive Operations Sync & Q3 Milestones
                                 </div>
                                 <div style="display: flex; align-items: center; justify-content: space-between;">
-                                    <span style="font-size: 0.6875rem; color: var(--neutral-600);">Hybrid • WebRTC Room Alpha</span>
+                                    <span style="font-size: 0.6875rem; color: var(--neutral-600);">Hybrid • WebRTC Room
+                                        Alpha</span>
                                     <div style="display: flex; margin-left: 0.5rem;">
-                                        <div class="avatar-circle" style="width: 22px; height: 22px; font-size: 0.625rem; background: #0F2438; margin-left: -4px; border: 1px solid #FFF;">VS</div>
-                                        <div class="avatar-circle" style="width: 22px; height: 22px; font-size: 0.625rem; background: #0E7C86; margin-left: -4px; border: 1px solid #FFF;">AK</div>
-                                        <div class="avatar-circle" style="width: 22px; height: 22px; font-size: 0.625rem; background: #1A73E8; margin-left: -4px; border: 1px solid #FFF;">EM</div>
+                                        <div class="avatar-circle"
+                                            style="width: 22px; height: 22px; font-size: 0.625rem; background: #0F2438; margin-left: -4px; border: 1px solid #FFF;">
+                                            VS</div>
+                                        <div class="avatar-circle"
+                                            style="width: 22px; height: 22px; font-size: 0.625rem; background: #0E7C86; margin-left: -4px; border: 1px solid #FFF;">
+                                            AK</div>
+                                        <div class="avatar-circle"
+                                            style="width: 22px; height: 22px; font-size: 0.625rem; background: #1A73E8; margin-left: -4px; border: 1px solid #FFF;">
+                                            EM</div>
                                     </div>
                                 </div>
                             </div>
 
                             <!-- Event 2 -->
-                            <div style="padding: 0.75rem; background: var(--neutral-50); border: 1px solid var(--neutral-200); border-radius: var(--radius-sm); border-left: 3px solid #137333;">
-                                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.25rem;">
-                                    <span style="font-family: var(--font-mono); font-size: 0.6875rem; font-weight: 600; color: #137333;">14:30 - 15:30</span>
+                            <div
+                                style="padding: 0.75rem; background: var(--neutral-50); border: 1px solid var(--neutral-200); border-radius: var(--radius-sm); border-left: 3px solid #137333;">
+                                <div
+                                    style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.25rem;">
+                                    <span
+                                        style="font-family: var(--font-mono); font-size: 0.6875rem; font-weight: 600; color: #137333;">14:30
+                                        - 15:30</span>
                                     <span class="dept-badge eng" style="font-size: 0.625rem;">ENG LAB 1</span>
                                 </div>
-                                <div style="font-size: 0.8125rem; font-weight: 600; color: var(--neutral-900); margin-bottom: 0.375rem;">
+                                <div
+                                    style="font-size: 0.8125rem; font-weight: 600; color: var(--neutral-900); margin-bottom: 0.375rem;">
                                     VP-900 Calibration Protocol Review
                                 </div>
                                 <div style="display: flex; align-items: center; justify-content: space-between;">
-                                    <span style="font-size: 0.6875rem; color: var(--neutral-600);">In-Person Cleanroom Bay C</span>
+                                    <span style="font-size: 0.6875rem; color: var(--neutral-600);">In-Person Cleanroom
+                                        Bay C</span>
                                     <div style="display: flex; margin-left: 0.5rem;">
-                                        <div class="avatar-circle" style="width: 22px; height: 22px; font-size: 0.625rem; background: #137333; margin-left: -4px; border: 1px solid #FFF;">AZ</div>
-                                        <div class="avatar-circle" style="width: 22px; height: 22px; font-size: 0.625rem; background: #137333; margin-left: -4px; border: 1px solid #FFF;">EH</div>
+                                        <div class="avatar-circle"
+                                            style="width: 22px; height: 22px; font-size: 0.625rem; background: #137333; margin-left: -4px; border: 1px solid #FFF;">
+                                            AZ</div>
+                                        <div class="avatar-circle"
+                                            style="width: 22px; height: 22px; font-size: 0.625rem; background: #137333; margin-left: -4px; border: 1px solid #FFF;">
+                                            EH</div>
                                     </div>
                                 </div>
                             </div>
 
                             <!-- Event 3 -->
-                            <div style="padding: 0.75rem; background: var(--neutral-50); border: 1px solid var(--neutral-200); border-radius: var(--radius-sm); border-left: 3px solid #D9822B;">
-                                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.25rem;">
-                                    <span style="font-family: var(--font-mono); font-size: 0.6875rem; font-weight: 600; color: #D9822B;">16:00 - 17:00</span>
-                                    <span class="badge-classification confidential" style="font-size: 0.625rem; padding: 0.1rem 0.35rem;">Confidential</span>
+                            <div
+                                style="padding: 0.75rem; background: var(--neutral-50); border: 1px solid var(--neutral-200); border-radius: var(--radius-sm); border-left: 3px solid #D9822B;">
+                                <div
+                                    style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.25rem;">
+                                    <span
+                                        style="font-family: var(--font-mono); font-size: 0.6875rem; font-weight: 600; color: #D9822B;">16:00
+                                        - 17:00</span>
+                                    <span class="badge-classification confidential"
+                                        style="font-size: 0.625rem; padding: 0.1rem 0.35rem;">Confidential</span>
                                 </div>
-                                <div style="font-size: 0.8125rem; font-weight: 600; color: var(--neutral-900); margin-bottom: 0.375rem;">
+                                <div
+                                    style="font-size: 0.8125rem; font-weight: 600; color: var(--neutral-900); margin-bottom: 0.375rem;">
                                     Security Architecture Board (Zero-Trust)
                                 </div>
                                 <div style="display: flex; align-items: center; justify-content: space-between;">
-                                    <span style="font-size: 0.6875rem; color: var(--neutral-600);">Virtual Conference 1</span>
+                                    <span style="font-size: 0.6875rem; color: var(--neutral-600);">Virtual Conference
+                                        1</span>
                                     <div style="display: flex; margin-left: 0.5rem;">
-                                        <div class="avatar-circle" style="width: 22px; height: 22px; font-size: 0.625rem; background: #1A73E8; margin-left: -4px; border: 1px solid #FFF;">RK</div>
-                                        <div class="avatar-circle" style="width: 22px; height: 22px; font-size: 0.625rem; background: #D84315; margin-left: -4px; border: 1px solid #FFF;">TA</div>
+                                        <div class="avatar-circle"
+                                            style="width: 22px; height: 22px; font-size: 0.625rem; background: #1A73E8; margin-left: -4px; border: 1px solid #FFF;">
+                                            RK</div>
+                                        <div class="avatar-circle"
+                                            style="width: 22px; height: 22px; font-size: 0.625rem; background: #D84315; margin-left: -4px; border: 1px solid #FFF;">
+                                            TA</div>
                                     </div>
                                 </div>
                             </div>
@@ -608,44 +814,63 @@
 
                     <!-- WIDGET 2: QUICK LINKS -->
                     <div class="intranet-card" style="padding: 1.25rem;">
-                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
+                        <div
+                            style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
                             <div style="display: flex; align-items: center; gap: 0.5rem;">
-                                <span class="material-symbols-outlined" style="color: var(--system-accent); font-size: 1.25rem;">bolt</span>
-                                <h3 style="margin: 0; font-size: 0.875rem; font-weight: 700; color: var(--neutral-900); text-transform: uppercase; letter-spacing: 0.04em;">Quick Links</h3>
+                                <span class="material-symbols-outlined"
+                                    style="color: var(--system-accent); font-size: 1.25rem;">bolt</span>
+                                <h3
+                                    style="margin: 0; font-size: 0.875rem; font-weight: 700; color: var(--neutral-900); text-transform: uppercase; letter-spacing: 0.04em;">
+                                    Quick Links</h3>
                             </div>
-                            <span style="font-family: var(--font-mono); font-size: 0.6875rem; color: var(--neutral-500);">Frequently Used</span>
+                            <span
+                                style="font-family: var(--font-mono); font-size: 0.6875rem; color: var(--neutral-500);">Frequently
+                                Used</span>
                         </div>
 
                         <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.625rem;">
-                            
+
                             <div class="quick-link-btn" onclick="window.downloadDocSimulation('DOC-2026-005')">
-                                <span class="material-symbols-outlined" style="color: #2E6E4E; font-size: 1.35rem; margin-bottom: 0.35rem;">receipt_long</span>
-                                <span style="font-size: 0.6875rem; font-weight: 600; text-align: center;">Submit Expense</span>
+                                <span class="material-symbols-outlined"
+                                    style="color: #2E6E4E; font-size: 1.35rem; margin-bottom: 0.35rem;">receipt_long</span>
+                                <span style="font-size: 0.6875rem; font-weight: 600; text-align: center;">Submit
+                                    Expense</span>
                             </div>
 
                             <div class="quick-link-btn" onclick="window.openQuickRequestModal('leave')">
-                                <span class="material-symbols-outlined" style="color: #E8A33D; font-size: 1.35rem; margin-bottom: 0.35rem;">date_range</span>
-                                <span style="font-size: 0.6875rem; font-weight: 600; text-align: center;">Request Leave</span>
+                                <span class="material-symbols-outlined"
+                                    style="color: #E8A33D; font-size: 1.35rem; margin-bottom: 0.35rem;">date_range</span>
+                                <span style="font-size: 0.6875rem; font-weight: 600; text-align: center;">Request
+                                    Leave</span>
                             </div>
 
                             <div class="quick-link-btn" onclick="window.openQuickRequestModal('it')">
-                                <span class="material-symbols-outlined" style="color: #1A73E8; font-size: 1.35rem; margin-bottom: 0.35rem;">headset_mic</span>
-                                <span style="font-size: 0.6875rem; font-weight: 600; text-align: center;">IT Helpdesk</span>
+                                <span class="material-symbols-outlined"
+                                    style="color: #1A73E8; font-size: 1.35rem; margin-bottom: 0.35rem;">headset_mic</span>
+                                <span style="font-size: 0.6875rem; font-weight: 600; text-align: center;">IT
+                                    Helpdesk</span>
                             </div>
 
-                            <div class="quick-link-btn" onclick="window.showIntranetToast('Conference Room Booking', 'Calendar integration active. Select room slot.', 'info')">
-                                <span class="material-symbols-outlined" style="color: #0E7C86; font-size: 1.35rem; margin-bottom: 0.35rem;">domain</span>
-                                <span style="font-size: 0.6875rem; font-weight: 600; text-align: center;">Room Booking</span>
+                            <div class="quick-link-btn"
+                                onclick="window.showIntranetToast('Conference Room Booking', 'Calendar integration active. Select room slot.', 'info')">
+                                <span class="material-symbols-outlined"
+                                    style="color: #0E7C86; font-size: 1.35rem; margin-bottom: 0.35rem;">domain</span>
+                                <span style="font-size: 0.6875rem; font-weight: 600; text-align: center;">Room
+                                    Booking</span>
                             </div>
 
                             <a href="EmployeeDirectory.html" class="quick-link-btn">
-                                <span class="material-symbols-outlined" style="color: #6E4C7C; font-size: 1.35rem; margin-bottom: 0.35rem;">schema</span>
-                                <span style="font-size: 0.6875rem; font-weight: 600; text-align: center;">Org Chart</span>
+                                <span class="material-symbols-outlined"
+                                    style="color: #6E4C7C; font-size: 1.35rem; margin-bottom: 0.35rem;">schema</span>
+                                <span style="font-size: 0.6875rem; font-weight: 600; text-align: center;">Org
+                                    Chart</span>
                             </a>
 
                             <div class="quick-link-btn" onclick="window.downloadDocSimulation('DOC-2026-008')">
-                                <span class="material-symbols-outlined" style="color: #B23A32; font-size: 1.35rem; margin-bottom: 0.35rem;">warning</span>
-                                <span style="font-size: 0.6875rem; font-weight: 600; text-align: center;">Safety Report</span>
+                                <span class="material-symbols-outlined"
+                                    style="color: #B23A32; font-size: 1.35rem; margin-bottom: 0.35rem;">warning</span>
+                                <span style="font-size: 0.6875rem; font-weight: 600; text-align: center;">Safety
+                                    Report</span>
                             </div>
 
                         </div>
@@ -653,53 +878,83 @@
 
                     <!-- WIDGET 3: BIRTHDAYS & ANNIVERSARIES -->
                     <div class="intranet-card" style="padding: 1.25rem;">
-                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
+                        <div
+                            style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
                             <div style="display: flex; align-items: center; gap: 0.5rem;">
-                                <span class="material-symbols-outlined" style="color: var(--system-accent); font-size: 1.25rem;">cake</span>
-                                <h3 style="margin: 0; font-size: 0.875rem; font-weight: 700; color: var(--neutral-900); text-transform: uppercase; letter-spacing: 0.04em;">Milestones & Birthdays</h3>
+                                <span class="material-symbols-outlined"
+                                    style="color: var(--system-accent); font-size: 1.25rem;">cake</span>
+                                <h3
+                                    style="margin: 0; font-size: 0.875rem; font-weight: 700; color: var(--neutral-900); text-transform: uppercase; letter-spacing: 0.04em;">
+                                    Milestones & Birthdays</h3>
                             </div>
-                            <span style="font-family: var(--font-mono); font-size: 0.6875rem; color: var(--neutral-500);">September 2026</span>
+                            <span
+                                style="font-family: var(--font-mono); font-size: 0.6875rem; color: var(--neutral-500);">September
+                                2026</span>
                         </div>
 
                         <div style="display: flex; flex-direction: column; gap: 0.75rem;">
-                            
+
                             <!-- Milestone 1 -->
-                            <div style="display: flex; align-items: center; gap: 0.75rem; padding: 0.5rem; background: var(--neutral-50); border-radius: var(--radius-sm);">
-                                <div class="avatar-circle" style="background-color: #0E7C86; width: 34px; height: 34px; font-size: 0.75rem;">AK</div>
-                                <div style="flex: 1; min-width: 0;">
-                                    <div style="font-size: 0.8125rem; font-weight: 600; color: var(--neutral-900); display: flex; align-items: center; gap: 0.375rem;">
-                                        Amina Karimova
-                                        <span class="dept-badge ops" style="font-size: 0.625rem; padding: 0 0.3rem;">OPS</span>
-                                    </div>
-                                    <div style="font-size: 0.6875rem; color: var(--neutral-600);">21 Years at VOSTOKPRIBOR</div>
+                            <div
+                                style="display: flex; align-items: center; gap: 0.75rem; padding: 0.5rem; background: var(--neutral-50); border-radius: var(--radius-sm);">
+                                <div class="avatar-circle"
+                                    style="background-color: #0E7C86; width: 34px; height: 34px; font-size: 0.75rem;">AK
                                 </div>
-                                <span style="font-family: var(--font-mono); font-size: 0.6875rem; font-weight: 600; color: var(--brand-accent); background: #FFF8E1; padding: 0.2rem 0.4rem; border-radius: 2px;">Sep 12</span>
+                                <div style="flex: 1; min-width: 0;">
+                                    <div
+                                        style="font-size: 0.8125rem; font-weight: 600; color: var(--neutral-900); display: flex; align-items: center; gap: 0.375rem;">
+                                        Amina Karimova
+                                        <span class="dept-badge ops"
+                                            style="font-size: 0.625rem; padding: 0 0.3rem;">OPS</span>
+                                    </div>
+                                    <div style="font-size: 0.6875rem; color: var(--neutral-600);">21 Years at
+                                        VOSTOKPRIBOR</div>
+                                </div>
+                                <span
+                                    style="font-family: var(--font-mono); font-size: 0.6875rem; font-weight: 600; color: var(--brand-accent); background: #FFF8E1; padding: 0.2rem 0.4rem; border-radius: 2px;">Sep
+                                    12</span>
                             </div>
 
                             <!-- Milestone 2 -->
-                            <div style="display: flex; align-items: center; gap: 0.75rem; padding: 0.5rem; background: var(--neutral-50); border-radius: var(--radius-sm);">
-                                <div class="avatar-circle" style="background-color: #137333; width: 34px; height: 34px; font-size: 0.75rem;">JR</div>
-                                <div style="flex: 1; min-width: 0;">
-                                    <div style="font-size: 0.8125rem; font-weight: 600; color: var(--neutral-900); display: flex; align-items: center; gap: 0.375rem;">
-                                        Jonas Richter
-                                        <span class="dept-badge eng" style="font-size: 0.625rem; padding: 0 0.3rem;">ENG</span>
-                                    </div>
-                                    <div style="font-size: 0.6875rem; color: var(--neutral-600);">Birthday Celebration 🎂</div>
+                            <div
+                                style="display: flex; align-items: center; gap: 0.75rem; padding: 0.5rem; background: var(--neutral-50); border-radius: var(--radius-sm);">
+                                <div class="avatar-circle"
+                                    style="background-color: #137333; width: 34px; height: 34px; font-size: 0.75rem;">JR
                                 </div>
-                                <span style="font-family: var(--font-mono); font-size: 0.6875rem; font-weight: 600; color: var(--system-accent); background: var(--neutral-100); padding: 0.2rem 0.4rem; border-radius: 2px;">Sep 15</span>
+                                <div style="flex: 1; min-width: 0;">
+                                    <div
+                                        style="font-size: 0.8125rem; font-weight: 600; color: var(--neutral-900); display: flex; align-items: center; gap: 0.375rem;">
+                                        Jonas Richter
+                                        <span class="dept-badge eng"
+                                            style="font-size: 0.625rem; padding: 0 0.3rem;">ENG</span>
+                                    </div>
+                                    <div style="font-size: 0.6875rem; color: var(--neutral-600);">Birthday Celebration
+                                        🎂</div>
+                                </div>
+                                <span
+                                    style="font-family: var(--font-mono); font-size: 0.6875rem; font-weight: 600; color: var(--system-accent); background: var(--neutral-100); padding: 0.2rem 0.4rem; border-radius: 2px;">Sep
+                                    15</span>
                             </div>
 
                             <!-- Milestone 3 -->
-                            <div style="display: flex; align-items: center; gap: 0.75rem; padding: 0.5rem; background: var(--neutral-50); border-radius: var(--radius-sm);">
-                                <div class="avatar-circle" style="background-color: #137333; width: 34px; height: 34px; font-size: 0.75rem;">OV</div>
-                                <div style="flex: 1; min-width: 0;">
-                                    <div style="font-size: 0.8125rem; font-weight: 600; color: var(--neutral-900); display: flex; align-items: center; gap: 0.375rem;">
-                                        Olga Voronova
-                                        <span class="dept-badge eng" style="font-size: 0.625rem; padding: 0 0.3rem;">ENG</span>
-                                    </div>
-                                    <div style="font-size: 0.6875rem; color: var(--neutral-600);">9 Years at VOSTOKPRIBOR</div>
+                            <div
+                                style="display: flex; align-items: center; gap: 0.75rem; padding: 0.5rem; background: var(--neutral-50); border-radius: var(--radius-sm);">
+                                <div class="avatar-circle"
+                                    style="background-color: #137333; width: 34px; height: 34px; font-size: 0.75rem;">OV
                                 </div>
-                                <span style="font-family: var(--font-mono); font-size: 0.6875rem; font-weight: 600; color: var(--brand-accent); background: #FFF8E1; padding: 0.2rem 0.4rem; border-radius: 2px;">Sep 19</span>
+                                <div style="flex: 1; min-width: 0;">
+                                    <div
+                                        style="font-size: 0.8125rem; font-weight: 600; color: var(--neutral-900); display: flex; align-items: center; gap: 0.375rem;">
+                                        Olga Voronova
+                                        <span class="dept-badge eng"
+                                            style="font-size: 0.625rem; padding: 0 0.3rem;">ENG</span>
+                                    </div>
+                                    <div style="font-size: 0.6875rem; color: var(--neutral-600);">9 Years at
+                                        VOSTOKPRIBOR</div>
+                                </div>
+                                <span
+                                    style="font-family: var(--font-mono); font-size: 0.6875rem; font-weight: 600; color: var(--brand-accent); background: #FFF8E1; padding: 0.2rem 0.4rem; border-radius: 2px;">Sep
+                                    19</span>
                             </div>
 
                         </div>
@@ -717,15 +972,19 @@
          ====================================================================== -->
     <div class="intranet-modal-backdrop" id="command-palette-modal">
         <div class="intranet-modal-container" style="max-width: 42rem; border: 1px solid var(--system-accent);">
-            <div style="background-color: var(--brand-primary-dark); padding: 0.875rem 1.25rem; display: flex; align-items: center; gap: 0.75rem; border-bottom: 1px solid rgba(255,255,255,0.12);">
+            <div
+                style="background-color: var(--brand-primary-dark); padding: 0.875rem 1.25rem; display: flex; align-items: center; gap: 0.75rem; border-bottom: 1px solid rgba(255,255,255,0.12);">
                 <span class="material-symbols-outlined" style="color: var(--system-accent);">search</span>
-                <input type="text" id="command-palette-input" placeholder="Type a name, department, role, or policy..." style="background: transparent; border: none; outline: none; color: #FFFFFF; font-size: 1rem; width: 100%; font-family: var(--font-sans);">
-                <button type="button" id="close-command-palette-btn" style="background: transparent; border: none; color: #8A94A0; cursor: pointer; padding: 0;">
+                <input type="text" id="command-palette-input" placeholder="Type a name, department, role, or policy..."
+                    style="background: transparent; border: none; outline: none; color: #FFFFFF; font-size: 1rem; width: 100%; font-family: var(--font-sans);">
+                <button type="button" id="close-command-palette-btn"
+                    style="background: transparent; border: none; color: #8A94A0; cursor: pointer; padding: 0;">
                     <span class="material-symbols-outlined">close</span>
                 </button>
             </div>
             <div id="command-palette-results" style="max-height: 24rem; overflow-y: auto; padding: 0.5rem;"></div>
-            <div style="padding: 0.5rem 1rem; background: var(--neutral-100); border-top: 1px solid var(--neutral-200); display: flex; align-items: center; justify-content: space-between; font-size: 0.6875rem; color: var(--neutral-600); font-family: var(--font-mono);">
+            <div
+                style="padding: 0.5rem 1rem; background: var(--neutral-100); border-top: 1px solid var(--neutral-200); display: flex; align-items: center; justify-content: space-between; font-size: 0.6875rem; color: var(--neutral-600); font-family: var(--font-mono);">
                 <span>Navigate with mouse or keyboard</span>
                 <span>ESC to dismiss</span>
             </div>
@@ -738,4 +997,5 @@
     <!-- Single Consolidated JavaScript Engine -->
     <script src="js/intranet.js"></script>
 </body>
+
 </html>

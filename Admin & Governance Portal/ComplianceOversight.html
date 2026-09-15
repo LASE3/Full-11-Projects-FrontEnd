@@ -151,7 +151,11 @@
                     </div>
                 </a></nav>
         </div>
-        <div class="p-space-md bg-primary-container/40 border-t border-outline/20 flex flex-col gap-space-2xs">
+                    <a class="flex items-center gap-space-sm px-space-sm py-space-xs rounded text-error hover:bg-error-container hover:text-on-error-container transition-all font-body-compact text-body-compact mt-space-sm" href="login.html" id="btn-logout" onclick="(function(){sessionStorage.clear();localStorage.clear();})()">
+                <span class="material-symbols-outlined text-[18px] text-error">logout</span>
+                <span>Log Out</span>
+            </a>
+            <div class="p-space-md bg-primary-container/40 border-t border-outline/20 flex flex-col gap-space-2xs">
             <div class="flex items-center justify-between"><span
                     class="font-security-stamp text-[10px] text-secondary-fixed-dim uppercase tracking-wider">SEC-OPS
                     FACILITY</span>
