@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ============================================================================
  * VOSTOKPRIBOR ENTERPRISE DESIGN SYSTEM - SYSTEM 02 (B2B E-COMMERCE)
  * FQDN: shop.vostokpribor.local
@@ -34,7 +34,6 @@
       categorySlug: 'optical-sensors',
       sector: 'Geomatics & GIS, Manufacturing, Process Automation',
       billingModel: 'Per Unit',
-      billingArabic: 'لكل وحدة',
       price: 5200,
       currency: '$',
       priceFormatted: '$5,200',
@@ -72,7 +71,6 @@
       categorySlug: 'measurement-kits',
       sector: 'Geomatics & GIS, Mining, Railway Infrastructure',
       billingModel: 'Per Unit',
-      billingArabic: 'لكل وحدة',
       price: 10400,
       currency: '$',
       priceFormatted: '$10,400',
@@ -108,7 +106,6 @@
       categorySlug: 'calibration-stations',
       sector: 'Process Automation, Industrial Metrology, Manufacturing',
       billingModel: 'Per Project',
-      billingArabic: 'حسب المشروع',
       price: 17900,
       currency: '$',
       priceFormatted: '$17,900',
@@ -143,7 +140,6 @@
       categorySlug: 'plc-integration',
       sector: 'Process Automation, Manufacturing, Robotics',
       billingModel: 'Per Project',
-      billingArabic: 'حسب المشروع',
       price: 18500,
       currency: '$',
       priceFormatted: '$18,500',
@@ -178,7 +174,6 @@
       categorySlug: 'monitoring-gateways',
       sector: 'Water Infrastructure, Environmental Monitoring, Mining',
       billingModel: 'Per Unit',
-      billingArabic: 'لكل وحدة',
       price: 2600,
       currency: '$',
       priceFormatted: '$2,600',
@@ -213,7 +208,6 @@
       categorySlug: 'optical-sensors',
       sector: 'Optical Engineering, Robotics, Manufacturing',
       billingModel: 'Per Project',
-      billingArabic: 'حسب المشروع',
       price: 19800,
       currency: '$',
       priceFormatted: '$19,800',
@@ -247,7 +241,6 @@
       categorySlug: 'monitoring-gateways',
       sector: 'Geomatics & GIS, Railway Infrastructure, Mining',
       billingModel: 'Subscription',
-      billingArabic: 'اشتراك سنوي',
       price: 15400,
       currency: '$',
       priceFormatted: '$15,400 / Yr',
@@ -279,7 +272,6 @@
       categorySlug: 'plc-integration',
       sector: 'Robotics, Manufacturing, Process Automation',
       billingModel: 'Per Project',
-      billingArabic: 'حسب المشروع',
       price: 19200,
       currency: '$',
       priceFormatted: '$19,200',
@@ -310,7 +302,6 @@
       categorySlug: 'monitoring-gateways',
       sector: 'Railway Infrastructure, Mining, Environmental Monitoring',
       billingModel: 'Subscription',
-      billingArabic: 'اشتراك شهري',
       price: 4100,
       currency: '$',
       priceFormatted: '$4,100 / Mo',
@@ -340,7 +331,6 @@
       categorySlug: 'calibration-stations',
       sector: 'Geomatics & GIS, Industrial Metrology, Process Automation',
       billingModel: 'Annual Contract',
-      billingArabic: 'عقد سنوي',
       price: 10600,
       currency: '$',
       priceFormatted: '$10,600 / Yr',
@@ -1004,7 +994,7 @@
 
             <div class="product-card__footer">
               <div class="product-pricing-block">
-                <span class="billing-model-tag">${product.billingModel} (${product.billingArabic})</span>
+                <span class="billing-model-tag">${product.billingModel}</span>
                 <div class="price-value">${product.priceFormatted}</div>
               </div>
               <div style="display: flex; gap: 8px;">
@@ -1153,7 +1143,7 @@
             <div class="pdp-header-block">
               <div class="pdp-meta-tags-row">
                 <span class="sku-tag-prominent">${product.id} · ${product.sku}</span>
-                <span class="billing-badge-prominent">${product.billingModel} (${product.billingArabic})</span>
+                <span class="billing-badge-prominent">${product.billingModel}</span>
                 <span class="classification-badge">SECURITY: L1 PUBLIC / L3 RESTRICTED</span>
               </div>
               <h1 class="pdp-product-title">${product.name}</h1>

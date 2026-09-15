@@ -323,6 +323,12 @@
           0 20px 40px -15px rgba(0,0,0,0.75),
           0 0 50px -10px var(--auth-accent-glow, rgba(27,58,92,0.4)) !important;
       }
+      .auth-card.auth-card-wide {
+        max-width: 680px !important;
+      }
+      .auth-card-wide ~ .vp-sim-bar {
+        max-width: 680px !important;
+      }
       .auth-card-stripe {
         transition: background 0.3s ease !important;
       }

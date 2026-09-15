@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -282,8 +282,11 @@
         submitBtn.classList.add('is-loading');
         submitBtn.disabled = true;
         setTimeout(() => {
-          showAlert('B2B Account Request Submitted for ' + orgName + '! Pending admin verification within 1 business day.', false);
+          showAlert('B2B Account Request Submitted for ' + orgName + '! Redirecting to login...', false);
           try { sessionStorage.setItem('vp_shop_reg', JSON.stringify({ fullName, orgName, email, accountId, status: 'pending_review', timestamp: new Date().toISOString() })); } catch (err) {}
+          setTimeout(() => {
+            window.location.href = 'login.html';
+          }, 1600);
         }, 700);
       });
     });

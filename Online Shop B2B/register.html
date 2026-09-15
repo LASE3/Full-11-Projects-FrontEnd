@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -268,8 +268,11 @@
         submitBtn.classList.add('is-loading');
         submitBtn.disabled = true;
         setTimeout(() => {
-          showAlert('Enterprise registration for ' + companyName + ' submitted! Our team will contact ' + contactEmail + ' within 1-2 business days.', false);
+          showAlert('Enterprise registration for ' + companyName + ' submitted! Redirecting to login...', false);
           try { sessionStorage.setItem('vp_partner_reg', JSON.stringify({ companyName, regNumber, contactName, contactEmail, status: 'pending_review', timestamp: new Date().toISOString() })); } catch (err) {}
+          setTimeout(() => {
+            window.location.href = 'login.html';
+          }, 1600);
         }, 700);
       });
     });

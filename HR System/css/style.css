@@ -602,6 +602,27 @@ input, select, textarea {
   color: #FFFFFF;
 }
 
+.sidebar-nav-item--logout {
+  color: #F87171 !important;
+  margin-top: 6px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 0.65rem;
+}
+
+.sidebar-nav-item--logout:hover {
+  background: linear-gradient(90deg, rgba(178, 58, 50, 0.35) 0%, rgba(255, 255, 255, 0.08) 100%) !important;
+  border-left: 3.5px solid #EF4444 !important;
+  border-color: rgba(239, 68, 68, 0.25) !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35), 0 0 12px rgba(239, 68, 68, 0.35) !important;
+  color: #FCA5A5 !important;
+}
+
+.sidebar-nav-item--logout:hover .sidebar-icon {
+  color: #EF4444 !important;
+  filter: drop-shadow(0 0 6px rgba(239, 68, 68, 0.8)) !important;
+}
+
+
 /* Sidebar Quota / Security Status Footer */
 .sidebar-footer {
   padding: 0 0.85rem;
