@@ -1,5 +1,6 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
@@ -8,47 +9,60 @@
     <link rel="stylesheet" href="css/dev-common.css" />
     <link rel="stylesheet" href="css/dev-portal.css" />
 </head>
+
 <body>
     <!-- TOP NAVIGATION BAR (Deep Navy + 4px Cyan Identity Stripe) -->
     <header class="vk-top-navbar">
         <div style="display: flex; align-items: center; gap: 24px;">
             <a class="vk-brand-section" href="index.html">
-                <img alt="VOSTOKPRIBOR Official Mark" class="brand-logo-img" style="height: 30px; width: 30px; object-fit: contain;" src="https://lh3.googleusercontent.com/aida/AEtjO1XMGDZ9meLzj0XkVJ6C4Xv2AoEzKtMyFqF7KQ8eMADmbywzsRZ7VF4Em6pQ7fZ8QRJExCZedCKEUUo1fN1LpEmGsQva25blyUsGhOPvX2vv2cHGkppzOp9iT33Xy2n4Nkr5e_YY_0J78vA8Q7vKUpViCouPJo13HFVvW5olf7QEFzU3EX-WCqc0SYyPXZb7E11PafOMC_KprpG6Tre6bN_DyZS-CI-J5qiCgBtikqVNYGueATNgWbi73Q" />
+                <img alt="VOSTOKPRIBOR Official Mark" class="brand-logo-img"
+                    style="height: 30px; width: 30px; object-fit: contain;"
+                    src="https://lh3.googleusercontent.com/aida/AEtjO1XMGDZ9meLzj0XkVJ6C4Xv2AoEzKtMyFqF7KQ8eMADmbywzsRZ7VF4Em6pQ7fZ8QRJExCZedCKEUUo1fN1LpEmGsQva25blyUsGhOPvX2vv2cHGkppzOp9iT33Xy2n4Nkr5e_YY_0J78vA8Q7vKUpViCouPJo13HFVvW5olf7QEFzU3EX-WCqc0SYyPXZb7E11PafOMC_KprpG6Tre6bN_DyZS-CI-J5qiCgBtikqVNYGueATNgWbi73Q" />
                 <div style="display: flex; flex-direction: column;">
                     <div style="display: flex; align-items: center; gap: 8px;">
-                        <span style="font-family: var(--font-heading); font-weight: 700; font-size: 15px; letter-spacing: -0.02em;">VOSTOKPRIBOR</span>
+                        <span
+                            style="font-family: var(--font-heading); font-weight: 700; font-size: 15px; letter-spacing: -0.02em;">VOSTOKPRIBOR</span>
                         <span class="vk-system-badge">SYS-10 // DEV-PORTAL</span>
                     </div>
-                    <span style="font-family: var(--font-mono); font-size: 10px; color: #94A3B8;">ALMATY CENTRAL • EST. 1968 • API GATEWAY v4.12.0</span>
+                    <span style="font-family: var(--font-mono); font-size: 10px; color: #94A3B8;">ALMATY CENTRAL • EST.
+                        1968 • API GATEWAY v4.12.0</span>
                 </div>
             </a>
-            <div style="display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.06); padding: 4px 12px; border-radius: var(--radius-sm); border: 1px solid rgba(255,255,255,0.1);">
+            <div
+                style="display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.06); padding: 4px 12px; border-radius: var(--radius-sm); border: 1px solid rgba(255,255,255,0.1);">
                 <span class="material-symbols-outlined text-[14px]" style="color: var(--vk-sys-accent);">hub</span>
-                <span style="font-family: var(--font-mono); font-size: 11px; color: #E2E8F0;">FQDN: <strong>developer.vostokpribor.local</strong></span>
+                <span style="font-family: var(--font-mono); font-size: 11px; color: #E2E8F0;">FQDN:
+                    <strong>developer.vostokpribor.local</strong></span>
             </div>
         </div>
 
         <div style="display: flex; align-items: center; gap: 16px;">
             <!-- Search Bar Trigger (Ctrl + K) -->
             <div style="position: relative; width: 280px;">
-                <span class="material-symbols-outlined text-[16px]" style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: #64748B;">search</span>
-                <input class="search-trigger-input" type="text" placeholder="Search API docs, schemas (Ctrl + K)" readonly
+                <span class="material-symbols-outlined text-[16px]"
+                    style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: #64748B;">search</span>
+                <input class="search-trigger-input" type="text" placeholder="Search API docs, schemas (Ctrl + K)"
+                    readonly
                     style="width: 100%; height: 32px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: var(--radius-sm); padding-left: 32px; padding-right: 12px; font-family: var(--font-mono); font-size: 11px; color: #ffffff; cursor: pointer;" />
             </div>
 
             <!-- Almaty Live Station Time -->
-            <div style="display: flex; align-items: center; gap: 6px; font-family: var(--font-mono); font-size: 11px; color: #94A3B8; background: rgba(0,0,0,0.25); padding: 4px 10px; border-radius: var(--radius-sm);">
+            <div
+                style="display: flex; align-items: center; gap: 6px; font-family: var(--font-mono); font-size: 11px; color: #94A3B8; background: rgba(0,0,0,0.25); padding: 4px 10px; border-radius: var(--radius-sm);">
                 <span class="material-symbols-outlined text-[14px]" style="color: var(--vk-secondary);">schedule</span>
                 <span class="station-live-clock">17:15:00 UTC+6</span>
             </div>
 
             <!-- Partner Session Persona (CUS-1002 BaltNord) -->
-            <div style="display: flex; align-items: center; gap: 10px; padding-left: 12px; border-left: 1px solid rgba(255,255,255,0.15);">
+            <div
+                style="display: flex; align-items: center; gap: 10px; padding-left: 12px; border-left: 1px solid rgba(255,255,255,0.15);">
                 <div style="text-align: right;">
                     <div style="font-size: 12px; font-weight: 600; color: #ffffff;">Kristaps Ozols</div>
-                    <div style="font-family: var(--font-mono); font-size: 10px; color: var(--vk-sys-accent);">CUS-1002 • BaltNord</div>
+                    <div style="font-family: var(--font-mono); font-size: 10px; color: var(--vk-sys-accent);">CUS-1002 •
+                        BaltNord</div>
                 </div>
-                <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--vk-primary); display: flex; align-items: center; justify-content: center; border: 1px solid var(--vk-sys-accent);">
+                <div
+                    style="width: 32px; height: 32px; border-radius: 50%; background: var(--vk-primary); display: flex; align-items: center; justify-content: center; border: 1px solid var(--vk-sys-accent);">
                     <span class="material-symbols-outlined text-[18px]" style="color: #ffffff;">person</span>
                 </div>
             </div>
@@ -64,7 +78,8 @@
                     <span class="material-symbols-outlined text-[18px]">menu_book</span>
                     <span>API Reference</span>
                 </div>
-                <span style="font-family: var(--font-mono); font-size: 10px; color: var(--vk-sys-accent); font-weight: 700;">REST</span>
+                <span
+                    style="font-family: var(--font-mono); font-size: 10px; color: var(--vk-sys-accent); font-weight: 700;">REST</span>
             </a>
             <a class="vk-nav-item" href="guides.html">
                 <div style="display: flex; align-items: center; gap: 10px;">
@@ -94,7 +109,8 @@
                     <span class="material-symbols-outlined text-[18px]">monitoring</span>
                     <span>Usage &amp; Telemetry</span>
                 </div>
-                <span style="font-family: var(--font-mono); font-size: 10px; color: var(--vk-secondary); font-weight: 700;">99.98%</span>
+                <span
+                    style="font-family: var(--font-mono); font-size: 10px; color: var(--vk-secondary); font-weight: 700;">99.98%</span>
             </a>
 
             <div class="vk-sidebar-header" style="margin-top: 16px;">Organization</div>
@@ -108,13 +124,31 @@
         </div>
 
         <!-- Technical Lead Contacts (PDF Grounded: EMP-1020 & EMP-1017) -->
-        <div style="padding: 16px; border-top: 1px solid var(--vk-neutral-200); background-color: #F8FAFC; font-size: 11px;">
-            <div style="font-family: var(--font-mono); font-weight: 700; color: var(--vk-neutral-600); text-transform: uppercase; margin-bottom: 6px;">Portal Custodians</div>
+        <div
+            style="padding: 16px; border-top: 1px solid var(--vk-neutral-200); background-color: #F8FAFC; font-size: 11px;">
+            <div
+                style="font-family: var(--font-mono); font-weight: 700; color: var(--vk-neutral-600); text-transform: uppercase; margin-bottom: 6px;">
+                Portal Custodians</div>
             <div style="color: var(--vk-primary); font-weight: 600;">Jonas Richter (EMP-1020)</div>
             <div style="color: var(--vk-neutral-600); font-size: 10px;">Lead Developer • ENG</div>
             <div style="color: var(--vk-primary); font-weight: 600; margin-top: 6px;">Dana Yermak (EMP-1017)</div>
             <div style="color: var(--vk-neutral-600); font-size: 10px;">Integration Engineer • ENG</div>
         </div>
+
+        <!-- Log Out -->
+        <a href="login.html" class="sidebar-nav-item sidebar-nav-item--logout" id="btn-logout"
+            onclick="(function(){sessionStorage.clear();localStorage.clear();})()">
+            <div class="sidebar-item-left">
+                <span class="sidebar-icon">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                        <polyline points="16 17 21 12 16 7" />
+                        <line x1="21" y1="12" x2="9" y2="12" />
+                    </svg>
+                </span>
+                <span>Log Out</span>
+            </div>
+        </a>
     </aside>
 
     <!-- MAIN APP BODY -->
@@ -123,14 +157,16 @@
         <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px;">
             <div>
                 <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
-                    <span style="font-family: var(--font-mono); font-size: 11px; color: var(--vk-neutral-600);">ROOT / SYSTEM 10 / API REFERENCE</span>
+                    <span style="font-family: var(--font-mono); font-size: 11px; color: var(--vk-neutral-600);">ROOT /
+                        SYSTEM 10 / API REFERENCE</span>
                     <span class="badge-classification badge-public">Public API</span>
                 </div>
                 <h1 style="font-size: 26px; font-weight: 700; color: var(--vk-primary-dark); letter-spacing: -0.02em;">
                     Industrial Equipment &amp; Automation API v1
                 </h1>
                 <p style="color: var(--vk-neutral-600); font-size: 14px; margin-top: 4px; max-width: 820px;">
-                    Official RESTful and telemetry streaming interfaces for precision optical measurement packages, geodetic kits, PLC integration, and enterprise B2B fulfillment pipelines.
+                    Official RESTful and telemetry streaming interfaces for precision optical measurement packages,
+                    geodetic kits, PLC integration, and enterprise B2B fulfillment pipelines.
                 </p>
             </div>
             <div style="display: flex; gap: 10px;">
@@ -145,21 +181,26 @@
 
         <!-- System Baseline Specs Banner (PDF Cross-Reference) -->
         <div class="vk-card tag-internal" style="margin-bottom: 28px; background: #ffffff;">
-            <div class="vk-card-body" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px;">
+            <div class="vk-card-body"
+                style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px;">
                 <div style="display: flex; align-items: center; gap: 16px;">
-                    <div style="width: 42px; height: 42px; background: rgba(30, 143, 166, 0.12); border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; color: var(--vk-sys-accent);">
+                    <div
+                        style="width: 42px; height: 42px; background: rgba(30, 143, 166, 0.12); border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; color: var(--vk-sys-accent);">
                         <span class="material-symbols-outlined text-[24px]">terminal</span>
                     </div>
                     <div>
-                        <div style="font-weight: 700; font-size: 14px; color: var(--vk-primary);">Statutory Specification DOC-2026-010 Synchronized</div>
+                        <div style="font-weight: 700; font-size: 14px; color: var(--vk-primary);">Statutory
+                            Specification DOC-2026-010 Synchronized</div>
                         <div style="font-size: 12px; color: var(--vk-neutral-600);">
-                            Conforms to Republic Heavy Automation Standards • Base URL: <code style="font-family: var(--font-mono); color: var(--vk-primary); background: #F1F5F9; padding: 2px 6px;">https://developer.vostokpribor.local/v1</code>
+                            Conforms to Republic Heavy Automation Standards • Base URL: <code
+                                style="font-family: var(--font-mono); color: var(--vk-primary); background: #F1F5F9; padding: 2px 6px;">https://developer.vostokpribor.local/v1</code>
                         </div>
                     </div>
                 </div>
                 <div style="display: flex; align-items: center; gap: 12px;">
                     <span class="badge-classification badge-internal">DOC-2026-010 • INTERNAL SPEC</span>
-                    <button class="vk-btn vk-btn-outline" onclick="window.showToast('SPEC DOWNLOADED', 'Saved OpenAPI 3.0 YAML descriptor for System 10.', 'success')">
+                    <button class="vk-btn vk-btn-outline"
+                        onclick="window.showToast('SPEC DOWNLOADED', 'Saved OpenAPI 3.0 YAML descriptor for System 10.', 'success')">
                         <span class="material-symbols-outlined text-[16px]">download</span> OpenAPI 3.0 JSON
                     </button>
                 </div>
@@ -177,22 +218,29 @@
                         <span class="badge-classification badge-internal">Internal • PROD-1001</span>
                     </div>
                     <div style="display: flex; align-items: center; gap: 10px;">
-                        <span style="font-family: var(--font-mono); font-size: 11px; color: var(--vk-neutral-600);">Rate Limit: 10k/min</span>
-                        <button class="vk-btn vk-btn-outline btn-try-sandbox" data-method="GET" data-url="/v1/sensors/optical/telemetry">
+                        <span style="font-family: var(--font-mono); font-size: 11px; color: var(--vk-neutral-600);">Rate
+                            Limit: 10k/min</span>
+                        <button class="vk-btn vk-btn-outline btn-try-sandbox" data-method="GET"
+                            data-url="/v1/sensors/optical/telemetry">
                             <span class="material-symbols-outlined text-[14px]">tune</span> Test in Sandbox
                         </button>
                     </div>
                 </div>
                 <div class="endpoint-body">
                     <div class="endpoint-docs-col">
-                        <div style="font-weight: 600; font-size: 14px; color: var(--vk-primary-dark); margin-bottom: 6px;">
+                        <div
+                            style="font-weight: 600; font-size: 14px; color: var(--vk-primary-dark); margin-bottom: 6px;">
                             Fetch Industrial Optical Sensor Package Real-time Telemetry
                         </div>
                         <p style="font-size: 13px; color: var(--vk-neutral-600); line-height: 1.5;">
-                            Retrieves high-frequency telemetry streams from field-deployed optical inspection and sensor apparatus (PROD-1001), including spectral resolution peak, focal plane operating temperature, and signal-to-noise ratio.
+                            Retrieves high-frequency telemetry streams from field-deployed optical inspection and sensor
+                            apparatus (PROD-1001), including spectral resolution peak, focal plane operating
+                            temperature, and signal-to-noise ratio.
                         </p>
 
-                        <div style="margin-top: 16px; font-weight: 600; font-size: 12px; color: var(--vk-neutral-900); text-transform: uppercase; letter-spacing: 0.04em;">Query Parameters</div>
+                        <div
+                            style="margin-top: 16px; font-weight: 600; font-size: 12px; color: var(--vk-neutral-900); text-transform: uppercase; letter-spacing: 0.04em;">
+                            Query Parameters</div>
                         <table class="param-table">
                             <thead>
                                 <tr>
@@ -212,7 +260,8 @@
                                 <tr>
                                     <td class="param-name">sample_window_sec</td>
                                     <td class="param-type">integer</td>
-                                    <td><span style="font-size: 10px; color: var(--vk-neutral-600);">Optional</span></td>
+                                    <td><span style="font-size: 10px; color: var(--vk-neutral-600);">Optional</span>
+                                    </td>
                                     <td>Window for rolling average (1 to 60, default: 5)</td>
                                 </tr>
                             </tbody>
@@ -221,12 +270,16 @@
                     <div class="endpoint-code-col">
                         <div class="code-tabs-nav">
                             <div style="display: flex; gap: 6px;">
-                                <button class="code-tab-btn active" data-endpoint="endpoint-optical" data-lang="curl">cURL</button>
-                                <button class="code-tab-btn" data-endpoint="endpoint-optical" data-lang="python">Python</button>
-                                <button class="code-tab-btn" data-endpoint="endpoint-optical" data-lang="node">Node.js</button>
+                                <button class="code-tab-btn active" data-endpoint="endpoint-optical"
+                                    data-lang="curl">cURL</button>
+                                <button class="code-tab-btn" data-endpoint="endpoint-optical"
+                                    data-lang="python">Python</button>
+                                <button class="code-tab-btn" data-endpoint="endpoint-optical"
+                                    data-lang="node">Node.js</button>
                                 <button class="code-tab-btn" data-endpoint="endpoint-optical" data-lang="go">Go</button>
                             </div>
-                            <button class="vk-btn-outline copy-code-btn" style="padding: 2px 8px; font-size: 11px; color: #94A3B8; border-color: rgba(255,255,255,0.15);">
+                            <button class="vk-btn-outline copy-code-btn"
+                                style="padding: 2px 8px; font-size: 11px; color: #94A3B8; border-color: rgba(255,255,255,0.15);">
                                 <span class="material-symbols-outlined text-[14px]">content_copy</span> Copy
                             </button>
                         </div>
@@ -246,22 +299,29 @@
                         <span class="badge-classification badge-internal">Internal • PROD-1002</span>
                     </div>
                     <div style="display: flex; align-items: center; gap: 10px;">
-                        <span style="font-family: var(--font-mono); font-size: 11px; color: var(--vk-neutral-600);">Rate Limit: 5k/min</span>
-                        <button class="vk-btn vk-btn-outline btn-try-sandbox" data-method="GET" data-url="/v1/devices/geodetic/measurements">
+                        <span style="font-family: var(--font-mono); font-size: 11px; color: var(--vk-neutral-600);">Rate
+                            Limit: 5k/min</span>
+                        <button class="vk-btn vk-btn-outline btn-try-sandbox" data-method="GET"
+                            data-url="/v1/devices/geodetic/measurements">
                             <span class="material-symbols-outlined text-[14px]">tune</span> Test in Sandbox
                         </button>
                     </div>
                 </div>
                 <div class="endpoint-body">
                     <div class="endpoint-docs-col">
-                        <div style="font-weight: 600; font-size: 14px; color: var(--vk-primary-dark); margin-bottom: 6px;">
+                        <div
+                            style="font-weight: 600; font-size: 14px; color: var(--vk-primary-dark); margin-bottom: 6px;">
                             Precision Geodetic Measurement Kit (PROD-1002) Calibration Vectors
                         </div>
                         <p style="font-size: 13px; color: var(--vk-neutral-600); line-height: 1.5;">
-                            Provides distance vectors, laser interferometer precision readings, and atmospheric refraction indices for geodetic surveying instrumentation deployed with CUS-1001 (Aral Geomatics) and CUS-1002 (BaltNord).
+                            Provides distance vectors, laser interferometer precision readings, and atmospheric
+                            refraction indices for geodetic surveying instrumentation deployed with CUS-1001 (Aral
+                            Geomatics) and CUS-1002 (BaltNord).
                         </p>
 
-                        <div style="margin-top: 16px; font-weight: 600; font-size: 12px; color: var(--vk-neutral-900); text-transform: uppercase;">Parameters</div>
+                        <div
+                            style="margin-top: 16px; font-weight: 600; font-size: 12px; color: var(--vk-neutral-900); text-transform: uppercase;">
+                            Parameters</div>
                         <table class="param-table">
                             <thead>
                                 <tr>
@@ -284,12 +344,17 @@
                     <div class="endpoint-code-col">
                         <div class="code-tabs-nav">
                             <div style="display: flex; gap: 6px;">
-                                <button class="code-tab-btn active" data-endpoint="endpoint-geodetic" data-lang="curl">cURL</button>
-                                <button class="code-tab-btn" data-endpoint="endpoint-geodetic" data-lang="python">Python</button>
-                                <button class="code-tab-btn" data-endpoint="endpoint-geodetic" data-lang="node">Node.js</button>
-                                <button class="code-tab-btn" data-endpoint="endpoint-geodetic" data-lang="go">Go</button>
+                                <button class="code-tab-btn active" data-endpoint="endpoint-geodetic"
+                                    data-lang="curl">cURL</button>
+                                <button class="code-tab-btn" data-endpoint="endpoint-geodetic"
+                                    data-lang="python">Python</button>
+                                <button class="code-tab-btn" data-endpoint="endpoint-geodetic"
+                                    data-lang="node">Node.js</button>
+                                <button class="code-tab-btn" data-endpoint="endpoint-geodetic"
+                                    data-lang="go">Go</button>
                             </div>
-                            <button class="vk-btn-outline copy-code-btn" style="padding: 2px 8px; font-size: 11px; color: #94A3B8; border-color: rgba(255,255,255,0.15);">
+                            <button class="vk-btn-outline copy-code-btn"
+                                style="padding: 2px 8px; font-size: 11px; color: #94A3B8; border-color: rgba(255,255,255,0.15);">
                                 <span class="material-symbols-outlined text-[14px]">content_copy</span> Copy
                             </button>
                         </div>
@@ -308,21 +373,28 @@
                         <span class="badge-classification badge-confidential">Confidential • PROD-1004</span>
                     </div>
                     <div style="display: flex; align-items: center; gap: 10px;">
-                        <span style="font-family: var(--font-mono); font-size: 11px; color: var(--vk-neutral-600);">Rate Limit: 50k/min</span>
-                        <button class="vk-btn vk-btn-outline btn-try-sandbox" data-method="POST" data-url="/v1/scada/ingest/frames" data-body='{"facility_id":"ALMATY-CENTRAL-01","protocol":"MODBUS-TCP","plc_register":"40001","payload_hex":"0A2B4C"}'>
+                        <span style="font-family: var(--font-mono); font-size: 11px; color: var(--vk-neutral-600);">Rate
+                            Limit: 50k/min</span>
+                        <button class="vk-btn vk-btn-outline btn-try-sandbox" data-method="POST"
+                            data-url="/v1/scada/ingest/frames"
+                            data-body='{"facility_id":"ALMATY-CENTRAL-01","protocol":"MODBUS-TCP","plc_register":"40001","payload_hex":"0A2B4C"}'>
                             <span class="material-symbols-outlined text-[14px]">tune</span> Test in Sandbox
                         </button>
                     </div>
                 </div>
                 <div class="endpoint-body">
                     <div class="endpoint-docs-col">
-                        <div style="font-weight: 600; font-size: 14px; color: var(--vk-primary-dark); margin-bottom: 6px;">
+                        <div
+                            style="font-weight: 600; font-size: 14px; color: var(--vk-primary-dark); margin-bottom: 6px;">
                             Industrial PLC Integration (PROD-1004) High-Speed Ingestion
                         </div>
                         <p style="font-size: 13px; color: var(--vk-neutral-600); line-height: 1.5;">
-                            Ingests Modbus-TCP, OPC-UA, and telemetry frames directly into System 11 Ingestion Bridges with microsecond timestamp validation.
+                            Ingests Modbus-TCP, OPC-UA, and telemetry frames directly into System 11 Ingestion Bridges
+                            with microsecond timestamp validation.
                         </p>
-                        <div style="margin-top: 16px; font-weight: 600; font-size: 12px; color: var(--vk-neutral-900); text-transform: uppercase;">Body Parameters (JSON)</div>
+                        <div
+                            style="margin-top: 16px; font-weight: 600; font-size: 12px; color: var(--vk-neutral-900); text-transform: uppercase;">
+                            Body Parameters (JSON)</div>
                         <table class="param-table">
                             <thead>
                                 <tr>
@@ -357,12 +429,16 @@
                     <div class="endpoint-code-col">
                         <div class="code-tabs-nav">
                             <div style="display: flex; gap: 6px;">
-                                <button class="code-tab-btn active" data-endpoint="endpoint-scada" data-lang="curl">cURL</button>
-                                <button class="code-tab-btn" data-endpoint="endpoint-scada" data-lang="python">Python</button>
-                                <button class="code-tab-btn" data-endpoint="endpoint-scada" data-lang="node">Node.js</button>
+                                <button class="code-tab-btn active" data-endpoint="endpoint-scada"
+                                    data-lang="curl">cURL</button>
+                                <button class="code-tab-btn" data-endpoint="endpoint-scada"
+                                    data-lang="python">Python</button>
+                                <button class="code-tab-btn" data-endpoint="endpoint-scada"
+                                    data-lang="node">Node.js</button>
                                 <button class="code-tab-btn" data-endpoint="endpoint-scada" data-lang="go">Go</button>
                             </div>
-                            <button class="vk-btn-outline copy-code-btn" style="padding: 2px 8px; font-size: 11px; color: #94A3B8; border-color: rgba(255,255,255,0.15);">
+                            <button class="vk-btn-outline copy-code-btn"
+                                style="padding: 2px 8px; font-size: 11px; color: #94A3B8; border-color: rgba(255,255,255,0.15);">
                                 <span class="material-symbols-outlined text-[14px]">content_copy</span> Copy
                             </button>
                         </div>
@@ -387,11 +463,13 @@
             <div>
                 <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
                     <div class="vk-brand-logo-badge" style="width: 28px; height: 28px; font-size: 14px;">VP</div>
-                    <span style="font-family: var(--font-heading); font-weight: 700; font-size: 16px;">VOSTOKPRIBOR</span>
+                    <span
+                        style="font-family: var(--font-heading); font-weight: 700; font-size: 16px;">VOSTOKPRIBOR</span>
                 </div>
                 <p style="color: #94A3B8; font-size: 13px; line-height: 1.6; max-width: 320px;">
                     Vostokpribor Global Logistics &amp; Supply JSC.<br />
-                    Industrial equipment, precision measurement, and engineering automation since 1968. Almaty, Kazakhstan.
+                    Industrial equipment, precision measurement, and engineering automation since 1968. Almaty,
+                    Kazakhstan.
                 </p>
             </div>
             <div>
@@ -417,12 +495,14 @@
                 <ul>
                     <li><span style="color: #94A3B8;">Domain: local.vostokpribor</span></li>
                     <li><span style="color: #94A3B8;">Gateway: Almaty Station Primary</span></li>
-                    <li><span class="vk-status-badge status-active" style="padding: 2px 8px; font-size: 10px;">GATEWAY: 99.98% SLA</span></li>
+                    <li><span class="vk-status-badge status-active" style="padding: 2px 8px; font-size: 10px;">GATEWAY:
+                            99.98% SLA</span></li>
                 </ul>
             </div>
         </div>
         <div class="vk-footer-bottom">
-            <div>© 2026 VOSTOKPRIBOR Global Logistics &amp; Supply JSC. All rights reserved. System 10: Developer &amp; API Portal.</div>
+            <div>© 2026 VOSTOKPRIBOR Global Logistics &amp; Supply JSC. All rights reserved. System 10: Developer &amp;
+                API Portal.</div>
             <div>ST RK IEC 62443 Industrial Security • Almaty Core Enclave</div>
         </div>
     </footer>
@@ -431,4 +511,5 @@
     <script src="js/dev-common.js"></script>
     <script src="js/dev-portal.js"></script>
 </body>
+
 </html>

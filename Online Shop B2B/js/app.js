@@ -35,9 +35,9 @@
       sector: 'Geomatics & GIS, Manufacturing, Process Automation',
       billingModel: 'Per Unit',
       billingArabic: 'لكل وحدة',
-      price: 4850,
-      currency: '€',
-      priceFormatted: '€4,850',
+      price: 5200,
+      currency: '$',
+      priceFormatted: '$5,200',
       availability: 'in-stock',
       stockCount: 38,
       stockText: '38 in Stock (Almaty Central Hub / Bay 14-C)',
@@ -58,9 +58,9 @@
       ],
       description: 'The VP-OPT-9020 package delivers sub-micron optical metrology and high-speed defect discrimination in demanding industrial environments. Encased in ruggedized anodized aluminum with high-transmittance sapphire optics and automated temperature drift compensation.',
       volumePricing: [
-        { qty: '1 - 4 units', price: '€4,850 / ea' },
-        { qty: '5 - 19 units', price: '€4,420 / ea' },
-        { qty: '20+ units', price: '€3,950 / ea' }
+        { qty: '1 - 4 units', price: '$5,200 / ea' },
+        { qty: '5 - 19 units', price: '$4,750 / ea' },
+        { qty: '20+ units', price: '$4,200 / ea' }
       ]
     },
     {
@@ -73,9 +73,9 @@
       sector: 'Geomatics & GIS, Mining, Railway Infrastructure',
       billingModel: 'Per Unit',
       billingArabic: 'لكل وحدة',
-      price: 9600,
-      currency: '€',
-      priceFormatted: '€9,600',
+      price: 10400,
+      currency: '$',
+      priceFormatted: '$10,400',
       availability: 'in-stock',
       stockCount: 14,
       stockText: '14 in Stock (Almaty Central Hub / Bay 08-A)',
@@ -94,9 +94,9 @@
       ],
       description: 'Engineered for open-pit mining, rail alignment, and GIS survey validation. Combines phase-shift laser distance meters with centimeter-level RTK positioning algorithms and internal inertial measurement units (IMU).',
       volumePricing: [
-        { qty: '1 - 2 units', price: '€9,600 / ea' },
-        { qty: '3 - 9 units', price: '€8,900 / ea' },
-        { qty: '10+ units', price: '€8,150 / ea' }
+        { qty: '1 - 2 units', price: '$10,400 / ea' },
+        { qty: '3 - 9 units', price: '$9,600 / ea' },
+        { qty: '10+ units', price: '$8,800 / ea' }
       ]
     },
     {
@@ -109,9 +109,9 @@
       sector: 'Process Automation, Industrial Metrology, Manufacturing',
       billingModel: 'Per Project',
       billingArabic: 'حسب المشروع',
-      price: 28000,
-      currency: '€',
-      priceFormatted: '€28,000',
+      price: 17900,
+      currency: '$',
+      priceFormatted: '$17,900',
       availability: 'lead-time',
       stockCount: 4,
       stockText: 'Lead Time: 2-3 Weeks (Custom Staging)',
@@ -129,8 +129,8 @@
       ],
       description: 'Fully automated hardware verification system for industrial instrumentation. Performs automated NIST/GOST/ISO traceable calibration curves, pressure leak tests, and thermal drift characterization with automated PDF report generation.',
       volumePricing: [
-        { qty: '1 station', price: '€28,000 / project' },
-        { qty: '2 - 4 stations', price: '€25,500 / ea' },
+        { qty: '1 station', price: '$17,900 / project' },
+        { qty: '2 - 4 stations', price: '$16,200 / ea' },
         { qty: '5+ stations', price: 'Custom Tender Price' }
       ]
     },
@@ -144,9 +144,9 @@
       sector: 'Process Automation, Manufacturing, Robotics',
       billingModel: 'Per Project',
       billingArabic: 'حسب المشروع',
-      price: 34500,
-      currency: '€',
-      priceFormatted: '€34,500',
+      price: 18500,
+      currency: '$',
+      priceFormatted: '$18,500',
       availability: 'custom',
       stockCount: 6,
       stockText: 'Engineering Order (14 Days Staging)',
@@ -164,9 +164,9 @@
       ],
       description: 'Complete programmable logic controller system engineered for mission-critical manufacturing and automation cells. Compatible with IEC 61131-3 languages (LD, FBD, ST, IL, SFC).',
       volumePricing: [
-        { qty: '1 system', price: '€34,500 / project' },
-        { qty: '2 - 5 systems', price: '€31,200 / ea' },
-        { qty: '6+ systems', price: '€28,000 / ea' }
+        { qty: '1 system', price: '$18,500 / project' },
+        { qty: '2 - 5 systems', price: '$16,900 / ea' },
+        { qty: '6+ systems', price: '$15,400 / ea' }
       ]
     },
     {
@@ -179,9 +179,9 @@
       sector: 'Water Infrastructure, Environmental Monitoring, Mining',
       billingModel: 'Per Unit',
       billingArabic: 'لكل وحدة',
-      price: 2400,
-      currency: '€',
-      priceFormatted: '€2,400',
+      price: 2600,
+      currency: '$',
+      priceFormatted: '$2,600',
       availability: 'in-stock',
       stockCount: 52,
       stockText: '52 in Stock (Almaty Central Hub / Bay 04-C)',
@@ -199,9 +199,9 @@
       ],
       description: 'Robust telemetry gateway designed for off-grid remote assets, water pipeline pump stations, and environmental monitoring networks. Transmits secured MQTT/HTTPS payloads with local failover buffering up to 128GB.',
       volumePricing: [
-        { qty: '1 - 9 units', price: '€2,400 / ea' },
-        { qty: '10 - 49 units', price: '€2,150 / ea' },
-        { qty: '50+ units', price: '€1,890 / ea' }
+        { qty: '1 - 9 units', price: '$2,600 / ea' },
+        { qty: '10 - 49 units', price: '$2,300 / ea' },
+        { qty: '50+ units', price: '$2,050 / ea' }
       ]
     },
     {
@@ -214,9 +214,9 @@
       sector: 'Optical Engineering, Robotics, Manufacturing',
       billingModel: 'Per Project',
       billingArabic: 'حسب المشروع',
-      price: 42000,
-      currency: '€',
-      priceFormatted: '€42,000',
+      price: 19800,
+      currency: '$',
+      priceFormatted: '$19,800',
       availability: 'lead-time',
       stockCount: 3,
       stockText: 'Lead Time: 3-4 Weeks (Staging Required)',
@@ -233,8 +233,8 @@
       ],
       description: 'Turnkey inline optical inspection for high-speed manufacturing lines, semiconductor wafer checks, and precision machined components with automated reject gating triggers.',
       volumePricing: [
-        { qty: '1 system', price: '€42,000 / project' },
-        { qty: '2 - 3 systems', price: '€38,500 / ea' },
+        { qty: '1 system', price: '$19,800 / project' },
+        { qty: '2 - 3 systems', price: '$18,200 / ea' },
         { qty: '4+ systems', price: 'Custom Enterprise Agreement' }
       ]
     },
@@ -248,9 +248,9 @@
       sector: 'Geomatics & GIS, Railway Infrastructure, Mining',
       billingModel: 'Subscription',
       billingArabic: 'اشتراك سنوي',
-      price: 14200,
-      currency: '€',
-      priceFormatted: '€14,200 / Yr',
+      price: 15400,
+      currency: '$',
+      priceFormatted: '$15,400 / Yr',
       availability: 'in-stock',
       stockCount: 999,
       stockText: 'Active Instant Provisioning',
@@ -265,9 +265,9 @@
       ],
       description: 'Comprehensive enterprise SLA contract ensuring zero unplanned equipment downtime. Includes direct access to Tier-3 engineering staff (EMP-1016, EMP-1018) and emergency replacement stock reservation.',
       volumePricing: [
-        { qty: '1 Year Contract', price: '€14,200 / yr' },
-        { qty: '3 Year Contract', price: '€12,500 / yr (Save 12%)' },
-        { qty: '5 Year Contract', price: '€11,000 / yr (Save 22%)' }
+        { qty: '1 Year Contract', price: '$15,400 / yr' },
+        { qty: '3 Year Contract', price: '$13,500 / yr (Save 12%)' },
+        { qty: '5 Year Contract', price: '$11,900 / yr (Save 22%)' }
       ]
     },
     {
@@ -280,9 +280,9 @@
       sector: 'Robotics, Manufacturing, Process Automation',
       billingModel: 'Per Project',
       billingArabic: 'حسب المشروع',
-      price: 18500,
-      currency: '€',
-      priceFormatted: '€18,500',
+      price: 19200,
+      currency: '$',
+      priceFormatted: '$19,200',
       availability: 'custom',
       stockCount: 10,
       stockText: 'Immediate Engineering Assignment',
@@ -297,8 +297,8 @@
       ],
       description: 'Professional engineering services led by senior integration engineers (EMP-1017, EMP-1020) to bridge physical sensor telemetries and PLC nodes directly with enterprise databases.',
       volumePricing: [
-        { qty: 'Base Connector', price: '€18,500 / project' },
-        { qty: 'Multi-Facility Bridge', price: '€32,000 / enterprise' }
+        { qty: 'Base Connector', price: '$19,200 / project' },
+        { qty: 'Multi-Facility Bridge', price: '$19,800 / enterprise' }
       ]
     },
     {
@@ -311,9 +311,9 @@
       sector: 'Railway Infrastructure, Mining, Environmental Monitoring',
       billingModel: 'Subscription',
       billingArabic: 'اشتراك شهري',
-      price: 3800,
-      currency: '€',
-      priceFormatted: '€3,800 / Mo',
+      price: 4100,
+      currency: '$',
+      priceFormatted: '$4,100 / Mo',
       availability: 'in-stock',
       stockCount: 999,
       stockText: 'Instant Cloud Tenant Setup',
@@ -327,8 +327,8 @@
       ],
       description: 'SaaS logistics visibility platform providing end-to-end tracking for industrial shipments across Central Asia and Eastern Europe.',
       volumePricing: [
-        { qty: 'Monthly Rolling', price: '€3,800 / mo' },
-        { qty: 'Annual Commitment', price: '€3,200 / mo (Save 15%)' }
+        { qty: 'Monthly Rolling', price: '$4,100 / mo' },
+        { qty: 'Annual Commitment', price: '$3,480 / mo (Save 15%)' }
       ]
     },
     {
@@ -341,9 +341,9 @@
       sector: 'Geomatics & GIS, Industrial Metrology, Process Automation',
       billingModel: 'Annual Contract',
       billingArabic: 'عقد سنوي',
-      price: 9800,
-      currency: '€',
-      priceFormatted: '€9,800 / Yr',
+      price: 10600,
+      currency: '$',
+      priceFormatted: '$10,600 / Yr',
       availability: 'in-stock',
       stockCount: 999,
       stockText: 'Annual Service Agreement',
@@ -357,8 +357,8 @@
       ],
       description: 'Routine preventive servicing and laser interferometer recalibration executed by certified field service technicians to preserve instrument accuracy.',
       volumePricing: [
-        { qty: '1 Facility', price: '€9,800 / yr' },
-        { qty: 'Up to 3 Facilities', price: '€17,500 / yr' }
+        { qty: '1 Facility', price: '$10,600 / yr' },
+        { qty: 'Up to 3 Facilities', price: '$18,900 / yr' }
       ]
     }
   ];
@@ -374,8 +374,8 @@
       customer: 'Tashkent Precision Controls',
       customerId: 'CUS-1005',
       package: 'Industrial PLC Integration + Optical Package',
-      value: 42000,
-      valueFormatted: '€42,000',
+      value: 26350,
+      valueFormatted: '$26,350',
       status: 'shipped',
       statusLabel: 'Shipped',
       invoice: 'INV-2026-005',
@@ -386,9 +386,9 @@
       responsible: 'EMP-1017 (Dana Yermak, Integration Eng.)',
       dispatchBy: 'EMP-1014 (Mikhail Antonov, Warehouse Sup.)',
       items: [
-        { sku: 'PROD-1004', name: 'Industrial PLC Integration Unit', qty: 1, price: '€34,500' },
-        { sku: 'PROD-1001', name: 'Industrial Optical Sensor Package', qty: 1, price: '€4,850' },
-        { sku: 'PROD-1007', name: 'Industrial Lifecycle Support (Setup)', qty: 1, price: '€2,650' }
+        { sku: 'PROD-1004', name: 'Industrial PLC Integration Unit', qty: 1, price: '$18,500' },
+        { sku: 'PROD-1001', name: 'Industrial Optical Sensor Package', qty: 1, price: '$5,200' },
+        { sku: 'PROD-1007', name: 'Industrial Lifecycle Support (Setup)', qty: 1, price: '$2,650' }
       ],
       history: [
         { step: 'Submitted', time: '2026-09-02 08:30 UTC', desc: 'Electronic Purchase Order received via B2B Portal. Verified with CRM Lead EMP-1008.' },
@@ -404,8 +404,8 @@
       customer: 'Aral Geomatics Group',
       customerId: 'CUS-1001',
       package: 'Geodetic Kits & Remote Gateways (Phase 1)',
-      value: 46250,
-      valueFormatted: '€46,250',
+      value: 16050,
+      valueFormatted: '$16,050',
       status: 'paid',
       statusLabel: 'Fulfillment',
       invoice: 'INV-2026-001',
@@ -416,9 +416,9 @@
       responsible: 'EMP-1019 (Farida Iskakova, Project Mgr.)',
       dispatchBy: 'EMP-1014 (Mikhail Antonov, Warehouse Sup.)',
       items: [
-        { sku: 'PROD-1002', name: 'Precision Geodetic Measurement Kit', qty: 4, price: '€35,600' },
-        { sku: 'PROD-1005', name: 'Remote Monitoring Gateway', qty: 4, price: '€8,600' },
-        { sku: 'PROD-1010', name: 'Preventive Instrument Maintenance', qty: 1, price: '€2,050' }
+        { sku: 'PROD-1002', name: 'Precision Geodetic Measurement Kit', qty: 4, price: '$9,600' },
+        { sku: 'PROD-1005', name: 'Remote Monitoring Gateway', qty: 4, price: '$4,400' },
+        { sku: 'PROD-1010', name: 'Preventive Instrument Maintenance', qty: 1, price: '$2,050' }
       ],
       history: [
         { step: 'Submitted', time: '2026-09-01 09:10 UTC', desc: 'Statement of Work PRJ-2026-001 validated in File Center.' },
@@ -434,8 +434,8 @@
       customer: 'BaltNord Process Systems',
       customerId: 'CUS-1002',
       package: 'Automated Calibration Station & Automation Bridge',
-      value: 80000,
-      valueFormatted: '€80,000',
+      value: 19600,
+      valueFormatted: '$19,600',
       status: 'pending',
       statusLabel: 'Procurement',
       invoice: 'INV-2026-002',
@@ -446,9 +446,9 @@
       responsible: 'EMP-1019 (Farida Iskakova, PM)',
       dispatchBy: 'EMP-1011 (Arman Tulegenov, Ops Director)',
       items: [
-        { sku: 'PROD-1003', name: 'Automated Calibration Station', qty: 2, price: '€56,000' },
-        { sku: 'PROD-1008', name: 'Automation Software Integration', qty: 1, price: '€18,500' },
-        { sku: 'PROD-1007', name: 'Industrial Lifecycle Support (Year 1)', qty: 1, price: '€5,500' }
+        { sku: 'PROD-1003', name: 'Automated Calibration Station', qty: 2, price: '$11,800' },
+        { sku: 'PROD-1008', name: 'Automation Software Integration', qty: 1, price: '$5,500' },
+        { sku: 'PROD-1007', name: 'Industrial Lifecycle Support (Year 1)', qty: 1, price: '$2,300' }
       ],
       history: [
         { step: 'Submitted', time: '2026-09-05 15:30 UTC', desc: 'Commercial agreement signed by Kristaps Ozols. Invoice INV-2026-002 issued (Pending).' },
@@ -464,8 +464,8 @@
       customer: 'Steppe Mining Technologies',
       customerId: 'CUS-1003',
       package: 'Geodetic Survey Array & Mining Gateways (Bulk)',
-      value: 137500,
-      valueFormatted: '€137,500',
+      value: 18750,
+      valueFormatted: '$18,750',
       status: 'paid',
       statusLabel: 'Fulfillment',
       invoice: 'INV-2026-003',
@@ -476,9 +476,9 @@
       responsible: 'EMP-1016 (Erik Hansen, Senior Automation Eng.)',
       dispatchBy: 'EMP-1012 (Rustam Bekov, Logistics Mgr.)',
       items: [
-        { sku: 'PROD-1002', name: 'Precision Geodetic Measurement Kit', qty: 10, price: '€81,500' },
-        { sku: 'PROD-1005', name: 'Remote Monitoring Gateway', qty: 15, price: '€28,350' },
-        { sku: 'PROD-1009', name: 'Enterprise Logistics Management (Annual)', qty: 1, price: '€27,650' }
+        { sku: 'PROD-1002', name: 'Precision Geodetic Measurement Kit', qty: 10, price: '$8,800' },
+        { sku: 'PROD-1005', name: 'Remote Monitoring Gateway', qty: 15, price: '$6,150' },
+        { sku: 'PROD-1009', name: 'Enterprise Logistics Management (Annual)', qty: 1, price: '$3,800' }
       ],
       history: [
         { step: 'Submitted', time: '2026-08-25 10:00 UTC', desc: 'Mining pit survey package contract executed.' },
@@ -494,8 +494,8 @@
       customer: 'RheinWerk Instrumentation',
       customerId: 'CUS-1004',
       package: 'Optical Inspection System + Preventive Maintenance',
-      value: 55000,
-      valueFormatted: '€55,000',
+      value: 19400,
+      valueFormatted: '$19,400',
       status: 'pending',
       statusLabel: 'Shipped',
       invoice: 'INV-2026-004',
@@ -506,9 +506,9 @@
       responsible: 'EMP-1019 (Farida Iskakova, PM)',
       dispatchBy: 'EMP-1012 (Rustam Bekov, Logistics Mgr.)',
       items: [
-        { sku: 'PROD-1006', name: 'Optical Inspection System (Base Unit)', qty: 1, price: '€42,000' },
-        { sku: 'PROD-1010', name: 'Preventive Instrument Maintenance Contract', qty: 1, price: '€9,800' },
-        { sku: 'PROD-1001', name: 'Spare Optical Sensor Matrix', qty: 1, price: '€3,200' }
+        { sku: 'PROD-1006', name: 'Optical Inspection System (Base Unit)', qty: 1, price: '$12,800' },
+        { sku: 'PROD-1010', name: 'Preventive Instrument Maintenance Contract', qty: 1, price: '$3,400' },
+        { sku: 'PROD-1001', name: 'Spare Optical Sensor Matrix', qty: 1, price: '$3,200' }
       ],
       history: [
         { step: 'Submitted', time: '2026-08-30 11:30 UTC', desc: 'Precision metrology upgrade order logged.' },
@@ -524,8 +524,8 @@
       customer: 'Caspian Industrial Robotics',
       customerId: 'CUS-1007',
       package: 'Robotic Workcell PLC & Automation Integration',
-      value: 105000,
-      valueFormatted: '€105,000',
+      value: 19500,
+      valueFormatted: '$19,500',
       status: 'paid',
       statusLabel: 'Delivered',
       invoice: 'INV-2026-007',
@@ -536,9 +536,9 @@
       responsible: 'EMP-1019 (Farida Iskakova, PM)',
       dispatchBy: 'EMP-1014 (Mikhail Antonov)',
       items: [
-        { sku: 'PROD-1004', name: 'Industrial PLC Integration Unit (Dual)', qty: 2, price: '€62,000' },
-        { sku: 'PROD-1008', name: 'Automation Software Integration', qty: 1, price: '€28,500' },
-        { sku: 'PROD-1007', name: 'Industrial Lifecycle Support (Year 1)', qty: 1, price: '€14,500' }
+        { sku: 'PROD-1004', name: 'Industrial PLC Integration Unit (Dual)', qty: 2, price: '$8,500' },
+        { sku: 'PROD-1008', name: 'Automation Software Integration', qty: 1, price: '$7,200' },
+        { sku: 'PROD-1007', name: 'Industrial Lifecycle Support (Year 1)', qty: 1, price: '$3,800' }
       ],
       history: [
         { step: 'Submitted', time: '2026-08-10 09:00 UTC', desc: 'Robotics assembly cell tender awarded.' },
@@ -554,8 +554,8 @@
       customer: 'Eurasia Water Automation',
       customerId: 'CUS-1008',
       package: 'Remote Monitoring Gateways (Regional Pumping Network)',
-      value: 68333,
-      valueFormatted: '€68,333',
+      value: 18733,
+      valueFormatted: '$18,733',
       status: 'pending',
       statusLabel: 'Procurement',
       invoice: 'INV-2026-008',
@@ -566,9 +566,9 @@
       responsible: 'EMP-1017 (Dana Yermak, Integration Eng.)',
       dispatchBy: 'EMP-1013 (Ilona Vetra, Procurement Mgr.)',
       items: [
-        { sku: 'PROD-1005', name: 'Remote Monitoring Gateway', qty: 24, price: '€45,360' },
-        { sku: 'PROD-1007', name: 'Industrial Lifecycle Support (Network)', qty: 1, price: '€14,200' },
-        { sku: 'PROD-1008', name: 'SCADA Telemetry Bridge', qty: 1, price: '€8,773' }
+        { sku: 'PROD-1005', name: 'Remote Monitoring Gateway', qty: 24, price: '$9,360' },
+        { sku: 'PROD-1007', name: 'Industrial Lifecycle Support (Network)', qty: 1, price: '$5,400' },
+        { sku: 'PROD-1008', name: 'SCADA Telemetry Bridge', qty: 1, price: '$3,973' }
       ],
       history: [
         { step: 'Submitted', time: '2026-09-07 14:15 UTC', desc: 'Pumping network telemetry RFP converted to active project.' },
@@ -599,12 +599,12 @@
     galleryActiveIndex: 0,
     selectedTrackingOrderId: 'ORD-2026-005',
     cartItems: [
-      { id: 'PROD-1001', sku: 'VP-OPT-9020', name: 'Industrial Optical Sensor Package', qty: 2, price: 4850, model: 'Per Unit' },
-      { id: 'PROD-1005', sku: 'VP-GTW-320', name: 'Remote Monitoring Gateway', qty: 4, price: 2400, model: 'Per Unit' }
+      { id: 'PROD-1001', sku: 'VP-OPT-9020', name: 'Industrial Optical Sensor Package', qty: 2, price: 5200, model: 'Per Unit' },
+      { id: 'PROD-1005', sku: 'VP-GTW-320', name: 'Remote Monitoring Gateway', qty: 4, price: 2600, model: 'Per Unit' }
     ],
     quoteItems: [
-      { id: 'PROD-1004', sku: 'VP-PLC-X400', name: 'Industrial PLC Integration Unit', qty: 1, price: 34500, model: 'Per Project' },
-      { id: 'PROD-1008', sku: 'VP-SRV-AUT', name: 'Automation Software Integration', qty: 1, price: 18500, model: 'Per Project' }
+      { id: 'PROD-1004', sku: 'VP-PLC-X400', name: 'Industrial PLC Integration Unit', qty: 1, price: 18500, model: 'Per Project' },
+      { id: 'PROD-1008', sku: 'VP-SRV-AUT', name: 'Automation Software Integration', qty: 1, price: 19200, model: 'Per Project' }
     ]
   };
 
@@ -949,7 +949,7 @@
       });
 
       if (state.priceMax < 50000) {
-        chipsHtml += `<div class="filter-chip">Max: <strong>€${state.priceMax.toLocaleString()}</strong> <span class="chip-remove" onclick="window.shopApp.resetPriceFilter()">×</span></div>`;
+        chipsHtml += `<div class="filter-chip">Max: <strong>$${state.priceMax.toLocaleString()}</strong> <span class="chip-remove" onclick="window.shopApp.resetPriceFilter()">×</span></div>`;
       }
 
       activeFiltersEl.innerHTML = chipsHtml;
@@ -1466,7 +1466,7 @@
               <span style="font-size: 11px; color: var(--text-secondary);">${item.model}</span>
             </div>
             <div style="display: flex; align-items: center; gap: 10px;">
-              <div class="drawer-item-price">€${(item.price * item.qty).toLocaleString()}</div>
+              <div class="drawer-item-price">$${(item.price * item.qty).toLocaleString()}</div>
               <span class="drawer-item-remove" onclick="window.shopApp.removeQuoteItem('${item.id}')">✕</span>
             </div>
           </div>
@@ -1475,7 +1475,7 @@
     }
 
     const total = state.quoteItems.reduce((sum, i) => sum + (i.price * i.qty), 0);
-    if (totalEl) totalEl.innerText = `€${total.toLocaleString()}`;
+    if (totalEl) totalEl.innerText = `$${total.toLocaleString()}`;
 
     overlay.classList.add('open');
     drawer.classList.add('open');
@@ -1505,7 +1505,7 @@
               </div>
             </div>
             <div style="display: flex; align-items: center; gap: 10px;">
-              <div class="drawer-item-price">€${(item.price * item.qty).toLocaleString()}</div>
+              <div class="drawer-item-price">$${(item.price * item.qty).toLocaleString()}</div>
               <span class="drawer-item-remove" onclick="window.shopApp.removeCartItem('${item.id}')">✕</span>
             </div>
           </div>
@@ -1514,8 +1514,8 @@
     }
 
     const subtotal = state.cartItems.reduce((sum, i) => sum + (i.price * i.qty), 0);
-    if (subtotalEl) subtotalEl.innerText = `€${subtotal.toLocaleString()}`;
-    if (totalEl) totalEl.innerText = `€${subtotal.toLocaleString()}`;
+    if (subtotalEl) subtotalEl.innerText = `$${subtotal.toLocaleString()}`;
+    if (totalEl) totalEl.innerText = `$${subtotal.toLocaleString()}`;
 
     overlay.classList.add('open');
     drawer.classList.add('open');
