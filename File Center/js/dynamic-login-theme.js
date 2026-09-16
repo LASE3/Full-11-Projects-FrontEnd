@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ============================================================
  *  VOSTOKPRIBOR ENTERPRISE — DYNAMIC LOGIN THEME ENGINE v2.0
  *  Est. 1968 · Almaty, Kazakhstan
@@ -319,6 +319,12 @@
         width: 100% !important;
         max-width: 440px !important;
         transition: all 0.3s ease !important;
+      }
+      .auth-card.auth-card-wide {
+        max-width: 680px !important;
+      }
+      .auth-card-wide ~ .vp-sim-bar {
+        max-width: 680px !important;
         box-shadow:
           0 20px 40px -15px rgba(0,0,0,0.75),
           0 0 50px -10px var(--auth-accent-glow, rgba(27,58,92,0.4)) !important;
