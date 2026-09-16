@@ -6,7 +6,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>VOSTOKPRIBOR | B2B Industrial E-Commerce Platform (shop.vostokpribor.local)</title>
 
-  <!-- Typography -->
+  <script>
+    (function () {
+      const isAuthenticated = localStorage.getItem('vostok_authenticated');
+
+      if (!isAuthenticated || isAuthenticated !== 'true') {
+        window.location.href = 'login.html';
+      }
+    })();
+  </script>
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
