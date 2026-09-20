@@ -10,14 +10,14 @@
     // 1. Navigation Mapping & Active Tab Detection
     function initNav() {
         const path = window.location.pathname;
-        const currentFile = decodeURIComponent(path.substring(path.lastIndexOf('/') + 1)) || 'index.html';
+        const currentFile = decodeURIComponent(path.substring(path.lastIndexOf('/') + 1)) || 'index.php';
 
         const navLinks = document.querySelectorAll('.vk-nav-item');
         navLinks.forEach(link => {
             const href = link.getAttribute('href');
             if (href) {
                 const linkFile = href.split('#')[0];
-                if (linkFile === currentFile || (currentFile === '' && linkFile === 'index.html')) {
+                if (linkFile === currentFile || (currentFile === '' && linkFile === 'index.php')) {
                     link.classList.add('active');
                 } else {
                     link.classList.remove('active');
@@ -103,16 +103,25 @@
 
     // 5. Global Command Palette / Search (Ctrl + K)
     const SEARCH_ITEMS = [
-        { name: 'GET /v1/sensors/optical/telemetry', cat: 'API Endpoint', href: 'index.html#endpoint-optical' },
-        { name: 'GET /v1/devices/geodetic/measurements', cat: 'API Endpoint', href: 'index.html#endpoint-geodetic' },
-        { name: 'POST /v1/scada/ingest/frames', cat: 'API Endpoint', href: 'index.html#endpoint-scada' },
-        { name: 'POST /v1/b2b/orders/create', cat: 'API Endpoint', href: 'index.html#endpoint-orders' },
-        { name: 'DOC-2026-010 API Integration Guide', cat: 'Documentation', href: 'guides.html' },
-        { name: 'ERP Integration Standard (SAP / 1C)', cat: 'Guide', href: 'guides.html#erp' },
-        { name: 'API Key Management & Vault', cat: 'Credentials', href: 'credentials.html' },
-        { name: 'Interactive Request Simulator', cat: 'Sandbox', href: 'sandbox.html' },
-        { name: 'Rate Limits & Quota Dashboards', cat: 'Metrics', href: 'metrics.html' },
-        { name: 'Enterprise Partner Onboarding', cat: 'Registration', href: 'partner-registration.html' }
+        { name: 'GET /v1/sensors/optical/telemetry', cat: 'API Endpoint', href: 'index.php#endpoint-optical' },
+        { name: 'GET /v1/devices/geodetic/measurements', cat: 'API Endpoint', href: 'index.php#endpoint-geodetic' },
+        { name: 'POST /v1/scada/ingest/frames', cat: 'API Endpoint', href: 'index.php#endpoint-scada' },
+        { name: 'POST /v1/b2b/orders/create', cat: 'API Endpoint', href: 'index.php#endpoint-orders' },
+        { name: 'DOC-2026-010 API Integration Guide', cat: 'Documentation', href: 'guides.php' },
+        { name: 'ERP Integration Standard (SAP / 1C)', cat: 'Guide', href: 'guides.php#erp' },
+        { name: 'API Key Management & Vault', cat: 'Credentials', href: 'credentials.php' },
+        { name: 'Interactive Request Simulator', cat: 'Sandbox', href: 'sandbox.php' },
+        { name: 'Enterprise Partner Onboarding', cat: 'Registration', href: 'partner-registration.php' },
+        { name: 'Corporate Web Platform (SYS-01)', cat: 'Ecosystem', href: '../VOSTOKPRIBOR Corporate Web Platform/index.php' },
+        { name: 'B2B Online Shop (SYS-02)', cat: 'Ecosystem', href: '../Online Shop B2B/index.php' },
+        { name: 'Customer Portal (SYS-03)', cat: 'Ecosystem', href: '../Customer Portal/Dashboard.php' },
+        { name: 'Employee Intranet (SYS-04)', cat: 'Ecosystem', href: '../Employee Intranet/index.php' },
+        { name: 'CRM Platform (SYS-05)', cat: 'Ecosystem', href: '../CRM/index.php' },
+        { name: 'HR System (SYS-06)', cat: 'Ecosystem', href: '../HR System/index.php' },
+        { name: 'Finance & Billing (SYS-07)', cat: 'Ecosystem', href: '../Finance & Billing/index.php' },
+        { name: 'IT Helpdesk & Service (SYS-08)', cat: 'Ecosystem', href: '../IT Helpdesk/index.php' },
+        { name: 'File Center / Document Hub (SYS-09)', cat: 'Ecosystem', href: '../File Center/index.php' },
+        { name: 'Admin & Governance Portal (SYS-11)', cat: 'Ecosystem', href: '../Admin & Governance Portal/index.php' }
     ];
 
     function initSearch() {

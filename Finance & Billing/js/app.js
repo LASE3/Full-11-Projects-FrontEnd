@@ -380,9 +380,9 @@
 
       sidebarLinks.forEach(link => {
         const href = (link.getAttribute('href') || '').toLowerCase();
-        if (href && (currentPath.endsWith(href) || (currentPath.endsWith('/') && href === 'dashboard.html') || (currentPath.endsWith('index.html') && href === 'dashboard.html'))) {
+        if (href && (currentPath.endsWith(href) || (currentPath.endsWith('/') && href === 'dashboard.php') || (currentPath.endsWith('index.php') && href === 'dashboard.php'))) {
           link.classList.add('active');
-        } else if (href && currentPath.includes(href.replace('.html', ''))) {
+        } else if (href && currentPath.includes(href.replace('.php', ''))) {
           link.classList.add('active');
         }
       });
@@ -395,7 +395,7 @@
             if (val) {
               finApp.showToast('Finance Ledger Query', `Locating transactions and invoices for "${val}"...`);
               setTimeout(() => {
-                window.location.href = 'Invoices.html';
+                window.location.href = 'Invoices.php';
               }, 600);
             }
           }

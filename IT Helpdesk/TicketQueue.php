@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VOSTOKPRIBOR IT Helpdesk · Incident &amp; Ticket Queue</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <div class="app-container">
+    <!-- ========================================================================
+         TOP NAVIGATION BAR
+         ======================================================================== -->
+    <header class="top-nav">
+      <div class="top-nav__accent-stripe"></div>
+
+      <div class="top-nav__content">
+        <!-- Brand & System Identifier -->
+        <div class="brand-section">
+          <a href="Dashboard.php" class="brand-logo-container">
+            <img alt="VOSTOKPRIBOR Official Mark" class="brand-logo-img" src="https://lh3.googleusercontent.com/aida/AEtjO1XMGDZ9meLzj0XkVJ6C4Xv2AoEzKtMyFqF7KQ8eMADmbywzsRZ7VF4Em6pQ7fZ8QRJExCZedCKEUUo1fN1LpEmGsQva25blyUsGhOPvX2vv2cHGkppzOp9iT33Xy2n4Nkr5e_YY_0J78vA8Q7vKUpViCouPJo13HFVvW5olf7QEFzU3EX-WCqc0SYyPXZb7E11PafOMC_KprpG6Tre6bN_DyZS-CI-J5qiCgBtikqVNYGueATNgWbi73Q" />
+            <div class="brand-divider"></div>
+            <div class="brand-title-group">
+              <div class="brand-title-row">
+                <span class="brand-name">VOSTOKPRIBOR</span>
+                <span class="system-tag">IT · SYS 08</span>
+              </div>
+              <div class="brand-subline">
+                <span class="status-dot-pulse"></span>
+                <span>helpdesk.vostokpribor.local</span>
+                <span style="opacity: 0.5;">|</span>
+                <span>SUPPORT OPERATIONS</span>
+              </div>
+            </div>
+          </a>
+        </div>
+
+        <!-- Global Omni Search -->
+        <div class="top-search-bar">
+          <div class="search-input-wrapper">
+            <span class="search-icon">🔍</span>
+            <input type="text" class="search-input" id="global-omni-search" placeholder="Search ticket ID, requester, SCADA node, knowledge base..." />
+            <span class="search-kbd">Ctrl+K</span>
+          </div>
+        </div>
+
+        <!-- Right System Metrics & Profile -->
+        <div class="top-nav__actions">
+          <div class="pipeline-sync-badge" style="display: flex; align-items: center; gap: 0.35rem; font-family: var(--hd-font-mono); font-size: 10px; color: var(--hd-text-inverse-muted); background: rgba(255,255,255,0.06); padding: 3px 8px; border-radius: var(--hd-radius-sm); border: 1px solid rgba(255,255,255,0.08);">
+            <span style="color: #2ECC71;">●</span>
+            <span>SLA: <strong>98.4% Compliant</strong></span>
+          </div>
+
+          <button class="icon-button" title="Incident Telemetry Notifications" onclick="window.hdApp.showToast('Critical Alert', 'SCADA Gateway Node #3 packet loss detected in Lipetsk Bay.', 'critical')">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+            <span class="badge-dot"></span>
+          </button>
+
+          <div class="top-user-profile" onclick="window.hdApp.showToast('Active Tech Session', 'Alexey Ivanov · Tier 3 IT Operations Engineer')">
+            <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDoVYMImYMOrFG-GImEjxCUij3YIwCjbxiUVg9-84NgNQUnx44rwhCbh4EVKLngwn6R5_hzNhRQkfTglEUz1jtP83GRGR8WbDdiIQblwg1fLV0mqc04y19GGKO27NGBpanqADz4vwO3ANY9KcZiOXBusZHAE_PU_FuuwKqChSLXXJsGo289bHOL3MFrKWoXXMoxnqoUIglg-NYsM99jg8cA3e1CeWhqlY0x7isLHdQfGbcFE_XiNNJg" alt="Alexey Ivanov" class="user-avatar-top" />
+            <div class="user-details-top">
+              <span class="user-name-top">Alexey Ivanov</span>
+              <span class="user-role-top">Lead IT Tech · Tier 3</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="main-layout">
+      <!-- ========================================================================
+           LEFT SIDEBAR NAVIGATION (Ticket Queue Active)
+           ======================================================================== -->
+      <aside class="sidebar">
+        <div>
+          <div class="sidebar-section-title">IT Support Operations</div>
+          <nav class="sidebar-nav">
+            <!-- Screen 1: Dashboard -->
+            <a href="Dashboard.php" class="sidebar-nav-item">
+              <div class="sidebar-item-left">
+                <span class="sidebar-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                </span>
+                <span>Dashboard</span>
+              </div>
+            </a>
+
+            <!-- Screen 2: Ticket Queue (Active) -->
+            <a href="TicketQueue.php" class="sidebar-nav-item active">
+              <div class="sidebar-item-left">
+                <span class="sidebar-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                </span>
+                <span>Ticket Queue</span>
+              </div>
+              <span class="sidebar-badge badge-orange">34</span>
+            </a>
+
+            <!-- My Tickets -->
+            <a href="MyTickets.php" class="sidebar-nav-item">
+              <div class="sidebar-item-left">
+                <span class="sidebar-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                </span>
+                <span>My Tickets</span>
+              </div>
+              <span class="sidebar-badge badge-red">8</span>
+            </a>
+
+            <!-- Knowledge Base -->
+            <a href="KnowledgeBase.php" class="sidebar-nav-item">
+              <div class="sidebar-item-left">
+                <span class="sidebar-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+                </span>
+                <span>Knowledge Base</span>
+              </div>
+              <span class="sidebar-badge">142</span>
+            </a>
+
+            <!-- Asset Management -->
+            <a href="AssetManagement.php" class="sidebar-nav-item">
+              <div class="sidebar-item-left">
+                <span class="sidebar-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"/><rect x="2" y="14" width="20" height="8" rx="2" ry="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg>
+                </span>
+                <span>Asset Management</span>
+              </div>
+              <span class="sidebar-badge">1,820</span>
+            </a>
+
+            <!-- SLA Reports -->
+            <a href="SLAReports.php" class="sidebar-nav-item">
+              <div class="sidebar-item-left">
+                <span class="sidebar-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                </span>
+                <span>SLA Reports</span>
+              </div>
+              <span class="sidebar-badge badge-green">98.4%</span>
+            </a>
+          </nav>
+        </div>
+
+        
+                      <div class="sidebar-section-title" style="margin-top: 1rem;">Unified Ecosystem</div>
+          <nav class="sidebar-nav" style="margin-bottom: 0.5rem;">
+            <a href="../VOSTOKPRIBOR Corporate Web Platform/index.php" class="sidebar-nav-item">
+              <div class="sidebar-item-left">
+                <span class="sidebar-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                </span>
+                <span>Corporate Platform</span>
+              </div>
+              <span class="sidebar-badge" style="font-size: 10px;">SYS 01</span>
+            </a>
+            <a href="../Employee Intranet/index.php" class="sidebar-nav-item">
+              <div class="sidebar-item-left">
+                <span class="sidebar-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                </span>
+                <span>Employee Intranet</span>
+              </div>
+              <span class="sidebar-badge" style="font-size: 10px;">SYS 04</span>
+            </a>
+          </nav>
+            <!-- Log Out -->
+            <a href="login.php" class="sidebar-nav-item sidebar-nav-item--logout" id="btn-logout" onclick="(function(){sessionStorage.clear();localStorage.clear();})()">
+              <div class="sidebar-item-left">
+                <span class="sidebar-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                    <polyline points="16 17 21 12 16 7"/>
+                    <line x1="21" y1="12" x2="9" y2="12"/>
+                  </svg>
+                </span>
+                <span>Log Out</span>
+              </div>
+            </a>
+        <div class="sidebar-footer">
+          <div class="security-widget-card">
+            <div class="security-widget-header">
+              <span>Incident Response Gateway</span>
+              <span class="security-badge-status">● LIVE</span>
+            </div>
+            <div style="font-size: 11px; color: var(--hd-text-inverse-muted); margin-top: 2px;">
+              Active Escalations: <strong>3 P1 Incidents</strong>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- ========================================================================
+           MAIN CONTENT AREA: SCREEN 2 TICKET QUEUE TABLE
+           ======================================================================== -->
+      <main class="content-wrapper">
+        <div class="portal-container">
+          <!-- Page Header -->
+          <div class="page-header">
+            <div class="page-header-info">
+              <div class="breadcrumb-trail">
+                <span>IT Helpdesk</span>
+                <span class="breadcrumb-separator">/</span>
+                <span>Incident Queue</span>
+                <span class="breadcrumb-separator">/</span>
+                <span class="breadcrumb-current">Operational Triage Matrix</span>
+              </div>
+              <h1 class="page-title">Enterprise Support &amp; Incident Triage Queue</h1>
+              <p class="page-subtitle">Real-time ticketing queue with multi-field classification filters, heat-scale priorities, and bulk dispatch controls</p>
+            </div>
+            <div class="page-header-actions">
+              <button class="btn btn-outline" onclick="window.hdApp.showToast('Queue Sync', 'Ticket queue refreshed from central message broker (0 new incidents).')">
+                <span>🔄 Sync Queue</span>
+              </button>
+              <button class="btn btn-primary-amber" onclick="window.hdApp.bulkAssign()">
+                <span>⚡ Bulk Assign</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Queue Quick Stats Bar -->
+          <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 1.25rem;">
+            <div class="hd-card" style="padding: 0.85rem 1.1rem; display: flex; align-items: center; justify-content: space-between; border-left: 3.5px solid var(--hd-priority-critical);">
+              <div>
+                <div style="font-size: 11px; font-weight: 600; color: var(--hd-text-muted); text-transform: uppercase;">Critical P1</div>
+                <div style="font-size: 20px; font-weight: 700; color: var(--hd-priority-critical); font-family: var(--hd-font-mono);">3 Open</div>
+              </div>
+              <span class="priority-badge priority-critical">SLA &lt; 2h</span>
+            </div>
+            <div class="hd-card" style="padding: 0.85rem 1.1rem; display: flex; align-items: center; justify-content: space-between; border-left: 3.5px solid var(--hd-orange);">
+              <div>
+                <div style="font-size: 11px; font-weight: 600; color: var(--hd-text-muted); text-transform: uppercase;">High P2</div>
+                <div style="font-size: 20px; font-weight: 700; color: var(--hd-orange); font-family: var(--hd-font-mono);">8 Open</div>
+              </div>
+              <span class="priority-badge priority-high">SLA &lt; 4h</span>
+            </div>
+            <div class="hd-card" style="padding: 0.85rem 1.1rem; display: flex; align-items: center; justify-content: space-between; border-left: 3.5px solid var(--hd-amber);">
+              <div>
+                <div style="font-size: 11px; font-weight: 600; color: var(--hd-text-muted); text-transform: uppercase;">Medium P3</div>
+                <div style="font-size: 20px; font-weight: 700; color: #B36B00; font-family: var(--hd-font-mono);">15 Open</div>
+              </div>
+              <span class="priority-badge priority-medium">SLA &lt; 8h</span>
+            </div>
+            <div class="hd-card" style="padding: 0.85rem 1.1rem; display: flex; align-items: center; justify-content: space-between; border-left: 3.5px solid var(--hd-priority-low);">
+              <div>
+                <div style="font-size: 11px; font-weight: 600; color: var(--hd-text-muted); text-transform: uppercase;">Low P4</div>
+                <div style="font-size: 20px; font-weight: 700; color: var(--hd-text-secondary); font-family: var(--hd-font-mono);">8 Open</div>
+              </div>
+              <span class="priority-badge priority-low">SLA &lt; 24h</span>
+            </div>
+          </div>
+
+          <!-- Main Table Card with Filter Bar -->
+          <div class="hd-card" style="padding: 0; overflow: hidden;">
+            <!-- Filter Bar -->
+            <div style="padding: 1.1rem 1.25rem; background-color: var(--hd-surface); border-bottom: 1px solid var(--hd-surface-border); display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem;">
+              <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem; flex: 1;">
+                <!-- Search Input in Filter Bar -->
+                <div style="position: relative; min-width: 240px; flex: 1; max-width: 320px;">
+                  <span style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); font-size: 12px; color: var(--hd-text-muted);">🔍</span>
+                  <input type="text" id="ticket-search" oninput="window.hdApp.filterTickets()" placeholder="Search ID, requester, keyword..." style="width: 100%; padding: 0.45rem 0.65rem 0.45rem 2rem; border: 1px solid var(--hd-surface-border); border-radius: var(--hd-radius-md); font-size: 12px; background: #FFFFFF; color: var(--hd-text-primary);" />
+                </div>
+
+                <!-- Priority Dropdown -->
+                <div style="display: flex; align-items: center; gap: 0.35rem;">
+                  <label for="filter-priority" style="font-size: 11.5px; font-weight: 600; color: var(--hd-text-secondary);">Priority:</label>
+                  <select id="filter-priority" onchange="window.hdApp.filterTickets()" style="padding: 0.45rem 0.75rem; border: 1px solid var(--hd-surface-border); border-radius: var(--hd-radius-md); font-size: 12px; background: #FFFFFF; color: var(--hd-text-primary); cursor: pointer;">
+                    <option value="all">All Priorities</option>
+                    <option value="Critical">Critical (P1)</option>
+                    <option value="High">High (P2)</option>
+                    <option value="Medium">Medium (P3)</option>
+                    <option value="Low">Low (P4)</option>
+                  </select>
+                </div>
+
+                <!-- System Affected Dropdown -->
+                <div style="display: flex; align-items: center; gap: 0.35rem;">
+                  <label for="filter-system" style="font-size: 11.5px; font-weight: 600; color: var(--hd-text-secondary);">System:</label>
+                  <select id="filter-system" onchange="window.hdApp.filterTickets()" style="padding: 0.45rem 0.75rem; border: 1px solid var(--hd-surface-border); border-radius: var(--hd-radius-md); font-size: 12px; background: #FFFFFF; color: var(--hd-text-primary); cursor: pointer;">
+                    <option value="all">All Systems</option>
+                    <option value="SCADA">SCADA &amp; Gateway Nodes</option>
+                    <option value="Cleanroom">Cleanroom Access Systems</option>
+                    <option value="Calibration">Calibration &amp; FAT Testing</option>
+                    <option value="PKI">PKI &amp; Security Tokens</option>
+                    <option value="ERP">ERP Procurement &amp; Sign-off</option>
+                  </select>
+                </div>
+
+                <!-- Status Dropdown -->
+                <div style="display: flex; align-items: center; gap: 0.35rem;">
+                  <label for="filter-status" style="font-size: 11.5px; font-weight: 600; color: var(--hd-text-secondary);">Status:</label>
+                  <select id="filter-status" onchange="window.hdApp.filterTickets()" style="padding: 0.45rem 0.75rem; border: 1px solid var(--hd-surface-border); border-radius: var(--hd-radius-md); font-size: 12px; background: #FFFFFF; color: var(--hd-text-primary); cursor: pointer;">
+                    <option value="all">All Statuses</option>
+                    <option value="Open">Open</option>
+                    <option value="In Progress">In Progress</option>
+                    <option value="Escalated">Escalated</option>
+                    <option value="Resolved">Resolved</option>
+                  </select>
+                </div>
+
+                <!-- Assigned Tech Dropdown -->
+                <div style="display: flex; align-items: center; gap: 0.35rem;">
+                  <label for="filter-tech" style="font-size: 11.5px; font-weight: 600; color: var(--hd-text-secondary);">Assigned Tech:</label>
+                  <select id="filter-tech" onchange="window.hdApp.filterTickets()" style="padding: 0.45rem 0.75rem; border: 1px solid var(--hd-surface-border); border-radius: var(--hd-radius-md); font-size: 12px; background: #FFFFFF; color: var(--hd-text-primary); cursor: pointer;">
+                    <option value="all">All Technicians</option>
+                    <option value="Alexey Ivanov">Alexey Ivanov (Tier 3)</option>
+                    <option value="Dmitry Popov">Dmitry Popov (Tier 2)</option>
+                    <option value="Sofia Volkova">Sofia Volkova (Tier 1)</option>
+                    <option value="Unassigned">Unassigned</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Bulk Assign Button & Queue Count -->
+              <div style="display: flex; align-items: center; gap: 0.75rem;">
+                <span style="font-size: 11.5px; color: var(--hd-text-muted); font-family: var(--hd-font-mono);">Showing <strong>5 of 34</strong> Active</span>
+                <button class="btn btn-orange btn-sm" onclick="window.hdApp.bulkAssign()" title="Assign pending unassigned tickets to active shift engineers">
+                  <span>⚡ Bulk Assign</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Data Table -->
+            <div style="overflow-x: auto;">
+              <table class="hd-table">
+                <thead>
+                  <tr>
+                    <th style="width: 120px;">Ticket ID</th>
+                    <th style="min-width: 220px;">Requester</th>
+                    <th style="min-width: 260px;">System Affected</th>
+                    <th style="width: 120px;">Priority</th>
+                    <th style="min-width: 200px;">Assigned Tech</th>
+                    <th style="width: 120px;">Status</th>
+                    <th style="width: 110px; text-align: right;">Action</th>
+                  </tr>
+                </thead>
+                <tbody class="ticket-table-body">
+                  <!-- Row 1: TICK-8819 (Critical) -->
+                  <tr class="hd-table-row" data-id="TICK-8819" data-requester="Dr. Elena Rostova" data-system="SCADA" data-priority="Critical" data-status="In Progress" data-tech="Alexey Ivanov" onclick="window.location.href='TicketDetail.php'">
+                    <td>
+                      <span style="font-family: var(--hd-font-mono); font-weight: 700; color: var(--hd-navy); font-size: 12.5px;">TICK-8819</span>
+                      <div style="font-size: 10px; color: var(--hd-text-muted); font-family: var(--hd-font-mono);">08:30 MSK</div>
+                    </td>
+                    <td>
+                      <div style="display: flex; align-items: center; gap: 0.65rem;">
+                        <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDZ9P2QbrRU2xObdFOu9aNA-iyUeUZ6UvBFT0l0KnTu1MKDRX0c84gVy9VkzAjtaXzw0JcEGYWbxd3RDqaIh7AyD6h4njnD-XTgLNnu6wa-UaOplKQCaWIDACINffaFufLMrEaDfvX7J3bqgPCT5b9oY66PI4s0dfAwRgA_V8p0oKzRnCAU0tihwWPq8xzU4FbT1iUoh0cBzt9pq7gPkXJVjA32ZA7kWXQvcLq090IXW-8Ihh_efhmM" alt="Elena Rostova" style="width: 28px; height: 28px; border-radius: 50%; object-fit: cover; border: 1.5px solid var(--hd-orange);" />
+                        <div>
+                          <div style="font-weight: 600; color: var(--hd-navy);">Dr. Elena Rostova</div>
+                          <div style="font-size: 11px; color: var(--hd-text-secondary);">Chief Optical Calibration Architect</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td>
+                      <div style="font-weight: 600; color: var(--hd-text-primary);">SCADA Modbus Gateway #3</div>
+                      <div style="font-size: 11px; color: var(--hd-text-muted);">Lipetsk Hot Blast Furnace #5 Gateway · Telemetry packet drop &gt; 14.8%</div>
+                    </td>
+                    <td>
+                      <span class="priority-badge priority-critical">CRITICAL</span>
+                    </td>
+                    <td>
+                      <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDoVYMImYMOrFG-GImEjxCUij3YIwCjbxiUVg9-84NgNQUnx44rwhCbh4EVKLngwn6R5_hzNhRQkfTglEUz1jtP83GRGR8WbDdiIQblwg1fLV0mqc04y19GGKO27NGBpanqADz4vwO3ANY9KcZiOXBusZHAE_PU_FuuwKqChSLXXJsGo289bHOL3MFrKWoXXMoxnqoUIglg-NYsM99jg8cA3e1CeWhqlY0x7isLHdQfGbcFE_XiNNJg" alt="Alexey Ivanov" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;" />
+                        <div>
+                          <div style="font-weight: 600; color: var(--hd-navy); font-size: 12px;">Alexey Ivanov</div>
+                          <div style="font-size: 10px; color: var(--hd-text-muted); font-family: var(--hd-font-mono);">Tier 3 SCADA Eng</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td>
+                      <span class="status-pill status-in-progress">In Progress</span>
+                    </td>
+                    <td style="text-align: right;">
+                      <a href="TicketDetail.php" class="btn btn-outline btn-sm" onclick="event.stopPropagation();">Triage →</a>
+                    </td>
+                  </tr>
+
+                  <!-- Row 2: TICK-8820 (Critical) -->
+                  <tr class="hd-table-row" data-id="TICK-8820" data-requester="Dr. Mikhail Abramov" data-system="Cleanroom" data-priority="Critical" data-status="In Progress" data-tech="Alexey Ivanov" onclick="window.location.href='TicketDetail.php'">
+                    <td>
+                      <span style="font-family: var(--hd-font-mono); font-weight: 700; color: var(--hd-navy); font-size: 12.5px;">TICK-8820</span>
+                      <div style="font-size: 10px; color: var(--hd-text-muted); font-family: var(--hd-font-mono);">09:12 MSK</div>
+                    </td>
+                    <td>
+                      <div style="display: flex; align-items: center; gap: 0.65rem;">
+                        <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDoVYMImYMOrFG-GImEjxCUij3YIwCjbxiUVg9-84NgNQUnx44rwhCbh4EVKLngwn6R5_hzNhRQkfTglEUz1jtP83GRGR8WbDdiIQblwg1fLV0mqc04y19GGKO27NGBpanqADz4vwO3ANY9KcZiOXBusZHAE_PU_FuuwKqChSLXXJsGo289bHOL3MFrKWoXXMoxnqoUIglg-NYsM99jg8cA3e1CeWhqlY0x7isLHdQfGbcFE_XiNNJg" alt="Mikhail Abramov" style="width: 28px; height: 28px; border-radius: 50%; object-fit: cover; border: 1.5px solid var(--hd-orange);" />
+                        <div>
+                          <div style="font-weight: 600; color: var(--hd-navy);">Dr. Mikhail Abramov</div>
+                          <div style="font-size: 11px; color: var(--hd-text-secondary);">Principal Semiconductor Physicist</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td>
+                      <div style="font-weight: 600; color: var(--hd-text-primary);">Cleanroom Biometric Scanner Bay B</div>
+                      <div style="font-size: 11px; color: var(--hd-text-muted);">Nanofabrication Facility Bay B · RFID airlock interlock rejecting Level 3 credentials</div>
+                    </td>
+                    <td>
+                      <span class="priority-badge priority-critical">CRITICAL</span>
+                    </td>
+                    <td>
+                      <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDoVYMImYMOrFG-GImEjxCUij3YIwCjbxiUVg9-84NgNQUnx44rwhCbh4EVKLngwn6R5_hzNhRQkfTglEUz1jtP83GRGR8WbDdiIQblwg1fLV0mqc04y19GGKO27NGBpanqADz4vwO3ANY9KcZiOXBusZHAE_PU_FuuwKqChSLXXJsGo289bHOL3MFrKWoXXMoxnqoUIglg-NYsM99jg8cA3e1CeWhqlY0x7isLHdQfGbcFE_XiNNJg" alt="Alexey Ivanov" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;" />
+                        <div>
+                          <div style="font-weight: 600; color: var(--hd-navy); font-size: 12px;">Alexey Ivanov</div>
+                          <div style="font-size: 10px; color: var(--hd-text-muted); font-family: var(--hd-font-mono);">Tier 3 SCADA Eng</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td>
+                      <span class="status-pill status-in-progress">In Progress</span>
+                    </td>
+                    <td style="text-align: right;">
+                      <a href="TicketDetail.php" class="btn btn-outline btn-sm" onclick="event.stopPropagation();">Triage →</a>
+                    </td>
+                  </tr>
+
+                  <!-- Row 3: TICK-8821 (High) -->
+                  <tr class="hd-table-row" data-id="TICK-8821" data-requester="Viktor Morozov" data-system="Calibration" data-priority="High" data-status="Open" data-tech="Dmitry Popov" onclick="window.location.href='TicketDetail.php'">
+                    <td>
+                      <span style="font-family: var(--hd-font-mono); font-weight: 700; color: var(--hd-navy); font-size: 12.5px;">TICK-8821</span>
+                      <div style="font-size: 10px; color: var(--hd-text-muted); font-family: var(--hd-font-mono);">10:05 MSK</div>
+                    </td>
+                    <td>
+                      <div style="display: flex; align-items: center; gap: 0.65rem;">
+                        <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDoVYMImYMOrFG-GImEjxCUij3YIwCjbxiUVg9-84NgNQUnx44rwhCbh4EVKLngwn6R5_hzNhRQkfTglEUz1jtP83GRGR8WbDdiIQblwg1fLV0mqc04y19GGKO27NGBpanqADz4vwO3ANY9KcZiOXBusZHAE_PU_FuuwKqChSLXXJsGo289bHOL3MFrKWoXXMoxnqoUIglg-NYsM99jg8cA3e1CeWhqlY0x7isLHdQfGbcFE_XiNNJg" alt="Viktor Morozov" style="width: 28px; height: 28px; border-radius: 50%; object-fit: cover;" />
+                        <div>
+                          <div style="font-weight: 600; color: var(--hd-navy);">Viktor Morozov</div>
+                          <div style="font-size: 11px; color: var(--hd-text-secondary);">Lead SCADA Gateway Specialist</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td>
+                      <div style="font-weight: 600; color: var(--hd-text-primary);">FAT Laser Calibration Server</div>
+                      <div style="font-size: 11px; color: var(--hd-text-muted);">FAT Testing Bay #2 · Floating-point matrix overflow during 1000 Hz profile pass</div>
+                    </td>
+                    <td>
+                      <span class="priority-badge priority-high">HIGH</span>
+                    </td>
+                    <td>
+                      <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBxrM-O7aJYHYCDtkoA3WwbiOe6BxJ0vK7AcnogxwZN9MACsknTlpyGKyy-lWl2Hwn9IEZLPDCvVGrmxN2kvPEfzbJ5E4u5x6-38EP2exwXW8Dmm-7oMTzMG07_rmRLbT0xvZwQMFEwa4qJO5LcWbn58eWx3fSkVjAmSI3UWO8dCTgRg6GBgrY_MTUl-JF-JUf4K5CGPp0o4tvKoxbSqSysGT8r3j8de3w_sfk4F8p9ysiXXfbUkWPV" alt="Dmitry Popov" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;" />
+                        <div>
+                          <div style="font-weight: 600; color: var(--hd-navy); font-size: 12px;">Dmitry Popov</div>
+                          <div style="font-size: 10px; color: var(--hd-text-muted); font-family: var(--hd-font-mono);">Tier 2 Infrastructure</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td>
+                      <span class="status-pill status-open">Open</span>
+                    </td>
+                    <td style="text-align: right;">
+                      <a href="TicketDetail.php" class="btn btn-outline btn-sm" onclick="event.stopPropagation();">Triage →</a>
+                    </td>
+                  </tr>
+
+                  <!-- Row 4: TICK-8822 (Medium) -->
+                  <tr class="hd-table-row" data-id="TICK-8822" data-requester="Anna Belova" data-system="PKI" data-priority="Medium" data-status="In Progress" data-tech="Sofia Volkova" onclick="window.location.href='TicketDetail.php'">
+                    <td>
+                      <span style="font-family: var(--hd-font-mono); font-weight: 700; color: var(--hd-navy); font-size: 12.5px;">TICK-8822</span>
+                      <div style="font-size: 10px; color: var(--hd-text-muted); font-family: var(--hd-font-mono);">Yesterday · 16:40</div>
+                    </td>
+                    <td>
+                      <div style="display: flex; align-items: center; gap: 0.65rem;">
+                        <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDZ9P2QbrRU2xObdFOu9aNA-iyUeUZ6UvBFT0l0KnTu1MKDRX0c84gVy9VkzAjtaXzw0JcEGYWbxd3RDqaIh7AyD6h4njnD-XTgLNnu6wa-UaOplKQCaWIDACINffaFufLMrEaDfvX7J3bqgPCT5b9oY66PI4s0dfAwRgA_V8p0oKzRnCAU0tihwWPq8xzU4FbT1iUoh0cBzt9pq7gPkXJVjA32ZA7kWXQvcLq090IXW-8Ihh_efhmM" alt="Anna Belova" style="width: 28px; height: 28px; border-radius: 50%; object-fit: cover;" />
+                        <div>
+                          <div style="font-weight: 600; color: var(--hd-navy);">Anna Belova</div>
+                          <div style="font-size: 11px; color: var(--hd-text-secondary);">Head of Quality Assurance</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td>
+                      <div style="font-weight: 600; color: var(--hd-text-primary);">ISO 9001 Certificate Signer</div>
+                      <div style="font-size: 11px; color: var(--hd-text-muted);">Cryptographic smartcard PKI token renewal required for electronic FAT signing</div>
+                    </td>
+                    <td>
+                      <span class="priority-badge priority-medium">MEDIUM</span>
+                    </td>
+                    <td>
+                      <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDZ9P2QbrRU2xObdFOu9aNA-iyUeUZ6UvBFT0l0KnTu1MKDRX0c84gVy9VkzAjtaXzw0JcEGYWbxd3RDqaIh7AyD6h4njnD-XTgLNnu6wa-UaOplKQCaWIDACINffaFufLMrEaDfvX7J3bqgPCT5b9oY66PI4s0dfAwRgA_V8p0oKzRnCAU0tihwWPq8xzU4FbT1iUoh0cBzt9pq7gPkXJVjA32ZA7kWXQvcLq090IXW-8Ihh_efhmM" alt="Sofia Volkova" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;" />
+                        <div>
+                          <div style="font-weight: 600; color: var(--hd-navy); font-size: 12px;">Sofia Volkova</div>
+                          <div style="font-size: 10px; color: var(--hd-text-muted); font-family: var(--hd-font-mono);">Tier 1 Support</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td>
+                      <span class="status-pill status-in-progress">In Progress</span>
+                    </td>
+                    <td style="text-align: right;">
+                      <a href="TicketDetail.php" class="btn btn-outline btn-sm" onclick="event.stopPropagation();">Triage →</a>
+                    </td>
+                  </tr>
+
+                  <!-- Row 5: TICK-8823 (Low) -->
+                  <tr class="hd-table-row" data-id="TICK-8823" data-requester="Svetlana Petrova" data-system="ERP" data-priority="Low" data-status="Open" data-tech="Sofia Volkova" onclick="window.location.href='TicketDetail.php'">
+                    <td>
+                      <span style="font-family: var(--hd-font-mono); font-weight: 700; color: var(--hd-navy); font-size: 12.5px;">TICK-8823</span>
+                      <div style="font-size: 10px; color: var(--hd-text-muted); font-family: var(--hd-font-mono);">Yesterday · 14:15</div>
+                    </td>
+                    <td>
+                      <div style="display: flex; align-items: center; gap: 0.65rem;">
+                        <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDZ9P2QbrRU2xObdFOu9aNA-iyUeUZ6UvBFT0l0KnTu1MKDRX0c84gVy9VkzAjtaXzw0JcEGYWbxd3RDqaIh7AyD6h4njnD-XTgLNnu6wa-UaOplKQCaWIDACINffaFufLMrEaDfvX7J3bqgPCT5b9oY66PI4s0dfAwRgA_V8p0oKzRnCAU0tihwWPq8xzU4FbT1iUoh0cBzt9pq7gPkXJVjA32ZA7kWXQvcLq090IXW-8Ihh_efhmM" alt="Svetlana Petrova" style="width: 28px; height: 28px; border-radius: 50%; object-fit: cover;" />
+                        <div>
+                          <div style="font-weight: 600; color: var(--hd-navy);">Svetlana Petrova</div>
+                          <div style="font-size: 11px; color: var(--hd-text-secondary);">Strategic Component Buyer</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td>
+                      <div style="font-weight: 600; color: var(--hd-text-primary);">ERP Procurement Signing Authority</div>
+                      <div style="font-size: 11px; color: var(--hd-text-muted);">Enterprise ERP Module · Temporary delegation setup for scheduled leave window</div>
+                    </td>
+                    <td>
+                      <span class="priority-badge priority-low">LOW</span>
+                    </td>
+                    <td>
+                      <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDZ9P2QbrRU2xObdFOu9aNA-iyUeUZ6UvBFT0l0KnTu1MKDRX0c84gVy9VkzAjtaXzw0JcEGYWbxd3RDqaIh7AyD6h4njnD-XTgLNnu6wa-UaOplKQCaWIDACINffaFufLMrEaDfvX7J3bqgPCT5b9oY66PI4s0dfAwRgA_V8p0oKzRnCAU0tihwWPq8xzU4FbT1iUoh0cBzt9pq7gPkXJVjA32ZA7kWXQvcLq090IXW-8Ihh_efhmM" alt="Sofia Volkova" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;" />
+                        <div>
+                          <div style="font-weight: 600; color: var(--hd-navy); font-size: 12px;">Sofia Volkova</div>
+                          <div style="font-size: 10px; color: var(--hd-text-muted); font-family: var(--hd-font-mono);">Tier 1 Support</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td>
+                      <span class="status-pill status-open">Open</span>
+                    </td>
+                    <td style="text-align: right;">
+                      <a href="TicketDetail.php" class="btn btn-outline btn-sm" onclick="event.stopPropagation();">Triage →</a>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Table Pagination / Footer -->
+            <div style="padding: 0.85rem 1.25rem; background-color: var(--hd-surface-dim); border-top: 1px solid var(--hd-surface-border); display: flex; align-items: center; justify-content: space-between; font-size: 12px; color: var(--hd-text-secondary);">
+              <div style="font-family: var(--hd-font-mono);">
+                Page <strong>1</strong> of <strong>7</strong> · Total <strong>34 Tickets</strong>
+              </div>
+              <div style="display: flex; gap: 0.5rem;">
+                <button class="btn btn-outline btn-sm" style="padding: 0.3rem 0.65rem;" disabled>← Previous</button>
+                <button class="btn btn-outline btn-sm" style="padding: 0.3rem 0.65rem;" onclick="window.hdApp.showToast('Pagination', 'Loaded page 2 of ticket queue.')">Next →</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <div id="toast-container"></div>
+  <script src="js/app.js"></script>
+</body>
+</html>

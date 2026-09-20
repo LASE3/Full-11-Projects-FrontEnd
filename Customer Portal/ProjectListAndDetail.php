@@ -1,0 +1,1188 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>VOSTOKPRIBOR Portal</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap"
+        rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+        rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="css/common.css" />
+    <link rel="stylesheet" href="css/projects.css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script
+        id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { colors: { "primary": "#000e1d", "secondary": "#436084", "primary-container": "#0f2438", "surface-container-highest": "#e0e3e5", "inverse-primary": "#b4c8e3", "secondary-fixed": "#d2e4ff", "on-secondary-container": "#3f5b7f", "surface-bright": "#f8f9fb", "primary-fixed-dim": "#b4c8e3", "on-secondary-fixed-variant": "#2b486b", "on-tertiary-fixed-variant": "#643f00", "surface-container-low": "#f2f4f6", "on-error": "#ffffff", "tertiary-fixed": "#ffddb5", "tertiary-container": "#331e00", "inverse-on-surface": "#eff1f3", "on-tertiary-fixed": "#2a1800", "on-secondary-fixed": "#001c38", "on-background": "#191c1e", "secondary-container": "#b6d4fe", "inverse-surface": "#2d3133", "tertiary": "#150a00", "error-container": "#ffdad6", "on-primary-fixed": "#071d30", "secondary-fixed-dim": "#abc9f2", "error": "#ba1a1a", "primary-fixed": "#d0e4ff", "surface-container": "#eceef0", "on-primary-fixed-variant": "#35485e", "on-error-container": "#93000a", "surface-variant": "#e0e3e5", "on-primary": "#ffffff", "on-tertiary-container": "#bb7d16", "on-secondary": "#ffffff", "background": "#f8f9fb", "surface-container-lowest": "#ffffff", "on-surface-variant": "#43474c", "surface": "#f8f9fb", "surface-tint": "#4d6077", "tertiary-fixed-dim": "#ffb956", "outline": "#74777d", "on-primary-container": "#788ca4", "surface-dim": "#d8dadc", "outline-variant": "#c4c6cd", "surface-container-high": "#e6e8ea", "on-tertiary": "#ffffff", "on-surface": "#191c1e" }, borderRadius: { "DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem" }, spacing: { "unit-md": "0.75rem", "grid-gutter": "1rem", "unit-lg": "1.5rem", "unit-xl": "2rem", "unit-sm": "0.5rem", "unit-2xs": "0.125rem", "grid-margin": "1.5rem", "unit-2xl": "3rem", "unit-base": "1rem", "unit-xs": "0.25rem" }, fontFamily: { "body-md": ["IBM Plex Sans"], "technical-tag": ["JetBrains Mono"], "display-lg": ["IBM Plex Sans"], "headline-lg": ["IBM Plex Sans"], "body-sm": ["IBM Plex Sans"], "body-lg": ["IBM Plex Sans"], "headline-md": ["IBM Plex Sans"], "headline-sm": ["IBM Plex Sans"], "data-mono-md": ["JetBrains Mono"], "data-mono-lg": ["JetBrains Mono"], "label-caps": ["IBM Plex Sans"], "display-lg-mobile": ["IBM Plex Sans"] }, fontSize: { "body-md": ["13px", { "lineHeight": "18px", "letterSpacing": "0em", "fontWeight": "400" }], "technical-tag": ["10px", { "lineHeight": "12px", "letterSpacing": "0.02em", "fontWeight": "500" }], "display-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700" }], "headline-lg": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.015em", "fontWeight": "600" }], "body-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.005em", "fontWeight": "400" }], "body-lg": ["15px", { "lineHeight": "22px", "letterSpacing": "0em", "fontWeight": "400" }], "headline-md": ["20px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600" }], "headline-sm": ["16px", { "lineHeight": "24px", "letterSpacing": "-0.005em", "fontWeight": "600" }], "data-mono-md": ["12px", { "lineHeight": "16px", "letterSpacing": "-0.01em", "fontWeight": "500" }], "data-mono-lg": ["14px", { "lineHeight": "20px", "letterSpacing": "-0.02em", "fontWeight": "600" }], "label-caps": ["11px", { "lineHeight": "14px", "letterSpacing": "0.06em", "fontWeight": "700" }], "display-lg-mobile": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700" }] } } } };</script>
+    <script src="js/portal.js"></script>
+    <script src="js/projects.js"></script>
+</head>
+
+<body class="bg-background font-body-md text-body-md text-on-background">
+    <header
+        class="fixed top-0 left-0 right-0 h-16 bg-primary-container z-50 flex items-center justify-between px-unit-lg border-b border-outline/20">
+        <div class="flex items-center gap-unit-base">
+            <button id="sidebar-toggle-btn" class="p-1.5 -ml-1 mr-1 rounded text-on-primary-container hover:text-on-primary hover:bg-surface-container-high/10 transition-colors flex items-center justify-center cursor-pointer focus:outline-none" title="Toggle Navigation Menu (Ctrl+B)">
+                <span class="material-symbols-outlined text-2xl" id="sidebar-toggle-icon">menu</span>
+            </button>
+            <img alt="VOSTOKPRIBOR Logo" class="h-8 w-auto object-contain cursor-pointer" onclick="location.href='Dashboard.php'"
+                src="https://lh3.googleusercontent.com/aida/AEtjO1XMGDZ9meLzj0XkVJ6C4Xv2AoEzKtMyFqF7KQ8eMADmbywzsRZ7VF4Em6pQ7fZ8QRJExCZedCKEUUo1fN1LpEmGsQva25blyUsGhOPvX2vv2cHGkppzOp9iT33Xy2n4Nkr5e_YY_0J78vA8Q7vKUpViCouPJo13HFVvW5olf7QEFzU3EX-WCqc0SYyPXZb7E11PafOMC_KprpG6Tre6bN_DyZS-CI-J5qiCgBtikqVNYGueATNgWbi73Q">
+            <div class="h-6 w-px bg-outline/30"></div>
+            <div class="flex flex-col">
+                <div class="flex items-center gap-unit-xs"><span
+                        class="font-headline-sm text-headline-sm text-on-primary font-semibold tracking-tight cursor-pointer" onclick="location.href='Dashboard.php'">VOSTOKPRIBOR</span><span
+                        class="px-unit-xs py-0.5 rounded bg-surface-container-high/10 text-tertiary-fixed font-technical-tag text-technical-tag border border-tertiary-fixed/30">PORTAL</span>
+                </div>
+                <div
+                    class="flex items-center gap-unit-xs text-on-primary-container font-technical-tag text-technical-tag">
+                    <span class="">Severstal Metallurgy Plant #4</span><span class="text-outline">|</span><span
+                        class="text-primary-fixed-dim">VP-88204-EU</span>
+                </div>
+            </div>
+        </div>
+        <div class="w-64 md:w-80 lg:w-96 max-w-md mx-2 shrink-1">
+            <div
+                class="header-search-bar flex items-center bg-primary px-unit-md py-1.5 rounded border border-outline/30 text-on-primary-container cursor-pointer transition-colors hover:border-outline/50">
+                <span class="material-symbols-outlined text-sm mr-unit-sm text-on-primary-container">search</span><input
+                    class="header-search-input bg-transparent border-none outline-none font-body-sm text-body-sm text-on-primary placeholder:text-on-primary-container w-full cursor-pointer"
+                    placeholder="Search projects, serial numbers, specs..." type="text"><span
+                    class="font-technical-tag text-technical-tag px-1.5 py-0.5 rounded bg-surface-container-high/10 text-on-primary-container border border-outline/30">Ctrl+K</span>
+            </div>
+        </div>
+        <div class="flex items-center gap-2 sm:gap-4 lg:gap-unit-lg shrink-0">
+            <div
+                class="hidden md:flex items-center gap-unit-xs px-unit-sm py-1 rounded bg-primary border border-outline/20 font-technical-tag text-technical-tag text-on-primary">
+                <span class="w-2 h-2 rounded-full bg-tertiary-fixed animate-pulse"></span><span
+                    class="text-on-primary-container">Telemetry Node:</span><span class="text-tertiary-fixed">Online
+                    99.98%</span>
+            </div>
+            <div id="header-bell-btn" class="relative flex items-center text-on-primary-container hover:text-on-primary cursor-pointer" title="Operational Telemetry Alerts"><span
+                    class="material-symbols-outlined">notifications</span><span id="bell-unread-dot"
+                    class="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-tertiary-fixed ring-2 ring-primary-container"></span>
+            </div><a class="flex items-center text-on-primary-container hover:text-on-primary" href="Documents.php"
+                title="Technical Documentation"><span class="material-symbols-outlined">menu_book</span></a>
+            <div class="h-6 w-px bg-outline/30"></div>
+            <div class="flex items-center gap-unit-sm cursor-pointer" id="header-profile-btn">
+                <div class="flex flex-col text-right"><span
+                        class="font-headline-sm text-headline-sm text-on-primary font-medium leading-none">Alexey R.
+                        Danilov</span><span
+                        class="font-technical-tag text-technical-tag text-on-primary-container mt-0.5">Chief
+                        Instrumentation Eng.</span></div><img alt="Profile"
+                    class="w-8 h-8 rounded-full object-cover ring-1 ring-tertiary-fixed/50"
+                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuBxrM-O7aJYHYCDtkoA3WwbiOe6BxJ0vK7AcnogxwZN9MACsknTlpyGKyy-lWl2Hwn9IEZLPDCvVGrmxN2kvPEfzbJ5E4u5x6-38EP2exwXW8Dmm-7oMTzMG07_rmRLbT0xvZwQMFEwa4qJO5LcWbn58eWx3fSkVjAmSI3UWO8dCTgRg6GBgrY_MTUl-JF-JUf4K5CGPp0o4tvKoxbSqSysGT8r3j8de3w_sfk4F8p9ysiXXfbUkWPV">
+            </div>
+        </div>
+    </header>
+    <aside id="portal-sidebar"
+        class="fixed left-0 top-16 bottom-0 w-64 bg-primary-container z-40 flex flex-col justify-between border-r border-outline/20">
+        <div class="py-unit-md">
+            <div
+                class="px-unit-base mb-unit-sm font-label-caps text-label-caps text-on-primary-container uppercase tracking-wider flex items-center justify-between">
+                <span>Operational Navigation</span>
+                <button id="sidebar-collapse-btn" class="text-on-primary-container hover:text-on-primary p-0.5 rounded hover:bg-surface-container-high/10 transition-colors cursor-pointer" title="Collapse Menu">
+                    <span class="material-symbols-outlined text-base">chevron_left</span>
+                </button>
+            </div>
+            <nav class="flex flex-col gap-0.5"
+                data-active-classes="bg-surface-container-high/10 text-on-primary font-semibold border-l-4 border-on-tertiary-container">
+                <a class="flex items-center gap-unit-sm px-unit-base py-unit-sm text-on-primary-container hover:bg-surface-container-high/5 hover:text-on-primary transition-colors font-headline-sm text-headline-sm font-normal"
+                    data-path="dashboard" href="Dashboard.php"><svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor"
+                        stroke-width="1.75" viewBox="0 0 24 24">
+                        <rect height="7" rx="1" width="7" x="3" y="3"></rect>
+                        <rect height="7" rx="1" width="7" x="14" y="3"></rect>
+                        <rect height="7" rx="1" width="7" x="14" y="14"></rect>
+                        <rect height="7" rx="1" width="7" x="3" y="14"></rect>
+                    </svg><span class="">Dashboard</span></a><a
+                    class="flex items-center gap-unit-sm px-unit-base py-unit-sm text-on-primary-container hover:bg-surface-container-high/5 hover:text-on-primary transition-colors font-headline-sm text-headline-sm font-normal"
+                    data-path="orders" href="Orders.php"><svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor"
+                        stroke-width="1.75" viewBox="0 0 24 24">
+                        <path
+                            d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z">
+                        </path>
+                        <path d="m3.3 7 8.7 5 8.7-5"></path>
+                        <path d="M12 22V12"></path>
+                    </svg><span class="">Orders</span></a><a aria-current="page"
+                    class="flex items-center gap-unit-sm px-unit-base py-unit-sm transition-colors bg-surface-container-high/10 text-on-primary font-semibold border-l-4 border-on-tertiary-container font-headline-sm text-headline-sm"
+                    data-path="projects" href="ProjectListAndDetail.php"><svg class="w-4 h-4 shrink-0 text-tertiary-fixed" fill="none" stroke="currentColor"
+                        stroke-width="1.75" viewBox="0 0 24 24">
+                        <rect height="18" rx="2" width="18" x="3" y="3"></rect>
+                        <path d="M3 9h18"></path>
+                        <path d="M9 21V9"></path>
+                    </svg><span class="">Projects</span></a><a
+                    class="flex items-center gap-unit-sm px-unit-base py-unit-sm text-on-primary-container hover:bg-surface-container-high/5 hover:text-on-primary transition-colors font-headline-sm text-headline-sm font-normal"
+                    data-path="invoices" href="Invoices.php"><svg class="w-4 h-4 shrink-0" fill="none"
+                        stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+                        <path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"></path>
+                        <path d="M8 7h8"></path>
+                        <path d="M8 11h8"></path>
+                        <path d="M8 15h5"></path>
+                    </svg><span class="">Invoices</span></a><a
+                    class="flex items-center gap-unit-sm px-unit-base py-unit-sm text-on-primary-container hover:bg-surface-container-high/5 hover:text-on-primary transition-colors font-headline-sm text-headline-sm font-normal"
+                    data-path="documents" href="Documents.php"><svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor"
+                        stroke-width="1.75" viewBox="0 0 24 24">
+                        <path
+                            d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z">
+                        </path>
+                    </svg><span class="">Documents</span></a><a
+                    class="flex items-center gap-unit-sm px-unit-base py-unit-sm text-on-primary-container hover:bg-surface-container-high/5 hover:text-on-primary transition-colors font-headline-sm text-headline-sm font-normal"
+                    data-path="support" href="SupportTicketView.php"><svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor"
+                        stroke-width="1.75" viewBox="0 0 24 24">
+                        <path d="M3 18v-6a9 9 0 0 1 18 0v6"></path>
+                        <path
+                            d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z">
+                        </path>
+                    </svg><span class="">Support</span></a><a
+                    class="flex items-center gap-unit-sm px-unit-base py-unit-sm text-on-primary-container hover:bg-surface-container-high/5 hover:text-on-primary transition-colors font-headline-sm text-headline-sm font-normal"
+                    data-path="account-settings" href="AccountSettings.php"><svg class="w-4 h-4 shrink-0" fill="none"
+                        stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+                        <path
+                            d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z">
+                        </path>
+                        <circle cx="12" cy="12" r="3"></circle>
+                    </svg><span class="">Account Settings</span></a>
+            </nav>
+        </div>
+                <a class="flex items-center gap-unit-sm px-unit-base py-unit-sm text-error hover:bg-error-container/20 hover:text-on-error-container transition-colors font-headline-sm text-headline-sm font-normal border-t border-outline/20 mt-1" href="login.php" id="btn-logout" onclick="(function(){sessionStorage.clear();localStorage.clear();})()">
+            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                <polyline points="16 17 21 12 16 7"/>
+                <line x1="21" y1="12" x2="9" y2="12"/>
+            </svg>
+            <span>Log Out</span>
+        </a>
+        <div class="portal-manager-card p-3 m-3 rounded-lg bg-primary/95 border border-outline/25 shadow-sm text-xs select-none">
+            <div class="flex items-center justify-between mb-1.5">
+                <span class="font-label-caps text-[10px] text-tertiary-fixed uppercase font-bold tracking-wider">Assigned Manager</span>
+                <span class="px-1.5 py-0.5 rounded bg-surface-container-high/15 text-on-primary-container font-mono text-[10px] border border-outline/20 font-semibold">SLA TIER 1</span>
+            </div>
+            <div class="flex items-center justify-between mb-0.5">
+                <div>
+                    <div class="font-headline-sm text-sm text-on-primary font-semibold leading-tight">Viktor Morozov</div>
+                    <div class="text-[11px] text-on-primary-container/85 leading-snug">Sr. Industrial Systems Eng.</div>
+                </div>
+                <a href="SupportTicketView.php?ticket=TCK-9482" class="p-1 rounded bg-surface-container-high/15 text-tertiary-fixed hover:bg-surface-container-high/25 hover:text-on-primary transition-colors flex items-center justify-center shrink-0" title="Message Viktor Morozov in Support Desk">
+                    <span class="material-symbols-outlined text-base">chat</span>
+                </a>
+            </div>
+            <div class="mt-2 pt-2 border-t border-outline/20 flex flex-col gap-1.5 font-mono text-[11px]">
+                <div class="flex items-center justify-between text-on-primary-container">
+                    <span class="text-[10px] uppercase tracking-wider text-on-primary-container/70">Hotline:</span>
+                    <a href="tel:+78124092211" class="text-on-primary font-medium hover:text-tertiary-fixed transition-colors">+7 812 409-22-11</a>
+                </div>
+                <div class="flex flex-col gap-0.5">
+                    <div class="flex items-center justify-between">
+                        <span class="text-[10px] uppercase tracking-wider text-on-primary-container/70">Direct:</span>
+                        <span class="text-[9px] text-tertiary-fixed/80 font-normal">Encrypted SLA</span>
+                    </div>
+                    <a href="mailto:v.morozov@vostokpribor.ru" class="text-tertiary-fixed text-[11px] truncate block hover:underline hover:text-on-primary transition-colors" title="v.morozov@vostokpribor.ru">v.morozov@vostokpribor.ru</a>
+                </div>
+            </div>
+        </div>
+    </aside>
+    <div id="portal-main-wrapper" class="portal-content-wrapper pl-64">
+        <main class="w-full min-h-screen pt-16 bg-surface px-4 sm:px-6 lg:px-8 py-6">
+            <div class="portal-container flex flex-col gap-6">
+                <!-- Top Operational Breadcrumbs & Facility Scope -->
+                <div class="flex items-center justify-between py-1">
+                    <div
+                        class="flex items-center gap-unit-xs font-technical-tag text-technical-tag text-on-surface-variant">
+                        <span class="hover:text-primary cursor-pointer transition-colors">Enterprise Portal</span>
+                        <span class="text-outline/40">/</span>
+                        <span class="hover:text-primary cursor-pointer transition-colors">Industrial Solutions</span>
+                        <span class="text-outline/40">/</span>
+                        <span class="text-primary font-semibold">Projects &amp; Commissioning</span>
+                    </div>
+                    <div class="flex items-center gap-unit-md font-technical-tag text-technical-tag">
+                        <div
+                            class="flex items-center gap-1.5 px-unit-sm py-0.5 rounded bg-surface-container-high text-on-surface">
+                            <span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+                            <span class="">SUPERVISORY TELEMETRY: <strong class="text-primary">NODE VP-704
+                                    ACTIVE</strong></span>
+                        </div>
+                        <div class="text-on-surface-variant">SYNC: 14:02:18 UTC</div>
+                    </div>
+                </div>
+                <!-- Header & Primary Controls Panel -->
+                <div class="flex flex-col xl:flex-row xl:items-end justify-between gap-unit-lg">
+                    <div>
+                        <div class="flex flex-wrap items-center gap-unit-sm mb-1">
+                            <h1 class="font-headline-lg text-headline-lg text-primary tracking-tight">Enterprise
+                                Automation &amp; Equipment Projects</h1>
+                            <span
+                                class="px-2.5 py-0.5 rounded bg-secondary-fixed text-on-secondary-fixed-variant font-label-caps text-label-caps uppercase">
+                                14 Total Active Engagements
+                            </span>
+                        </div>
+                        <p class="font-body-md text-body-md text-on-surface-variant max-w-3xl">
+                            Real-time telemetry oversight, milestone gating, compliance dossiers, and capitalized
+                            project ledger for Severstal Metallurgy Plant #4 operational expansions.
+                        </p>
+                    </div>
+                    <button
+                        class="inline-flex items-center justify-center gap-unit-sm px-unit-base py-2 rounded bg-tertiary-fixed text-primary font-headline-sm text-headline-sm font-semibold hover:bg-tertiary-fixed-dim transition-colors shadow-sm shrink-0"
+                        onclick="showRFQModal()"
+                        type="button">
+                        <span class="material-symbols-outlined text-lg">post_add</span>
+                        <span class="">Request Project Scope Change / New RFQ</span>
+                    </button>
+                </div>
+                <!-- Industrial Filter Toolbar -->
+                <div
+                    class="bg-surface-container-lowest rounded-xl p-unit-base shadow-sm flex flex-col lg:flex-row items-center justify-between gap-unit-md">
+                    <div class="flex flex-1 w-full lg:w-auto items-center gap-unit-sm">
+                        <div class="relative flex-1 max-w-md">
+                            <span
+                                class="material-symbols-outlined absolute left-3 top-2.5 text-outline text-lg">filter_alt</span>
+                            <input
+                                class="w-full bg-surface-container-low text-primary pl-9 pr-unit-base py-2 rounded text-body-sm font-body-sm placeholder:text-outline focus:bg-surface-container-lowest focus:outline-none"
+                                id="projectFilterInput" onkeyup="filterProjects()"
+                                placeholder="Filter by Project Code, Equipment Scope, or Director..." type="text">
+                        </div>
+                        <div class="flex items-center gap-unit-xs">
+                            <div class="relative">
+                                <select
+                                    class="appearance-none bg-surface-container-low text-on-surface font-technical-tag text-technical-tag pl-3 pr-8 py-2 rounded focus:outline-none cursor-pointer"
+                                    id="projectStageSelect" onchange="filterProjects()">
+                                    <option value="ALL">STAGE: ALL PHASES</option>
+                                    <option value="DESIGN">DESIGN</option>
+                                    <option value="PROCUREMENT">PROCUREMENT</option>
+                                    <option value="INTEGRATION">INTEGRATION</option>
+                                    <option value="EXECUTION">EXECUTION</option>
+                                    <option value="MAINTENANCE">MAINTENANCE</option>
+                                </select>
+                                <span
+                                    class="material-symbols-outlined absolute right-2 top-2.5 text-xs text-outline pointer-events-none">expand_more</span>
+                            </div>
+                            <div class="relative">
+                                <select
+                                    class="appearance-none bg-surface-container-low text-on-surface font-technical-tag text-technical-tag pl-3 pr-8 py-2 rounded focus:outline-none cursor-pointer">
+                                    <option>CALENDAR: FY 2024</option>
+                                    <option>CALENDAR: FY 2023</option>
+                                    <option>ALL TIMELINES</option>
+                                </select>
+                                <span
+                                    class="material-symbols-outlined absolute right-2 top-2.5 text-xs text-outline pointer-events-none">expand_more</span>
+                            </div>
+                            <div class="relative">
+                                <select
+                                    class="appearance-none bg-surface-container-low text-on-surface font-technical-tag text-technical-tag pl-3 pr-8 py-2 rounded focus:outline-none cursor-pointer">
+                                    <option selected="">FACILITY: CHEREPOVETS PLANT #4</option>
+                                    <option>FACILITY: CHEREPOVETS SINTER PLANT</option>
+                                    <option>FACILITY: KOLPINO SHEET MILL</option>
+                                </select>
+                                <span
+                                    class="material-symbols-outlined absolute right-2 top-2.5 text-xs text-outline pointer-events-none">expand_more</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-unit-sm self-end lg:self-center">
+                        <span class="font-technical-tag text-technical-tag text-outline">VIEWPORT: HIGH DENSITY</span>
+                        <div class="flex items-center bg-surface-container-low p-0.5 rounded">
+                            <button class="p-1 rounded bg-surface-container-lowest text-primary shadow-xs">
+                                <span class="material-symbols-outlined text-base">table_rows</span>
+                            </button>
+                            <button class="p-1 rounded text-outline hover:text-primary">
+                                <span class="material-symbols-outlined text-base">view_kanban</span>
+                            </button>
+                        </div>
+                        <button
+                            class="p-1.5 rounded bg-surface-container-low text-on-surface hover:bg-surface-container transition-colors"
+                            onclick="window.showToast('Ledger Exported', 'Project capital allocations exported (.CSV).', 'success')"
+                            title="Export Ledger as CSV">
+                            <span class="material-symbols-outlined text-base">file_download</span>
+                        </button>
+                    </div>
+                </div>
+                <!-- Projects Master Data Grid Container -->
+                <div class="bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden mb-unit-xl">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr
+                                    class="bg-surface-container-low text-on-surface-variant font-label-caps text-label-caps uppercase tracking-wider">
+                                    <th class="py-3 px-unit-md w-36">Project ID</th>
+                                    <th class="py-3 px-unit-md">Description &amp; Equipment Scope</th>
+                                    <th class="py-3 px-unit-md w-32">Status Stage</th>
+                                    <th class="py-3 px-unit-md text-right w-44">Allocated Budget</th>
+                                    <th class="py-3 px-unit-md w-40">Progress</th>
+                                    <th class="py-3 px-unit-md w-48">Project Manager</th>
+                                    <th class="py-3 px-unit-md text-right w-28">Inspection</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-surface-container-low">
+                                <!-- ROW 1: EXPANDED / SELECTED ROW -->
+                                <tr
+                                    class="bg-surface-bright/80 hover:bg-surface-bright transition-colors group cursor-pointer">
+                                    <td
+                                        class="py-3.5 px-unit-md font-data-mono-md text-data-mono-md font-semibold text-primary">
+                                        <div class="flex items-center gap-1.5">
+                                            <span class="w-2 h-2 rounded-full bg-tertiary-fixed-dim"></span>
+                                            <span class="">PRJ-VP-7721</span>
+                                        </div>
+                                    </td>
+                                    <td class="py-3.5 px-unit-md">
+                                        <div class="font-headline-sm text-headline-sm text-primary font-medium">
+                                            Blast Furnace #5 Automation &amp; Gas Analysis Instrumentation Suite
+                                        </div>
+                                        <div class="font-technical-tag text-technical-tag text-on-surface-variant">
+                                            Turbulent tuyere optical pyrometry &amp; continuous top-gas chromatography
+                                            rack
+                                        </div>
+                                    </td>
+                                    <td class="py-3.5 px-unit-md">
+                                        <span
+                                            class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-tertiary-fixed/30 text-on-tertiary-container font-technical-tag text-technical-tag font-semibold">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-tertiary-fixed-dim"></span>
+                                            Execution
+                                        </span>
+                                    </td>
+                                    <td class="py-3.5 px-unit-md text-right">
+                                        <div class="inline-flex items-center justify-end gap-1.5 font-data-mono-md text-data-mono-md font-semibold text-primary pl-2"
+                                            style="box-shadow: inset 3px 0 0 0 #D9822B;">
+                                            <span class="">$1,850,000.00</span>
+                                            <span
+                                                class="font-technical-tag text-technical-tag text-outline font-normal">USD</span>
+                                        </div>
+                                    </td>
+                                    <td class="py-3.5 px-unit-md">
+                                        <div
+                                            class="flex items-center justify-between font-data-mono-md text-data-mono-md text-primary mb-1">
+                                            <span class="font-semibold">72%</span>
+                                            <span
+                                                class="font-technical-tag text-technical-tag text-outline">G-4/5</span>
+                                        </div>
+                                        <div
+                                            class="w-full h-1.5 bg-surface-container-high rounded-full overflow-hidden">
+                                            <div class="h-full bg-tertiary-fixed-dim rounded-full" style="width: 72%;">
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="py-3.5 px-unit-md">
+                                        <div class="flex items-center gap-unit-sm">
+                                            <img class="w-7 h-7 rounded-full object-cover bg-surface-container"
+                                                data-alt="Close-up professional portrait of Dr Elena Rostova, a Russian senior industrial systems engineer with glasses and dark pulled-back hair wearing industrial safety vest and clean navy blazer, neutral studio lighting, cool tones."
+                                                src="https://lh3.googleusercontent.com/aida-public/AB6AXuDZ9P2QbrRU2xObdFOu9aNA-iyUeUZ6UvBFT0l0KnTu1MKDRX0c84gVy9VkzAjtaXzw0JcEGYWbxd3RDqaIh7AyD6h4njnD-XTgLNnu6wa-UaOplKQCaWIDACINffaFufLMrEaDfvX7J3bqgPCT5b9oY66PI4s0dfAwRgA_V8p0oKzRnCAU0tihwWPq8xzU4FbT1iUoh0cBzt9pq7gPkXJVjA32ZA7kWXQvcLq090IXW-8Ihh_efhmM">
+                                            <div class="flex flex-col">
+                                                <span
+                                                    class="font-body-sm text-body-sm font-medium text-primary leading-tight">Dr.
+                                                    Elena Rostova</span>
+                                                <span class="font-technical-tag text-technical-tag text-outline">Lead
+                                                    Systems Eng.</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="py-3.5 px-unit-md text-right">
+                                        <button
+                                            class="inline-flex items-center gap-0.5 font-technical-tag text-technical-tag px-2 py-1 rounded bg-primary text-on-primary font-medium">
+                                            <span class="">COLLAPSE</span>
+                                            <span class="material-symbols-outlined text-sm">keyboard_arrow_up</span>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <!-- EXPANDED DETAIL INSPECTION DRAWER FOR ROW 1 -->
+                                <tr class="bg-surface-container-low/60">
+                                    <td class="p-unit-lg" colspan="7">
+                                        <div
+                                            class="bg-surface-container-lowest rounded-xl p-unit-lg shadow-md flex flex-col gap-unit-lg">
+                                            <!-- Expanded Blueprint Title Block -->
+                                            <div
+                                                class="flex flex-col lg:flex-row lg:items-center justify-between pb-unit-md gap-unit-base bg-surface-container-low/40 p-unit-md rounded-lg">
+                                                <div class="flex items-start gap-unit-md">
+                                                    <div class="p-2.5 rounded bg-primary text-tertiary-fixed shrink-0">
+                                                        <span
+                                                            class="material-symbols-outlined text-2xl">precision_manufacturing</span>
+                                                    </div>
+                                                    <div>
+                                                        <div class="flex items-center gap-unit-sm">
+                                                            <span
+                                                                class="font-label-caps text-label-caps uppercase text-outline">Detailed
+                                                                Execution Blueprint</span>
+                                                            <span
+                                                                class="font-data-mono-md text-data-mono-md font-semibold text-primary bg-surface-container px-2 py-0.5 rounded">PRJ-VP-7721</span>
+                                                            <span
+                                                                class="px-2 py-0.5 rounded bg-tertiary-fixed/30 text-on-tertiary-container font-technical-tag text-technical-tag font-semibold">STAGE:
+                                                                EXECUTION</span>
+                                                        </div>
+                                                        <h2
+                                                            class="font-headline-md text-headline-md text-primary mt-0.5">
+                                                            Blast Furnace #5 Automation &amp; Gas Analysis
+                                                            Instrumentation Suite
+                                                        </h2>
+                                                    </div>
+                                                </div>
+                                                <div class="flex flex-wrap items-center gap-unit-lg">
+                                                    <div class="flex flex-col">
+                                                        <span
+                                                            class="font-label-caps text-label-caps uppercase text-outline">Target
+                                                            Commissioning</span>
+                                                        <span
+                                                            class="font-data-mono-md text-data-mono-md font-semibold text-primary">Dec
+                                                            20, 2024 (On Schedule)</span>
+                                                    </div>
+                                                    <div class="h-8 w-px bg-outline-variant/50 hidden sm:block"></div>
+                                                    <div class="flex flex-col">
+                                                        <span
+                                                            class="font-label-caps text-label-caps uppercase text-outline">Direct
+                                                            Line / Channel</span>
+                                                        <span
+                                                            class="font-technical-tag text-technical-tag text-secondary font-semibold">COM-CH-BF5-ENG</span>
+                                                    </div>
+                                                    <div class="h-8 w-px bg-outline-variant/50 hidden sm:block"></div>
+                                                    <div class="flex items-center gap-unit-xs">
+                                                        <button
+                                                            class="px-unit-sm py-1.5 rounded bg-surface-container text-primary font-technical-tag text-technical-tag font-medium hover:bg-surface-container-high transition-colors"
+                                                            onclick="window.showToast('Telemetry Link Active', 'SCADA feed polling Node VP-704 at 250ms interval.', 'info')"
+                                                            type="button">
+                                                            Telemetry Log
+                                                        </button>
+                                                        <button
+                                                            class="px-unit-sm py-1.5 rounded bg-primary text-on-primary font-technical-tag text-technical-tag font-medium hover:bg-primary-container transition-colors"
+                                                            onclick="window.location.href='SupportTicketView.php?ticket=TCK-9482'"
+                                                            type="button">
+                                                            Field Ops Dispatch
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!-- COMPONENT A: Horizontal Milestone Timeline -->
+                                            <div class="flex flex-col gap-unit-sm">
+                                                <div class="flex items-center justify-between">
+                                                    <div class="flex items-center gap-unit-xs">
+                                                        <span
+                                                            class="material-symbols-outlined text-base text-primary">route</span>
+                                                        <span
+                                                            class="font-label-caps text-label-caps uppercase text-primary tracking-wider">Gate
+                                                            Stage Milestone Roadmap</span>
+                                                    </div>
+                                                    <span class="font-technical-tag text-technical-tag text-outline">4
+                                                        OF 5 GATES VALIDATED • 72% OVERALL PHYSICAL COMPLETION</span>
+                                                </div>
+                                                <!-- Connected Stepper -->
+                                                <div class="bg-surface-container-low p-unit-lg rounded-xl">
+                                                    <div class="grid grid-cols-1 md:grid-cols-5 gap-unit-md relative">
+                                                        <!-- Step 1 -->
+                                                        <div class="flex flex-col gap-unit-xs relative">
+                                                            <div class="flex items-center gap-unit-xs mb-1">
+                                                                <div
+                                                                    class="w-6 h-6 rounded-full bg-surface-container-lowest text-on-surface font-data-mono-md text-data-mono-md font-bold flex items-center justify-center shrink-0 shadow-xs">
+                                                                    <span
+                                                                        class="material-symbols-outlined text-sm font-bold"
+                                                                        style="color: #16A34A;">check</span>
+                                                                </div>
+                                                                <span
+                                                                    class="font-technical-tag text-technical-tag font-semibold"
+                                                                    style="color: #16A34A;">PHASE 1 COMPLETE</span>
+                                                            </div>
+                                                            <div
+                                                                class="font-headline-sm text-headline-sm text-primary font-medium text-sm leading-snug">
+                                                                Requirement Specs &amp; Safety Audit</div>
+                                                            <div
+                                                                class="font-data-mono-md text-data-mono-md text-outline">
+                                                                Jun 15, 2024</div>
+                                                            <div
+                                                                class="font-technical-tag text-technical-tag text-on-surface-variant">
+                                                                Severstal HSE Pass Signoff</div>
+                                                        </div>
+                                                        <!-- Step 2 -->
+                                                        <div class="flex flex-col gap-unit-xs relative">
+                                                            <div class="flex items-center gap-unit-xs mb-1">
+                                                                <div
+                                                                    class="w-6 h-6 rounded-full bg-surface-container-lowest text-on-surface font-data-mono-md text-data-mono-md font-bold flex items-center justify-center shrink-0 shadow-xs">
+                                                                    <span
+                                                                        class="material-symbols-outlined text-sm font-bold"
+                                                                        style="color: #16A34A;">check</span>
+                                                                </div>
+                                                                <span
+                                                                    class="font-technical-tag text-technical-tag font-semibold"
+                                                                    style="color: #16A34A;">PHASE 2 COMPLETE</span>
+                                                            </div>
+                                                            <div
+                                                                class="font-headline-sm text-headline-sm text-primary font-medium text-sm leading-snug">
+                                                                Hardware Procurement &amp; Sensor Fab</div>
+                                                            <div
+                                                                class="font-data-mono-md text-data-mono-md text-outline">
+                                                                Aug 28, 2024</div>
+                                                            <div
+                                                                class="font-technical-tag text-technical-tag text-on-surface-variant">
+                                                                Inconel 718 Sensors Shipped</div>
+                                                        </div>
+                                                        <!-- Step 3 -->
+                                                        <div class="flex flex-col gap-unit-xs relative">
+                                                            <div class="flex items-center gap-unit-xs mb-1">
+                                                                <div
+                                                                    class="w-6 h-6 rounded-full bg-surface-container-lowest text-on-surface font-data-mono-md text-data-mono-md font-bold flex items-center justify-center shrink-0 shadow-xs">
+                                                                    <span
+                                                                        class="material-symbols-outlined text-sm font-bold"
+                                                                        style="color: #16A34A;">check</span>
+                                                                </div>
+                                                                <span
+                                                                    class="font-technical-tag text-technical-tag font-semibold"
+                                                                    style="color: #16A34A;">PHASE 3 COMPLETE</span>
+                                                            </div>
+                                                            <div
+                                                                class="font-headline-sm text-headline-sm text-primary font-medium text-sm leading-snug">
+                                                                Factory Acceptance Test [FAT]</div>
+                                                            <div
+                                                                class="font-data-mono-md text-data-mono-md text-outline">
+                                                                Oct 10, 2024</div>
+                                                            <div
+                                                                class="font-technical-tag text-technical-tag text-on-surface-variant">
+                                                                St. Petersburg Facility Approved</div>
+                                                        </div>
+                                                        <!-- Step 4 (ACTIVE) -->
+                                                        <div
+                                                            class="flex flex-col gap-unit-xs relative bg-surface-container-lowest p-unit-sm rounded-lg shadow-sm">
+                                                            <div class="flex items-center gap-unit-xs mb-1">
+                                                                <div class="relative flex items-center justify-center">
+                                                                    <span
+                                                                        class="w-3 h-3 rounded-full bg-tertiary-fixed-dim animate-ping absolute"></span>
+                                                                    <span
+                                                                        class="w-5 h-5 rounded-full bg-tertiary-fixed text-primary font-data-mono-md text-data-mono-md font-bold flex items-center justify-center relative">
+                                                                        4
+                                                                    </span>
+                                                                </div>
+                                                                <span
+                                                                    class="font-technical-tag text-technical-tag font-bold text-on-tertiary-container">CURRENT
+                                                                    / ACTIVE</span>
+                                                            </div>
+                                                            <div
+                                                                class="font-headline-sm text-headline-sm text-primary font-semibold text-sm leading-snug">
+                                                                Site Installation &amp; Cold Commissioning</div>
+                                                            <div
+                                                                class="font-data-mono-md text-data-mono-md text-primary font-semibold">
+                                                                Nov 12, 2024 (72% Done)</div>
+                                                            <div
+                                                                class="font-technical-tag text-technical-tag text-secondary">
+                                                                Tuyere sensors mounted, cable racks wired</div>
+                                                        </div>
+                                                        <!-- Step 5 (UPCOMING) -->
+                                                        <div class="flex flex-col gap-unit-xs relative opacity-70">
+                                                            <div class="flex items-center gap-unit-xs mb-1">
+                                                                <div
+                                                                    class="w-5 h-5 rounded-full bg-surface-container-high text-outline font-data-mono-md text-data-mono-md flex items-center justify-center shrink-0">
+                                                                    5
+                                                                </div>
+                                                                <span
+                                                                    class="font-technical-tag text-technical-tag text-outline">SCHEDULED
+                                                                    GATE</span>
+                                                            </div>
+                                                            <div
+                                                                class="font-headline-sm text-headline-sm text-outline font-medium text-sm leading-snug">
+                                                                Hot Rolling Live Handover &amp; SAT</div>
+                                                            <div
+                                                                class="font-data-mono-md text-data-mono-md text-outline">
+                                                                Dec 20, 2024</div>
+                                                            <div
+                                                                class="font-technical-tag text-technical-tag text-outline">
+                                                                Final 72-hr continuous run test</div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!-- Two-Column Breakdown: Technical Docs & Invoice Mini-Table -->
+                                            <div class="grid grid-cols-1 xl:grid-cols-12 gap-unit-lg items-start">
+                                                <!-- COMPONENT B: Linked Technical Documents Card List (5 cols) -->
+                                                <div class="xl:col-span-5 flex flex-col gap-unit-sm">
+                                                    <div class="flex items-center justify-between">
+                                                        <div class="flex items-center gap-unit-xs">
+                                                            <span
+                                                                class="material-symbols-outlined text-base text-primary">verified_user</span>
+                                                            <span
+                                                                class="font-label-caps text-label-caps uppercase text-primary tracking-wider">Engineering
+                                                                Compliance &amp; Specs (3)</span>
+                                                        </div>
+                                                        <span
+                                                            class="font-technical-tag text-technical-tag text-secondary hover:underline cursor-pointer">View
+                                                            Archive</span>
+                                                    </div>
+                                                    <div class="flex flex-col gap-unit-xs">
+                                                        <!-- Doc 1 -->
+                                                        <div
+                                                            class="p-unit-sm rounded bg-surface-container-low hover:bg-surface-container transition-colors flex items-center justify-between gap-unit-sm">
+                                                            <div class="flex items-center gap-unit-sm min-w-0">
+                                                                <div
+                                                                    class="p-2 rounded bg-surface-container-lowest text-primary shrink-0 shadow-xs">
+                                                                    <span
+                                                                        class="material-symbols-outlined text-xl">description</span>
+                                                                </div>
+                                                                <div class="truncate">
+                                                                    <div
+                                                                        class="font-headline-sm text-headline-sm text-primary text-sm font-medium truncate">
+                                                                        FAT Protocol &amp; Sensor Calibration
+                                                                        Certificate</div>
+                                                                    <div
+                                                                        class="flex items-center gap-unit-xs font-technical-tag text-technical-tag text-on-surface-variant">
+                                                                        <span
+                                                                            class="font-data-mono-md text-data-mono-md">DOC-7721-FAT.pdf</span>
+                                                                        <span class="">•</span>
+                                                                        <span class="">14.8 MB</span>
+                                                                        <span class="">•</span>
+                                                                        <span
+                                                                            class="text-secondary font-semibold">Signed
+                                                                            QA</span>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <button
+                                                                class="px-2.5 py-1.5 rounded bg-surface-container-lowest hover:bg-primary hover:text-on-primary text-primary transition-colors font-technical-tag text-technical-tag font-semibold shrink-0 shadow-xs flex items-center gap-1"
+                                                                onclick="window.previewDocument('DOC-7721-FAT.pdf', 'FAT Protocol & Sensor Calibration Certificate', 'SIGNED QA')"
+                                                                type="button">
+                                                                <span class="material-symbols-outlined text-sm">download</span>
+                                                                <span class="">PDF</span>
+                                                            </button>
+                                                        </div>
+                                                        <!-- Doc 2 -->
+                                                        <div
+                                                            class="p-unit-sm rounded bg-surface-container-low hover:bg-surface-container transition-colors flex items-center justify-between gap-unit-sm">
+                                                            <div class="flex items-center gap-unit-sm min-w-0">
+                                                                <div
+                                                                    class="p-2 rounded bg-surface-container-lowest text-primary shrink-0 shadow-xs">
+                                                                    <span
+                                                                        class="material-symbols-outlined text-xl">schema</span>
+                                                                </div>
+                                                                <div class="truncate">
+                                                                    <div
+                                                                        class="font-headline-sm text-headline-sm text-primary text-sm font-medium truncate">
+                                                                        Wiring Schematic &amp; P&amp;ID Diagram Rev 4.2
+                                                                    </div>
+                                                                    <div
+                                                                        class="flex items-center gap-unit-xs font-technical-tag text-technical-tag text-on-surface-variant">
+                                                                        <span
+                                                                            class="font-data-mono-md text-data-mono-md">DWG-7721-PND.pdf</span>
+                                                                        <span class="">•</span>
+                                                                        <span class="">28.2 MB</span>
+                                                                        <span class="">•</span>
+                                                                        <span class="text-secondary font-semibold">PE
+                                                                            Approved</span>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <button
+                                                                class="px-2.5 py-1.5 rounded bg-surface-container-lowest hover:bg-primary hover:text-on-primary text-primary transition-colors font-technical-tag text-technical-tag font-semibold shrink-0 shadow-xs flex items-center gap-1"
+                                                                onclick="window.previewDocument('DWG-7721-PND-V3', 'Wiring Schematic & P&ID Diagram Rev 4.2', 'PE APPROVED')"
+                                                                type="button">
+                                                                <span class="material-symbols-outlined text-sm">download</span>
+                                                                <span class="">PDF</span>
+                                                            </button>
+                                                        </div>
+                                                        <!-- Doc 3 -->
+                                                        <div
+                                                            class="p-unit-sm rounded bg-surface-container-low hover:bg-surface-container transition-colors flex items-center justify-between gap-unit-sm">
+                                                            <div class="flex items-center gap-unit-sm min-w-0">
+                                                                <div
+                                                                    class="p-2 rounded bg-surface-container-lowest text-primary shrink-0 shadow-xs">
+                                                                    <span
+                                                                        class="material-symbols-outlined text-xl">fact_check</span>
+                                                                </div>
+                                                                <div class="truncate">
+                                                                    <div
+                                                                        class="font-headline-sm text-headline-sm text-primary text-sm font-medium truncate">
+                                                                        GOST/ISO Compliance Hazardous Plants Dossier
+                                                                    </div>
+                                                                    <div
+                                                                        class="flex items-center gap-unit-xs font-technical-tag text-technical-tag text-on-surface-variant">
+                                                                        <span
+                                                                            class="font-data-mono-md text-data-mono-md">CERT-7721-EXP.pdf</span>
+                                                                        <span class="">•</span>
+                                                                        <span class="">6.4 MB</span>
+                                                                        <span class="">•</span>
+                                                                        <span
+                                                                            class="text-secondary font-semibold">GOST-R
+                                                                            Valid</span>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <button
+                                                                class="px-2.5 py-1.5 rounded bg-surface-container-lowest hover:bg-primary hover:text-on-primary text-primary transition-colors font-technical-tag text-technical-tag font-semibold shrink-0 shadow-xs flex items-center gap-1"
+                                                                onclick="window.previewDocument('CERT-7721-EXP', 'GOST/ISO Compliance Hazardous Plants Dossier', 'GOST-R VALID')"
+                                                                type="button">
+                                                                <span class="material-symbols-outlined text-sm">download</span>
+                                                                <span class="">PDF</span>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <!-- COMPONENT C: Linked Invoices Mini Table (7 cols) -->
+                                                <div class="xl:col-span-7 flex flex-col gap-unit-sm">
+                                                    <div class="flex items-center justify-between">
+                                                        <div class="flex items-center gap-unit-xs">
+                                                            <span
+                                                                class="material-symbols-outlined text-base text-primary">receipt_long</span>
+                                                            <span
+                                                                class="font-label-caps text-label-caps uppercase text-primary tracking-wider">Milestone
+                                                                Capital Disbursements</span>
+                                                        </div>
+                                                        <span
+                                                            class="font-technical-tag text-technical-tag text-outline">CONFIDENTIAL
+                                                            BILLING MATRIX</span>
+                                                    </div>
+                                                    <div
+                                                        class="bg-surface-container-low rounded-lg p-unit-xs overflow-x-auto shadow-xs">
+                                                        <table class="w-full text-left">
+                                                            <thead>
+                                                                <tr
+                                                                    class="text-on-surface-variant font-label-caps text-label-caps uppercase text-xs">
+                                                                    <th class="py-2 px-unit-sm">Invoice Ref</th>
+                                                                    <th class="py-2 px-unit-sm">Milestone / Scope Stage
+                                                                    </th>
+                                                                    <th class="py-2 px-unit-sm text-right">Amount</th>
+                                                                    <th class="py-2 px-unit-sm">Maturity Date</th>
+                                                                    <th class="py-2 px-unit-sm text-right">Accounting
+                                                                        State</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody class="divide-y divide-surface-container">
+                                                                <!-- Inv 1 -->
+                                                                <tr
+                                                                    class="bg-surface-container-lowest/80 text-body-sm font-body-sm">
+                                                                    <td
+                                                                        class="py-2.5 px-unit-sm font-data-mono-md text-data-mono-md font-semibold text-primary">
+                                                                        INV-2024-4411</td>
+                                                                    <td class="py-2.5 px-unit-sm text-on-surface">
+                                                                        Advance Mobilization Payment (30%)</td>
+                                                                    <td class="py-2.5 px-unit-sm text-right font-data-mono-md text-data-mono-md font-semibold text-primary pl-2"
+                                                                        style="box-shadow: inset 3px 0 0 0 #D9822B;">
+                                                                        $555,000.00
+                                                                    </td>
+                                                                    <td
+                                                                        class="py-2.5 px-unit-sm font-technical-tag text-technical-tag text-outline">
+                                                                        Jun 22, 2024</td>
+                                                                    <td class="py-2.5 px-unit-sm text-right">
+                                                                        <span
+                                                                            class="inline-block px-2 py-0.5 rounded text-technical-tag font-technical-tag font-semibold"
+                                                                            style="background-color: #DCFCE7; color: #16A34A;">
+                                                                            PAID
+                                                                        </span>
+                                                                    </td>
+                                                                </tr>
+                                                                <!-- Inv 2 -->
+                                                                <tr
+                                                                    class="bg-surface-container-lowest/80 text-body-sm font-body-sm">
+                                                                    <td
+                                                                        class="py-2.5 px-unit-sm font-data-mono-md text-data-mono-md font-semibold text-primary">
+                                                                        INV-2024-5890</td>
+                                                                    <td class="py-2.5 px-unit-sm text-on-surface">
+                                                                        Equipment Delivery &amp; Fabrication (40%)</td>
+                                                                    <td class="py-2.5 px-unit-sm text-right font-data-mono-md text-data-mono-md font-semibold text-primary pl-2"
+                                                                        style="box-shadow: inset 3px 0 0 0 #D9822B;">
+                                                                        $740,000.00
+                                                                    </td>
+                                                                    <td
+                                                                        class="py-2.5 px-unit-sm font-technical-tag text-technical-tag text-outline">
+                                                                        Sep 15, 2024</td>
+                                                                    <td class="py-2.5 px-unit-sm text-right">
+                                                                        <span
+                                                                            class="inline-block px-2 py-0.5 rounded text-technical-tag font-technical-tag font-semibold"
+                                                                            style="background-color: #DCFCE7; color: #16A34A;">
+                                                                            PAID
+                                                                        </span>
+                                                                    </td>
+                                                                </tr>
+                                                                <!-- Inv 3 -->
+                                                                <tr
+                                                                    class="bg-surface-container-lowest text-body-sm font-body-sm">
+                                                                    <td
+                                                                        class="py-2.5 px-unit-sm font-data-mono-md text-data-mono-md font-semibold text-primary">
+                                                                        INV-2024-7019</td>
+                                                                    <td
+                                                                        class="py-2.5 px-unit-sm text-primary font-medium">
+                                                                        FAT Signoff &amp; Cold Commissioning (20%)</td>
+                                                                    <td class="py-2.5 px-unit-sm text-right font-data-mono-md text-data-mono-md font-semibold text-primary pl-2"
+                                                                        style="box-shadow: inset 3px 0 0 0 #D9822B;">
+                                                                        $370,000.00
+                                                                    </td>
+                                                                    <td
+                                                                        class="py-2.5 px-unit-sm font-technical-tag text-technical-tag text-primary font-semibold">
+                                                                        Nov 28, 2024</td>
+                                                                    <td class="py-2.5 px-unit-sm text-right">
+                                                                        <span
+                                                                            class="inline-block px-2 py-0.5 rounded text-technical-tag font-technical-tag font-bold"
+                                                                            style="background-color: #FEF3C7; color: #D97706;">
+                                                                            PENDING / INVOICED
+                                                                        </span>
+                                                                    </td>
+                                                                </tr>
+                                                                <!-- Inv 4 -->
+                                                                <tr
+                                                                    class="bg-surface-container-lowest/50 text-body-sm font-body-sm opacity-80">
+                                                                    <td
+                                                                        class="py-2.5 px-unit-sm font-data-mono-md text-data-mono-md text-outline">
+                                                                        INV-2024-8114</td>
+                                                                    <td
+                                                                        class="py-2.5 px-unit-sm text-on-surface-variant">
+                                                                        Final Handover &amp; Retainage Release (10%)
+                                                                    </td>
+                                                                    <td class="py-2.5 px-unit-sm text-right font-data-mono-md text-data-mono-md text-outline pl-2"
+                                                                        style="box-shadow: inset 3px 0 0 0 #D9822B;">
+                                                                        $185,000.00
+                                                                    </td>
+                                                                    <td
+                                                                        class="py-2.5 px-unit-sm font-technical-tag text-technical-tag text-outline">
+                                                                        Jan 15, 2025</td>
+                                                                    <td class="py-2.5 px-unit-sm text-right">
+                                                                        <span
+                                                                            class="inline-block px-2 py-0.5 rounded text-technical-tag font-technical-tag font-medium"
+                                                                            style="background-color: #F1F5F9; color: #64748B;">
+                                                                            UNBILLED / GATE-5
+                                                                        </span>
+                                                                    </td>
+                                                                </tr>
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <!-- ROW 2: INTEGRATION -->
+                                <tr class="hover:bg-surface-container-low/40 transition-colors cursor-pointer">
+                                    <td
+                                        class="py-3 px-unit-md font-data-mono-md text-data-mono-md font-medium text-primary">
+                                        PRJ-VP-7804
+                                    </td>
+                                    <td class="py-3 px-unit-md">
+                                        <div class="font-headline-sm text-headline-sm text-primary font-medium">
+                                            Hot Strip Mill Hydraulic Pressure Sensor Telemetry Retrofit
+                                        </div>
+                                        <div class="font-technical-tag text-technical-tag text-on-surface-variant">
+                                            Ultra-high-frequency transducer array (0-600 bar) on hydraulic roll gap
+                                            actuators
+                                        </div>
+                                    </td>
+                                    <td class="py-3 px-unit-md">
+                                        <span
+                                            class="inline-flex items-center gap-1 px-2 py-0.5 rounded font-technical-tag text-technical-tag font-medium"
+                                            style="background-color: #F0FDFA; color: #0D9488;">
+                                            <span class="w-1.5 h-1.5 rounded-full"
+                                                style="background-color: #0D9488;"></span>
+                                            Integration
+                                        </span>
+                                    </td>
+                                    <td class="py-3 px-unit-md text-right">
+                                        <div class="inline-flex items-center justify-end gap-1.5 font-data-mono-md text-data-mono-md text-on-surface pl-2"
+                                            style="box-shadow: inset 3px 0 0 0 #D9822B;">
+                                            <span class="">$640,000.00</span>
+                                            <span class="font-technical-tag text-technical-tag text-outline">USD</span>
+                                        </div>
+                                    </td>
+                                    <td class="py-3 px-unit-md">
+                                        <div
+                                            class="flex items-center justify-between font-data-mono-md text-data-mono-md text-on-surface mb-1">
+                                            <span class="">45%</span>
+                                            <span
+                                                class="font-technical-tag text-technical-tag text-outline">G-2/5</span>
+                                        </div>
+                                        <div
+                                            class="w-full h-1.5 bg-surface-container-high rounded-full overflow-hidden">
+                                            <div class="h-full rounded-full"
+                                                style="width: 45%; background-color: #0D9488;"></div>
+                                        </div>
+                                    </td>
+                                    <td class="py-3 px-unit-md">
+                                        <div class="flex items-center gap-unit-sm">
+                                            <img class="w-7 h-7 rounded-full object-cover bg-surface-container"
+                                                data-alt="Close-up professional portrait of Viktor Morozov, an experienced industrial systems engineer with short grey hair and beard, wearing dark glasses and dark blue work vest, serious technical expression, natural lighting."
+                                                src="https://lh3.googleusercontent.com/aida-public/AB6AXuDYTcRKMnEZOzF-q9UweeFDUJFi4PAeYT6HQyfF8pGID5-SRDnqzHMgKJ91_il2nk_MzvH4TQJtWbY2POYOLLBKCdpEQmQpg855GKNjOhE2NlAcZh_GYrAX45wnfAtw7ggIirQo7QWcY08xjpflkAceTkQ4nxCYix9exFCaWvq6bL5JLowwZF9wIb3HqqzOMfaicXZm6ETxfXkoqzDTzSk6Jo5koMeT_wb9nF2BLxomDxfPOuHKK5EK">
+                                            <div class="flex flex-col">
+                                                <span
+                                                    class="font-body-sm text-body-sm font-medium text-primary leading-tight">Viktor
+                                                    Morozov</span>
+                                                <span class="font-technical-tag text-technical-tag text-outline">Sr.
+                                                    Industrial Eng.</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="py-3 px-unit-md text-right">
+                                        <button
+                                            class="inline-flex items-center gap-0.5 font-technical-tag text-technical-tag px-2 py-1 rounded bg-surface-container-low text-primary hover:bg-surface-container transition-colors">
+                                            <span class="">VIEW</span>
+                                            <span class="material-symbols-outlined text-sm">keyboard_arrow_down</span>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <!-- ROW 3: PROCUREMENT -->
+                                <tr class="hover:bg-surface-container-low/40 transition-colors cursor-pointer">
+                                    <td
+                                        class="py-3 px-unit-md font-data-mono-md text-data-mono-md font-medium text-primary">
+                                        PRJ-VP-7910
+                                    </td>
+                                    <td class="py-3 px-unit-md">
+                                        <div class="font-headline-sm text-headline-sm text-primary font-medium">
+                                            Coke Oven Battery Temperature Profiling &amp; IR Cameras
+                                        </div>
+                                        <div class="font-technical-tag text-technical-tag text-on-surface-variant">
+                                            Dual spectral infrared thermal cameras with liquid nitrogen cooling
+                                            enclosures
+                                        </div>
+                                    </td>
+                                    <td class="py-3 px-unit-md">
+                                        <span
+                                            class="inline-flex items-center gap-1 px-2 py-0.5 rounded font-technical-tag text-technical-tag font-medium"
+                                            style="background-color: #EFF6FF; color: #2563EB;">
+                                            <span class="w-1.5 h-1.5 rounded-full"
+                                                style="background-color: #2563EB;"></span>
+                                            Procurement
+                                        </span>
+                                    </td>
+                                    <td class="py-3 px-unit-md text-right">
+                                        <div class="inline-flex items-center justify-end gap-1.5 font-data-mono-md text-data-mono-md text-on-surface pl-2"
+                                            style="box-shadow: inset 3px 0 0 0 #D9822B;">
+                                            <span class="">$920,000.00</span>
+                                            <span class="font-technical-tag text-technical-tag text-outline">USD</span>
+                                        </div>
+                                    </td>
+                                    <td class="py-3 px-unit-md">
+                                        <div
+                                            class="flex items-center justify-between font-data-mono-md text-data-mono-md text-on-surface mb-1">
+                                            <span class="">20%</span>
+                                            <span
+                                                class="font-technical-tag text-technical-tag text-outline">G-1/5</span>
+                                        </div>
+                                        <div
+                                            class="w-full h-1.5 bg-surface-container-high rounded-full overflow-hidden">
+                                            <div class="h-full rounded-full"
+                                                style="width: 20%; background-color: #2563EB;"></div>
+                                        </div>
+                                    </td>
+                                    <td class="py-3 px-unit-md">
+                                        <div class="flex items-center gap-unit-sm">
+                                            <img class="w-7 h-7 rounded-full object-cover bg-surface-container"
+                                                data-alt="Professional photo of Mikhail Sorokin, a young Russian automation engineer in high-vis safety jacket and dark collar, clean industrial background, neutral direct lighting."
+                                                src="https://lh3.googleusercontent.com/aida-public/AB6AXuDoTTzxRABfnWg8dfMS9Z6VAzpjAtxz7D9v_RwJpHb8lq4v4tc72qr2-H2gwxmP1HdegQcWT6ujQr0sO-qevtaQGTHZvoRJwlkQWDOubV4hdPzAP7-MsUKYrbLQSWqvHwF65GJARoKEX_Ie4wDLLXw7HAoOJ69vVBu1UgM5CuwyaudJsjNow-cQtQYayhbD_rIhG7Z-eT78SyyZL9KtCYk_ZYnN5hfesRZF8Z-AwZIFBQh9wcysmHCs">
+                                            <div class="flex flex-col">
+                                                <span
+                                                    class="font-body-sm text-body-sm font-medium text-primary leading-tight">Mikhail
+                                                    Sorokin</span>
+                                                <span
+                                                    class="font-technical-tag text-technical-tag text-outline">Procurement
+                                                    Lead</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="py-3 px-unit-md text-right">
+                                        <button
+                                            class="inline-flex items-center gap-0.5 font-technical-tag text-technical-tag px-2 py-1 rounded bg-surface-container-low text-primary hover:bg-surface-container transition-colors">
+                                            <span class="">VIEW</span>
+                                            <span class="material-symbols-outlined text-sm">keyboard_arrow_down</span>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <!-- ROW 4: DESIGN -->
+                                <tr class="hover:bg-surface-container-low/40 transition-colors cursor-pointer">
+                                    <td
+                                        class="py-3 px-unit-md font-data-mono-md text-data-mono-md font-medium text-primary">
+                                        PRJ-VP-8002
+                                    </td>
+                                    <td class="py-3 px-unit-md">
+                                        <div class="font-headline-sm text-headline-sm text-primary font-medium">
+                                            Continuous Casting Machine #3 Optical Thickness Gauges
+                                        </div>
+                                        <div class="font-technical-tag text-technical-tag text-on-surface-variant">
+                                            Laser triangulation thickness profiler with sub-millimeter realtime
+                                            calibration
+                                        </div>
+                                    </td>
+                                    <td class="py-3 px-unit-md">
+                                        <span
+                                            class="inline-flex items-center gap-1 px-2 py-0.5 rounded font-technical-tag text-technical-tag font-medium"
+                                            style="background-color: #F1F5F9; color: #64748B;">
+                                            <span class="w-1.5 h-1.5 rounded-full"
+                                                style="background-color: #64748B;"></span>
+                                            Design
+                                        </span>
+                                    </td>
+                                    <td class="py-3 px-unit-md text-right">
+                                        <div class="inline-flex items-center justify-end gap-1.5 font-data-mono-md text-data-mono-md text-on-surface pl-2"
+                                            style="box-shadow: inset 3px 0 0 0 #D9822B;">
+                                            <span class="">$410,000.00</span>
+                                            <span class="font-technical-tag text-technical-tag text-outline">USD</span>
+                                        </div>
+                                    </td>
+                                    <td class="py-3 px-unit-md">
+                                        <div
+                                            class="flex items-center justify-between font-data-mono-md text-data-mono-md text-on-surface mb-1">
+                                            <span class="">10%</span>
+                                            <span
+                                                class="font-technical-tag text-technical-tag text-outline">G-1/5</span>
+                                        </div>
+                                        <div
+                                            class="w-full h-1.5 bg-surface-container-high rounded-full overflow-hidden">
+                                            <div class="h-full rounded-full"
+                                                style="width: 10%; background-color: #64748B;"></div>
+                                        </div>
+                                    </td>
+                                    <td class="py-3 px-unit-md">
+                                        <div class="flex items-center gap-unit-sm">
+                                            <img class="w-7 h-7 rounded-full object-cover bg-surface-container"
+                                                data-alt="Professional studio headshot of Anna Belova, female lead instrument designer with blonde hair tied back, wearing minimal black collar and subtle spectacles, soft diffuse corporate lighting."
+                                                src="https://lh3.googleusercontent.com/aida-public/AB6AXuCcAVsO-XaZCG6SgodG80nLQVRwbkwBqroDT7pe2fR_brwGhrkqpMvasL4E4k7JTFjHnokK1eB4Y4JvRUe9cAEb4WePxdmYWxIeZMY6X1hRN2WEWygWXgsN2E-LXAXJ1a5B47b_vAsASVhFnTtdRR2qepxX3eOAaZV9J9yu8vHrdcm8CzkSLi-Vt0U0ofRcxUL_CnK_CMiWro0ZHThPWwb5Mi2lI1WnGYOlJ5hhgSvXJ8uwvtK5Qcmo">
+                                            <div class="flex flex-col">
+                                                <span
+                                                    class="font-body-sm text-body-sm font-medium text-primary leading-tight">Anna
+                                                    Belova</span>
+                                                <span class="font-technical-tag text-technical-tag text-outline">Chief
+                                                    Design Spec.</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="py-3 px-unit-md text-right">
+                                        <button
+                                            class="inline-flex items-center gap-0.5 font-technical-tag text-technical-tag px-2 py-1 rounded bg-surface-container-low text-primary hover:bg-surface-container transition-colors">
+                                            <span class="">VIEW</span>
+                                            <span class="material-symbols-outlined text-sm">keyboard_arrow_down</span>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <!-- ROW 5: MAINTENANCE -->
+                                <tr class="hover:bg-surface-container-low/40 transition-colors cursor-pointer">
+                                    <td
+                                        class="py-3 px-unit-md font-data-mono-md text-data-mono-md font-medium text-primary">
+                                        PRJ-VP-6945
+                                    </td>
+                                    <td class="py-3 px-unit-md">
+                                        <div class="font-headline-sm text-headline-sm text-primary font-medium">
+                                            Raw Materials Yard Conveyor Belt Laser Profiler System
+                                        </div>
+                                        <div class="font-technical-tag text-technical-tag text-on-surface-variant">
+                                            Heavy-duty volumetric scanners and belt rip detectors across lines A1-A8
+                                        </div>
+                                    </td>
+                                    <td class="py-3 px-unit-md">
+                                        <span
+                                            class="inline-flex items-center gap-1 px-2 py-0.5 rounded font-technical-tag text-technical-tag font-medium"
+                                            style="background-color: #DCFCE7; color: #16A34A;">
+                                            <span class="w-1.5 h-1.5 rounded-full"
+                                                style="background-color: #16A34A;"></span>
+                                            Maintenance
+                                        </span>
+                                    </td>
+                                    <td class="py-3 px-unit-md text-right">
+                                        <div class="inline-flex items-center justify-end gap-1.5 font-data-mono-md text-data-mono-md text-on-surface pl-2"
+                                            style="box-shadow: inset 3px 0 0 0 #D9822B;">
+                                            <span class="">$1,150,000.00</span>
+                                            <span class="font-technical-tag text-technical-tag text-outline">USD</span>
+                                        </div>
+                                    </td>
+                                    <td class="py-3 px-unit-md">
+                                        <div
+                                            class="flex items-center justify-between font-data-mono-md text-data-mono-md text-on-surface mb-1">
+                                            <span class="">100%</span>
+                                            <span class="font-technical-tag text-technical-tag text-outline">SLA
+                                                Active</span>
+                                        </div>
+                                        <div
+                                            class="w-full h-1.5 bg-surface-container-high rounded-full overflow-hidden">
+                                            <div class="h-full rounded-full"
+                                                style="width: 100%; background-color: #16A34A;"></div>
+                                        </div>
+                                    </td>
+                                    <td class="py-3 px-unit-md">
+                                        <div class="flex items-center gap-unit-sm">
+                                            <img class="w-7 h-7 rounded-full object-cover bg-surface-container"
+                                                data-alt="Professional photo of Dmitry Levin, senior maintenance superintendent wearing dark polo and industrial lanyard, friendly confidence, workshop background out of focus."
+                                                src="https://lh3.googleusercontent.com/aida-public/AB6AXuCL3U6AtZHa9ZLIUtan-M7F88cVU1XvGFnYECINKv56euxljcu8xnL71nSNOoOT5M1Hu5vaIw0087Yg2XBE8taR2gtSyP8_gIOjCeywFkNzX5fCM_bXJdTFm8tEbcCqT01JPw3pa3pxBA3Vq_iQzouTNo8QaoquUozEDbrAgD83h-7HNcjvOhQBDNwnpsEDZGYtDmZU1fQQUP883d-VYEzkYlhDtTdnjK6k3-F-2stAQZznHMQbtPwq">
+                                            <div class="flex flex-col">
+                                                <span
+                                                    class="font-body-sm text-body-sm font-medium text-primary leading-tight">Dmitry
+                                                    Levin</span>
+                                                <span class="font-technical-tag text-technical-tag text-outline">Field
+                                                    Service Lead</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="py-3 px-unit-md text-right">
+                                        <button
+                                            class="inline-flex items-center gap-0.5 font-technical-tag text-technical-tag px-2 py-1 rounded bg-surface-container-low text-primary hover:bg-surface-container transition-colors">
+                                            <span class="">VIEW</span>
+                                            <span class="material-symbols-outlined text-sm">keyboard_arrow_down</span>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- Data Grid Footer / Pagination Metadata -->
+                    <div
+                        class="px-unit-lg py-3 bg-surface-container-low/50 flex flex-col sm:flex-row items-center justify-between gap-unit-sm font-technical-tag text-technical-tag text-on-surface-variant">
+                        <div class="flex items-center gap-unit-md">
+                            <span class="">SHOWING 5 OF 14 COMMISSIONS</span>
+                            <span class="">•</span>
+                            <span class="text-primary font-semibold">TOTAL CAPITALIZATION: $4,970,000.00 USD</span>
+                        </div>
+                        <div class="flex items-center gap-unit-xs">
+                            <button
+                                class="px-2 py-1 rounded bg-surface-container text-outline hover:text-primary transition-colors disabled:opacity-40"
+                                disabled="">
+                                PREV
+                            </button>
+                            <span class="px-2 py-1 rounded bg-primary text-on-primary font-bold">1</span>
+                            <button
+                                class="px-2 py-1 rounded bg-surface-container hover:bg-surface-container-high text-primary transition-colors">2</button>
+                            <button
+                                class="px-2 py-1 rounded bg-surface-container hover:bg-surface-container-high text-primary transition-colors">3</button>
+                            <button
+                                class="px-2 py-1 rounded bg-surface-container text-primary hover:bg-surface-container-high transition-colors">
+                                NEXT
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <!-- Operational Health & Support Strip -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-unit-md">
+                    <div
+                        class="bg-surface-container-lowest p-unit-base rounded-xl shadow-sm flex items-center gap-unit-md">
+                        <div class="p-3 rounded-lg bg-surface-container-low text-primary shrink-0">
+                            <span class="material-symbols-outlined text-2xl">sensors</span>
+                        </div>
+                        <div>
+                            <div class="font-label-caps text-label-caps uppercase text-outline">SCADA Link Integrity
+                            </div>
+                            <div class="font-headline-sm text-headline-sm text-primary font-semibold">99.98% Telemetry
+                                Uptime</div>
+                            <div class="font-technical-tag text-technical-tag text-on-surface-variant mt-0.5">Polling
+                                interval: 250ms via VP-Gateway</div>
+                        </div>
+                    </div>
+                    <div
+                        class="bg-surface-container-lowest p-unit-base rounded-xl shadow-sm flex items-center gap-unit-md">
+                        <div class="p-3 rounded-lg bg-surface-container-low text-primary shrink-0">
+                            <span class="material-symbols-outlined text-2xl">verified</span>
+                        </div>
+                        <div>
+                            <div class="font-label-caps text-label-caps uppercase text-outline">Quality &amp; Standards
+                            </div>
+                            <div class="font-headline-sm text-headline-sm text-primary font-semibold">ISO 9001 / GOST R
+                                Valid</div>
+                            <div class="font-technical-tag text-technical-tag text-on-surface-variant mt-0.5">
+                                Recertification Audit: March 2025</div>
+                        </div>
+                    </div>
+                    <div
+                        class="bg-surface-container-lowest p-unit-base rounded-xl shadow-sm flex items-center gap-unit-md">
+                        <div class="p-3 rounded-lg bg-surface-container-low text-primary shrink-0">
+                            <span class="material-symbols-outlined text-2xl">support_agent</span>
+                        </div>
+                        <div>
+                            <div class="font-label-caps text-label-caps uppercase text-outline">Industrial Helpdesk
+                            </div>
+                            <div class="font-headline-sm text-headline-sm text-primary font-semibold">Dedicated Field
+                                Response</div>
+                            <div class="font-technical-tag text-technical-tag text-secondary mt-0.5">1-hr priority SLA
+                                on active execution lines</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+</body>
+
+</html>

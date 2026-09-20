@@ -1,4 +1,4 @@
-﻿/**
+/**
  * ============================================================
  *  VOSTOKPRIBOR ENTERPRISE — DYNAMIC LOGIN THEME ENGINE v2.0
  *  Est. 1968 · Almaty, Kazakhstan
@@ -32,7 +32,7 @@
 
   // ──────────────────────────────────────────────────────────
   // 1. SYSTEM IDENTITY MAP  (tag text → official brand token)
-  //    Matches the auth-system-tag span in every login.html
+  //    Matches the auth-system-tag span in every login.php
   // ──────────────────────────────────────────────────────────
   const SYSTEM_PRESETS = {
     'CORP':     { accent: '#1B3A5C', hover: '#0F2438', glow: 'rgba(27,58,92,0.45)',   bg1: '#060D14', bg2: '#030810', label: '01 · CORPORATE' },

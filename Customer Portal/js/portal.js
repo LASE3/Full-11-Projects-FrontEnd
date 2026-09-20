@@ -9,48 +9,54 @@
 
     // Route configuration mapping data-path keys to physical files
     const ROUTES = {
-        'dashboard': 'Dashboard.html',
-        'orders': 'Orders.html',
-        'projects': 'ProjectListAndDetail.html',
-        'invoices': 'Invoices.html',
-        'documents': 'Documents.html',
-        'support': 'SupportTicketView.html',
-        'account-settings': 'AccountSettings.html'
+        'dashboard': 'Dashboard.php',
+        'orders': 'Orders.php',
+        'projects': 'ProjectListAndDetail.php',
+        'invoices': 'Invoices.php',
+        'documents': 'Documents.php',
+        'support': 'SupportTicketView.php',
+        'account-settings': 'AccountSettings.php'
     };
 
     // Global Search Index across all portal assets
     const SEARCH_INDEX = [
         // Projects
-        { type: 'Project', id: 'PRJ-VP-7721', title: 'Blast Furnace #5 Automation & Gas Analysis Suite', meta: '$1,850,000 • 72% Complete', url: 'ProjectListAndDetail.html?project=PRJ-VP-7721', icon: 'precision_manufacturing', badge: 'Execution' },
-        { type: 'Project', id: 'PRJ-VP-6840', title: 'Hot Rolling Mill #2 Continuous Hydraulic Profiler', meta: '$920,000 • 45% Complete', url: 'ProjectListAndDetail.html?project=PRJ-VP-6840', icon: 'precision_manufacturing', badge: 'Integration' },
-        { type: 'Project', id: 'PRJ-VP-5510', title: 'Sinter Plant Dust Filtration Optical Pyrometry Array', meta: '$640,000 • 90% Complete', url: 'ProjectListAndDetail.html?project=PRJ-VP-5510', icon: 'precision_manufacturing', badge: 'Commissioning' },
+        { type: 'Project', id: 'PRJ-VP-7721', title: 'Blast Furnace #5 Automation & Gas Analysis Suite', meta: '$1,850,000 • 72% Complete', url: 'ProjectListAndDetail.php?project=PRJ-VP-7721', icon: 'precision_manufacturing', badge: 'Execution' },
+        { type: 'Project', id: 'PRJ-VP-6840', title: 'Hot Rolling Mill #2 Continuous Hydraulic Profiler', meta: '$920,000 • 45% Complete', url: 'ProjectListAndDetail.php?project=PRJ-VP-6840', icon: 'precision_manufacturing', badge: 'Integration' },
+        { type: 'Project', id: 'PRJ-VP-5510', title: 'Sinter Plant Dust Filtration Optical Pyrometry Array', meta: '$640,000 • 90% Complete', url: 'ProjectListAndDetail.php?project=PRJ-VP-5510', icon: 'precision_manufacturing', badge: 'Commissioning' },
 
         // Orders
-        { type: 'Order', id: 'ORD-2024-8812', title: 'Gas Chromatography Skid #4 Sensors & Manifolds', meta: '$418,200.00 • In Transit (RZD Express)', url: 'Orders.html?order=ORD-2024-8812', icon: 'local_shipping', badge: 'In Transit' },
-        { type: 'Order', id: 'ORD-2024-8805', title: 'Blast Furnace #5 Spare Tuyere Pyrometer Sensor Assemblies', meta: '$189,400.00 • Manufacturing / FAT', url: 'Orders.html?order=ORD-2024-8805', icon: 'inventory_2', badge: 'Manufacturing' },
-        { type: 'Order', id: 'ORD-2024-8790', title: 'Optical Pyrometer Fiber-Optic Replacement Harnesses', meta: '$64,500.00 • Delivered & Inspected', url: 'Orders.html?order=ORD-2024-8790', icon: 'check_circle', badge: 'Delivered' },
+        { type: 'Order', id: 'ORD-2024-8812', title: 'Gas Chromatography Skid #4 Sensors & Manifolds', meta: '$418,200.00 • In Transit (RZD Express)', url: 'Orders.php?order=ORD-2024-8812', icon: 'local_shipping', badge: 'In Transit' },
+        { type: 'Order', id: 'ORD-2024-8805', title: 'Blast Furnace #5 Spare Tuyere Pyrometer Sensor Assemblies', meta: '$189,400.00 • Manufacturing / FAT', url: 'Orders.php?order=ORD-2024-8805', icon: 'inventory_2', badge: 'Manufacturing' },
+        { type: 'Order', id: 'ORD-2024-8790', title: 'Optical Pyrometer Fiber-Optic Replacement Harnesses', meta: '$64,500.00 • Delivered & Inspected', url: 'Orders.php?order=ORD-2024-8790', icon: 'check_circle', badge: 'Delivered' },
 
         // Invoices
-        { type: 'Invoice', id: 'INV-2024-5890', title: 'Equipment Delivery & Sensor Fabrication Milestone (40%)', meta: '$740,000.00 • Status: Paid', url: 'Invoices.html?invoice=INV-2024-5890', icon: 'receipt_long', badge: 'Paid' },
-        { type: 'Invoice', id: 'INV-2024-4411', title: 'Advance Mobilization Payment (30%) - Blast Furnace #5', meta: '$555,000.00 • Status: Paid', url: 'Invoices.html?invoice=INV-2024-4411', icon: 'receipt_long', badge: 'Paid' },
-        { type: 'Invoice', id: 'INV-2024-6102', title: 'Cold Commissioning & FAT Signoff Milestone', meta: '$114,200.00 • Due Nov 28, 2024', url: 'Invoices.html?invoice=INV-2024-6102', icon: 'pending_actions', badge: 'Pending' },
+        { type: 'Invoice', id: 'INV-2024-5890', title: 'Equipment Delivery & Sensor Fabrication Milestone (40%)', meta: '$740,000.00 • Status: Paid', url: 'Invoices.php?invoice=INV-2024-5890', icon: 'receipt_long', badge: 'Paid' },
+        { type: 'Invoice', id: 'INV-2024-4411', title: 'Advance Mobilization Payment (30%) - Blast Furnace #5', meta: '$555,000.00 • Status: Paid', url: 'Invoices.php?invoice=INV-2024-4411', icon: 'receipt_long', badge: 'Paid' },
+        { type: 'Invoice', id: 'INV-2024-6102', title: 'Cold Commissioning & FAT Signoff Milestone', meta: '$114,200.00 • Due Nov 28, 2024', url: 'Invoices.php?invoice=INV-2024-6102', icon: 'pending_actions', badge: 'Pending' },
 
         // Documents
-        { type: 'Document', id: 'CERT-2024-HPF-0994', title: 'High-Pressure Flowmeter HPF-900X Calibration Certificate', meta: 'Rostest State Protocol #VP-CAL-0994 • SHA-256 Validated', url: 'Documents.html?doc=1', icon: 'verified', badge: 'Rostest Cert' },
-        { type: 'Document', id: 'DWG-7721-PND-V3', title: 'Blast Furnace #5 Automation Wiring Schematic & P&ID Diagram', meta: 'CAD Rev 4.2 • 28.2 MB • PE Approved', url: 'Documents.html?doc=2', icon: 'schema', badge: 'P&ID Blueprint' },
-        { type: 'Document', id: 'DOC-7721-FAT.pdf', title: 'Factory Acceptance Test (FAT) Protocol - Gas Skid #4', meta: 'Signed QA • 14.8 MB', url: 'Documents.html?doc=3', icon: 'description', badge: 'FAT Protocol' },
-        { type: 'Document', id: 'BOL-8812.PDF', title: 'Bill of Lading & Waybill Manifest - ORD-2024-8812', meta: 'RZD Freight Express • Consignment #88192-RU', url: 'Documents.html?doc=4', icon: 'local_shipping', badge: 'Waybill' },
+        { type: 'Document', id: 'CERT-2024-HPF-0994', title: 'High-Pressure Flowmeter HPF-900X Calibration Certificate', meta: 'Rostest State Protocol #VP-CAL-0994 • SHA-256 Validated', url: 'Documents.php?doc=1', icon: 'verified', badge: 'Rostest Cert' },
+        { type: 'Document', id: 'DWG-7721-PND-V3', title: 'Blast Furnace #5 Automation Wiring Schematic & P&ID Diagram', meta: 'CAD Rev 4.2 • 28.2 MB • PE Approved', url: 'Documents.php?doc=2', icon: 'schema', badge: 'P&ID Blueprint' },
+        { type: 'Document', id: 'DOC-7721-FAT.pdf', title: 'Factory Acceptance Test (FAT) Protocol - Gas Skid #4', meta: 'Signed QA • 14.8 MB', url: 'Documents.php?doc=3', icon: 'description', badge: 'FAT Protocol' },
+        { type: 'Document', id: 'BOL-8812.PDF', title: 'Bill of Lading & Waybill Manifest - ORD-2024-8812', meta: 'RZD Freight Express • Consignment #88192-RU', url: 'Documents.php?doc=4', icon: 'local_shipping', badge: 'Waybill' },
 
         // Support Tickets
-        { type: 'Support Ticket', id: 'TCK-9482', title: 'Sensor Bank #2 Analog Loop Dropout (P1 Critical)', meta: 'Blast Furnace #5 • Viktor Morozov Assigned', url: 'SupportTicketView.html?ticket=TCK-9482', icon: 'warning', badge: 'P1 Critical' },
-        { type: 'Support Ticket', id: 'TCK-9440', title: 'Optical Pyrometer Array Temperature Calibration Drift', meta: 'Sinter Plant #3 • Level 2 Investigation', url: 'SupportTicketView.html?ticket=TCK-9440', icon: 'headset_mic', badge: 'High Priority' },
-        { type: 'Support Ticket', id: 'TCK-9399', title: 'Replacement Lens Assembly Shipping Tracking & Customs', meta: 'Raw Material Yard LP-400 • Resolved', url: 'SupportTicketView.html?ticket=TCK-9399', icon: 'check_circle', badge: 'Resolved' },
-        { type: 'Support Ticket', id: 'TCK-9351', title: 'Hydraulic Pressure Array Firmware Patch Compatibility', meta: 'Hot Strip Mill #2 • Siemens S7-400 PLC', url: 'SupportTicketView.html?ticket=TCK-9351', icon: 'check_circle', badge: 'Resolved' },
+        { type: 'Support Ticket', id: 'TCK-9482', title: 'Sensor Bank #2 Analog Loop Dropout (P1 Critical)', meta: 'Blast Furnace #5 • Viktor Morozov Assigned', url: 'SupportTicketView.php?ticket=TCK-9482', icon: 'warning', badge: 'P1 Critical' },
+        { type: 'Support Ticket', id: 'TCK-9440', title: 'Optical Pyrometer Array Temperature Calibration Drift', meta: 'Sinter Plant #3 • Level 2 Investigation', url: 'SupportTicketView.php?ticket=TCK-9440', icon: 'headset_mic', badge: 'High Priority' },
+        { type: 'Support Ticket', id: 'TCK-9399', title: 'Replacement Lens Assembly Shipping Tracking & Customs', meta: 'Raw Material Yard LP-400 • Resolved', url: 'SupportTicketView.php?ticket=TCK-9399', icon: 'check_circle', badge: 'Resolved' },
+        { type: 'Support Ticket', id: 'TCK-9351', title: 'Hydraulic Pressure Array Firmware Patch Compatibility', meta: 'Hot Strip Mill #2 • Siemens S7-400 PLC', url: 'SupportTicketView.php?ticket=TCK-9351', icon: 'check_circle', badge: 'Resolved' },
 
         // Settings
-        { type: 'Settings', id: 'SET-ORG', title: 'Organization Profile & Facility Identification', meta: 'Severstal Metallurgy Plant #4 • VP-90214-EU', url: 'AccountSettings.html?tab=panel-org', icon: 'corporate_fare', badge: 'Settings' },
-        { type: 'Settings', id: 'SET-API', title: 'SCADA Telemetry & REST API Gateway Keys', meta: 'Active Key: vp_live_9941_chrp04_prod', url: 'AccountSettings.html?tab=panel-scada', icon: 'hub', badge: 'API Config' },
-        { type: 'Settings', id: 'SET-ROSTER', title: 'User Roster & Security Clearance Credentials', meta: 'Alexey Danilov (Chief Eng.) • Dr. Elena Rostova', url: 'AccountSettings.html?tab=panel-user', icon: 'badge', badge: 'Team Roster' }
+        { type: 'Settings', id: 'SET-ORG', title: 'Organization Profile & Facility Identification', meta: 'Severstal Metallurgy Plant #4 • VP-90214-EU', url: 'AccountSettings.php?tab=panel-org', icon: 'corporate_fare', badge: 'Settings' },
+        { type: 'Settings', id: 'SET-API', title: 'SCADA Telemetry & REST API Gateway Keys', meta: 'Active Key: vp_live_9941_chrp04_prod', url: 'AccountSettings.php?tab=panel-scada', icon: 'hub', badge: 'API Config' },
+        { type: 'Settings', id: 'SET-ROSTER', title: 'User Roster & Security Clearance Credentials', meta: 'Alexey Danilov (Chief Eng.) • Dr. Elena Rostova', url: 'AccountSettings.php?tab=panel-user', icon: 'badge', badge: 'Team Roster' },
+
+        // Ecosystem Portals
+        { type: 'Ecosystem', id: 'SYS-01', title: 'VOSTOKPRIBOR Corporate Platform', meta: 'vostokpribor.local • System 01', url: '../VOSTOKPRIBOR Corporate Web Platform/index.php', icon: 'language', badge: 'Corporate' },
+        { type: 'Ecosystem', id: 'SYS-02', title: 'B2B Online Equipment Shop', meta: 'shop.vostokpribor.local • System 02', url: '../Online Shop B2B/index.php', icon: 'shopping_cart', badge: 'B2B Shop' },
+        { type: 'Ecosystem', id: 'SYS-04', title: 'Enterprise Employee Intranet', meta: 'intranet.vostokpribor.local • System 04', url: '../Employee Intranet/index.php', icon: 'badge', badge: 'Intranet' },
+        { type: 'Ecosystem', id: 'SYS-10', title: 'Developer & API Portal Gateway', meta: 'developer.vostokpribor.local • System 10', url: '../Developer/index.php', icon: 'terminal', badge: 'Developer' }
     ];
 
     // Notification Feed Data
@@ -63,7 +69,7 @@
             icon: 'warning',
             color: 'text-error',
             bg: 'bg-error/10',
-            url: 'SupportTicketView.html?ticket=TCK-9482'
+            url: 'SupportTicketView.php?ticket=TCK-9482'
         },
         {
             id: 'n2',
@@ -73,7 +79,7 @@
             icon: 'receipt_long',
             color: 'text-on-tertiary-container',
             bg: 'bg-tertiary-fixed/30',
-            url: 'Invoices.html?invoice=INV-2024-6102'
+            url: 'Invoices.php?invoice=INV-2024-6102'
         },
         {
             id: 'n3',
@@ -83,7 +89,7 @@
             icon: 'verified',
             color: 'text-secondary',
             bg: 'bg-secondary/10',
-            url: 'Documents.html?doc=1'
+            url: 'Documents.php?doc=1'
         },
         {
             id: 'n4',
@@ -93,7 +99,7 @@
             icon: 'local_shipping',
             color: 'text-primary',
             bg: 'bg-primary/10',
-            url: 'Orders.html?order=ORD-2024-8812'
+            url: 'Orders.php?order=ORD-2024-8812'
         }
     ];
 
@@ -143,15 +149,15 @@
             container.addEventListener('click', (e) => {
                 if (e.target.closest('#sidebar-toggle-btn')) return;
                 if (e.target.tagName !== 'A') {
-                    window.location.href = 'Dashboard.html';
+                    window.location.href = 'Dashboard.php';
                 }
             });
         });
 
-        // Wire header technical docs menu_book icon to Documents.html
+        // Wire header technical docs menu_book icon to Documents.php
         const docsIcon = document.querySelector('header a[title="Technical Documentation"]');
         if (docsIcon) {
-            docsIcon.setAttribute('href', 'Documents.html');
+            docsIcon.setAttribute('href', 'Documents.php');
         }
 
         // Wire Assigned Manager box to Support page
@@ -161,7 +167,7 @@
             managerCard.title = 'Click to contact Assigned Manager Viktor Morozov in Support';
             managerCard.addEventListener('click', (e) => {
                 if (e.target.closest('a')) return;
-                window.location.href = 'SupportTicketView.html?ticket=TCK-9482';
+                window.location.href = 'SupportTicketView.php?ticket=TCK-9482';
             });
         }
 
@@ -654,7 +660,7 @@
             </div>
             <div class="p-2.5 bg-surface-container-low border-t border-outline/10 flex items-center justify-between text-xs">
                 <button id="mark-all-read" class="text-secondary hover:underline font-medium cursor-pointer">Mark all acknowledged</button>
-                <a href="SupportTicketView.html" class="text-primary font-semibold flex items-center gap-1 hover:underline">
+                <a href="SupportTicketView.php" class="text-primary font-semibold flex items-center gap-1 hover:underline">
                     View incident desk <span class="material-symbols-outlined text-xs">arrow_forward</span>
                 </a>
             </div>
@@ -729,15 +735,15 @@
             </div>
             <div class="p-2 divide-y divide-outline/10 text-xs font-body-sm">
                 <div class="py-1">
-                    <a href="AccountSettings.html?tab=panel-org" class="flex items-center gap-2.5 px-3 py-2 rounded-lg hover:bg-surface-container-low text-primary transition-colors">
+                    <a href="AccountSettings.php?tab=panel-org" class="flex items-center gap-2.5 px-3 py-2 rounded-lg hover:bg-surface-container-low text-primary transition-colors">
                         <span class="material-symbols-outlined text-base text-secondary">factory</span>
                         <span>Plant Cadastre & Org Profile</span>
                     </a>
-                    <a href="AccountSettings.html?tab=panel-scada" class="flex items-center gap-2.5 px-3 py-2 rounded-lg hover:bg-surface-container-low text-primary transition-colors">
+                    <a href="AccountSettings.php?tab=panel-scada" class="flex items-center gap-2.5 px-3 py-2 rounded-lg hover:bg-surface-container-low text-primary transition-colors">
                         <span class="material-symbols-outlined text-base text-secondary">hub</span>
                         <span>SCADA & API Keys</span>
                     </a>
-                    <a href="AccountSettings.html?tab=panel-user" class="flex items-center gap-2.5 px-3 py-2 rounded-lg hover:bg-surface-container-low text-primary transition-colors">
+                    <a href="AccountSettings.php?tab=panel-user" class="flex items-center gap-2.5 px-3 py-2 rounded-lg hover:bg-surface-container-low text-primary transition-colors">
                         <span class="material-symbols-outlined text-base text-secondary">badge</span>
                         <span>Security Clearances & Roster</span>
                     </a>

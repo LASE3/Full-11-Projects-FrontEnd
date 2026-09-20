@@ -10,22 +10,22 @@
     // 1. PAGE ROUTING & NAVIGATION MAPPING
     // ==========================================
     const SYSTEM_NAV_MAP = [
-        { path: 'dashboard', href: 'mainDashborde.html', label: 'Main Dashboard', icon: 'dashboard', badge: 'KPI & Threat' },
-        { path: 'access-matrix-and-role-review', href: 'accessMatrix.html', label: 'Access Matrix', icon: 'grid_view', badge: '2 Orphaned' },
-        { path: 'privileged-accounts-monitoring', href: 'PrivilegedAccounts.html', label: 'Privileged Accounts', icon: 'admin_panel_settings', badge: '7 Active' },
-        { path: 'audit-logs-and-event-streams', href: 'AuditLogs.html', label: 'Audit Logs', icon: 'terminal', badge: 'LIVE' },
-        { path: 'ingestion-bridges', href: 'IngestionBridges.html', label: 'Ingestion Bridges', icon: 'cable', badge: '01-10' },
-        { path: 'emergency-break-glass', href: 'Break-GlassAccess.html', label: 'Break-Glass Access', icon: 'e911_emergency', badge: 'DEFCON-1', isEmergency: true },
-        { path: 'enterprise-security-policies', href: 'SecurityPolicies.html', label: 'Security Policies', icon: 'policy', badge: 'DOC-001' },
-        { path: 'board-risk-register', href: 'BoardRiskRegister.html', label: 'Board Risk Register', icon: 'balance', badge: 'DOC-015' },
-        { path: 'compliance-and-incident-oversight', href: 'ComplianceOversight.html', label: 'Compliance Oversight', icon: 'gavel', badge: 'ST RK' },
-        { path: 'emergency-lockdown', href: 'Emergency Lockdown.html', label: 'Emergency Lockdown', icon: 'lock', badge: 'QUARANTINE', isLockdown: true }
+        { path: 'dashboard', href: 'mainDashborde.php', label: 'Main Dashboard', icon: 'dashboard', badge: 'KPI & Threat' },
+        { path: 'access-matrix-and-role-review', href: 'accessMatrix.php', label: 'Access Matrix', icon: 'grid_view', badge: '2 Orphaned' },
+        { path: 'privileged-accounts-monitoring', href: 'PrivilegedAccounts.php', label: 'Privileged Accounts', icon: 'admin_panel_settings', badge: '7 Active' },
+        { path: 'audit-logs-and-event-streams', href: 'AuditLogs.php', label: 'Audit Logs', icon: 'terminal', badge: 'LIVE' },
+        { path: 'ingestion-bridges', href: 'IngestionBridges.php', label: 'Ingestion Bridges', icon: 'cable', badge: '01-10' },
+        { path: 'emergency-break-glass', href: 'Break-GlassAccess.php', label: 'Break-Glass Access', icon: 'e911_emergency', badge: 'DEFCON-1', isEmergency: true },
+        { path: 'enterprise-security-policies', href: 'SecurityPolicies.php', label: 'Security Policies', icon: 'policy', badge: 'DOC-001' },
+        { path: 'board-risk-register', href: 'BoardRiskRegister.php', label: 'Board Risk Register', icon: 'balance', badge: 'DOC-015' },
+        { path: 'compliance-and-incident-oversight', href: 'ComplianceOversight.php', label: 'Compliance Oversight', icon: 'gavel', badge: 'ST RK' },
+        { path: 'emergency-lockdown', href: 'Emergency Lockdown.php', label: 'Emergency Lockdown', icon: 'lock', badge: 'QUARANTINE', isLockdown: true }
     ];
 
     function getCurrentFileName() {
         const path = window.location.pathname;
         const filename = decodeURIComponent(path.substring(path.lastIndexOf('/') + 1));
-        return filename || 'mainDashborde.html';
+        return filename || 'mainDashborde.php';
     }
 
     function initNavigation() {
@@ -42,8 +42,8 @@
 
                 // Detect if this is the active page
                 const isCurrent = currentFile.toLowerCase() === mapItem.href.toLowerCase() ||
-                    (currentFile === '' && mapItem.href === 'mainDashborde.html') ||
-                    (currentFile.toLowerCase() === 'index.html' && mapItem.href === 'mainDashborde.html');
+                    (currentFile === '' && mapItem.href === 'mainDashborde.php') ||
+                    (currentFile.toLowerCase() === 'index.php' && mapItem.href === 'mainDashborde.php');
 
                 if (isCurrent) {
                     link.setAttribute('aria-current', 'page');
@@ -67,7 +67,7 @@
         const brandHeaders = document.querySelectorAll('header .flex.items-center.gap-space-md:first-child');
         brandHeaders.forEach(el => {
             el.style.cursor = 'pointer';
-            el.onclick = () => { window.location.href = 'mainDashborde.html'; };
+            el.onclick = () => { window.location.href = 'mainDashborde.php'; };
         });
     }
 
@@ -138,32 +138,40 @@
     // 4. QUICK SEARCH & COMMAND PALETTE (CTRL + K)
     // ==========================================
     const SEARCH_ENTITIES = [
-        { name: 'Main Dashboard (KPI & Threat Overview)', path: 'mainDashborde.html', type: 'View', cat: 'Navigation' },
-        { name: 'Access Matrix & Role Entitlement Configurator', path: 'accessMatrix.html', type: 'View', cat: 'Identity' },
-        { name: 'Privileged Accounts & Vault Session Control', path: 'PrivilegedAccounts.html', type: 'View', cat: 'Vault' },
-        { name: 'Audit Logs & Streaming Event Inspection', path: 'AuditLogs.html', type: 'View', cat: 'Audit' },
-        { name: 'Telemetry Ingestion Bridges (SYS 01-10)', path: 'IngestionBridges.html', type: 'View', cat: 'Pipelines' },
-        { name: 'Break-Glass Emergency HSM Override', path: 'Break-GlassAccess.html', type: 'View', cat: 'Emergency' },
-        { name: 'Enterprise Security Policies (DOC-2026-001)', path: 'SecurityPolicies.html', type: 'View', cat: 'Policies' },
-        { name: 'Board Risk Register & Roadmap (DOC-2026-015)', path: 'BoardRiskRegister.html', type: 'View', cat: 'Board' },
-        { name: 'Compliance Oversight & Statutory Register', path: 'ComplianceOversight.html', type: 'View', cat: 'Compliance' },
-        { name: 'Emergency Lockdown Console (DEFCON-1)', path: 'Emergency Lockdown.html', type: 'View', cat: 'Quarantine' },
+        { name: 'Main Dashboard (KPI & Threat Overview)', path: 'mainDashborde.php', type: 'View', cat: 'Navigation' },
+        { name: 'Access Matrix & Role Entitlement Configurator', path: 'accessMatrix.php', type: 'View', cat: 'Identity' },
+        { name: 'Privileged Accounts & Vault Session Control', path: 'PrivilegedAccounts.php', type: 'View', cat: 'Vault' },
+        { name: 'Audit Logs & Streaming Event Inspection', path: 'AuditLogs.php', type: 'View', cat: 'Audit' },
+        { name: 'Telemetry Ingestion Bridges (SYS 01-10)', path: 'IngestionBridges.php', type: 'View', cat: 'Pipelines' },
+        { name: 'Break-Glass Emergency HSM Override', path: 'Break-GlassAccess.php', type: 'View', cat: 'Emergency' },
+        { name: 'Enterprise Security Policies (DOC-2026-001)', path: 'SecurityPolicies.php', type: 'View', cat: 'Policies' },
+        { name: 'Board Risk Register & Roadmap (DOC-2026-015)', path: 'BoardRiskRegister.php', type: 'View', cat: 'Board' },
+        { name: 'Compliance Oversight & Statutory Register', path: 'ComplianceOversight.php', type: 'View', cat: 'Compliance' },
+        { name: 'Emergency Lockdown Console (DEFCON-1)', path: 'Emergency Lockdown.php', type: 'View', cat: 'Quarantine' },
         // Baseline Key Personnel
-        { name: 'Viktor Sokolov (EMP-1001) - CEO [L4 Clearance]', path: 'mainDashborde.html', type: 'EMP-ID', cat: 'Executive' },
-        { name: 'Amina Karimova (EMP-1002) - COO [L4 Clearance]', path: 'mainDashborde.html', type: 'EMP-ID', cat: 'Executive' },
-        { name: 'Elena Morozova (EMP-1004) - CTO [L4 Clearance]', path: 'mainDashborde.html', type: 'EMP-ID', cat: 'Executive' },
-        { name: 'Timur Akhmetov (EMP-1005) - Chief Governance Officer [L4]', path: 'mainDashborde.html', type: 'EMP-ID', cat: 'Governance' },
-        { name: 'Leonid Volkov (EMP-1018) - Systems Engineer [L3 Clearance]', path: 'mainDashborde.html', type: 'EMP-ID', cat: 'Engineering' },
-        { name: 'Farida Iskakova (EMP-1019) - Project Manager & Lead Custodian [L3]', path: '../File Center/index.html', type: 'EMP-ID', cat: 'Engineering' },
-        { name: 'Jonas Richter (EMP-1020) - Lead Developer [L3 Clearance]', path: 'mainDashborde.html', type: 'EMP-ID', cat: 'Engineering' },
-        { name: 'File Center / Document Hub (System 09 // Graphite)', path: '../File Center/index.html', type: 'External', cat: 'File Center' },
-        { name: 'DOC-2026-004 BaltNord Integration Spec (System 09)', path: '../File Center/approvals.html', type: 'Doc', cat: 'File Center' },
-        { name: 'Developer & API Portal (System 10 // Cyan)', path: '../Developer/index.html', type: 'External', cat: 'Developer' },
-        { name: 'DOC-2026-010 API Integration Guide (System 10)', path: '../Developer/guides.html', type: 'Doc', cat: 'Developer' },
+        { name: 'Viktor Sokolov (EMP-1001) - CEO [L4 Clearance]', path: 'mainDashborde.php', type: 'EMP-ID', cat: 'Executive' },
+        { name: 'Amina Karimova (EMP-1002) - COO [L4 Clearance]', path: 'mainDashborde.php', type: 'EMP-ID', cat: 'Executive' },
+        { name: 'Elena Morozova (EMP-1004) - CTO [L4 Clearance]', path: 'mainDashborde.php', type: 'EMP-ID', cat: 'Executive' },
+        { name: 'Timur Akhmetov (EMP-1005) - Chief Governance Officer [L4]', path: 'mainDashborde.php', type: 'EMP-ID', cat: 'Governance' },
+        { name: 'Leonid Volkov (EMP-1018) - Systems Engineer [L3 Clearance]', path: 'mainDashborde.php', type: 'EMP-ID', cat: 'Engineering' },
+        { name: 'Farida Iskakova (EMP-1019) - Project Manager & Lead Custodian [L3]', path: '../File Center/index.php', type: 'EMP-ID', cat: 'Engineering' },
+        { name: 'Jonas Richter (EMP-1020) - Lead Developer [L3 Clearance]', path: 'mainDashborde.php', type: 'EMP-ID', cat: 'Engineering' },
+        { name: 'Corporate Web Platform (System 01 // Public)', path: '../VOSTOKPRIBOR Corporate Web Platform/index.php', type: 'External', cat: 'Ecosystem' },
+        { name: 'B2B Online Shop (System 02 // Commerce)', path: '../Online Shop B2B/index.php', type: 'External', cat: 'Ecosystem' },
+        { name: 'Customer Service Portal (System 03 // Client)', path: '../Customer Portal/Dashboard.php', type: 'External', cat: 'Ecosystem' },
+        { name: 'Employee Intranet (System 04 // Staff)', path: '../Employee Intranet/index.php', type: 'External', cat: 'Ecosystem' },
+        { name: 'CRM Platform (System 05 // Sales)', path: '../CRM/index.php', type: 'External', cat: 'Ecosystem' },
+        { name: 'Human Resources HR (System 06 // Personnel)', path: '../HR System/index.php', type: 'External', cat: 'Ecosystem' },
+        { name: 'Finance & Billing (System 07 // Treasury)', path: '../Finance & Billing/index.php', type: 'External', cat: 'Ecosystem' },
+        { name: 'IT Helpdesk & Operations (System 08 // Service)', path: '../IT Helpdesk/index.php', type: 'External', cat: 'Ecosystem' },
+        { name: 'File Center / Document Hub (System 09 // Graphite)', path: '../File Center/index.php', type: 'External', cat: 'File Center' },
+        { name: 'DOC-2026-004 BaltNord Integration Spec (System 09)', path: '../File Center/approvals.php', type: 'Doc', cat: 'File Center' },
+        { name: 'Developer & API Portal (System 10 // Cyan)', path: '../Developer/index.php', type: 'External', cat: 'Developer' },
+        { name: 'DOC-2026-010 API Integration Guide (System 10)', path: '../Developer/guides.php', type: 'Doc', cat: 'Developer' },
         // Statutory Baseline Documents
-        { name: 'DOC-2026-001 Corporate Information Security Policy', path: 'SecurityPolicies.html', type: 'Doc', cat: 'Classified' },
-        { name: 'DOC-2026-007 Employee Access Matrix (Attestation)', path: 'mainDashborde.html', type: 'Doc', cat: 'Classified' },
-        { name: 'DOC-2026-015 Board Risk Register 2026', path: 'BoardRiskRegister.html', type: 'Doc', cat: 'Classified' }
+        { name: 'DOC-2026-001 Corporate Information Security Policy', path: 'SecurityPolicies.php', type: 'Doc', cat: 'Classified' },
+        { name: 'DOC-2026-007 Employee Access Matrix (Attestation)', path: 'mainDashborde.php', type: 'Doc', cat: 'Classified' },
+        { name: 'DOC-2026-015 Board Risk Register 2026', path: 'BoardRiskRegister.php', type: 'Doc', cat: 'Classified' }
     ];
 
     function createSearchModal() {

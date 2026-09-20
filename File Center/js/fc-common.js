@@ -177,10 +177,10 @@
      * Sidebar Navigation Active Link Highlight
      */
     function initNavigationHighlight() {
-        const currentPath = window.location.pathname.split('/').pop() || 'index.html';
+        const currentPath = window.location.pathname.split('/').pop() || 'index.php';
         document.querySelectorAll('.vk-nav-item').forEach(link => {
             const href = link.getAttribute('href');
-            if (href === currentPath || (currentPath === '' && href === 'index.html')) {
+            if (href === currentPath || (currentPath === '' && href === 'index.php')) {
                 link.classList.add('active');
             } else {
                 link.classList.remove('active');

@@ -1,0 +1,1272 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>VOSTOKPRIBOR • Precision Industrial Instrumentation & Automation Systems (Est. 1968)</title>
+    <meta name="description"
+        content="VOSTOKPRIBOR Global Logistics & Supply JSC — Industrial optical sensors, geodetic precision instruments, SCADA automation, and turnkey metrology lifecycle engineering." />
+
+    <!-- Google Fonts: IBM Plex Sans & JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+        rel="stylesheet" />
+
+    <!-- Core Stylesheets: Unified Theme & Corporate Page Styling -->
+    <link rel="stylesheet" href="css/theme.css" />
+    <link rel="stylesheet" href="css/corporate.css" />
+
+    <!-- Tailwind CSS with Enterprise Design Tokens -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "brand-primary": "#1B3A5C",
+                        "brand-primary-dark": "#0F2438",
+                        "brand-secondary": "#0E7C86",
+                        "brand-accent": "#E8A33D",
+                        "neutral-900": "#101418",
+                        "neutral-800": "#1E252D",
+                        "neutral-700": "#323B44",
+                        "neutral-600": "#4A5560",
+                        "neutral-300": "#BDC6CF",
+                        "neutral-200": "#DCE1E6",
+                        "neutral-100": "#EDF1F4",
+                        "neutral-50": "#F5F7F9",
+                        "class-public": "#8A94A0",
+                        "class-internal": "#3E7CB1",
+                        "class-confidential": "#D9822B",
+                        "class-restricted": "#B23A32"
+                    },
+                    fontFamily: {
+                        sans: ['IBM Plex Sans', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace']
+                    }
+                }
+            }
+        };
+    </script>
+</head>
+
+<body class="bg-neutral-50 font-sans text-neutral-900 antialiased selection:bg-brand-secondary selection:text-white">
+
+    <!-- ==========================================================================
+       Top Navigation Bar (Deep Navy #0F2438 with 4px Steel Blue Accent Stripe)
+       ========================================================================== -->
+    <header class="corporate-header">
+        <div class="max-w-[1440px] mx-auto h-full px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-4">
+            <!-- Brand Mark & Identity -->
+            <div class="flex items-center gap-3 shrink-0">
+                <a href="#hero" class="flex items-center gap-3 group">
+                    <img alt="VOSTOKPRIBOR Official Mark"
+                        class="h-8 w-auto object-contain transition-transform group-hover:scale-105"
+                        src="https://lh3.googleusercontent.com/aida/AEtjO1XMGDZ9meLzj0XkVJ6C4Xv2AoEzKtMyFqF7KQ8eMADmbywzsRZ7VF4Em6pQ7fZ8QRJExCZedCKEUUo1fN1LpEmGsQva25blyUsGhOPvX2vv2cHGkppzOp9iT33Xy2n4Nkr5e_YY_0J78vA8Q7vKUpViCouPJo13HFVvW5olf7QEFzU3EX-WCqc0SYyPXZb7E11PafOMC_KprpG6Tre6bN_DyZS-CI-J5qiCgBtikqVNYGueATNgWbi73Q" />
+                    <div class="h-6 w-px bg-white/20 hidden sm:block"></div>
+                    <div class="flex flex-col">
+                        <div class="flex items-center gap-2">
+                            <span
+                                class="font-bold text-white text-sm sm:text-base tracking-wide leading-tight">VOSTOKPRIBOR</span>
+                            <span
+                                class="px-1.5 py-0.5 rounded text-[10px] font-mono font-semibold bg-brand-primary text-slate-200 border border-white/20 whitespace-nowrap">SYSTEM
+                                01</span>
+                        </div>
+                        <span
+                            class="text-[10px] font-mono text-slate-400 whitespace-nowrap hidden sm:block">www.vostokpribor.local
+                            • Est. 1968</span>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Desktop Navigation Menu -->
+            <nav class="hidden lg:flex items-center gap-1 xl:gap-2 text-xs xl:text-sm font-medium shrink-0">
+                <a href="#solutions" class="nav-link">Solutions</a>
+                <a href="#sectors" class="nav-link">Sectors</a>
+                <a href="#timeline" class="nav-link">Heritage</a>
+                <a href="#projects" class="nav-link">Case Studies</a>
+                <a href="#leadership" class="nav-link">Leadership</a>
+                <a href="#network" class="nav-link">Global Hubs</a>
+                <a href="#contact-rfq" class="nav-link">Contact</a>
+            </nav>
+
+            <!-- Actions & Ecosystem Switcher -->
+            <div class="flex items-center gap-2.5 sm:gap-3 shrink-0">
+                <!-- Ecosystem Dropdown Button -->
+                <div class="relative">
+                    <button id="ecosystemSwitcherBtn"
+                        class="flex items-center gap-1.5 px-2.5 py-1.5 rounded text-xs font-mono text-slate-300 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 transition-colors cursor-pointer whitespace-nowrap"
+                        title="Switch between 11 VOSTOKPRIBOR Systems">
+                        <span class="material-symbols-outlined text-sm text-teal-400">apps</span>
+                        <span class="hidden sm:inline">Ecosystem (11)</span>
+                        <span class="material-symbols-outlined text-xs">expand_more</span>
+                    </button>
+
+                    <!-- Ecosystem Dropdown Menu -->
+                    <div id="ecosystemDropdown" class="ecosystem-dropdown">
+                        <div class="px-2 pb-2 mb-2 border-b border-white/10 flex items-center justify-between">
+                            <span
+                                class="text-xs font-mono font-semibold text-slate-300 uppercase tracking-wider">VOSTOKPRIBOR
+                                Ecosystem</span>
+                            <span class="text-[10px] font-mono text-teal-400">Baseline v2.4</span>
+                        </div>
+                        <div class="flex flex-col gap-1 max-h-80 overflow-y-auto pr-1">
+                            <a href="index.php" class="ecosystem-item bg-white/10 border-l-[#1B3A5C]">
+                                <span class="material-symbols-outlined text-sm text-blue-400">language</span>
+                                <div class="flex-1">
+                                    <div class="text-xs font-semibold text-white">01. Corporate Web Platform</div>
+                                    <div class="text-[10px] text-slate-400 font-mono">www.vostokpribor.local (Active)
+                                    </div>
+                                </div>
+                                <span
+                                    class="ecosystem-badge bg-blue-900/60 text-blue-300 border border-blue-500/30">Public</span>
+                            </a>
+                            <a href="../Online Shop B2B/index.php" class="ecosystem-item border-l-[#0E7C86]">
+                                <span class="material-symbols-outlined text-sm text-teal-400">shopping_cart</span>
+                                <div class="flex-1">
+                                    <div class="text-xs font-semibold text-slate-200">02. B2B Online Shop</div>
+                                    <div class="text-[10px] text-slate-400 font-mono">shop.vostokpribor.local</div>
+                                </div>
+                                <span
+                                    class="ecosystem-badge bg-teal-900/60 text-teal-300 border border-teal-500/30">Public</span>
+                            </a>
+                            <a href="../Customer Portal/Dashboard.php" class="ecosystem-item border-l-[#E8A33D]">
+                                <span class="material-symbols-outlined text-sm text-amber-400">space_dashboard</span>
+                                <div class="flex-1">
+                                    <div class="text-xs font-semibold text-slate-200">03. Customer Portal</div>
+                                    <div class="text-[10px] text-slate-400 font-mono">portal.vostokpribor.local</div>
+                                </div>
+                                <span
+                                    class="ecosystem-badge bg-amber-900/60 text-amber-300 border border-amber-500/30">Auth</span>
+                            </a>
+                            <a href="../Employee Intranet/index.php" class="ecosystem-item border-l-[#5C7290]">
+                                <span class="material-symbols-outlined text-sm text-slate-400">badge</span>
+                                <div class="flex-1">
+                                    <div class="text-xs font-semibold text-slate-200">04. Employee Intranet</div>
+                                    <div class="text-[10px] text-slate-400 font-mono">intranet.vostokpribor.local</div>
+                                </div>
+                                <span
+                                    class="ecosystem-badge bg-slate-800 text-slate-300 border border-slate-600">Internal</span>
+                            </a>
+                            <a href="../CRM/index.php" class="ecosystem-item border-l-[#3B4C8C]">
+                                <span class="material-symbols-outlined text-sm text-indigo-400">groups</span>
+                                <div class="flex-1">
+                                    <div class="text-xs font-semibold text-slate-200">05. CRM Platform</div>
+                                    <div class="text-[10px] text-slate-400 font-mono">crm.vostokpribor.local</div>
+                                </div>
+                                <span
+                                    class="ecosystem-badge bg-indigo-900/60 text-indigo-300 border border-indigo-500/30">Sales</span>
+                            </a>
+                            <a href="../HR System/index.php" class="ecosystem-item border-l-[#6E4C7C]">
+                                <span class="material-symbols-outlined text-sm text-purple-400">person_search</span>
+                                <div class="flex-1">
+                                    <div class="text-xs font-semibold text-slate-200">06. Human Resources (HR)</div>
+                                    <div class="text-[10px] text-slate-400 font-mono">hr.vostokpribor.local</div>
+                                </div>
+                                <span
+                                    class="ecosystem-badge bg-purple-900/60 text-purple-300 border border-purple-500/30">HRA</span>
+                            </a>
+                            <a href="../Finance & Billing/index.php" class="ecosystem-item border-l-[#2E6E4E]">
+                                <span class="material-symbols-outlined text-sm text-emerald-400">receipt_long</span>
+                                <div class="flex-1">
+                                    <div class="text-xs font-semibold text-slate-200">07. Finance & Billing</div>
+                                    <div class="text-[10px] text-slate-400 font-mono">finance.vostokpribor.local</div>
+                                </div>
+                                <span
+                                    class="ecosystem-badge bg-emerald-900/60 text-emerald-300 border border-emerald-500/30">Fin</span>
+                            </a>
+                            <a href="../IT Helpdesk/index.php" class="ecosystem-item border-l-[#C97A3D]">
+                                <span class="material-symbols-outlined text-sm text-orange-400">support_agent</span>
+                                <div class="flex-1">
+                                    <div class="text-xs font-semibold text-slate-200">08. IT Helpdesk & Service</div>
+                                    <div class="text-[10px] text-slate-400 font-mono">helpdesk.vostokpribor.local</div>
+                                </div>
+                                <span
+                                    class="ecosystem-badge bg-orange-900/60 text-orange-300 border border-orange-500/30">ITD</span>
+                            </a>
+                            <a href="../File Center/index.php" class="ecosystem-item border-l-[#5A6470]">
+                                <span class="material-symbols-outlined text-sm text-zinc-400">folder_zip</span>
+                                <div class="flex-1">
+                                    <div class="text-xs font-semibold text-slate-200">09. File Center Hub</div>
+                                    <div class="text-[10px] text-slate-400 font-mono">files.vostokpribor.local</div>
+                                </div>
+                                <span
+                                    class="ecosystem-badge bg-zinc-800 text-zinc-300 border border-zinc-600">Dossier</span>
+                            </a>
+                            <a href="../Developer/index.php" class="ecosystem-item border-l-[#1E8FA6]">
+                                <span class="material-symbols-outlined text-sm text-cyan-400">terminal</span>
+                                <div class="flex-1">
+                                    <div class="text-xs font-semibold text-slate-200">10. Developer / API Portal</div>
+                                    <div class="text-[10px] text-slate-400 font-mono">developer.vostokpribor.local</div>
+                                </div>
+                                <span
+                                    class="ecosystem-badge bg-cyan-900/60 text-cyan-300 border border-cyan-500/30">API</span>
+                            </a>
+                            <a href="../Admin & Governance Portal/index.php" class="ecosystem-item border-l-[#B23A32]">
+                                <span class="material-symbols-outlined text-sm text-red-400">security</span>
+                                <div class="flex-1">
+                                    <div class="text-xs font-semibold text-slate-200">11. Admin & Governance</div>
+                                    <div class="text-[10px] text-slate-400 font-mono">admin.vostokpribor.local</div>
+                                </div>
+                                <span class="ecosystem-badge bg-red-900/60 text-red-300 border border-red-500/30">Trust
+                                    4L</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Primary Action CTA Button -->
+                <a href="#contact-rfq"
+                    class="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded bg-brand-accent hover:bg-amber-500 text-neutral-900 font-bold text-xs transition-colors shadow-sm cursor-pointer whitespace-nowrap">
+                    <span>Request RFQ</span>
+                    <span class="material-symbols-outlined text-sm">send</span>
+                </a>
+
+
+
+                <!-- Mobile Menu Button -->
+                <button id="mobileMenuToggleBtn"
+                    class="p-1.5 rounded text-slate-300 hover:text-white hover:bg-white/10 lg:hidden cursor-pointer">
+                    <span class="material-symbols-outlined text-2xl">menu</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Drawer -->
+        <div id="mobileMenuDrawer" class="hidden lg:hidden bg-brand-primary-dark border-b border-white/15 px-4 py-4">
+            <div class="flex flex-col gap-2">
+                <a href="#solutions" class="nav-link py-2">Solutions & Products</a>
+                <a href="#sectors" class="nav-link py-2">Sectors</a>
+                <a href="#timeline" class="nav-link py-2">Heritage & History</a>
+                <a href="#projects" class="nav-link py-2">Case Studies</a>
+                <a href="#leadership" class="nav-link py-2">Leadership</a>
+                <a href="#network" class="nav-link py-2">Global Hubs</a>
+                <a href="#contact-rfq" class="nav-link py-2">Contact & RFQ</a>
+                <a href="../Customer Portal/Dashboard.php"
+                    class="mt-2 text-center py-2 rounded bg-brand-primary text-white text-xs font-semibold">Access
+                    Customer Portal</a>
+
+            </div>
+        </div>
+    </header>
+
+    <!-- ==========================================================================
+       Hero Section & Operational Heritage
+       ========================================================================== -->
+    <section id="hero" class="hero-stage">
+        <div class="hero-grid-pattern"></div>
+        <div class="hero-radar-glow"></div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="max-w-3xl">
+                <!-- Operational Badge -->
+                <div
+                    class="inline-flex items-center gap-2 px-2.5 py-1 rounded bg-white/10 border border-white/20 text-xs font-mono text-teal-300 mb-6 backdrop-blur-sm">
+                    <span class="w-2 h-2 rounded-full bg-teal-400 animate-pulse"></span>
+                    <span>ENTERPRISE BASELINE • EST. 1968 ALMATY</span>
+                    <span class="text-white/40">|</span>
+                    <span class="text-slate-300">JSC REGISTRY 77401</span>
+                </div>
+
+                <!-- Main Hero Headline -->
+                <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-white tracking-tight leading-[1.15] mb-6">
+                    Precision Instrumentation, Industrial Automation & Lifecycle Engineering Since 1968.
+                </h1>
+
+                <!-- Subtitle -->
+                <p class="text-base sm:text-lg text-slate-300 leading-relaxed mb-8 max-w-2xl font-normal">
+                    VOSTOKPRIBOR bridges advanced optical sensing, sub-millimeter geodetic precision, deterministic PLC
+                    loop automation, and comprehensive turnkey supply chains across Central Asia and Europe.
+                </p>
+
+                <!-- Dual Action CTAs -->
+                <div class="flex flex-wrap items-center gap-3 sm:gap-4">
+                    <a href="#solutions"
+                        class="inline-flex items-center gap-2 px-5 py-2.5 rounded bg-brand-accent hover:bg-amber-500 text-neutral-900 font-semibold text-sm transition-all shadow-md">
+                        <span>Explore Equipment Catalog</span>
+                        <span class="material-symbols-outlined text-base">precision_manufacturing</span>
+                    </a>
+                    <a href="#contact-rfq"
+                        class="inline-flex items-center gap-2 px-5 py-2.5 rounded bg-white/10 hover:bg-white/15 text-white font-medium text-sm border border-white/20 transition-all backdrop-blur-sm">
+                        <span>Submit Industrial RFQ (SOP-01)</span>
+                        <span class="material-symbols-outlined text-base">arrow_forward</span>
+                    </a>
+
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================================================
+       Live Operational Telemetry Bar (4 Key Enterprise Counters)
+       ========================================================================== -->
+    <div class="telemetry-ticker-bar">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-2 md:grid-cols-4">
+                <div class="telemetry-node-card">
+                    <div class="p-2.5 rounded bg-blue-50 text-brand-primary shrink-0">
+                        <span class="material-symbols-outlined text-2xl">groups</span>
+                    </div>
+                    <div>
+                        <div class="text-xl sm:text-2xl font-bold font-mono text-neutral-900 leading-tight">95</div>
+                        <div class="text-xs text-neutral-600 font-medium">Certified Specialists (8 Departments)</div>
+                    </div>
+                </div>
+                <div class="telemetry-node-card">
+                    <div class="p-2.5 rounded bg-teal-50 text-brand-secondary shrink-0">
+                        <span class="material-symbols-outlined text-2xl">precision_manufacturing</span>
+                    </div>
+                    <div>
+                        <div class="text-xl sm:text-2xl font-bold font-mono text-neutral-900 leading-tight">15</div>
+                        <div class="text-xs text-neutral-600 font-medium">Active Turnkey Programs (€2.9M)</div>
+                    </div>
+                </div>
+                <div class="telemetry-node-card">
+                    <div class="p-2.5 rounded bg-amber-50 text-amber-700 shrink-0">
+                        <span class="material-symbols-outlined text-2xl">corporate_fare</span>
+                    </div>
+                    <div>
+                        <div class="text-xl sm:text-2xl font-bold font-mono text-neutral-900 leading-tight">10</div>
+                        <div class="text-xs text-neutral-600 font-medium">Enterprise Consortia (Severstal, Steppe)</div>
+                    </div>
+                </div>
+                <div class="telemetry-node-card">
+                    <div class="p-2.5 rounded bg-emerald-50 text-emerald-700 shrink-0">
+                        <span class="material-symbols-outlined text-2xl">verified</span>
+                    </div>
+                    <div>
+                        <div class="text-xl sm:text-2xl font-bold font-mono text-neutral-900 leading-tight">99.98%</div>
+                        <div class="text-xs text-neutral-600 font-medium">SCADA Telemetry Uptime (Tier-1 SLA)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==========================================================================
+       Data Classification Security Framework Showcase
+       ========================================================================== */ -->
+    <section class="py-10 bg-white border-b border-neutral-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+                <div>
+                    <div class="text-xs font-mono font-semibold text-brand-secondary uppercase tracking-wider">Baseline
+                        Security Architecture</div>
+                    <h2 class="text-xl font-bold text-neutral-900 mt-0.5">Unified 4-Tier Data Classification Standard
+                    </h2>
+                </div>
+                <p class="text-xs text-neutral-600 max-w-lg">
+                    Applied uniformly across all 11 VOSTOKPRIBOR web systems to govern information sensitivity,
+                    role-based access control (RBAC), and cryptographic data isolation.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <!-- Public Tier -->
+                <div class="p-4 rounded-md border border-neutral-200 bg-neutral-50 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="badge-classification public">Public (L1)</span>
+                            <span class="text-[10px] font-mono text-neutral-500">Unrestricted</span>
+                        </div>
+                        <div class="text-xs font-semibold text-neutral-900 mb-1">General Documentation & Catalogs</div>
+                        <p class="text-[11px] text-neutral-600 leading-normal">
+                            Product specification sheets, public corporate overviews, and general brochures open to all
+                            external industrial stakeholders.
+                        </p>
+                    </div>
+                    <div class="mt-3 pt-2 border-t border-neutral-200 text-[10px] font-mono text-neutral-500">Example:
+                        PROD-1001 Catalog Spec</div>
+                </div>
+
+                <!-- Internal Tier -->
+                <div class="p-4 rounded-md border border-neutral-200 bg-neutral-50 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="badge-classification internal">Internal (L2)</span>
+                            <span class="text-[10px] font-mono text-neutral-500">Authorized Org</span>
+                        </div>
+                        <div class="text-xs font-semibold text-neutral-900 mb-1">Standard Operating Procedures</div>
+                        <p class="text-[11px] text-neutral-600 leading-normal">
+                            Departmental operational briefs, employee handbooks, and internal integration guides
+                            restricted to authenticated staff.
+                        </p>
+                    </div>
+                    <div class="mt-3 pt-2 border-t border-neutral-200 text-[10px] font-mono text-neutral-500">Example:
+                        SOP-01 Lead Intake Process</div>
+                </div>
+
+                <!-- Confidential Tier -->
+                <div class="p-4 rounded-md border border-neutral-200 bg-neutral-50 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="badge-classification confidential">Confidential (L3)</span>
+                            <span class="text-[10px] font-mono text-neutral-500">Need-to-Know</span>
+                        </div>
+                        <div class="text-xs font-semibold text-neutral-900 mb-1">Client Commercials & RFQs</div>
+                        <p class="text-[11px] text-neutral-600 leading-normal">
+                            Customer proposals, active project scopes (PRJ-2026-001), billing records, and incoming
+                            client RFQ submissions.
+                        </p>
+                    </div>
+                    <div class="mt-3 pt-2 border-t border-neutral-200 text-[10px] font-mono text-neutral-500">Example:
+                        Invoices & Statements of Work</div>
+                </div>
+
+                <!-- Highly Confidential Tier -->
+                <div class="p-4 rounded-md border border-neutral-200 bg-neutral-50 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="badge-classification restricted">Restricted (L4)</span>
+                            <span class="text-[10px] font-mono text-neutral-500">Executive / Gov</span>
+                        </div>
+                        <div class="text-xs font-semibold text-neutral-900 mb-1">Executive & Security Audits</div>
+                        <p class="text-[11px] text-neutral-600 leading-normal">
+                            Board risk registers, cryptographic access matrices, root master keys, and governance audit
+                            trails.
+                        </p>
+                    </div>
+                    <div class="mt-3 pt-2 border-t border-neutral-200 text-[10px] font-mono text-neutral-500">Example:
+                        Corporate Security Policy</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================================================
+       Solutions & Equipment Showcase (PROD-1001 – PROD-1010)
+       ========================================================================== -->
+    <section id="solutions" class="py-16 bg-neutral-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
+                <div>
+                    <div class="text-xs font-mono font-semibold text-brand-secondary uppercase tracking-wider">
+                        Industrial Catalog Matrix</div>
+                    <h2 class="text-2xl sm:text-3xl font-bold text-neutral-900 mt-1">Certified Industrial Equipment &
+                        Solutions</h2>
+                    <p class="text-sm text-neutral-600 mt-2 max-w-2xl">
+                        Explore our standardized baseline instrumentation portfolio, engineered for heavy metallurgical,
+                        mining, and infrastructural environments.
+                    </p>
+                </div>
+
+                <!-- Category Filter Tabs -->
+                <div class="flex flex-wrap items-center gap-1.5 p-1 bg-neutral-200/70 rounded-md">
+                    <button
+                        class="product-filter-btn active px-3 py-1.5 rounded text-xs font-medium bg-brand-primary text-white transition-colors cursor-pointer"
+                        data-category="all">All (10)</button>
+                    <button
+                        class="product-filter-btn px-3 py-1.5 rounded text-xs font-medium bg-white text-neutral-600 hover:text-neutral-900 transition-colors cursor-pointer"
+                        data-category="optics">Optics & Vision</button>
+                    <button
+                        class="product-filter-btn px-3 py-1.5 rounded text-xs font-medium bg-white text-neutral-600 hover:text-neutral-900 transition-colors cursor-pointer"
+                        data-category="geodesy">Geodesy & Survey</button>
+                    <button
+                        class="product-filter-btn px-3 py-1.5 rounded text-xs font-medium bg-white text-neutral-600 hover:text-neutral-900 transition-colors cursor-pointer"
+                        data-category="automation">PLC & Gateways</button>
+                    <button
+                        class="product-filter-btn px-3 py-1.5 rounded text-xs font-medium bg-white text-neutral-600 hover:text-neutral-900 transition-colors cursor-pointer"
+                        data-category="metrology">Metrology & SLAs</button>
+                </div>
+            </div>
+
+            <!-- Equipment Dynamic Grid -->
+            <div id="equipmentGridContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Dynamically populated via js/corporate.js -->
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================================================
+       Industrial Sectors & Turnkey Engineering
+       ========================================================================== -->
+    <section id="sectors" class="py-16 bg-white border-t border-b border-neutral-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-2xl mx-auto mb-12">
+                <div class="text-xs font-mono font-semibold text-brand-secondary uppercase tracking-wider">Industrial
+                    Domains</div>
+                <h2 class="text-2xl sm:text-3xl font-bold text-neutral-900 mt-1">Engineered for Harsh Industrial
+                    Operations</h2>
+                <p class="text-sm text-neutral-600 mt-2">
+                    Our systems withstand continuous blast furnace heat, sub-surface mining dust, extreme Eurasian
+                    permafrost, and automated rail vibration.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Metallurgy & Heavy Foundry -->
+                <div class="enterprise-card p-6 flex flex-col justify-between">
+                    <div>
+                        <div
+                            class="w-12 h-12 rounded-md bg-blue-50 text-brand-primary flex items-center justify-center mb-4">
+                            <span class="material-symbols-outlined text-2xl">local_fire_department</span>
+                        </div>
+                        <h3 class="text-lg font-bold text-neutral-900 mb-2">Metallurgy & Smelting</h3>
+                        <p class="text-xs text-neutral-600 leading-relaxed mb-4">
+                            High-temperature non-contact optical pyrometry and optical surface defect inspection skids
+                            deployed in hot strip mills and blast furnaces.
+                        </p>
+                        <div class="flex flex-wrap gap-1 mb-4">
+                            <span
+                                class="text-[10px] font-mono px-2 py-0.5 rounded bg-neutral-100 text-neutral-700">Severstal
+                                Plant #4</span>
+                            <span
+                                class="text-[10px] font-mono px-2 py-0.5 rounded bg-neutral-100 text-neutral-700">PRJ-2026-001</span>
+                        </div>
+                    </div>
+                    <div
+                        class="pt-4 border-t border-neutral-200 text-xs font-semibold text-brand-primary flex items-center justify-between">
+                        <span>Deployments: 12 Furnaces</span>
+                        <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                    </div>
+                </div>
+
+                <!-- Mining & Mineral Extraction -->
+                <div class="enterprise-card p-6 flex flex-col justify-between">
+                    <div>
+                        <div
+                            class="w-12 h-12 rounded-md bg-teal-50 text-brand-secondary flex items-center justify-center mb-4">
+                            <span class="material-symbols-outlined text-2xl">terrain</span>
+                        </div>
+                        <h3 class="text-lg font-bold text-neutral-900 mb-2">Mining & Extraction</h3>
+                        <p class="text-xs text-neutral-600 leading-relaxed mb-4">
+                            Heavy-duty telemetry gateways, slope stability geodetic monitors, and autonomous ore slurry
+                            concentration instrumentation.
+                        </p>
+                        <div class="flex flex-wrap gap-1 mb-4">
+                            <span
+                                class="text-[10px] font-mono px-2 py-0.5 rounded bg-neutral-100 text-neutral-700">Steppe
+                                Mining</span>
+                            <span
+                                class="text-[10px] font-mono px-2 py-0.5 rounded bg-neutral-100 text-neutral-700">PRJ-2026-003</span>
+                        </div>
+                    </div>
+                    <div
+                        class="pt-4 border-t border-neutral-200 text-xs font-semibold text-brand-primary flex items-center justify-between">
+                        <span>Deployments: 4 Open Pits</span>
+                        <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                    </div>
+                </div>
+
+                <!-- Critical Infrastructure & Rail -->
+                <div class="enterprise-card p-6 flex flex-col justify-between">
+                    <div>
+                        <div
+                            class="w-12 h-12 rounded-md bg-amber-50 text-amber-700 flex items-center justify-center mb-4">
+                            <span class="material-symbols-outlined text-2xl">train</span>
+                        </div>
+                        <h3 class="text-lg font-bold text-neutral-900 mb-2">Rail & Water Infrastructure</h3>
+                        <p class="text-xs text-neutral-600 leading-relaxed mb-4">
+                            Sub-millimeter track gauge dynamic measurement, high-pressure aqueduct telemetry, and
+                            municipal SCADA pump integration.
+                        </p>
+                        <div class="flex flex-wrap gap-1 mb-4">
+                            <span
+                                class="text-[10px] font-mono px-2 py-0.5 rounded bg-neutral-100 text-neutral-700">CentralRail
+                                Diagnostics</span>
+                            <span
+                                class="text-[10px] font-mono px-2 py-0.5 rounded bg-neutral-100 text-neutral-700">Eurasia
+                                Water</span>
+                        </div>
+                    </div>
+                    <div
+                        class="pt-4 border-t border-neutral-200 text-xs font-semibold text-brand-primary flex items-center justify-between">
+                        <span>Coverage: 3,400 km Track</span>
+                        <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================================================
+       Projects & Case Studies Portfolio (PRJ-2026-001 – PRJ-2026-015)
+       ========================================================================== -->
+    <section id="projects" class="py-16 bg-neutral-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
+                <div>
+                    <div class="text-xs font-mono font-semibold text-brand-secondary uppercase tracking-wider">
+                        Enterprise Engagement Record</div>
+                    <h2 class="text-2xl sm:text-3xl font-bold text-neutral-900 mt-1">Active Projects & Industrial Case
+                        Studies</h2>
+                    <p class="text-sm text-neutral-600 mt-2 max-w-xl">
+                        Every project in the VOSTOKPRIBOR ecosystem is tracked with strict data classification tags,
+                        budget transparency, and assigned lead engineers.
+                    </p>
+                </div>
+                <div class="text-xs font-mono text-neutral-500">
+                    Source: PRJ Registry • Baseline 2026
+                </div>
+            </div>
+
+            <!-- Classified Data Table -->
+            <div class="enterprise-card overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left table-classified">
+                        <thead
+                            class="bg-neutral-100 border-b border-neutral-200 text-xs font-mono text-neutral-600 uppercase tracking-wider">
+                            <tr>
+                                <th class="py-3 px-4">Project ID</th>
+                                <th class="py-3 px-4">Client & Sector</th>
+                                <th class="py-3 px-4">Scope Title</th>
+                                <th class="py-3 px-4">Budget</th>
+                                <th class="py-3 px-4">Milestone Status</th>
+                                <th class="py-3 px-4">Project Lead</th>
+                                <th class="py-3 px-4 text-right">Data Class</th>
+                            </tr>
+                        </thead>
+                        <tbody id="projectsTableBody">
+                            <!-- Populated via js/corporate.js -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================================================
+       Chronological Transformation Timeline (1968 to 2026)
+       ========================================================================== -->
+    <section id="timeline" class="py-16 bg-white border-t border-b border-neutral-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-2xl mx-auto mb-12">
+                <div class="text-xs font-mono font-semibold text-brand-secondary uppercase tracking-wider">58 Years of
+                    Metrology Heritage</div>
+                <h2 class="text-2xl sm:text-3xl font-bold text-neutral-900 mt-1">From Soviet Precision Optics to Digital
+                    Enterprise</h2>
+                <p class="text-sm text-neutral-600 mt-2">
+                    Established in 1968 in Almaty, Kazakhstan, VOSTOKPRIBOR has evolved continuously through six
+                    distinct eras of industrial transformation.
+                </p>
+            </div>
+
+            <div class="timeline-track max-w-4xl mx-auto">
+                <!-- 1968 -->
+                <div class="timeline-node md:grid md:grid-cols-2 md:gap-8 items-center">
+                    <div class="timeline-dot"></div>
+                    <div class="md:text-right pl-12 md:pl-0 pr-0 md:pr-8 mb-4 md:mb-0">
+                        <span
+                            class="inline-block font-mono text-sm font-bold text-brand-secondary bg-teal-50 px-2.5 py-0.5 rounded border border-teal-200 mb-1">1968
+                            • Foundation</span>
+                        <h4 class="text-base font-bold text-neutral-900">Soviet Optics & Geodetic Instruments</h4>
+                    </div>
+                    <div class="pl-12 md:pl-8">
+                        <div class="timeline-card">
+                            <p class="text-xs text-neutral-600 leading-relaxed">
+                                Founded in Almaty as a specialized precision optics manufacturer supplying high-accuracy
+                                surveying theodolites, optical levels, and lens arrays for industrial geodesy.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 1991 -->
+                <div class="timeline-node md:grid md:grid-cols-2 md:gap-8 items-center">
+                    <div class="timeline-dot"></div>
+                    <div class="md:order-2 pl-12 md:pl-8 pr-0 mb-4 md:mb-0">
+                        <span
+                            class="inline-block font-mono text-sm font-bold text-brand-primary bg-blue-50 px-2.5 py-0.5 rounded border border-blue-200 mb-1">1991
+                            • Post-Soviet Resilience</span>
+                        <h4 class="text-base font-bold text-neutral-900">Supply Chain Independence</h4>
+                    </div>
+                    <div class="md:order-1 pl-12 md:pl-0 pr-0 md:pr-8">
+                        <div class="timeline-card">
+                            <p class="text-xs text-neutral-600 leading-relaxed">
+                                Following the dissolution of centralized distribution, the plant transitioned from
+                                purely domestic fabrication to international multi-brand distribution and regional
+                                metrology support.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2004 -->
+                <div class="timeline-node md:grid md:grid-cols-2 md:gap-8 items-center">
+                    <div class="timeline-dot"></div>
+                    <div class="md:text-right pl-12 md:pl-0 pr-0 md:pr-8 mb-4 md:mb-0">
+                        <span
+                            class="inline-block font-mono text-sm font-bold text-brand-secondary bg-teal-50 px-2.5 py-0.5 rounded border border-teal-200 mb-1">2004
+                            • Restructuring</span>
+                        <h4 class="text-base font-bold text-neutral-900">Privatization & Global Logistics JSC</h4>
+                    </div>
+                    <div class="pl-12 md:pl-8">
+                        <div class="timeline-card">
+                            <p class="text-xs text-neutral-600 leading-relaxed">
+                                Reorganized under <em>Vostokpribor Global Logistics & Supply JSC</em>, establishing
+                                dedicated bonded warehousing hubs and an international B2B technical procurement
+                                framework.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2013 -->
+                <div class="timeline-node md:grid md:grid-cols-2 md:gap-8 items-center">
+                    <div class="timeline-dot"></div>
+                    <div class="md:order-2 pl-12 md:pl-8 pr-0 mb-4 md:mb-0">
+                        <span
+                            class="inline-block font-mono text-sm font-bold text-amber-700 bg-amber-50 px-2.5 py-0.5 rounded border border-amber-200 mb-1">2013
+                            • Customer Self-Service</span>
+                        <h4 class="text-base font-bold text-neutral-900">Launch of Customer Portal (System 03)</h4>
+                    </div>
+                    <div class="md:order-1 pl-12 md:pl-0 pr-0 md:pr-8">
+                        <div class="timeline-card">
+                            <p class="text-xs text-neutral-600 leading-relaxed">
+                                Large industrial accounts demanded live visibility into project stages, electronic
+                                calibration certificates, and billing ledgers, leading to the creation of the
+                                self-service portal.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2026 -->
+                <div class="timeline-node md:grid md:grid-cols-2 md:gap-8 items-center">
+                    <div class="timeline-dot" style="background-color: var(--brand-accent);"></div>
+                    <div class="md:text-right pl-12 md:pl-0 pr-0 md:pr-8 mb-4 md:mb-0">
+                        <span
+                            class="inline-block font-mono text-sm font-bold text-neutral-900 bg-amber-100 px-2.5 py-0.5 rounded border border-amber-300 mb-1">2026
+                            • Current Era</span>
+                        <h4 class="text-base font-bold text-neutral-900">Interconnected 11-System Ecosystem</h4>
+                    </div>
+                    <div class="pl-12 md:pl-8">
+                        <div class="timeline-card border-brand-accent shadow-md">
+                            <p class="text-xs text-neutral-700 font-medium leading-relaxed">
+                                Fully integrated digital industrial enterprise connecting 95 employees, 60 industrial
+                                clients, and 11 distinct web platforms under a singular, hardened security and design
+                                baseline.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================================================
+       Executive Leadership & Governance Team
+       ========================================================================== -->
+    <section id="leadership" class="py-16 bg-neutral-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
+                <div>
+                    <div class="text-xs font-mono font-semibold text-brand-secondary uppercase tracking-wider">Executive
+                        Management (EXE)</div>
+                    <h2 class="text-2xl sm:text-3xl font-bold text-neutral-900 mt-1">Corporate Governance & Technical
+                        Leadership</h2>
+                    <p class="text-sm text-neutral-600 mt-2 max-w-xl">
+                        Guided by experienced industrial executives operating under Level 4 (Restricted) administrative
+                        governance standards.
+                    </p>
+                </div>
+                <div class="text-xs font-mono text-neutral-500">
+                    Almaty Headquarters • Executive Committee
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Viktor Sokolov (CEO) -->
+                <div class="enterprise-card p-5">
+                    <div class="flex items-center gap-3.5 mb-3.5">
+                        <div
+                            class="w-12 h-12 rounded-full bg-brand-primary text-white flex items-center justify-center font-bold text-base shadow-sm">
+                            VS
+                        </div>
+                        <div>
+                            <div class="text-sm font-bold text-neutral-900">Viktor Sokolov</div>
+                            <div class="text-xs text-brand-secondary font-medium">Chief Executive Officer (CEO)</div>
+                            <div class="text-[10px] font-mono text-neutral-500">EMP-1001 • Clearance L4</div>
+                        </div>
+                    </div>
+                    <p class="text-xs text-neutral-600 leading-relaxed pt-3 border-t border-neutral-200">
+                        Oversees strategic industrial expansion, major governmental consortiums, and executive risk
+                        approvals across Central Asia and Europe.
+                    </p>
+                </div>
+
+                <!-- Amina Karimova (COO) -->
+                <div class="enterprise-card p-5">
+                    <div class="flex items-center gap-3.5 mb-3.5">
+                        <div
+                            class="w-12 h-12 rounded-full bg-brand-primary text-white flex items-center justify-center font-bold text-base shadow-sm">
+                            AK
+                        </div>
+                        <div>
+                            <div class="text-sm font-bold text-neutral-900">Amina Karimova</div>
+                            <div class="text-xs text-brand-secondary font-medium">Chief Operating Officer (COO)</div>
+                            <div class="text-[10px] font-mono text-neutral-500">EMP-1002 • Clearance L4</div>
+                        </div>
+                    </div>
+                    <p class="text-xs text-neutral-600 leading-relaxed pt-3 border-t border-neutral-200">
+                        Leads multi-hub bonded warehouse logistics, instrument fabrication quality control, and
+                        cross-border customs execution.
+                    </p>
+                </div>
+
+                <!-- Elena Morozova (CTO) -->
+                <div class="enterprise-card p-5">
+                    <div class="flex items-center gap-3.5 mb-3.5">
+                        <div
+                            class="w-12 h-12 rounded-full bg-brand-primary text-white flex items-center justify-center font-bold text-base shadow-sm">
+                            EM
+                        </div>
+                        <div>
+                            <div class="text-sm font-bold text-neutral-900">Elena Morozova</div>
+                            <div class="text-xs text-brand-secondary font-medium">Chief Technology Officer (CTO)</div>
+                            <div class="text-[10px] font-mono text-neutral-500">EMP-1004 • Clearance L4</div>
+                        </div>
+                    </div>
+                    <p class="text-xs text-neutral-600 leading-relaxed pt-3 border-t border-neutral-200">
+                        Directs software engineering, SCADA protocol gateways, API integrations, and edge sensor
+                        computing architectures.
+                    </p>
+                </div>
+
+                <!-- Daniel Weber (CFO) -->
+                <div class="enterprise-card p-5">
+                    <div class="flex items-center gap-3.5 mb-3.5">
+                        <div
+                            class="w-12 h-12 rounded-full bg-brand-primary text-white flex items-center justify-center font-bold text-base shadow-sm">
+                            DW
+                        </div>
+                        <div>
+                            <div class="text-sm font-bold text-neutral-900">Daniel Weber</div>
+                            <div class="text-xs text-brand-secondary font-medium">Chief Financial Officer (CFO)</div>
+                            <div class="text-[10px] font-mono text-neutral-500">EMP-1003 • Clearance L4</div>
+                        </div>
+                    </div>
+                    <p class="text-xs text-neutral-600 leading-relaxed pt-3 border-t border-neutral-200">
+                        Manages corporate treasury, capital investments, multi-currency client billing, and
+                        international audit compliance.
+                    </p>
+                </div>
+
+                <!-- Timur Akhmetov (Chief Governance Officer) -->
+                <div class="enterprise-card p-5">
+                    <div class="flex items-center gap-3.5 mb-3.5">
+                        <div
+                            class="w-12 h-12 rounded-full bg-brand-primary text-white flex items-center justify-center font-bold text-base shadow-sm">
+                            TA
+                        </div>
+                        <div>
+                            <div class="text-sm font-bold text-neutral-900">Timur Akhmetov</div>
+                            <div class="text-xs text-brand-secondary font-medium">Chief Governance Officer (CGO)</div>
+                            <div class="text-[10px] font-mono text-neutral-500">EMP-1005 • Clearance L4</div>
+                        </div>
+                    </div>
+                    <p class="text-xs text-neutral-600 leading-relaxed pt-3 border-t border-neutral-200">
+                        Oversees enterprise information security, regulatory compliance, data classification
+                        enforcement, and audit logs.
+                    </p>
+                </div>
+
+                <!-- Pavel Orlov (Sales Director) -->
+                <div class="enterprise-card p-5">
+                    <div class="flex items-center gap-3.5 mb-3.5">
+                        <div
+                            class="w-12 h-12 rounded-full bg-brand-accent text-neutral-900 flex items-center justify-center font-bold text-base shadow-sm">
+                            PO
+                        </div>
+                        <div>
+                            <div class="text-sm font-bold text-neutral-900">Pavel Orlov</div>
+                            <div class="text-xs text-brand-secondary font-medium">Commercial & Sales Director</div>
+                            <div class="text-[10px] font-mono text-neutral-500">EMP-1006 • Clearance L3</div>
+                        </div>
+                    </div>
+                    <p class="text-xs text-neutral-600 leading-relaxed pt-3 border-t border-neutral-200">
+                        Heads strategic key accounts, commercial RFQ evaluations (SOP-01), enterprise bids, and customer
+                        onboarding.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================================================
+       Global Metrology & Logistics Network
+       ========================================================================== -->
+    <section id="network" class="py-16 bg-white border-t border-b border-neutral-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-2xl mx-auto mb-12">
+                <div class="text-xs font-mono font-semibold text-brand-secondary uppercase tracking-wider">Metrology
+                    Infrastructure</div>
+                <h2 class="text-2xl sm:text-3xl font-bold text-neutral-900 mt-1">International Transit & Metrology Hubs
+                </h2>
+                <p class="text-sm text-neutral-600 mt-2">
+                    Strategically stationed facilities ensuring precision sensor calibration, bonded warehousing, and
+                    guaranteed SLA logistics.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="p-5 rounded-md border border-neutral-200 bg-neutral-50">
+                    <div class="text-xs font-mono font-bold text-brand-secondary uppercase mb-1">Central Headquarters
+                    </div>
+                    <div class="text-base font-bold text-neutral-900">Almaty, Kazakhstan</div>
+                    <div class="text-xs text-neutral-600 mt-1">Dostyk Metrology Campus</div>
+                    <div class="mt-3 pt-3 border-t border-neutral-200 text-xs text-neutral-500">
+                        Primary Rosstandart & ISO/IEC 17025 accredited calibration bench, Executive management &
+                        Engineering skids.
+                    </div>
+                </div>
+
+                <div class="p-5 rounded-md border border-neutral-200 bg-neutral-50">
+                    <div class="text-xs font-mono font-bold text-brand-secondary uppercase mb-1">Northern Logistics
+                        Center</div>
+                    <div class="text-base font-bold text-neutral-900">Astana, Kazakhstan</div>
+                    <div class="text-xs text-neutral-600 mt-1">Industrial Transit Zone #2</div>
+                    <div class="mt-3 pt-3 border-t border-neutral-200 text-xs text-neutral-500">
+                        Rapid rail dispatch staging, cold-weather test chamber, and mineral extraction equipment
+                        inventory.
+                    </div>
+                </div>
+
+                <div class="p-5 rounded-md border border-neutral-200 bg-neutral-50">
+                    <div class="text-xs font-mono font-bold text-brand-secondary uppercase mb-1">Central Asian
+                        Operations</div>
+                    <div class="text-base font-bold text-neutral-900">Tashkent, Uzbekistan</div>
+                    <div class="text-xs text-neutral-600 mt-1">Chilanzar Tech Park</div>
+                    <div class="mt-3 pt-3 border-t border-neutral-200 text-xs text-neutral-500">
+                        PLC integration workshops, gas chromatography assembly, and regional technical support hotline.
+                    </div>
+                </div>
+
+                <div class="p-5 rounded-md border border-neutral-200 bg-neutral-50">
+                    <div class="text-xs font-mono font-bold text-brand-secondary uppercase mb-1">Western Gateway Port
+                    </div>
+                    <div class="text-base font-bold text-neutral-900">Rotterdam, Netherlands</div>
+                    <div class="text-xs text-neutral-600 mt-1">Maasvlakte Euro-Hub</div>
+                    <div class="mt-3 pt-3 border-t border-neutral-200 text-xs text-neutral-500">
+                        European customs clearance, optics import bonding, and international maritime cargo
+                        consolidation.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================================================
+       Commercial RFQ & Lead Intake Cockpit (SOP-01)
+       ========================================================================== -->
+    <section id="contact-rfq" class="py-16 bg-neutral-50">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="enterprise-card p-6 sm:p-10">
+                <div class="flex items-center justify-between border-b border-neutral-200 pb-5 mb-6">
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span class="badge-classification confidential">Confidential Intake</span>
+                            <span class="text-xs font-mono text-neutral-500">SOP-01 Workflow</span>
+                        </div>
+                        <h2 class="text-2xl font-bold text-neutral-900 mt-1">Commercial Technical Consultation & RFQ
+                            Intake</h2>
+                    </div>
+                    <span
+                        class="material-symbols-outlined text-3xl text-brand-secondary hidden sm:block">request_quote</span>
+                </div>
+
+                <p class="text-xs text-neutral-600 mb-6 leading-relaxed">
+                    Submit your industrial specifications, equipment inquiry, or tender documentation. In accordance
+                    with SOP-01, your inquiry will be assigned a unique Lead ID and routed to Director Pavel Orlov
+                    (EMP-1006) and the CRM engineering queue.
+                </p>
+
+                <!-- RFQ Intake Form -->
+                <form id="corporateRfqForm" class="space-y-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label for="rfqCompanyName" class="form-label-enterprise">Company / Industrial Entity
+                                *</label>
+                            <input type="text" id="rfqCompanyName" required
+                                placeholder="e.g. Severstal Metallurgy Plant #4" class="form-input-enterprise" />
+                        </div>
+                        <div>
+                            <label for="rfqContactName" class="form-label-enterprise">Contact Name & Title *</label>
+                            <input type="text" id="rfqContactName" required
+                                placeholder="e.g. Alexey Danilov (Chief Eng.)" class="form-input-enterprise" />
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label for="rfqEmail" class="form-label-enterprise">Corporate Business Email *</label>
+                            <input type="email" id="rfqEmail" required placeholder="name@company.com"
+                                class="form-input-enterprise" />
+                        </div>
+                        <div>
+                            <label for="rfqSector" class="form-label-enterprise">Industrial Sector</label>
+                            <select id="rfqSector" class="form-input-enterprise">
+                                <option value="metallurgy">Metallurgy & Heavy Smelting</option>
+                                <option value="mining">Mining & Extraction</option>
+                                <option value="geodesy">Geomatics & Geodetic Survey</option>
+                                <option value="automation">Process Automation & Robotics</option>
+                                <option value="railways">Rail & Transit Infrastructure</option>
+                                <option value="utilities">Water & Petrochemical Utilities</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label for="rfqInterestSelect" class="form-label-enterprise">Primary Equipment / Service
+                                Interest</label>
+                            <select id="rfqInterestSelect" class="form-input-enterprise">
+                                <option value="PROD-1001">PROD-1001 • Industrial Optical Sensor Package</option>
+                                <option value="PROD-1002">PROD-1002 • Precision Geodetic Measurement Kit</option>
+                                <option value="PROD-1003">PROD-1003 • Automated Calibration Station</option>
+                                <option value="PROD-1004">PROD-1004 • Industrial PLC Integration Skid</option>
+                                <option value="PROD-1005">PROD-1005 • Remote Monitoring Gateway (IoT/SCADA)</option>
+                                <option value="PROD-1006">PROD-1006 • Optical Inspection System</option>
+                                <option value="PROD-1007">PROD-1007 • Industrial Lifecycle Support & SLA</option>
+                                <option value="PROD-1008">PROD-1008 • Automation Software Integration</option>
+                                <option value="PROD-1009">PROD-1009 • Enterprise Logistics Management</option>
+                                <option value="PROD-1010">PROD-1010 • Preventive Instrument Maintenance</option>
+                                <option value="other">Custom Turnkey Engineering Project</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="rfqBudget" class="form-label-enterprise">Estimated Budget Scope</label>
+                            <select id="rfqBudget" class="form-input-enterprise">
+                                <option value="standard">€50,000 – €150,000</option>
+                                <option value="medium">€150,000 – €300,000</option>
+                                <option value="large">€300,000 – €1,000,000+</option>
+                                <option value="evaluation">Technical Evaluation Stage</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="rfqNotes" class="form-label-enterprise">Technical Requirements / Operating
+                            Parameters</label>
+                        <textarea id="rfqNotes" rows="3"
+                            placeholder="Describe telemetry protocols, operating temperature limits, expected unit count, or calibration needs..."
+                            class="form-input-enterprise"></textarea>
+                    </div>
+
+                    <div class="pt-4 flex items-center justify-between">
+                        <div class="text-[11px] text-neutral-500 font-mono">
+                            Protected under VOSTOKPRIBOR NDA & Data Protection Policy DOC-2026-001.
+                        </div>
+                        <button type="submit"
+                            class="inline-flex items-center gap-2 px-6 py-2.5 rounded bg-brand-accent hover:bg-amber-500 text-neutral-900 font-bold text-xs uppercase tracking-wider transition-colors shadow-sm cursor-pointer">
+                            <span>Submit RFP / Inquiry</span>
+                            <span class="material-symbols-outlined text-base">send</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================================================
+       Technical Dossier Spec Modal (#specModalBackdrop)
+       ========================================================================== -->
+    <div id="specModalBackdrop" class="enterprise-modal-backdrop">
+        <div class="enterprise-modal-container p-6 sm:p-8">
+            <div class="flex items-start justify-between border-b border-neutral-200 pb-4 mb-4">
+                <div>
+                    <div class="flex items-center gap-2 mb-1">
+                        <span id="specModalClassBadge" class="badge-classification public">Public</span>
+                        <span class="text-xs font-mono text-neutral-500">Technical Dossier</span>
+                    </div>
+                    <h3 id="specModalTitle" class="text-xl font-bold text-neutral-900">PROD-1001 • Product Spec</h3>
+                    <div id="specModalSubtitle" class="text-xs font-mono text-neutral-600 mt-0.5">Model: VP-OPT-8800
+                    </div>
+                </div>
+                <button id="closeSpecModalBtn"
+                    class="p-1 rounded text-neutral-400 hover:text-neutral-900 transition-colors cursor-pointer">
+                    <span class="material-symbols-outlined text-xl">close</span>
+                </button>
+            </div>
+
+            <p id="specModalDescription" class="text-xs text-neutral-700 leading-relaxed mb-6"></p>
+
+            <div class="mb-6">
+                <div class="text-xs font-mono font-bold text-neutral-800 uppercase tracking-wider mb-2">Technical
+                    Parameters & Calibration Specs</div>
+                <table class="w-full text-left">
+                    <tbody id="specModalSpecsTable">
+                        <!-- Filled dynamically -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="p-3 bg-neutral-100 rounded border border-neutral-200 text-xs mb-6">
+                <div class="font-bold text-neutral-800 mb-1">Primary Industrial Deployments:</div>
+                <div id="specModalDeployments" class="text-neutral-600 font-mono text-[11px]"></div>
+            </div>
+
+            <div class="flex items-center justify-end gap-3 pt-2">
+                <button onclick="document.getElementById('specModalBackdrop').classList.remove('show')"
+                    class="px-4 py-2 rounded text-xs font-semibold text-neutral-700 hover:bg-neutral-100 transition-colors cursor-pointer">Close</button>
+                <a href="#contact-rfq" onclick="document.getElementById('specModalBackdrop').classList.remove('show')"
+                    class="px-4 py-2 rounded bg-brand-primary text-white text-xs font-semibold hover:bg-brand-primary-dark transition-colors cursor-pointer">Request
+                    Commercial Quote</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==========================================================================
+       Commercial RFQ Confirmation Modal (#rfqConfirmationBackdrop)
+       ========================================================================== -->
+    <div id="rfqConfirmationBackdrop" class="enterprise-modal-backdrop">
+        <div class="enterprise-modal-container max-w-lg p-6 sm:p-8 text-center">
+            <div
+                class="w-16 h-16 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center mx-auto mb-4">
+                <span class="material-symbols-outlined text-3xl">check_circle</span>
+            </div>
+            <span class="badge-classification confidential mb-2">Confidential Record</span>
+            <h3 class="text-xl font-bold text-neutral-900 mt-2 mb-1">Inquiry Dispatched to CRM</h3>
+            <p class="text-xs text-neutral-600 mb-6">
+                Your technical commercial inquiry has been recorded and processed in accordance with VOSTOKPRIBOR
+                Standard Operating Procedure <strong>SOP-01</strong>.
+            </p>
+
+            <div
+                class="bg-neutral-100 rounded p-4 border border-neutral-200 text-left font-mono text-xs mb-6 space-y-1.5">
+                <div class="flex justify-between">
+                    <span class="text-neutral-500">Lead Reference ID:</span>
+                    <span id="confirmedLeadId" class="font-bold text-brand-primary">LEAD-2026-XXXX</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-neutral-500">Workflow Standard:</span>
+                    <span class="text-neutral-800">SOP-01 Lead Intake</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-neutral-500">Target Pipeline:</span>
+                    <span class="text-neutral-800">crm.vostokpribor.local</span>
+                </div>
+                <div class="pt-2 border-t border-neutral-200 text-[11px] text-neutral-600" id="confirmedRouting">
+                    Assigned Account Manager: Pavel Orlov (EMP-1006)
+                </div>
+            </div>
+
+            <button id="closeConfirmationBtn"
+                class="w-full py-2.5 rounded bg-brand-primary hover:bg-brand-primary-dark text-white font-semibold text-xs transition-colors cursor-pointer">
+                Acknowledge & Return to Platform
+            </button>
+        </div>
+    </div>
+
+    <!-- ==========================================================================
+       Standardized Enterprise Corporate Footer (System 01 Specification)
+       ========================================================================== -->
+    <footer class="bg-brand-primary-dark text-slate-400 text-xs border-t border-white/10 pt-16 pb-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 pb-12 border-b border-white/10">
+                <!-- Col 1: Corporate Profile -->
+                <div class="lg:col-span-2">
+                    <div class="flex items-center gap-2 mb-3">
+                        <img alt="VOSTOKPRIBOR Logo" class="h-7 w-auto object-contain"
+                            src="https://lh3.googleusercontent.com/aida/AEtjO1XMGDZ9meLzj0XkVJ6C4Xv2AoEzKtMyFqF7KQ8eMADmbywzsRZ7VF4Em6pQ7fZ8QRJExCZedCKEUUo1fN1LpEmGsQva25blyUsGhOPvX2vv2cHGkppzOp9iT33Xy2n4Nkr5e_YY_0J78vA8Q7vKUpViCouPJo13HFVvW5olf7QEFzU3EX-WCqc0SYyPXZb7E11PafOMC_KprpG6Tre6bN_DyZS-CI-J5qiCgBtikqVNYGueATNgWbi73Q" />
+                        <span class="font-bold text-white text-base tracking-tight">VOSTOKPRIBOR</span>
+                    </div>
+                    <p class="text-xs text-slate-400 leading-relaxed mb-4 max-w-sm">
+                        Vostokpribor Global Logistics & Supply JSC. Specializing in optical sensors, geodetic precision
+                        equipment, deterministic PLC automation, and industrial lifecycle engineering since 1968.
+                    </p>
+                    <div class="text-[11px] font-mono text-slate-500">
+                        Registration: JSC-77401 • Headquarters: Almaty, Kazakhstan
+                    </div>
+                </div>
+
+                <!-- Col 2: Solutions Matrix -->
+                <div>
+                    <div class="text-xs font-mono font-bold text-white uppercase tracking-wider mb-4">Equipment &
+                        Solutions</div>
+                    <ul class="space-y-2.5">
+                        <li><a href="#solutions" class="hover:text-white transition-colors">Optical Sensors
+                                (PROD-1001)</a></li>
+                        <li><a href="#solutions" class="hover:text-white transition-colors">Geodetic Systems
+                                (PROD-1002)</a></li>
+                        <li><a href="#solutions" class="hover:text-white transition-colors">Calibration Benches
+                                (PROD-1003)</a></li>
+                        <li><a href="#solutions" class="hover:text-white transition-colors">Industrial PLCs
+                                (PROD-1004)</a></li>
+                        <li><a href="#solutions" class="hover:text-white transition-colors">SCADA Edge Gateways
+                                (PROD-1005)</a></li>
+                        <li><a href="#solutions" class="hover:text-white transition-colors">Machine Vision AI
+                                (PROD-1006)</a></li>
+                    </ul>
+                </div>
+
+                <!-- Col 3: Sectors & Projects -->
+                <div>
+                    <div class="text-xs font-mono font-bold text-white uppercase tracking-wider mb-4">Industrial Sectors
+                    </div>
+                    <ul class="space-y-2.5">
+                        <li><a href="#sectors" class="hover:text-white transition-colors">Metallurgical Strip Mills</a>
+                        </li>
+                        <li><a href="#sectors" class="hover:text-white transition-colors">Open-Pit Mining & Slurry</a>
+                        </li>
+                        <li><a href="#sectors" class="hover:text-white transition-colors">Railway Telemetry Gauging</a>
+                        </li>
+                        <li><a href="#sectors" class="hover:text-white transition-colors">Robotic Vision Guidance</a>
+                        </li>
+                        <li><a href="#sectors" class="hover:text-white transition-colors">Municipal Water SCADA</a></li>
+                        <li><a href="#projects" class="hover:text-white transition-colors">Case Studies (PRJ-2026)</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Col 4: Enterprise Ecosystem Portals -->
+                <div>
+                    <div class="text-xs font-mono font-bold text-teal-400 uppercase tracking-wider mb-4">Ecosystem
+                        Portals</div>
+                    <ul class="space-y-2.5 text-xs font-mono">
+                        <li><a href="../Customer Portal/Dashboard.php"
+                                class="hover:text-teal-300 transition-colors flex items-center gap-1.5"><span
+                                    class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>Customer Portal</a></li>
+                        <li><a href="../Online Shop B2B/index.php"
+                                class="hover:text-teal-300 transition-colors flex items-center gap-1.5"><span
+                                    class="w-1.5 h-1.5 rounded-full bg-teal-400"></span>B2B Online Shop</a></li>
+                        <li><a href="../Developer/index.php"
+                                class="hover:text-teal-300 transition-colors flex items-center gap-1.5"><span
+                                    class="w-1.5 h-1.5 rounded-full bg-cyan-400"></span>Developer / API Hub</a></li>
+                        <li><a href="../Employee Intranet/index.php"
+                                class="hover:text-teal-300 transition-colors flex items-center gap-1.5"><span
+                                    class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>Employee Intranet</a></li>
+                        <li><a href="../CRM/index.php"
+                                class="hover:text-teal-300 transition-colors flex items-center gap-1.5"><span
+                                    class="w-1.5 h-1.5 rounded-full bg-indigo-400"></span>CRM Platform</a></li>
+                        <li><a href="../Admin & Governance Portal/index.php"
+                                class="hover:text-teal-300 transition-colors flex items-center gap-1.5"><span
+                                    class="w-1.5 h-1.5 rounded-full bg-red-400"></span>Governance Console</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Bottom Legal & Accreditation Strip -->
+            <div
+                class="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] font-mono text-slate-500">
+                <div class="flex flex-wrap items-center gap-3">
+                    <span>© 1968–2026 VOSTOKPRIBOR Global Logistics & Supply JSC.</span>
+                    <span>All Rights Reserved.</span>
+                    <span>ISO 9001:2015</span>
+                    <span>ISO/IEC 17025 Metrology</span>
+                    <span>GOST R 8.568</span>
+                </div>
+                <div class="flex items-center gap-4">
+                    <span class="text-teal-400 font-semibold">FQDN: www.vostokpribor.local</span>
+                    <span>•</span>
+                    <a href="#contact-rfq" class="hover:text-white transition-colors">Security Disclosures</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Toast Notification Container -->
+    <div id="corporate-toast-container"></div>
+
+    <!-- Application Script -->
+    <script src="js/corporate.js"></script>
+</body>
+
+</html>

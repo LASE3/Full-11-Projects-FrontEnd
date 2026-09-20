@@ -19,7 +19,7 @@
      * Connect directly to Assigned Manager Viktor Morozov
      */
     window.contactManager = function () {
-        window.location.href = 'SupportTicketView.html?ticket=TCK-9482';
+        window.location.href = 'SupportTicketView.php?ticket=TCK-9482';
     };
 
     /**

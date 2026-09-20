@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VOSTOKPRIBOR Finance · Executive Financial Operations</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <div class="app-container">
+    <!-- ========================================================================
+         TOP NAVIGATION BAR (#0F2438 Deep Navy + #2E6E4E 4px Accent Stripe)
+         ======================================================================== -->
+    <header class="top-nav">
+      <!-- 4px System Identity Stripe (Deep Green) -->
+      <div class="top-nav__accent-stripe"></div>
+
+      <div class="top-nav__content">
+        <!-- Brand & System Identifier -->
+        <div class="brand-section">
+          <a href="Dashboard.php" class="brand-logo-container">
+            <img alt="VOSTOKPRIBOR Official Mark" class="brand-logo-img" src="https://lh3.googleusercontent.com/aida/AEtjO1XMGDZ9meLzj0XkVJ6C4Xv2AoEzKtMyFqF7KQ8eMADmbywzsRZ7VF4Em6pQ7fZ8QRJExCZedCKEUUo1fN1LpEmGsQva25blyUsGhOPvX2vv2cHGkppzOp9iT33Xy2n4Nkr5e_YY_0J78vA8Q7vKUpViCouPJo13HFVvW5olf7QEFzU3EX-WCqc0SYyPXZb7E11PafOMC_KprpG6Tre6bN_DyZS-CI-J5qiCgBtikqVNYGueATNgWbi73Q" />
+            <div class="brand-divider"></div>
+            <div class="brand-title-group">
+              <div class="brand-title-row">
+                <span class="brand-name">VOSTOKPRIBOR</span>
+                <span class="system-tag">FIN · SYS 08</span>
+              </div>
+              <div class="brand-subline">
+                <span class="status-dot-pulse"></span>
+                <span>finance.vostokpribor.local</span>
+                <span style="opacity: 0.5;">|</span>
+                <span>FINANCIAL OPERATIONS</span>
+              </div>
+            </div>
+          </a>
+        </div>
+
+        <!-- Global Omni Search -->
+        <div class="top-search-bar">
+          <div class="search-input-wrapper">
+            <span class="search-icon">🔍</span>
+            <input type="text" class="search-input" id="global-omni-search" placeholder="Search invoices, transactions, account IDs, project budgets..." />
+            <span class="search-kbd">Ctrl+K</span>
+          </div>
+        </div>
+
+        <!-- Right System Metrics, Red Confidential Badge & Profile -->
+        <div class="top-nav__actions">
+          <!-- Persistent Small Red "Highly Confidential" Badge (#B23A32) -->
+          <div class="confidential-system-pill" title="Restricted Financial Records (Banking & Audit Level Access)">
+            <span>🔒</span>
+            <span>HIGHLY CONFIDENTIAL</span>
+          </div>
+
+          <button class="icon-button" title="Financial Alerts & Telemetry" onclick="window.finApp.showToast('Reconciliation Notice', 'Incoming SPFS settlement of $420,000 detected from Severstal.')">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+            <span class="badge-dot"></span>
+          </button>
+
+          <div class="top-user-profile" onclick="window.finApp.showToast('Active Financial Controller', 'Mikhail Sorokin · Chief Financial Controller · Level 4 Authorization')">
+            <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDoVYMImYMOrFG-GImEjxCUij3YIwCjbxiUVg9-84NgNQUnx44rwhCbh4EVKLngwn6R5_hzNhRQkfTglEUz1jtP83GRGR8WbDdiIQblwg1fLV0mqc04y19GGKO27NGBpanqADz4vwO3ANY9KcZiOXBusZHAE_PU_FuuwKqChSLXXJsGo289bHOL3MFrKWoXXMoxnqoUIglg-NYsM99jg8cA3e1CeWhqlY0x7isLHdQfGbcFE_XiNNJg" alt="Controller" class="user-avatar-top" />
+            <div class="user-details-top">
+              <span class="user-name-top">Mikhail Sorokin</span>
+              <span class="user-role-top">Chief Financial Controller</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="main-layout">
+      <!-- ========================================================================
+           LEFT SIDEBAR NAVIGATION (#0F2438 Dark Navy + #2E6E4E Deep Green Active & Hover)
+           ======================================================================== -->
+      <aside class="sidebar">
+        <div>
+          <div class="sidebar-section-title">Finance &amp; Treasury</div>
+          <nav class="sidebar-nav">
+            <!-- Screen 1: Dashboard (Active) -->
+            <a href="Dashboard.php" class="sidebar-nav-item active">
+              <div class="sidebar-item-left">
+                <span class="sidebar-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                </span>
+                <span>Dashboard</span>
+              </div>
+            </a>
+
+            <!-- Screen 2: Invoices -->
+            <a href="Invoices.php" class="sidebar-nav-item">
+              <div class="sidebar-item-left">
+                <span class="sidebar-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                </span>
+                <span>Invoices</span>
+              </div>
+              <span class="sidebar-badge badge-amber">48</span>
+            </a>
+
+            <!-- Payments & Reconciliation -->
+            <a href="PaymentsReconciliation.php" class="sidebar-nav-item">
+              <div class="sidebar-item-left">
+                <span class="sidebar-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+                </span>
+                <span>Payments &amp; Reconciliation</span>
+              </div>
+              <span class="sidebar-badge badge-red">6</span>
+            </a>
+
+            <!-- Screen 3: Project Billing -->
+            <a href="ProjectBilling.php" class="sidebar-nav-item">
+              <div class="sidebar-item-left">
+                <span class="sidebar-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/><line x1="12" y1="11" x2="12" y2="17"/><line x1="9" y1="14" x2="15" y2="14"/></svg>
+                </span>
+                <span>Project Billing</span>
+              </div>
+              <span class="sidebar-badge badge-green">14</span>
+            </a>
+
+            <!-- Budgets -->
+            <a href="Budgets.php" class="sidebar-nav-item">
+              <div class="sidebar-item-left">
+                <span class="sidebar-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                </span>
+                <span>Budgets</span>
+              </div>
+              <span class="sidebar-badge">91%</span>
+            </a>
+
+            <!-- Financial Reports -->
+            <a href="FinancialReports.php" class="sidebar-nav-item">
+              <div class="sidebar-item-left">
+                <span class="sidebar-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>
+                </span>
+                <span>Financial Reports</span>
+              </div>
+              <span class="sidebar-badge">Q4</span>
+            </a>
+          </nav>
+        </div>
+
+        
+                      <div class="sidebar-section-title" style="margin-top: 1rem;">Unified Ecosystem</div>
+          <nav class="sidebar-nav" style="margin-bottom: 0.5rem;">
+            <a href="../VOSTOKPRIBOR Corporate Web Platform/index.php" class="sidebar-nav-item">
+              <div class="sidebar-item-left">
+                <span class="sidebar-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                </span>
+                <span>Corporate Platform</span>
+              </div>
+              <span class="sidebar-badge" style="font-size: 10px;">SYS 01</span>
+            </a>
+            <a href="../Employee Intranet/index.php" class="sidebar-nav-item">
+              <div class="sidebar-item-left">
+                <span class="sidebar-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                </span>
+                <span>Employee Intranet</span>
+              </div>
+              <span class="sidebar-badge" style="font-size: 10px;">SYS 04</span>
+            </a>
+          </nav>
+            <!-- Log Out -->
+            <a href="login.php" class="sidebar-nav-item sidebar-nav-item--logout" id="btn-logout" onclick="(function(){sessionStorage.clear();localStorage.clear();})()">
+              <div class="sidebar-item-left">
+                <span class="sidebar-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                    <polyline points="16 17 21 12 16 7"/>
+                    <line x1="21" y1="12" x2="9" y2="12"/>
+                  </svg>
+                </span>
+                <span>Log Out</span>
+              </div>
+            </a>
+        <div class="sidebar-footer">
+          <div class="security-widget-card">
+            <div class="security-widget-header">
+              <span>Financial Ledger Security</span>
+              <span class="security-badge-status">● VERIFIED</span>
+            </div>
+            <div style="font-size: 11px; color: var(--fin-text-inverse-muted); margin-top: 2px;">
+              Bank Accounts &amp; SPFS: <strong>100% Synced</strong>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- ========================================================================
+           MAIN CONTENT AREA: SCREEN 1 DASHBOARD
+           ======================================================================== -->
+      <main class="content-wrapper">
+        <div class="portal-container">
+          <!-- Page Header -->
+          <div class="page-header">
+            <div class="page-header-info">
+              <div class="breadcrumb-trail">
+                <span>Finance &amp; Billing</span>
+                <span class="breadcrumb-separator">/</span>
+                <span>General Ledger</span>
+                <span class="breadcrumb-separator">/</span>
+                <span class="breadcrumb-current">Executive Overview</span>
+              </div>
+              <h1 class="page-title">Executive Financial Overview &amp; Treasury Operations</h1>
+              <p class="page-subtitle">Real-time enterprise receivables, revenue recognition, cash collection pacing, and payment matching</p>
+            </div>
+            <div class="page-header-actions">
+              <button class="btn btn-outline" onclick="window.finApp.showToast('Ledger Export', 'General Ledger Q4 CSV file generated with full GAAP &amp; RAS metadata.')">
+                <span>📥 Export GL (.CSV)</span>
+              </button>
+              <a href="Invoices.php" class="btn btn-primary-amber">
+                <span>+ Create New Invoice</span>
+              </a>
+            </div>
+          </div>
+
+          <!-- Top Row of 4 KPI Cards -->
+          <div class="kpi-grid">
+            <!-- KPI 1: Total Outstanding -->
+            <div class="fin-card kpi-card">
+              <div class="kpi-header">
+                <span class="kpi-title">Total Outstanding</span>
+                <div class="kpi-icon-pill green">💵</div>
+              </div>
+              <div class="kpi-value-row">
+                <span class="kpi-value">$4,285,400.00</span>
+              </div>
+              <div class="kpi-footer">
+                <span>48 Active Invoices</span>
+                <span class="kpi-trend up">12 Due in 7 Days</span>
+              </div>
+            </div>
+
+            <!-- KPI 2: Revenue This Quarter -->
+            <div class="fin-card kpi-card">
+              <div class="kpi-header">
+                <span class="kpi-title">Revenue This Quarter</span>
+                <div class="kpi-icon-pill steel">📈</div>
+              </div>
+              <div class="kpi-value-row">
+                <span class="kpi-value">$18,650,200.00</span>
+              </div>
+              <div class="kpi-footer">
+                <span>Target: $22,000,000.00</span>
+                <span class="kpi-trend up">▲ +14.2% vs Q2</span>
+              </div>
+            </div>
+
+            <!-- KPI 3: Overdue Invoices -->
+            <div class="fin-card kpi-card">
+              <div class="kpi-header">
+                <span class="kpi-title">Overdue Invoices</span>
+                <div class="kpi-icon-pill red">⚠️</div>
+              </div>
+              <div class="kpi-value-row">
+                <span class="kpi-value" style="color: var(--fin-confidential);">$385,000.00</span>
+              </div>
+              <div class="kpi-footer">
+                <span>3 Accounts Past Net-30</span>
+                <span class="kpi-trend alert">Action Required</span>
+              </div>
+            </div>
+
+            <!-- KPI 4: Reconciliation Backlog -->
+            <div class="fin-card kpi-card">
+              <div class="kpi-header">
+                <span class="kpi-title">Reconciliation Backlog</span>
+                <div class="kpi-icon-pill amber">⚡</div>
+              </div>
+              <div class="kpi-value-row">
+                <span class="kpi-value">6 Unmatched</span>
+              </div>
+              <div class="kpi-footer">
+                <span>Volume: $942,300.00</span>
+                <span class="kpi-trend alert">Matching Pending</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Revenue Trend Line Chart Spanning Several Months -->
+          <div class="fin-card" style="margin-bottom: 1.5rem;">
+            <div class="card-header-row">
+              <div>
+                <h3 class="card-title">Enterprise Revenue Trajectory &amp; Cash Collection Trend (May – Nov)</h3>
+                <p style="font-size: 11.5px; color: var(--fin-text-secondary); margin-top: 2px;">
+                  Monthly billed project milestones vs collected cash receipts (Figures in Millions USD)
+                </p>
+              </div>
+              <div style="display: flex; align-items: center; gap: 1rem; font-size: 11.5px;">
+                <div style="display: flex; align-items: center; gap: 0.35rem;">
+                  <span style="width: 10px; height: 10px; background: #2E6E4E; border-radius: 2px;"></span>
+                  <span style="font-weight: 600; color: var(--fin-navy);">Cash Collected ($M)</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 0.35rem;">
+                  <span style="width: 10px; height: 10px; background: #E8A33D; border-radius: 2px;"></span>
+                  <span style="font-weight: 600; color: var(--fin-navy);">Billed Milestone Target ($M)</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- SVG Multi-Month Interactive Chart -->
+            <div style="width: 100%; height: 260px; position: relative; margin-top: 1rem;">
+              <svg viewBox="0 0 900 240" style="width: 100%; height: 100%; overflow: visible;">
+                <defs>
+                  <linearGradient id="chartGreenGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="#2E6E4E" stop-opacity="0.35"/>
+                    <stop offset="100%" stop-color="#2E6E4E" stop-opacity="0.0"/>
+                  </linearGradient>
+                </defs>
+
+                <!-- Gridlines -->
+                <line x1="50" y1="20" x2="880" y2="20" stroke="#E1E6EB" stroke-dasharray="3,3" />
+                <line x1="50" y1="70" x2="880" y2="70" stroke="#E1E6EB" stroke-dasharray="3,3" />
+                <line x1="50" y1="120" x2="880" y2="120" stroke="#E1E6EB" stroke-dasharray="3,3" />
+                <line x1="50" y1="170" x2="880" y2="170" stroke="#E1E6EB" stroke-dasharray="3,3" />
+                <line x1="50" y1="210" x2="880" y2="210" stroke="#CBD5E0" />
+
+                <!-- Y-Axis Labels -->
+                <text x="40" y="24" font-size="10" font-family="'JetBrains Mono', monospace" fill="#718096" text-anchor="end">$6.0M</text>
+                <text x="40" y="74" font-size="10" font-family="'JetBrains Mono', monospace" fill="#718096" text-anchor="end">$4.5M</text>
+                <text x="40" y="124" font-size="10" font-family="'JetBrains Mono', monospace" fill="#718096" text-anchor="end">$3.0M</text>
+                <text x="40" y="174" font-size="10" font-family="'JetBrains Mono', monospace" fill="#718096" text-anchor="end">$1.5M</text>
+                <text x="40" y="214" font-size="10" font-family="'JetBrains Mono', monospace" fill="#718096" text-anchor="end">$0.0M</text>
+
+                <!-- Area Fill for Green -->
+                <polygon points="100,140 220,115 340,95 460,75 580,55 700,45 820,35 820,210 100,210" fill="url(#chartGreenGrad)" />
+
+                <!-- Target Line (Amber dashed) -->
+                <polyline points="100,150 220,130 340,105 460,85 580,65 700,50 820,40" fill="none" stroke="#E8A33D" stroke-width="2.5" stroke-dasharray="5,4" />
+
+                <!-- Actual Collected Line (Deep Green solid) -->
+                <polyline points="100,140 220,115 340,95 460,75 580,55 700,45 820,35" fill="none" stroke="#2E6E4E" stroke-width="3.5" stroke-linecap="round" />
+
+                <!-- Data Nodes -->
+                <!-- May -->
+                <circle cx="100" cy="140" r="5" fill="#2E6E4E" stroke="#FFFFFF" stroke-width="2" />
+                <text x="100" y="230" font-size="11" font-weight="600" fill="#4A5568" text-anchor="middle">May</text>
+                <text x="100" y="130" font-size="10" font-family="'JetBrains Mono', monospace" font-weight="700" fill="#2E6E4E" text-anchor="middle">$2.4M</text>
+
+                <!-- Jun -->
+                <circle cx="220" cy="115" r="5" fill="#2E6E4E" stroke="#FFFFFF" stroke-width="2" />
+                <text x="220" y="230" font-size="11" font-weight="600" fill="#4A5568" text-anchor="middle">Jun</text>
+                <text x="220" y="105" font-size="10" font-family="'JetBrains Mono', monospace" font-weight="700" fill="#2E6E4E" text-anchor="middle">$3.1M</text>
+
+                <!-- Jul -->
+                <circle cx="340" cy="95" r="5" fill="#2E6E4E" stroke="#FFFFFF" stroke-width="2" />
+                <text x="340" y="230" font-size="11" font-weight="600" fill="#4A5568" text-anchor="middle">Jul</text>
+                <text x="340" y="85" font-size="10" font-family="'JetBrains Mono', monospace" font-weight="700" fill="#2E6E4E" text-anchor="middle">$3.8M</text>
+
+                <!-- Aug -->
+                <circle cx="460" cy="75" r="5" fill="#2E6E4E" stroke="#FFFFFF" stroke-width="2" />
+                <text x="460" y="230" font-size="11" font-weight="600" fill="#4A5568" text-anchor="middle">Aug</text>
+                <text x="460" y="65" font-size="10" font-family="'JetBrains Mono', monospace" font-weight="700" fill="#2E6E4E" text-anchor="middle">$4.4M</text>
+
+                <!-- Sep -->
+                <circle cx="580" cy="55" r="5" fill="#2E6E4E" stroke="#FFFFFF" stroke-width="2" />
+                <text x="580" y="230" font-size="11" font-weight="600" fill="#4A5568" text-anchor="middle">Sep</text>
+                <text x="580" y="45" font-size="10" font-family="'JetBrains Mono', monospace" font-weight="700" fill="#2E6E4E" text-anchor="middle">$5.0M</text>
+
+                <!-- Oct -->
+                <circle cx="700" cy="45" r="6" fill="#2E6E4E" stroke="#FFFFFF" stroke-width="2.5" />
+                <text x="700" y="230" font-size="11" font-weight="700" fill="#2E6E4E" text-anchor="middle">Oct (Actual)</text>
+                <text x="700" y="35" font-size="10" font-family="'JetBrains Mono', monospace" font-weight="700" fill="#2E6E4E" text-anchor="middle">$5.4M</text>
+
+                <!-- Nov (Projected) -->
+                <circle cx="820" cy="35" r="5" fill="#388E64" stroke="#FFFFFF" stroke-width="2" />
+                <text x="820" y="230" font-size="11" font-weight="600" fill="#4A5568" text-anchor="middle">Nov (Proj)</text>
+                <text x="820" y="25" font-size="10" font-family="'JetBrains Mono', monospace" font-weight="700" fill="#388E64" text-anchor="middle">$5.8M</text>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Pending Payment Matching List Widget -->
+          <div class="fin-card" style="padding: 0; overflow: hidden;">
+            <div style="padding: 1rem 1.25rem; background: #FFFFFF; border-bottom: 1px solid var(--fin-surface-border); display: flex; align-items: center; justify-content: space-between;">
+              <div>
+                <h3 class="card-title">Pending Payment Matching &amp; Bank Telemetry Ingestion</h3>
+                <p style="font-size: 11.5px; color: var(--fin-text-secondary); margin-top: 2px;">
+                  Unmatched electronic bank wires requiring manual controller ledger association
+                </p>
+              </div>
+              <a href="PaymentsReconciliation.php" class="btn btn-outline btn-sm">
+                <span>Open Full Reconciliation Desk (6) →</span>
+              </a>
+            </div>
+
+            <table class="fin-table">
+              <thead>
+                <tr>
+                  <th>Transaction ID</th>
+                  <th>Remitting Customer</th>
+                  <th>Payment Method &amp; Reference</th>
+                  <th>Settlement Amount</th>
+                  <th>Date Ingested</th>
+                  <th style="text-align: right;">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Transaction 1 -->
+                <tr id="tx-row-TX-SPFS-9101" class="fin-table-row">
+                  <td><span style="font-family: var(--fin-font-mono); font-weight: 700; color: var(--fin-green);">TX-SPFS-9101</span></td>
+                  <td>
+                    <div style="font-weight: 700; color: var(--fin-navy);">Severstal Metallurgy PJSC</div>
+                    <div style="font-size: 11px; color: var(--fin-text-muted);">Main Operational Account · Cherepovets</div>
+                  </td>
+                  <td>
+                    <div style="font-weight: 600; color: var(--fin-text-secondary);">SPFS Direct Clearance</div>
+                    <div style="font-family: var(--fin-font-mono); font-size: 10.5px; color: var(--fin-text-muted);">Ref: PO-SEV-88219 (BF #5 Retrofit)</div>
+                  </td>
+                  <td><span style="font-family: var(--fin-font-mono); font-weight: 700; font-size: 13.5px; color: var(--fin-navy);">$420,000.00</span></td>
+                  <td><span style="font-family: var(--fin-font-mono); font-size: 11.5px;">Nov 09, 2024</span></td>
+                  <td style="text-align: right;">
+                    <button class="btn btn-primary-amber btn-sm" onclick="window.finApp.reconcilePayment('TX-SPFS-9101')">
+                      <span>Reconcile ⚡</span>
+                    </button>
+                  </td>
+                </tr>
+
+                <!-- Transaction 2 -->
+                <tr id="tx-row-TX-SWIFT-9102" class="fin-table-row">
+                  <td><span style="font-family: var(--fin-font-mono); font-weight: 700; color: var(--fin-green);">TX-SWIFT-9102</span></td>
+                  <td>
+                    <div style="font-weight: 700; color: var(--fin-navy);">NLMK Group Lipetsk</div>
+                    <div style="font-size: 11px; color: var(--fin-text-muted);">Treasury Escrow Account</div>
+                  </td>
+                  <td>
+                    <div style="font-weight: 600; color: var(--fin-text-secondary);">Bank Wire (Gazprombank)</div>
+                    <div style="font-family: var(--fin-font-mono); font-size: 10.5px; color: var(--fin-text-muted);">Ref: NLMK-FAT-INV-8842</div>
+                  </td>
+                  <td><span style="font-family: var(--fin-font-mono); font-weight: 700; font-size: 13.5px; color: var(--fin-navy);">$185,000.00</span></td>
+                  <td><span style="font-family: var(--fin-font-mono); font-size: 11.5px;">Nov 08, 2024</span></td>
+                  <td style="text-align: right;">
+                    <button class="btn btn-primary-amber btn-sm" onclick="window.finApp.reconcilePayment('TX-SWIFT-9102')">
+                      <span>Reconcile ⚡</span>
+                    </button>
+                  </td>
+                </tr>
+
+                <!-- Transaction 3 -->
+                <tr id="tx-row-TX-SPFS-9103" class="fin-table-row">
+                  <td><span style="font-family: var(--fin-font-mono); font-weight: 700; color: var(--fin-green);">TX-SPFS-9103</span></td>
+                  <td>
+                    <div style="font-weight: 700; color: var(--fin-navy);">Norilsk Nickel Mining</div>
+                    <div style="font-size: 11px; color: var(--fin-text-muted);">Arctic Operations Directorate</div>
+                  </td>
+                  <td>
+                    <div style="font-weight: 600; color: var(--fin-text-secondary);">SPFS Direct Clearance</div>
+                    <div style="font-family: var(--fin-font-mono); font-size: 10.5px; color: var(--fin-text-muted);">Ref: NN-ARC-TEL-99</div>
+                  </td>
+                  <td><span style="font-family: var(--fin-font-mono); font-weight: 700; font-size: 13.5px; color: var(--fin-navy);">$337,300.00</span></td>
+                  <td><span style="font-family: var(--fin-font-mono); font-size: 11.5px;">Nov 06, 2024</span></td>
+                  <td style="text-align: right;">
+                    <button class="btn btn-primary-amber btn-sm" onclick="window.finApp.reconcilePayment('TX-SPFS-9103')">
+                      <span>Reconcile ⚡</span>
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <div id="toast-container"></div>
+  <script src="js/app.js"></script>
+</body>
+</html>

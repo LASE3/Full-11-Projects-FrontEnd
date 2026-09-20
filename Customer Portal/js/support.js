@@ -239,7 +239,7 @@
         const prjLink = document.getElementById('detailProjectLink');
         if (prjLink) {
             prjLink.textContent = data.projectName;
-            prjLink.onclick = () => location.href = `ProjectListAndDetail.html?project=${data.projectId}`;
+            prjLink.onclick = () => location.href = `ProjectListAndDetail.php?project=${data.projectId}`;
         }
         const intEl = document.getElementById('detailInterface');
         if (intEl) intEl.textContent = data.interface;

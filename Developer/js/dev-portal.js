@@ -161,7 +161,7 @@ resp, err := http.Post("https://developer.vostokpribor.local/v1/scada/ingest/fra
                 sessionStorage.setItem('vk_sandbox_url', url);
                 sessionStorage.setItem('vk_sandbox_body', body);
 
-                window.location.href = 'sandbox.html';
+                window.location.href = 'sandbox.php';
             });
         });
     });

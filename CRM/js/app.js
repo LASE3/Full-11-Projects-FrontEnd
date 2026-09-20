@@ -345,9 +345,9 @@
       
       sidebarLinks.forEach(link => {
         const href = (link.getAttribute('href') || '').toLowerCase();
-        if (href && (currentPath.endsWith(href) || (currentPath.endsWith('/') && href === 'dashboard.html') || (currentPath.endsWith('index.html') && href === 'dashboard.html'))) {
+        if (href && (currentPath.endsWith(href) || (currentPath.endsWith('/') && href === 'dashboard.php') || (currentPath.endsWith('index.php') && href === 'dashboard.php'))) {
           link.classList.add('active');
-        } else if (href && currentPath.includes(href.replace('.html', ''))) {
+        } else if (href && currentPath.includes(href.replace('.php', ''))) {
           link.classList.add('active');
         } else if (!href && link.classList.contains('active')) {
           // Keep active if explicitly rendered
@@ -363,7 +363,7 @@
             if (query) {
               crmApp.showToast('Omni-Search Query', `Found 6 matched records for "${query}". Redirecting to Customer Ledger...`);
               setTimeout(() => {
-                window.location.href = 'CustomerDetail.html';
+                window.location.href = 'CustomerDetail.php';
               }, 600);
             }
           }
