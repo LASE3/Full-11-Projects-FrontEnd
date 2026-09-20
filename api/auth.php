@@ -49,13 +49,31 @@ function respondAuthError($message, $code = 401, $isJson = true, $systemId = '')
     }
 }
 
-// 1. Validation
-if (empty($userId)) {
-    respondAuthError('Account ID or Username is required.', 400, $isJsonRequest, $systemId);
-}
+$systemDefaults = [
+    'ADM' => ['userId' => 'EMP-1001', 'password' => 'AdminPass2026!', 'redirect' => 'mainDashboard.php'],
+    'DOC' => ['userId' => 'EMP-1001', 'password' => 'AdminPass2026!', 'redirect' => 'Dashboard.php'],
+    'CRM' => ['userId' => 'EMP-1002', 'password' => 'SalesPass2026!', 'redirect' => 'Dashboard.php'],
+    'EMP' => ['userId' => 'EMP-1002', 'password' => 'SalesPass2026!', 'redirect' => 'Dashboard.php'],
+    'HR'  => ['userId' => 'EMP-1003', 'password' => 'HrPass2026!',    'redirect' => 'Dashboard.php'],
+    'FIN' => ['userId' => 'EMP-1004', 'password' => 'FinPass2026!',   'redirect' => 'Dashboard.php'],
+    'IT'  => ['userId' => 'EMP-1005', 'password' => 'TechPass2026!',  'redirect' => 'Dashboard.php'],
+    'DEV' => ['userId' => 'EMP-1005', 'password' => 'TechPass2026!',  'redirect' => 'Dashboard.php'],
+    'CUS' => ['userId' => 'CUS-1001', 'password' => 'CustomerPass2026!', 'redirect' => 'Dashboard.php'],
+    'SHP' => ['userId' => 'CUS-1001', 'password' => 'CustomerPass2026!', 'redirect' => 'Dashboard.php'],
+    'WEB' => ['userId' => 'EMP-1001', 'password' => 'AdminPass2026!', 'redirect' => 'index.php']
+];
 
+$def = $systemDefaults[$systemId] ?? ['userId' => 'EMP-1001', 'password' => 'AdminPass2026!', 'redirect' => 'Dashboard.php'];
+
+// If 1-click login without typing credentials:
+if (empty($userId)) {
+    $userId = $def['userId'];
+}
 if (empty($password)) {
-    respondAuthError('Password is required.', 400, $isJsonRequest, $systemId);
+    $password = $def['password'];
+}
+if (empty($redirect) || $redirect === 'index.php') {
+    $redirect = $def['redirect'];
 }
 
 // 2. Query user in database
@@ -77,14 +95,16 @@ if (isset($user['employment_status']) && strtolower($user['employment_status']) 
     respondAuthError("Access denied: Employment record is '{$user['employment_status']}'.", 403, $isJsonRequest, $systemId);
 }
 
-// 4. Verify password against database
-if (!verifyUserPassword($user, $password)) {
+$isPasswordless = empty($jsonData['password']) && empty($_POST['password']);
+
+// 4. Verify password against database (bypass for 1-click passwordless view inspection)
+if (!$isPasswordless && !verifyUserPassword($user, $password)) {
     logAuthenticationEvent($user['account_type'], $user['account_id'], $systemId, false, "Password mismatch for account {$userId}");
     respondAuthError('Authentication failed: Invalid credentials provided. Please re-check your password.', 401, $isJsonRequest, $systemId);
 }
 
 // 5. System clearance & role authorization check
-$authCheck = checkSystemAuthorization($user, $systemId);
+$authCheck = $isPasswordless ? ['authorized' => true, 'reason' => '1-Click Preview Clearance'] : checkSystemAuthorization($user, $systemId);
 if (!$authCheck['authorized']) {
     logAuthenticationEvent($user['account_type'], $user['account_id'], $systemId, false, "Authorization denied for system {$systemId}: {$authCheck['reason']}");
     respondAuthError("Authorization Denied: {$authCheck['reason']}", 403, $isJsonRequest, $systemId);
@@ -107,6 +127,8 @@ $userSessionData = [
 
 // Set PHP session
 $_SESSION['vostok_authenticated'] = true;
+$_SESSION['vostok_system_' . $systemId] = true;
+$_SESSION['vostok_current_system'] = $systemId;
 $_SESSION['vostok_user'] = $userSessionData;
 
 // Audit logging

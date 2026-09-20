@@ -29,8 +29,8 @@
                     <span class="material-symbols-outlined" style="font-size: 1.25rem;">menu</span>
                 </button>
 
-                <a href="index.php" style="display: flex; align-items: center; gap: 0.75rem; text-decoration: none; cursor: pointer;">
-                    <img alt="VOSTOKPRIBOR Official Mark" style="height: 32px; width: auto; object-fit: contain;" src="https://lh3.googleusercontent.com/aida/AEtjO1XMGDZ9meLzj0XkVJ6C4Xv2AoEzKtMyFqF7KQ8eMADmbywzsRZ7VF4Em6pQ7fZ8QRJExCZedCKEUUo1fN1LpEmGsQva25blyUsGhOPvX2vv2cHGkppzOp9iT33Xy2n4Nkr5e_YY_0J78vA8Q7vKUpViCouPJo13HFVvW5olf7QEFzU3EX-WCqc0SYyPXZb7E11PafOMC_KprpG6Tre6bN_DyZS-CI-J5qiCgBtikqVNYGueATNgWbi73Q" />
+                <a href="Dashboard.php" style="display: flex; align-items: center; gap: 0.75rem; text-decoration: none; cursor: pointer;">
+                    <img alt="VOSTOKPRIBOR Official Mark" style="height: 32px; width: auto; object-fit: contain;" src="assets/logo.svg" />
                     <div style="height: 24px; width: 1px; background: rgba(255,255,255,0.2);"></div>
                     <div style="display: flex; flex-direction: column;">
                         <div style="display: flex; align-items: center; gap: 0.5rem;">
@@ -116,7 +116,7 @@
                                     <div style="color: #8A94A0; font-size: 0.6875rem; font-family: var(--font-mono);">portal.vostokpribor.local • System 03</div>
                                 </div>
                             </a>
-                            <a href="index.php" class="ecosystem-item" style="background-color: rgba(92,114,144,0.25); border-left-color: var(--system-accent);">
+                            <a href="Dashboard.php" class="ecosystem-item" style="background-color: rgba(92,114,144,0.25); border-left-color: var(--system-accent);">
                                 <span class="material-symbols-outlined" style="color: var(--system-accent); font-size: 1.25rem;">hub</span>
                                 <div>
                                     <div style="color: #FFFFFF; font-size: 0.8125rem; font-weight: 600;">Employee Intranet</div>
@@ -190,7 +190,10 @@
 
             </div>
 
-        </div>
+        
+<!-- Top Bar Sign Out -->
+<a href="../api/logout.php?system=Employee%20Intranet&redirect=../Employee%20Intranet/login.php" class="top-signout-btn" title="Sign Out of Employee Intranet" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" style="display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:4px;background:rgba(178,58,50,0.2);border:1px solid rgba(178,58,50,0.5);color:#FF8080;font-size:12px;font-weight:600;text-decoration:none;cursor:pointer;margin-left:8px;vertical-align:middle;transition:all 0.2s;" onmouseover="this.style.background='rgba(178,58,50,0.4)';this.style.color='#FFFFFF'" onmouseout="this.style.background='rgba(178,58,50,0.2)';this.style.color='#FF8080'"><span class="material-symbols-outlined" style="font-size:15px;line-height:1;">logout</span><span>Sign Out</span></a>
+</div>
     </header>
 
     <!-- ======================================================================
@@ -205,7 +208,7 @@
             </div>
 
             <!-- News & Announcements -->
-            <a href="index.php" class="sidebar-link">
+            <a href="Dashboard.php" class="sidebar-link">
                 <span class="material-symbols-outlined" style="font-size: 1.25rem;">campaign</span>
                 <span class="sidebar-label">News & Announcements</span>
             </a>
@@ -271,7 +274,7 @@
 
     
             <!-- Log Out -->
-            <a href="login.php" class="sidebar-nav-item sidebar-nav-item--logout" id="btn-logout" onclick="(function(){sessionStorage.clear();localStorage.clear();})()">
+            <a href="../api/logout.php?system=Employee%20Intranet&redirect=../Employee%20Intranet/login.php" class="sidebar-nav-item sidebar-nav-item--logout" id="btn-logout" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" onclick="(function(){sessionStorage.clear();localStorage.clear();})()">
               <div class="sidebar-item-left">
                 <span class="sidebar-icon">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">

@@ -69,7 +69,7 @@
                 <a href="#hero" class="flex items-center gap-3 group">
                     <img alt="VOSTOKPRIBOR Official Mark"
                         class="h-8 w-auto object-contain transition-transform group-hover:scale-105"
-                        src="https://lh3.googleusercontent.com/aida/AEtjO1XMGDZ9meLzj0XkVJ6C4Xv2AoEzKtMyFqF7KQ8eMADmbywzsRZ7VF4Em6pQ7fZ8QRJExCZedCKEUUo1fN1LpEmGsQva25blyUsGhOPvX2vv2cHGkppzOp9iT33Xy2n4Nkr5e_YY_0J78vA8Q7vKUpViCouPJo13HFVvW5olf7QEFzU3EX-WCqc0SYyPXZb7E11PafOMC_KprpG6Tre6bN_DyZS-CI-J5qiCgBtikqVNYGueATNgWbi73Q" />
+                        src="assets/logo.svg" />
                     <div class="h-6 w-px bg-white/20 hidden sm:block"></div>
                     <div class="flex flex-col">
                         <div class="flex items-center gap-2">
@@ -1165,7 +1165,7 @@
                 <div class="lg:col-span-2">
                     <div class="flex items-center gap-2 mb-3">
                         <img alt="VOSTOKPRIBOR Logo" class="h-7 w-auto object-contain"
-                            src="https://lh3.googleusercontent.com/aida/AEtjO1XMGDZ9meLzj0XkVJ6C4Xv2AoEzKtMyFqF7KQ8eMADmbywzsRZ7VF4Em6pQ7fZ8QRJExCZedCKEUUo1fN1LpEmGsQva25blyUsGhOPvX2vv2cHGkppzOp9iT33Xy2n4Nkr5e_YY_0J78vA8Q7vKUpViCouPJo13HFVvW5olf7QEFzU3EX-WCqc0SYyPXZb7E11PafOMC_KprpG6Tre6bN_DyZS-CI-J5qiCgBtikqVNYGueATNgWbi73Q" />
+                            src="assets/logo.svg" />
                         <span class="font-bold text-white text-base tracking-tight">VOSTOKPRIBOR</span>
                     </div>
                     <p class="text-xs text-slate-400 leading-relaxed mb-4 max-w-sm">

@@ -41,6 +41,34 @@ if ($isJson) {
     exit;
 }
 
-$redirect = $_GET['redirect'] ?? 'login.php';
+$systemDirs = [
+    'ADM' => 'Admin & Governance Portal',
+    'CRM' => 'CRM',
+    'CUS' => 'Customer Portal',
+    'DEV' => 'Developer',
+    'EMP' => 'Employee Intranet',
+    'DOC' => 'File Center',
+    'FIN' => 'Finance & Billing',
+    'HR'  => 'HR System',
+    'IT'  => 'IT Helpdesk',
+    'SHP' => 'Online Shop B2B'
+];
+
+$system = $_GET['system'] ?? '';
+$redirect = $_GET['redirect'] ?? '';
+
+if (empty($redirect) || $redirect === 'login.php') {
+    if (!empty($system) && isset($systemDirs[strtoupper($system)])) {
+        $redirect = '../' . rawurlencode($systemDirs[strtoupper($system)]) . '/login.php';
+    } else if (!empty($system)) {
+        $redirect = '../' . rawurlencode($system) . '/login.php';
+    } else if (!empty($_SERVER['HTTP_REFERER'])) {
+        $refererDir = dirname($_SERVER['HTTP_REFERER']);
+        $redirect = $refererDir . '/login.php';
+    } else {
+        $redirect = '../index.php';
+    }
+}
+
 header("Location: " . $redirect);
 exit;

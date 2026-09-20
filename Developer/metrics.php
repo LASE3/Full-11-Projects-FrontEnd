@@ -12,8 +12,8 @@
     <!-- TOP NAVIGATION BAR (System 10 Cyan 4px stripe) -->
     <header class="vk-top-navbar">
         <div style="display: flex; align-items: center; gap: 24px;">
-            <a class="vk-brand-section" href="index.php">
-                <img alt="VOSTOKPRIBOR Official Mark" class="brand-logo-img" style="height: 30px; width: 30px; object-fit: contain;" src="https://lh3.googleusercontent.com/aida/AEtjO1XMGDZ9meLzj0XkVJ6C4Xv2AoEzKtMyFqF7KQ8eMADmbywzsRZ7VF4Em6pQ7fZ8QRJExCZedCKEUUo1fN1LpEmGsQva25blyUsGhOPvX2vv2cHGkppzOp9iT33Xy2n4Nkr5e_YY_0J78vA8Q7vKUpViCouPJo13HFVvW5olf7QEFzU3EX-WCqc0SYyPXZb7E11PafOMC_KprpG6Tre6bN_DyZS-CI-J5qiCgBtikqVNYGueATNgWbi73Q" />
+            <a class="vk-brand-section" href="Dashboard.php">
+                <img alt="VOSTOKPRIBOR Official Mark" class="brand-logo-img" style="height: 30px; width: 30px; object-fit: contain;" src="assets/logo.svg" />
                 <div style="display: flex; flex-direction: column;">
                     <div style="display: flex; align-items: center; gap: 8px;">
                         <span style="font-family: var(--font-heading); font-weight: 700; font-size: 15px; letter-spacing: -0.02em;">VOSTOKPRIBOR</span>
@@ -47,14 +47,17 @@
                     <span class="material-symbols-outlined text-[18px]" style="color: #ffffff;">person</span>
                 </div>
             </div>
-        </div>
+        
+<!-- Top Bar Sign Out -->
+<a href="../api/logout.php?system=Developer&redirect=../Developer/login.php" class="top-signout-btn" title="Sign Out of Developer" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" style="display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:4px;background:rgba(178,58,50,0.2);border:1px solid rgba(178,58,50,0.5);color:#FF8080;font-size:12px;font-weight:600;text-decoration:none;cursor:pointer;margin-left:8px;vertical-align:middle;transition:all 0.2s;" onmouseover="this.style.background='rgba(178,58,50,0.4)';this.style.color='#FFFFFF'" onmouseout="this.style.background='rgba(178,58,50,0.2)';this.style.color='#FF8080'"><span class="material-symbols-outlined" style="font-size:15px;line-height:1;">logout</span><span>Sign Out</span></a>
+</div>
     </header>
 
     <!-- LEFT SIDEBAR -->
     <aside class="vk-sidebar">
         <div class="vk-sidebar-nav">
             <div class="vk-sidebar-header">Core Documentation</div>
-            <a class="vk-nav-item" href="index.php">
+            <a class="vk-nav-item" href="Dashboard.php">
                 <div style="display: flex; align-items: center; gap: 10px;">
                     <span class="material-symbols-outlined text-[18px]">menu_book</span>
                     <span>API Reference</span>
@@ -136,7 +139,7 @@
         </div>
     
             <!-- Log Out -->
-            <a href="login.php" class="sidebar-nav-item sidebar-nav-item--logout" id="btn-logout" onclick="(function(){sessionStorage.clear();localStorage.clear();})()">
+            <a href="../api/logout.php?system=Developer&redirect=../Developer/login.php" class="sidebar-nav-item sidebar-nav-item--logout" id="btn-logout" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" onclick="(function(){sessionStorage.clear();localStorage.clear();})()">
               <div class="sidebar-item-left">
                 <span class="sidebar-icon">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -422,7 +425,7 @@
             <div>
                 <div style="font-family: var(--font-mono); font-size: 11px; text-transform: uppercase; color: #94A3B8; margin-bottom: 8px; letter-spacing: 0.05em;">Developer Resources</div>
                 <div style="display: flex; flex-direction: column; gap: 6px; font-size: 12px;">
-                    <a href="index.php" style="color: #CBD5E1; text-decoration: none;">API Reference (OpenAPI 3.1)</a>
+                    <a href="Dashboard.php" style="color: #CBD5E1; text-decoration: none;">API Reference (OpenAPI 3.1)</a>
                     <a href="guides.php" style="color: #CBD5E1; text-decoration: none;">Integration Guide (DOC-2026-010)</a>
                     <a href="credentials.php" style="color: #CBD5E1; text-decoration: none;">Partner Key Enclave</a>
                     <a href="sandbox.php" style="color: #CBD5E1; text-decoration: none;">Interactive Dispatch Console</a>
@@ -463,7 +466,7 @@
                 <input class="cmd-palette-input" id="cmd-palette-input" type="text" placeholder="Type a command or jump to documentation..." />
             </div>
             <div class="cmd-palette-list" id="cmd-palette-results">
-                <a class="cmd-palette-item" href="index.php">
+                <a class="cmd-palette-item" href="Dashboard.php">
                     <span class="material-symbols-outlined text-[16px]">menu_book</span>
                     <span>API Reference &amp; Endpoints</span>
                 </a>

@@ -17,7 +17,7 @@
         <div class="h-[60px] w-full px-gutter-desktop flex items-center justify-between gap-space-md">
             <div class="flex items-center gap-space-md"><img alt="VOSTOKPRIBOR System 11 Logo"
                     class="h-8 w-auto object-contain"
-                    src="https://lh3.googleusercontent.com/aida/AEtjO1XMGDZ9meLzj0XkVJ6C4Xv2AoEzKtMyFqF7KQ8eMADmbywzsRZ7VF4Em6pQ7fZ8QRJExCZedCKEUUo1fN1LpEmGsQva25blyUsGhOPvX2vv2cHGkppzOp9iT33Xy2n4Nkr5e_YY_0J78vA8Q7vKUpViCouPJo13HFVvW5olf7QEFzU3EX-WCqc0SYyPXZb7E11PafOMC_KprpG6Tre6bN_DyZS-CI-J5qiCgBtikqVNYGueATNgWbi73Q" />
+                    src="assets/logo.svg" />
                 <div class="h-6 w-[1px] bg-outline-variant/40"></div>
                 <div class="flex flex-col">
                     <div class="flex items-center gap-space-xs"><span
@@ -66,7 +66,10 @@
                             class="material-symbols-outlined text-on-primary text-[18px]">person</span></div>
                 </div>
             </div>
-        </div>
+        
+<!-- Top Bar Sign Out -->
+<a href="../api/logout.php?system=Admin%20%26%20Governance%20Portal&redirect=../Admin%20%26%20Governance%20Portal/login.php" class="top-signout-btn" title="Sign Out of Admin &amp; Governance Portal" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" style="display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:4px;background:rgba(178,58,50,0.2);border:1px solid rgba(178,58,50,0.5);color:#FF8080;font-size:12px;font-weight:600;text-decoration:none;cursor:pointer;margin-left:8px;vertical-align:middle;transition:all 0.2s;" onmouseover="this.style.background='rgba(178,58,50,0.4)';this.style.color='#FFFFFF'" onmouseout="this.style.background='rgba(178,58,50,0.2)';this.style.color='#FF8080'"><span class="material-symbols-outlined" style="font-size:15px;line-height:1;">logout</span><span>Sign Out</span></a>
+</div>
     </header>
     <aside
         class="fixed left-0 top-[60px] h-[calc(100vh-60px)] w-[260px] bg-primary z-40 flex flex-col justify-between border-r border-outline/30 select-none overflow-y-auto">
@@ -154,7 +157,7 @@
                 </a>
             </nav>
         </div>
-                    <a class="flex items-center gap-space-sm px-space-sm py-space-xs rounded text-error hover:bg-error-container hover:text-on-error-container transition-all font-body-compact text-body-compact mt-space-sm" href="login.php" id="btn-logout" onclick="(function(){sessionStorage.clear();localStorage.clear();})()">
+                    <a class="flex items-center gap-space-sm px-space-sm py-space-xs rounded text-error hover:bg-error-container hover:text-on-error-container transition-all font-body-compact text-body-compact mt-space-sm" href="../api/logout.php?system=Admin%20%26%20Governance%20Portal&redirect=../Admin%20%26%20Governance%20Portal/login.php" id="btn-logout" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" onclick="(function(){sessionStorage.clear();localStorage.clear();})()">
                 <span class="material-symbols-outlined text-[18px] text-error">logout</span>
                 <span>Log Out</span>
             </a>

@@ -188,7 +188,7 @@ $systems = [
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
             <div class="flex items-center gap-3">
                 <img alt="VOSTOKPRIBOR Logo" class="h-8 w-auto object-contain"
-                    src="https://lh3.googleusercontent.com/aida/AEtjO1XMGDZ9meLzj0XkVJ6C4Xv2AoEzKtMyFqF7KQ8eMADmbywzsRZ7VF4Em6pQ7fZ8QRJExCZedCKEUUo1fN1LpEmGsQva25blyUsGhOPvX2vv2cHGkppzOp9iT33Xy2n4Nkr5e_YY_0J78vA8Q7vKUpViCouPJo13HFVvW5olf7QEFzU3EX-WCqc0SYyPXZb7E11PafOMC_KprpG6Tre6bN_DyZS-CI-J5qiCgBtikqVNYGueATNgWbi73Q" />
+                    src="assets/logo.svg" />
                 <div class="h-6 w-px bg-brand-border"></div>
                 <div>
                     <h1 class="font-bold tracking-wide text-white text-base leading-none">VOSTOKPRIBOR</h1>
@@ -254,6 +254,14 @@ $systems = [
 
                     <!-- Action Buttons -->
                     <div class="flex items-center gap-2 pt-2 border-t border-brand-border/40">
+                        <?php if ($sys['code'] === 'WEB'): ?>
+                        <a href="<?= rawurlencode($sys['dir']) ?>/index.php" 
+                           class="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded text-xs font-semibold text-white transition-colors"
+                           style="background-color: <?= $sys['accent'] ?>; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">
+                            <span class="material-symbols-outlined text-sm">public</span>
+                            <span>View Corporate Site</span>
+                        </a>
+                        <?php else: ?>
                         <a href="<?= rawurlencode($sys['dir']) ?>/login.php" 
                            class="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded text-xs font-semibold text-white transition-colors"
                            style="background-color: <?= $sys['accent'] ?>; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">
@@ -262,10 +270,11 @@ $systems = [
                         </a>
                         <a href="<?= rawurlencode($sys['dir']) ?>/" 
                            class="inline-flex items-center justify-center gap-1 px-3 py-2 rounded text-xs font-mono text-slate-300 bg-brand-panel hover:bg-brand-border border border-brand-border transition-colors"
-                           title="Launch system root entry (redirects to login)">
+                           title="Launch system root entry (opens login first)">
                             <span class="material-symbols-outlined text-sm">open_in_new</span>
                             <span>Run</span>
                         </a>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>

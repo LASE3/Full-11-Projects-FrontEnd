@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="100%" height="100%">
+  <defs>
+    <linearGradient id="vpGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0E7C86" />
+      <stop offset="50%" stop-color="#1B3A5C" />
+      <stop offset="100%" stop-color="#0F2438" />
+    </linearGradient>
+    <linearGradient id="vpAccent" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38BDF8" />
+      <stop offset="100%" stop-color="#0E7C86" />
+    </linearGradient>
+  </defs>
+  <!-- Outer Shield / Precision Hexagon -->
+  <polygon points="60,4 108,31 108,89 60,116 12,89 12,31" fill="url(#vpGrad1)" stroke="#38BDF8" stroke-width="3" stroke-linejoin="round" />
+  <!-- Telemetry Reticle Rings -->
+  <circle cx="60" cy="60" r="42" fill="none" stroke="#38BDF8" stroke-width="1" stroke-opacity="0.4" stroke-dasharray="3,3" />
+  <circle cx="60" cy="60" r="30" fill="none" stroke="#FFFFFF" stroke-width="1.5" stroke-opacity="0.3" />
+  <!-- Reticle Crosshairs -->
+  <line x1="60" y1="12" x2="60" y2="24" stroke="#38BDF8" stroke-width="2.5" stroke-linecap="round" />
+  <line x1="60" y1="96" x2="60" y2="108" stroke="#38BDF8" stroke-width="2.5" stroke-linecap="round" />
+  <line x1="18" y1="60" x2="30" y2="60" stroke="#38BDF8" stroke-width="2.5" stroke-linecap="round" />
+  <line x1="90" y1="60" x2="102" y2="60" stroke="#38BDF8" stroke-width="2.5" stroke-linecap="round" />
+  <!-- Geometric 'V' Monogram with Diamond Apex -->
+  <path d="M34,36 L60,88 L86,36 L72,36 L60,63 L48,36 Z" fill="#FFFFFF" />
+  <path d="M60,40 L69,57 L60,74 L51,57 Z" fill="url(#vpAccent)" />
+  <polygon points="60,48 65,57 60,66 55,57" fill="#F59E0B" />
+  <!-- Core Optical Sensor Point -->
+  <circle cx="60" cy="57" r="2.5" fill="#FFFFFF" />
+</svg>

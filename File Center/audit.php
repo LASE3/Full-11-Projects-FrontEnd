@@ -11,8 +11,8 @@
     <!-- TOP NAVIGATION BAR (System 09 Graphite 4px Accent Stripe) -->
     <header class="vk-top-navbar">
         <div style="display: flex; align-items: center; gap: 24px;">
-            <a class="vk-brand-section" href="index.php">
-                <img alt="VOSTOKPRIBOR Official Mark" class="brand-logo-img" style="height: 30px; width: 30px; object-fit: contain;" src="https://lh3.googleusercontent.com/aida/AEtjO1XMGDZ9meLzj0XkVJ6C4Xv2AoEzKtMyFqF7KQ8eMADmbywzsRZ7VF4Em6pQ7fZ8QRJExCZedCKEUUo1fN1LpEmGsQva25blyUsGhOPvX2vv2cHGkppzOp9iT33Xy2n4Nkr5e_YY_0J78vA8Q7vKUpViCouPJo13HFVvW5olf7QEFzU3EX-WCqc0SYyPXZb7E11PafOMC_KprpG6Tre6bN_DyZS-CI-J5qiCgBtikqVNYGueATNgWbi73Q" />
+            <a class="vk-brand-section" href="Dashboard.php">
+                <img alt="VOSTOKPRIBOR Official Mark" class="brand-logo-img" style="height: 30px; width: 30px; object-fit: contain;" src="assets/logo.svg" />
                 <div style="display: flex; flex-direction: column;">
                     <div style="display: flex; align-items: center; gap: 8px;">
                         <span style="font-family: var(--font-heading); font-weight: 700; font-size: 15px; letter-spacing: -0.02em;">VOSTOKPRIBOR</span>
@@ -46,14 +46,17 @@
                     <span class="material-symbols-outlined text-[18px]" style="color: #ffffff;">folder_managed</span>
                 </div>
             </div>
-        </div>
+        
+<!-- Top Bar Sign Out -->
+<a href="../api/logout.php?system=File%20Center&redirect=../File%20Center/login.php" class="top-signout-btn" title="Sign Out of File Center" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" style="display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:4px;background:rgba(178,58,50,0.2);border:1px solid rgba(178,58,50,0.5);color:#FF8080;font-size:12px;font-weight:600;text-decoration:none;cursor:pointer;margin-left:8px;vertical-align:middle;transition:all 0.2s;" onmouseover="this.style.background='rgba(178,58,50,0.4)';this.style.color='#FFFFFF'" onmouseout="this.style.background='rgba(178,58,50,0.2)';this.style.color='#FF8080'"><span class="material-symbols-outlined" style="font-size:15px;line-height:1;">logout</span><span>Sign Out</span></a>
+</div>
     </header>
 
     <!-- LEFT SIDEBAR -->
     <aside class="vk-sidebar">
         <div class="vk-sidebar-nav">
             <div class="vk-sidebar-header">Document Vault</div>
-            <a class="vk-nav-item" href="index.php">
+            <a class="vk-nav-item" href="Dashboard.php">
                 <div style="display: flex; align-items: center; gap: 10px;">
                     <span class="material-symbols-outlined text-[18px]">folder_open</span>
                     <span>Document Repository</span>
@@ -127,7 +130,7 @@
         </div>
     
             <!-- Log Out -->
-            <a href="login.php" class="sidebar-nav-item sidebar-nav-item--logout" id="btn-logout" onclick="(function(){sessionStorage.clear();localStorage.clear();})()">
+            <a href="../api/logout.php?system=File%20Center&redirect=../File%20Center/login.php" class="sidebar-nav-item sidebar-nav-item--logout" id="btn-logout" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" onclick="(function(){sessionStorage.clear();localStorage.clear();})()">
               <div class="sidebar-item-left">
                 <span class="sidebar-icon">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -377,7 +380,7 @@
                 <input class="cmd-palette-input" id="cmd-palette-input" type="text" placeholder="Type a document ID, name, or jump to view..." />
             </div>
             <div class="cmd-palette-list" id="cmd-palette-results">
-                <a class="cmd-palette-item" href="index.php">
+                <a class="cmd-palette-item" href="Dashboard.php">
                     <span class="material-symbols-outlined text-[16px]">folder_open</span>
                     <span>Document Repository (All 15 Statutory Records)</span>
                 </a>

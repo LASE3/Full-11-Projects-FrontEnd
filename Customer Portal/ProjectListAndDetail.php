@@ -31,7 +31,7 @@
                 <span class="material-symbols-outlined text-2xl" id="sidebar-toggle-icon">menu</span>
             </button>
             <img alt="VOSTOKPRIBOR Logo" class="h-8 w-auto object-contain cursor-pointer" onclick="location.href='Dashboard.php'"
-                src="https://lh3.googleusercontent.com/aida/AEtjO1XMGDZ9meLzj0XkVJ6C4Xv2AoEzKtMyFqF7KQ8eMADmbywzsRZ7VF4Em6pQ7fZ8QRJExCZedCKEUUo1fN1LpEmGsQva25blyUsGhOPvX2vv2cHGkppzOp9iT33Xy2n4Nkr5e_YY_0J78vA8Q7vKUpViCouPJo13HFVvW5olf7QEFzU3EX-WCqc0SYyPXZb7E11PafOMC_KprpG6Tre6bN_DyZS-CI-J5qiCgBtikqVNYGueATNgWbi73Q">
+                src="assets/logo.svg">
             <div class="h-6 w-px bg-outline/30"></div>
             <div class="flex flex-col">
                 <div class="flex items-center gap-unit-xs"><span
@@ -76,7 +76,10 @@
                     class="w-8 h-8 rounded-full object-cover ring-1 ring-tertiary-fixed/50"
                     src="https://lh3.googleusercontent.com/aida-public/AB6AXuBxrM-O7aJYHYCDtkoA3WwbiOe6BxJ0vK7AcnogxwZN9MACsknTlpyGKyy-lWl2Hwn9IEZLPDCvVGrmxN2kvPEfzbJ5E4u5x6-38EP2exwXW8Dmm-7oMTzMG07_rmRLbT0xvZwQMFEwa4qJO5LcWbn58eWx3fSkVjAmSI3UWO8dCTgRg6GBgrY_MTUl-JF-JUf4K5CGPp0o4tvKoxbSqSysGT8r3j8de3w_sfk4F8p9ysiXXfbUkWPV">
             </div>
-        </div>
+        
+<!-- Top Bar Sign Out -->
+<a href="../api/logout.php?system=Customer%20Portal&redirect=../Customer%20Portal/login.php" class="top-signout-btn" title="Sign Out of Customer Portal" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" style="display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:4px;background:rgba(178,58,50,0.2);border:1px solid rgba(178,58,50,0.5);color:#FF8080;font-size:12px;font-weight:600;text-decoration:none;cursor:pointer;margin-left:8px;vertical-align:middle;transition:all 0.2s;" onmouseover="this.style.background='rgba(178,58,50,0.4)';this.style.color='#FFFFFF'" onmouseout="this.style.background='rgba(178,58,50,0.2)';this.style.color='#FF8080'"><span class="material-symbols-outlined" style="font-size:15px;line-height:1;">logout</span><span>Sign Out</span></a>
+</div>
     </header>
     <aside id="portal-sidebar"
         class="fixed left-0 top-16 bottom-0 w-64 bg-primary-container z-40 flex flex-col justify-between border-r border-outline/20">
@@ -147,7 +150,7 @@
                     </svg><span class="">Account Settings</span></a>
             </nav>
         </div>
-                <a class="flex items-center gap-unit-sm px-unit-base py-unit-sm text-error hover:bg-error-container/20 hover:text-on-error-container transition-colors font-headline-sm text-headline-sm font-normal border-t border-outline/20 mt-1" href="login.php" id="btn-logout" onclick="(function(){sessionStorage.clear();localStorage.clear();})()">
+                <a class="flex items-center gap-unit-sm px-unit-base py-unit-sm text-error hover:bg-error-container/20 hover:text-on-error-container transition-colors font-headline-sm text-headline-sm font-normal border-t border-outline/20 mt-1" href="../api/logout.php?system=Customer%20Portal&redirect=../Customer%20Portal/login.php" id="btn-logout" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" onclick="(function(){sessionStorage.clear();localStorage.clear();})()">
             <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
                 <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
                 <polyline points="16 17 21 12 16 7"/>

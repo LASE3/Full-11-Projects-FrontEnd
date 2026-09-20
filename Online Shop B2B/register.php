@@ -16,7 +16,7 @@
   <header class="auth-top-bar">
     <a href="index.php" class="auth-brand-link" title="Return to B2B Shop">
       <img
-        src="https://lh3.googleusercontent.com/aida/AEtjO1XMGDZ9meLzj0XkVJ6C4Xv2AoEzKtMyFqF7KQ8eMADmbywzsRZ7VF4Em6pQ7fZ8QRJExCZedCKEUUo1fN1LpEmGsQva25blyUsGhOPvX2vv2cHGkppzOp9iT33Xy2n4Nkr5e_YY_0J78vA8Q7vKUpViCouPJo13HFVvW5olf7QEFzU3EX-WCqc0SYyPXZb7E11PafOMC_KprpG6Tre6bN_DyZS-CI-J5qiCgBtikqVNYGueATNgWbi73Q"
+        src="assets/logo.svg"
         alt="VOSTOKPRIBOR Logo" class="auth-brand-logo">
       <div>
         <div class="auth-brand-name">VOSTOKPRIBOR</div>
@@ -26,7 +26,10 @@
     <div class="auth-status-beacon" title="Enterprise Partner Registration Active">
       <span class="status-dot-pulse"></span>
       <span>PARTNER ONBOARDING · LIVE</span>
-    </div>
+    
+<!-- Top Bar Sign Out -->
+<a href="../api/logout.php?system=Online%20Shop%20B2B&redirect=../Online%20Shop%20B2B/login.php" class="top-signout-btn" title="Sign Out of Online Shop B2B" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" style="display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:4px;background:rgba(178,58,50,0.2);border:1px solid rgba(178,58,50,0.5);color:#FF8080;font-size:12px;font-weight:600;text-decoration:none;cursor:pointer;margin-left:8px;vertical-align:middle;transition:all 0.2s;" onmouseover="this.style.background='rgba(178,58,50,0.4)';this.style.color='#FFFFFF'" onmouseout="this.style.background='rgba(178,58,50,0.2)';this.style.color='#FF8080'"><span class="material-symbols-outlined" style="font-size:15px;line-height:1;">logout</span><span>Sign Out</span></a>
+</div>
   </header>
 
   <main class="auth-main">
