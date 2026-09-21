@@ -37,10 +37,10 @@ function getDbConnection() {
             $rootPdo = new PDO("mysql:host=" . VP_DB_HOST . ";port=" . VP_DB_PORT . ";charset=utf8mb4", VP_DB_USER, VP_DB_PASS, $options);
             $rootPdo->exec("CREATE DATABASE IF NOT EXISTS `" . VP_DB_NAME . "` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
             $pdo = new PDO($dsn, VP_DB_USER, VP_DB_PASS, $options);
-            // Run seeder
-            $migrator = __DIR__ . '/../DataBase/migrate.php';
-            if (file_exists($migrator)) {
-                require_once $migrator;
+            // Run seeder from consolidated master SQL
+            $masterSql = __DIR__ . '/../DataBase/vostokpribor_master.sql';
+            if (file_exists($masterSql)) {
+                $pdo->exec(file_get_contents($masterSql));
             }
         } catch (Exception $fallbackEx) {
             error_log("Database connection failure: " . $e->getMessage());

@@ -1,4 +1,40 @@
-﻿-- MariaDB dump 10.19  Distrib 10.4.32-MariaDB, for Win64 (AMD64)
+-- ============================================================================
+-- VOSTOKPRIBOR COMPLETE MASTER DATABASE DUMP (ALL-IN-ONE)
+-- ============================================================================
+-- Merges:
+--   1. vostokpribor_1.sql (Complete enterprise 64-table schema & constraints)
+--   2. vostokpribor.sql   (Base sample datasets: customers, departments,
+--                          documents, employees, invoices, products, projects, tickets)
+--   3. migrate.php        (Complete systems catalog, roles, role_system_access,
+--                          employee accounts & aliases, customer accounts,
+--                          and product inventory with verified bcrypt password hashes)
+--
+-- DEFAULT LOGIN PASSWORDS:
+--   * Executive & Admin Accounts: AdminPass2026!
+--   * Staff & Logistics Accounts: Vostok2026!
+--   * Customer & Client Accounts: ClientPass2026!
+--
+-- QUICK LOGIN ACCOUNTS:
+--   * ADM (Admin Portal)     : ADM-VP-01 / viktor.sokolov (AdminPass2026!)
+--   * HR (HR System)         : HR-VP-201 / amina.karimova (AdminPass2026!)
+--   * FIN (Finance & Billing): FIN-VP-102 / daniel.weber  (AdminPass2026!)
+--   * IT (IT Helpdesk)       : IT-VP-304  / leonid.volkov (Vostok2026!)
+--   * DEV (Developer Portal) : DEV-VP-994 / jonas.richter (Vostok2026!)
+--   * CRM (CRM System)       : CRM-VP-842 / pavel.orlov   (Vostok2026!)
+--   * SHP (Online Shop B2B)  : EMP-1011   / SHP-VP-11     (Vostok2026! / ClientPass2026!)
+--   * CUS (Customer Portal)  : CLT-77210  / sergei.makarov(ClientPass2026!)
+--
+-- COMPATIBILITY: MySQL 5.7+, MySQL 8.0+, MariaDB 10.3+, phpMyAdmin, Docker
+-- ============================================================================
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+SET time_zone = "+00:00";
+SET FOREIGN_KEY_CHECKS = 0;
+
+CREATE DATABASE IF NOT EXISTS `vostokpribor` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE `vostokpribor`;
+
+-- MariaDB dump 10.19  Distrib 10.4.32-MariaDB, for Win64 (AMD64)
 --
 -- Host: localhost    Database: vostokpribor
 -- ------------------------------------------------------
@@ -19,9 +55,11 @@
 -- Current Database: `vostokpribor`
 --
 
-CREATE DATABASE /*!32312 IF NOT EXISTS*/ `vostokpribor` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci */;
 
-USE `vostokpribor`;
+
+
+
+
 
 --
 -- Table structure for table `access_reviews`
@@ -31,12 +69,17 @@ DROP TABLE IF EXISTS `access_reviews`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `access_reviews` (
-  `review_id` int(11) NOT NULL,
+  `review_id` int(11) NOT NULL AUTO_INCREMENT,
   `emp_id` varchar(10) DEFAULT NULL,
   `reviewed_by_emp_id` varchar(10) DEFAULT NULL,
   `review_date` date DEFAULT curdate(),
   `finding` text DEFAULT NULL,
-  `action_taken` text DEFAULT NULL
+  `action_taken` text DEFAULT NULL,
+  PRIMARY KEY (`review_id`),
+  KEY `fk_access_reviews_emp_id` (`emp_id`),
+  KEY `fk_access_reviews_reviewed_by_emp_id` (`reviewed_by_emp_id`),
+  CONSTRAINT `fk_access_reviews_emp_id` FOREIGN KEY (`emp_id`) REFERENCES `employees` (`emp_id`),
+  CONSTRAINT `fk_access_reviews_reviewed_by_emp_id` FOREIGN KEY (`reviewed_by_emp_id`) REFERENCES `employees` (`emp_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -57,12 +100,17 @@ DROP TABLE IF EXISTS `announcements`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `announcements` (
-  `announcement_id` int(11) NOT NULL,
+  `announcement_id` int(11) NOT NULL AUTO_INCREMENT,
   `title` varchar(200) DEFAULT NULL,
   `body` text DEFAULT NULL,
   `posted_by_emp_id` varchar(10) DEFAULT NULL,
   `audience_dept` varchar(4) DEFAULT NULL,
-  `posted_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `posted_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`announcement_id`),
+  KEY `fk_announcements_posted_by_emp_id` (`posted_by_emp_id`),
+  KEY `fk_announcements_audience_dept` (`audience_dept`),
+  CONSTRAINT `fk_announcements_audience_dept` FOREIGN KEY (`audience_dept`) REFERENCES `departments` (`dept_code`),
+  CONSTRAINT `fk_announcements_posted_by_emp_id` FOREIGN KEY (`posted_by_emp_id`) REFERENCES `employees` (`emp_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -83,7 +131,7 @@ DROP TABLE IF EXISTS `api_access_logs`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `api_access_logs` (
-  `api_log_id` bigint(20) NOT NULL,
+  `api_log_id` bigint(20) NOT NULL AUTO_INCREMENT,
   `credential_id` int(11) DEFAULT NULL,
   `partner_id` int(11) DEFAULT NULL,
   `system_id` varchar(4) DEFAULT NULL,
@@ -95,7 +143,14 @@ CREATE TABLE `api_access_logs` (
   `response_time_ms` int(11) DEFAULT NULL,
   `user_agent` varchar(255) DEFAULT NULL,
   `request_id` varchar(64) DEFAULT NULL,
-  `success` tinyint(1) DEFAULT NULL
+  `success` tinyint(1) DEFAULT NULL,
+  PRIMARY KEY (`api_log_id`),
+  KEY `fk_api_access_logs_credential_id` (`credential_id`),
+  KEY `fk_api_access_logs_partner_id` (`partner_id`),
+  KEY `fk_api_access_logs_system_id` (`system_id`),
+  CONSTRAINT `fk_api_access_logs_credential_id` FOREIGN KEY (`credential_id`) REFERENCES `api_credentials` (`credential_id`),
+  CONSTRAINT `fk_api_access_logs_partner_id` FOREIGN KEY (`partner_id`) REFERENCES `api_partners` (`partner_id`),
+  CONSTRAINT `fk_api_access_logs_system_id` FOREIGN KEY (`system_id`) REFERENCES `systems_catalog` (`system_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -116,12 +171,15 @@ DROP TABLE IF EXISTS `api_credentials`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `api_credentials` (
-  `credential_id` int(11) NOT NULL,
+  `credential_id` int(11) NOT NULL AUTO_INCREMENT,
   `partner_id` int(11) NOT NULL,
   `api_key_hash` varchar(255) DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `expires_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
-  `revoked` tinyint(1) DEFAULT 0
+  `revoked` tinyint(1) DEFAULT 0,
+  PRIMARY KEY (`credential_id`),
+  KEY `fk_api_credentials_partner_id` (`partner_id`),
+  CONSTRAINT `fk_api_credentials_partner_id` FOREIGN KEY (`partner_id`) REFERENCES `api_partners` (`partner_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -142,11 +200,14 @@ DROP TABLE IF EXISTS `api_partners`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `api_partners` (
-  `partner_id` int(11) NOT NULL,
+  `partner_id` int(11) NOT NULL AUTO_INCREMENT,
   `cus_id` varchar(10) DEFAULT NULL,
   `partner_name` varchar(150) DEFAULT NULL,
   `registered_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `status` varchar(30) DEFAULT 'Active'
+  `status` varchar(30) DEFAULT 'Active',
+  PRIMARY KEY (`partner_id`),
+  KEY `fk_api_partners_cus_id` (`cus_id`),
+  CONSTRAINT `fk_api_partners_cus_id` FOREIGN KEY (`cus_id`) REFERENCES `customers` (`cus_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -167,7 +228,7 @@ DROP TABLE IF EXISTS `audit_logs`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `audit_logs` (
-  `audit_id` bigint(20) NOT NULL,
+  `audit_id` bigint(20) NOT NULL AUTO_INCREMENT,
   `actor_emp_id` varchar(10) DEFAULT NULL,
   `actor_customer_id` varchar(10) DEFAULT NULL,
   `actor_system` varchar(50) DEFAULT NULL,
@@ -180,7 +241,16 @@ CREATE TABLE `audit_logs` (
   `old_values` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`old_values`)),
   `new_values` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`new_values`)),
   `result` varchar(20) DEFAULT NULL,
-  `occurred_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `occurred_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`audit_id`),
+  KEY `fk_audit_logs_actor_emp_id` (`actor_emp_id`),
+  KEY `fk_audit_logs_actor_customer_id` (`actor_customer_id`),
+  KEY `fk_audit_logs_system_id` (`system_id`),
+  KEY `fk_audit_logs_device_id` (`device_id`),
+  CONSTRAINT `fk_audit_logs_actor_customer_id` FOREIGN KEY (`actor_customer_id`) REFERENCES `customers` (`cus_id`),
+  CONSTRAINT `fk_audit_logs_actor_emp_id` FOREIGN KEY (`actor_emp_id`) REFERENCES `employees` (`emp_id`),
+  CONSTRAINT `fk_audit_logs_device_id` FOREIGN KEY (`device_id`) REFERENCES `devices` (`device_id`),
+  CONSTRAINT `fk_audit_logs_system_id` FOREIGN KEY (`system_id`) REFERENCES `systems_catalog` (`system_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -211,10 +281,18 @@ CREATE TABLE `authentication_events` (
   `event_type` varchar(30) DEFAULT NULL,
   `occurred_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `success` tinyint(1) DEFAULT NULL,
-  `source_ip` varchar(45) DEFAULT '127.0.0.1',
-  `details` text DEFAULT NULL,
-  PRIMARY KEY (`event_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  PRIMARY KEY (`event_id`),
+  KEY `fk_authentication_events_employee_account_id` (`employee_account_id`),
+  KEY `fk_authentication_events_customer_account_id` (`customer_account_id`),
+  KEY `fk_authentication_events_system_id` (`system_id`),
+  KEY `fk_authentication_events_device_id` (`device_id`),
+  KEY `fk_authentication_events_ip_id` (`ip_id`),
+  CONSTRAINT `fk_authentication_events_customer_account_id` FOREIGN KEY (`customer_account_id`) REFERENCES `customer_accounts` (`account_id`),
+  CONSTRAINT `fk_authentication_events_device_id` FOREIGN KEY (`device_id`) REFERENCES `devices` (`device_id`),
+  CONSTRAINT `fk_authentication_events_employee_account_id` FOREIGN KEY (`employee_account_id`) REFERENCES `employee_accounts` (`account_id`),
+  CONSTRAINT `fk_authentication_events_ip_id` FOREIGN KEY (`ip_id`) REFERENCES `ip_addresses` (`ip_id`),
+  CONSTRAINT `fk_authentication_events_system_id` FOREIGN KEY (`system_id`) REFERENCES `systems_catalog` (`system_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -223,7 +301,6 @@ CREATE TABLE `authentication_events` (
 
 LOCK TABLES `authentication_events` WRITE;
 /*!40000 ALTER TABLE `authentication_events` DISABLE KEYS */;
-INSERT INTO `authentication_events` VALUES (1,'Employee',2,NULL,'ADM',NULL,NULL,'LOGIN_ATTEMPT','2026-09-20 16:07:46',1,'127.0.0.1','Access granted via Executive L4 unrestricted clearance'),(2,'Employee',47,NULL,'DEV',NULL,NULL,'LOGIN_ATTEMPT','2026-09-20 16:07:52',1,'127.0.0.1','Access granted via Authorized via role access (Full)'),(3,'Employee',47,NULL,'ADM',NULL,NULL,'LOGIN_ATTEMPT','2026-09-20 16:07:56',0,'127.0.0.1','Authorization denied for system ADM: Insufficient clearance (L3) or role permissions for system ADM.'),(4,'Customer',NULL,2,'CUS',NULL,NULL,'LOGIN_ATTEMPT','2026-09-20 16:08:00',1,'127.0.0.1','Access granted via Customer portal access granted'),(5,'Customer',NULL,2,'ADM',NULL,NULL,'LOGIN_ATTEMPT','2026-09-20 16:08:05',0,'127.0.0.1','Authorization denied for system ADM: Customer accounts are restricted from internal enterprise portals'),(6,'Employee',2,NULL,'ADM',NULL,NULL,'LOGIN_ATTEMPT','2026-09-20 16:08:08',0,'127.0.0.1','Password mismatch for account ADM-VP-01'),(7,'Employee',2,NULL,'ADM',NULL,NULL,'LOGIN_ATTEMPT','2026-09-20 16:14:32',1,'127.0.0.1','Access granted via Executive L4 unrestricted clearance'),(8,'Employee',15,NULL,'CRM',NULL,NULL,'LOGIN_ATTEMPT','2026-09-20 16:14:32',1,'127.0.0.1','Access granted via Authorized via role access (Full)'),(9,'Customer',NULL,2,'CUS',NULL,NULL,'LOGIN_ATTEMPT','2026-09-20 16:14:32',1,'127.0.0.1','Access granted via Customer portal access granted'),(10,'Employee',47,NULL,'DEV',NULL,NULL,'LOGIN_ATTEMPT','2026-09-20 16:14:32',1,'127.0.0.1','Access granted via Authorized via role access (Full)'),(11,'Employee',93,NULL,'EMP',NULL,NULL,'LOGIN_ATTEMPT','2026-09-20 16:14:33',1,'127.0.0.1','Access granted via Authorized via role access (Read)'),(12,'Employee',142,NULL,'DOC',NULL,NULL,'LOGIN_ATTEMPT','2026-09-20 16:14:33',1,'127.0.0.1','Access granted via Authorized via role access (ReadWrite)'),(13,'Employee',156,NULL,'FIN',NULL,NULL,'LOGIN_ATTEMPT','2026-09-20 16:14:33',1,'127.0.0.1','Access granted via Executive L4 unrestricted clearance'),(14,'Employee',5,NULL,'HR',NULL,NULL,'LOGIN_ATTEMPT','2026-09-20 16:14:33',1,'127.0.0.1','Access granted via Executive L4 unrestricted clearance'),(15,'Employee',41,NULL,'IT',NULL,NULL,'LOGIN_ATTEMPT','2026-09-20 16:14:33',1,'127.0.0.1','Access granted via Authorized via role access (Full)'),(16,'Customer',NULL,5,'SHP',NULL,NULL,'LOGIN_ATTEMPT','2026-09-20 16:14:33',1,'127.0.0.1','Access granted via Customer portal access granted'),(17,'Customer',NULL,5,'ADM',NULL,NULL,'LOGIN_ATTEMPT','2026-09-20 16:14:33',0,'127.0.0.1','Authorization denied for system ADM: Customer accounts are restricted from internal enterprise portals');
 /*!40000 ALTER TABLE `authentication_events` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -235,11 +312,14 @@ DROP TABLE IF EXISTS `billing_cycles`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `billing_cycles` (
-  `cycle_id` int(11) NOT NULL,
+  `cycle_id` int(11) NOT NULL AUTO_INCREMENT,
   `prj_id` varchar(15) NOT NULL,
   `milestone_description` varchar(200) DEFAULT NULL,
   `scheduled_date` date DEFAULT NULL,
-  `invoiced` tinyint(1) DEFAULT 0
+  `invoiced` tinyint(1) DEFAULT 0,
+  PRIMARY KEY (`cycle_id`),
+  KEY `fk_billing_cycles_prj_id` (`prj_id`),
+  CONSTRAINT `fk_billing_cycles_prj_id` FOREIGN KEY (`prj_id`) REFERENCES `projects` (`prj_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -260,11 +340,14 @@ DROP TABLE IF EXISTS `budgets`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `budgets` (
-  `budget_id` int(11) NOT NULL,
+  `budget_id` int(11) NOT NULL AUTO_INCREMENT,
   `department_code` varchar(4) DEFAULT NULL,
   `fiscal_year` int(11) DEFAULT NULL,
   `allocated_amount` decimal(14,2) DEFAULT NULL,
-  `spent_amount` decimal(14,2) DEFAULT 0.00
+  `spent_amount` decimal(14,2) DEFAULT 0.00,
+  PRIMARY KEY (`budget_id`),
+  KEY `fk_budgets_department_code` (`department_code`),
+  CONSTRAINT `fk_budgets_department_code` FOREIGN KEY (`department_code`) REFERENCES `departments` (`dept_code`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -285,12 +368,15 @@ DROP TABLE IF EXISTS `contacts`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `contacts` (
-  `contact_id` int(11) NOT NULL,
+  `contact_id` int(11) NOT NULL AUTO_INCREMENT,
   `cus_id` varchar(10) NOT NULL,
   `full_name` varchar(150) DEFAULT NULL,
   `role` varchar(100) DEFAULT NULL,
   `email` varchar(150) DEFAULT NULL,
-  `phone` varchar(50) DEFAULT NULL
+  `phone` varchar(50) DEFAULT NULL,
+  PRIMARY KEY (`contact_id`),
+  KEY `fk_contacts_cus_id` (`cus_id`),
+  CONSTRAINT `fk_contacts_cus_id` FOREIGN KEY (`cus_id`) REFERENCES `customers` (`cus_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -311,7 +397,7 @@ DROP TABLE IF EXISTS `contracts`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `contracts` (
-  `contract_id` int(11) NOT NULL,
+  `contract_id` int(11) NOT NULL AUTO_INCREMENT,
   `cus_id` varchar(10) DEFAULT NULL,
   `prj_id` varchar(15) DEFAULT NULL,
   `opp_id` int(11) DEFAULT NULL,
@@ -319,7 +405,16 @@ CREATE TABLE `contracts` (
   `start_date` date DEFAULT NULL,
   `end_date` date DEFAULT NULL,
   `status` varchar(30) DEFAULT NULL,
-  `doc_id` varchar(15) DEFAULT NULL
+  `doc_id` varchar(15) DEFAULT NULL,
+  PRIMARY KEY (`contract_id`),
+  KEY `fk_contracts_cus_id` (`cus_id`),
+  KEY `fk_contracts_prj_id` (`prj_id`),
+  KEY `fk_contracts_opp_id` (`opp_id`),
+  KEY `fk_contracts_doc_id` (`doc_id`),
+  CONSTRAINT `fk_contracts_cus_id` FOREIGN KEY (`cus_id`) REFERENCES `customers` (`cus_id`),
+  CONSTRAINT `fk_contracts_doc_id` FOREIGN KEY (`doc_id`) REFERENCES `documents` (`doc_id`),
+  CONSTRAINT `fk_contracts_opp_id` FOREIGN KEY (`opp_id`) REFERENCES `opportunities` (`opp_id`),
+  CONSTRAINT `fk_contracts_prj_id` FOREIGN KEY (`prj_id`) REFERENCES `projects` (`prj_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -347,10 +442,13 @@ CREATE TABLE `customer_accounts` (
   `password_hash` varchar(255) NOT NULL,
   `mfa_enabled` tinyint(1) DEFAULT 0,
   `status` varchar(20) DEFAULT 'Active',
-  `last_login` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `last_login` timestamp NULL DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  PRIMARY KEY (`account_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=86 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  PRIMARY KEY (`account_id`),
+  UNIQUE KEY `idx_cus_account_username` (`username`),
+  KEY `idx_cus_id` (`cus_id`),
+  CONSTRAINT `fk_customer_accounts_cus_id` FOREIGN KEY (`cus_id`) REFERENCES `customers` (`cus_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -359,7 +457,7 @@ CREATE TABLE `customer_accounts` (
 
 LOCK TABLES `customer_accounts` WRITE;
 /*!40000 ALTER TABLE `customer_accounts` DISABLE KEYS */;
-INSERT INTO `customer_accounts` VALUES (1,'CUS-1001','sergei.makarov','s.makarov@aral-geomatics.kz','$2y$10$dUJcrR/HX8nibkq6RiE15ug5eo1h7gD/Xs/FtOhvRY7A4/x3BXlQK',0,'Active','2026-09-20 16:07:17','2026-09-20 16:05:39'),(2,'CUS-1001','CLT-77210','client77210@vostokpribor.local','$2y$10$dUJcrR/HX8nibkq6RiE15ug5eo1h7gD/Xs/FtOhvRY7A4/x3BXlQK',0,'Active','2026-09-20 16:14:32','2026-09-20 16:05:39'),(3,'CUS-1001','CUS-1001','cus1001@aral-geomatics.kz','$2y$10$dUJcrR/HX8nibkq6RiE15ug5eo1h7gD/Xs/FtOhvRY7A4/x3BXlQK',0,'Active','2026-09-20 16:07:17','2026-09-20 16:05:39'),(4,'CUS-1002','kristaps.ozols','k.ozols@baltnord-systems.eu','$2y$10$dUJcrR/HX8nibkq6RiE15ug5eo1h7gD/Xs/FtOhvRY7A4/x3BXlQK',0,'Active','2026-09-20 16:07:17','2026-09-20 16:05:39'),(5,'CUS-1002','SHP-VP-11','b2b-buyer11@baltnord.eu','$2y$10$dUJcrR/HX8nibkq6RiE15ug5eo1h7gD/Xs/FtOhvRY7A4/x3BXlQK',0,'Active','2026-09-20 16:14:33','2026-09-20 16:05:39'),(6,'CUS-1002','CUS-1002','cus1002@baltnord.eu','$2y$10$dUJcrR/HX8nibkq6RiE15ug5eo1h7gD/Xs/FtOhvRY7A4/x3BXlQK',0,'Active','2026-09-20 16:07:17','2026-09-20 16:05:39'),(7,'CUS-1003','yerlan.bektemis','y.bektemis@steppemining.kz','$2y$10$dUJcrR/HX8nibkq6RiE15ug5eo1h7gD/Xs/FtOhvRY7A4/x3BXlQK',0,'Active','2026-09-20 16:07:17','2026-09-20 16:05:39'),(8,'CUS-1003','CUS-1003','cus1003@steppemining.kz','$2y$10$dUJcrR/HX8nibkq6RiE15ug5eo1h7gD/Xs/FtOhvRY7A4/x3BXlQK',0,'Active','2026-09-20 16:07:17','2026-09-20 16:05:39'),(9,'CUS-1004','lukas.brandt','l.brandt@rheinwerk-inst.de','$2y$10$dUJcrR/HX8nibkq6RiE15ug5eo1h7gD/Xs/FtOhvRY7A4/x3BXlQK',0,'Active','2026-09-20 16:07:17','2026-09-20 16:05:39'),(10,'CUS-1004','CUS-1004','cus1004@rheinwerk.de','$2y$10$dUJcrR/HX8nibkq6RiE15ug5eo1h7gD/Xs/FtOhvRY7A4/x3BXlQK',0,'Active','2026-09-20 16:07:17','2026-09-20 16:05:39'),(11,'CUS-1005','dilshod.karim','d.karim@tashkent-precision.uz','$2y$10$dUJcrR/HX8nibkq6RiE15ug5eo1h7gD/Xs/FtOhvRY7A4/x3BXlQK',0,'Active','2026-09-20 16:07:17','2026-09-20 16:05:39'),(12,'CUS-1005','CUS-1005','cus1005@tashkent-precision.uz','$2y$10$dUJcrR/HX8nibkq6RiE15ug5eo1h7gD/Xs/FtOhvRY7A4/x3BXlQK',0,'Active','2026-09-20 16:07:17','2026-09-20 16:05:39'),(13,'CUS-1006','mara.kalnina','m.kalnina@daugava-optical.lv','$2y$10$dUJcrR/HX8nibkq6RiE15ug5eo1h7gD/Xs/FtOhvRY7A4/x3BXlQK',0,'Active','2026-09-20 16:07:17','2026-09-20 16:05:39'),(14,'CUS-1007','murad.safarov','m.safarov@caspian-robotics.az','$2y$10$dUJcrR/HX8nibkq6RiE15ug5eo1h7gD/Xs/FtOhvRY7A4/x3BXlQK',0,'Active','2026-09-20 16:07:17','2026-09-20 16:05:39'),(15,'CUS-1008','oleg.petrenko','o.petrenko@eurasia-water.ua','$2y$10$dUJcrR/HX8nibkq6RiE15ug5eo1h7gD/Xs/FtOhvRY7A4/x3BXlQK',0,'Active','2026-09-20 16:07:17','2026-09-20 16:05:39'),(16,'CUS-1009','ainur.sadyk','a.sadyk@altai-env.kz','$2y$10$dUJcrR/HX8nibkq6RiE15ug5eo1h7gD/Xs/FtOhvRY7A4/x3BXlQK',0,'Active','2026-09-20 16:07:17','2026-09-20 16:05:39'),(17,'CUS-1010','tomas.varga','t.varga@central-rail.hu','$2y$10$dUJcrR/HX8nibkq6RiE15ug5eo1h7gD/Xs/FtOhvRY7A4/x3BXlQK',0,'Active','2026-09-20 16:07:17','2026-09-20 16:05:39'),(18,'CUS-1001','sergei.makarov','s.makarov@aral-geomatics.kz','$2y$10$pN4wsT5GSj9R6J/.OYR.v.tRn5j3xjB.XvpQKl7CQ0Go/hXTgBglC',0,'Active','2026-09-20 16:10:27','2026-09-20 16:10:27'),(19,'CUS-1001','CLT-77210','client77210@vostokpribor.local','$2y$10$pN4wsT5GSj9R6J/.OYR.v.tRn5j3xjB.XvpQKl7CQ0Go/hXTgBglC',0,'Active','2026-09-20 16:10:27','2026-09-20 16:10:27'),(20,'CUS-1001','CUS-1001','cus1001@aral-geomatics.kz','$2y$10$pN4wsT5GSj9R6J/.OYR.v.tRn5j3xjB.XvpQKl7CQ0Go/hXTgBglC',0,'Active','2026-09-20 16:10:27','2026-09-20 16:10:27'),(21,'CUS-1002','kristaps.ozols','k.ozols@baltnord-systems.eu','$2y$10$pN4wsT5GSj9R6J/.OYR.v.tRn5j3xjB.XvpQKl7CQ0Go/hXTgBglC',0,'Active','2026-09-20 16:10:27','2026-09-20 16:10:27'),(22,'CUS-1002','SHP-VP-11','b2b-buyer11@baltnord.eu','$2y$10$pN4wsT5GSj9R6J/.OYR.v.tRn5j3xjB.XvpQKl7CQ0Go/hXTgBglC',0,'Active','2026-09-20 16:10:27','2026-09-20 16:10:27'),(23,'CUS-1002','CUS-1002','cus1002@baltnord.eu','$2y$10$pN4wsT5GSj9R6J/.OYR.v.tRn5j3xjB.XvpQKl7CQ0Go/hXTgBglC',0,'Active','2026-09-20 16:10:27','2026-09-20 16:10:27'),(24,'CUS-1003','yerlan.bektemis','y.bektemis@steppemining.kz','$2y$10$pN4wsT5GSj9R6J/.OYR.v.tRn5j3xjB.XvpQKl7CQ0Go/hXTgBglC',0,'Active','2026-09-20 16:10:27','2026-09-20 16:10:27'),(25,'CUS-1003','CUS-1003','cus1003@steppemining.kz','$2y$10$pN4wsT5GSj9R6J/.OYR.v.tRn5j3xjB.XvpQKl7CQ0Go/hXTgBglC',0,'Active','2026-09-20 16:10:27','2026-09-20 16:10:27'),(26,'CUS-1004','lukas.brandt','l.brandt@rheinwerk-inst.de','$2y$10$pN4wsT5GSj9R6J/.OYR.v.tRn5j3xjB.XvpQKl7CQ0Go/hXTgBglC',0,'Active','2026-09-20 16:10:27','2026-09-20 16:10:27'),(27,'CUS-1004','CUS-1004','cus1004@rheinwerk.de','$2y$10$pN4wsT5GSj9R6J/.OYR.v.tRn5j3xjB.XvpQKl7CQ0Go/hXTgBglC',0,'Active','2026-09-20 16:10:27','2026-09-20 16:10:27'),(28,'CUS-1005','dilshod.karim','d.karim@tashkent-precision.uz','$2y$10$pN4wsT5GSj9R6J/.OYR.v.tRn5j3xjB.XvpQKl7CQ0Go/hXTgBglC',0,'Active','2026-09-20 16:10:27','2026-09-20 16:10:27'),(29,'CUS-1005','CUS-1005','cus1005@tashkent-precision.uz','$2y$10$pN4wsT5GSj9R6J/.OYR.v.tRn5j3xjB.XvpQKl7CQ0Go/hXTgBglC',0,'Active','2026-09-20 16:10:27','2026-09-20 16:10:27'),(30,'CUS-1006','mara.kalnina','m.kalnina@daugava-optical.lv','$2y$10$pN4wsT5GSj9R6J/.OYR.v.tRn5j3xjB.XvpQKl7CQ0Go/hXTgBglC',0,'Active','2026-09-20 16:10:27','2026-09-20 16:10:27'),(31,'CUS-1007','murad.safarov','m.safarov@caspian-robotics.az','$2y$10$pN4wsT5GSj9R6J/.OYR.v.tRn5j3xjB.XvpQKl7CQ0Go/hXTgBglC',0,'Active','2026-09-20 16:10:27','2026-09-20 16:10:27'),(32,'CUS-1008','oleg.petrenko','o.petrenko@eurasia-water.ua','$2y$10$pN4wsT5GSj9R6J/.OYR.v.tRn5j3xjB.XvpQKl7CQ0Go/hXTgBglC',0,'Active','2026-09-20 16:10:27','2026-09-20 16:10:27'),(33,'CUS-1009','ainur.sadyk','a.sadyk@altai-env.kz','$2y$10$pN4wsT5GSj9R6J/.OYR.v.tRn5j3xjB.XvpQKl7CQ0Go/hXTgBglC',0,'Active','2026-09-20 16:10:27','2026-09-20 16:10:27'),(34,'CUS-1010','tomas.varga','t.varga@central-rail.hu','$2y$10$pN4wsT5GSj9R6J/.OYR.v.tRn5j3xjB.XvpQKl7CQ0Go/hXTgBglC',0,'Active','2026-09-20 16:10:27','2026-09-20 16:10:27'),(35,'CUS-1001','sergei.makarov','s.makarov@aral-geomatics.kz','$2y$10$FfOBA/qg9xnutLDJYWp41OVe9RLzfV4sF6l2YJQN3Yw2QWDIr3q6u',0,'Active','2026-09-20 16:10:58','2026-09-20 16:10:58'),(36,'CUS-1001','CLT-77210','client77210@vostokpribor.local','$2y$10$FfOBA/qg9xnutLDJYWp41OVe9RLzfV4sF6l2YJQN3Yw2QWDIr3q6u',0,'Active','2026-09-20 16:10:58','2026-09-20 16:10:58'),(37,'CUS-1001','CUS-1001','cus1001@aral-geomatics.kz','$2y$10$FfOBA/qg9xnutLDJYWp41OVe9RLzfV4sF6l2YJQN3Yw2QWDIr3q6u',0,'Active','2026-09-20 16:10:58','2026-09-20 16:10:58'),(38,'CUS-1002','kristaps.ozols','k.ozols@baltnord-systems.eu','$2y$10$FfOBA/qg9xnutLDJYWp41OVe9RLzfV4sF6l2YJQN3Yw2QWDIr3q6u',0,'Active','2026-09-20 16:10:58','2026-09-20 16:10:58'),(39,'CUS-1002','SHP-VP-11','b2b-buyer11@baltnord.eu','$2y$10$FfOBA/qg9xnutLDJYWp41OVe9RLzfV4sF6l2YJQN3Yw2QWDIr3q6u',0,'Active','2026-09-20 16:10:58','2026-09-20 16:10:58'),(40,'CUS-1002','CUS-1002','cus1002@baltnord.eu','$2y$10$FfOBA/qg9xnutLDJYWp41OVe9RLzfV4sF6l2YJQN3Yw2QWDIr3q6u',0,'Active','2026-09-20 16:10:58','2026-09-20 16:10:58'),(41,'CUS-1003','yerlan.bektemis','y.bektemis@steppemining.kz','$2y$10$FfOBA/qg9xnutLDJYWp41OVe9RLzfV4sF6l2YJQN3Yw2QWDIr3q6u',0,'Active','2026-09-20 16:10:58','2026-09-20 16:10:58'),(42,'CUS-1003','CUS-1003','cus1003@steppemining.kz','$2y$10$FfOBA/qg9xnutLDJYWp41OVe9RLzfV4sF6l2YJQN3Yw2QWDIr3q6u',0,'Active','2026-09-20 16:10:58','2026-09-20 16:10:58'),(43,'CUS-1004','lukas.brandt','l.brandt@rheinwerk-inst.de','$2y$10$FfOBA/qg9xnutLDJYWp41OVe9RLzfV4sF6l2YJQN3Yw2QWDIr3q6u',0,'Active','2026-09-20 16:10:58','2026-09-20 16:10:58'),(44,'CUS-1004','CUS-1004','cus1004@rheinwerk.de','$2y$10$FfOBA/qg9xnutLDJYWp41OVe9RLzfV4sF6l2YJQN3Yw2QWDIr3q6u',0,'Active','2026-09-20 16:10:58','2026-09-20 16:10:58'),(45,'CUS-1005','dilshod.karim','d.karim@tashkent-precision.uz','$2y$10$FfOBA/qg9xnutLDJYWp41OVe9RLzfV4sF6l2YJQN3Yw2QWDIr3q6u',0,'Active','2026-09-20 16:10:58','2026-09-20 16:10:58'),(46,'CUS-1005','CUS-1005','cus1005@tashkent-precision.uz','$2y$10$FfOBA/qg9xnutLDJYWp41OVe9RLzfV4sF6l2YJQN3Yw2QWDIr3q6u',0,'Active','2026-09-20 16:10:58','2026-09-20 16:10:58'),(47,'CUS-1006','mara.kalnina','m.kalnina@daugava-optical.lv','$2y$10$FfOBA/qg9xnutLDJYWp41OVe9RLzfV4sF6l2YJQN3Yw2QWDIr3q6u',0,'Active','2026-09-20 16:10:58','2026-09-20 16:10:58'),(48,'CUS-1007','murad.safarov','m.safarov@caspian-robotics.az','$2y$10$FfOBA/qg9xnutLDJYWp41OVe9RLzfV4sF6l2YJQN3Yw2QWDIr3q6u',0,'Active','2026-09-20 16:10:58','2026-09-20 16:10:58'),(49,'CUS-1008','oleg.petrenko','o.petrenko@eurasia-water.ua','$2y$10$FfOBA/qg9xnutLDJYWp41OVe9RLzfV4sF6l2YJQN3Yw2QWDIr3q6u',0,'Active','2026-09-20 16:10:58','2026-09-20 16:10:58'),(50,'CUS-1009','ainur.sadyk','a.sadyk@altai-env.kz','$2y$10$FfOBA/qg9xnutLDJYWp41OVe9RLzfV4sF6l2YJQN3Yw2QWDIr3q6u',0,'Active','2026-09-20 16:10:58','2026-09-20 16:10:58'),(51,'CUS-1010','tomas.varga','t.varga@central-rail.hu','$2y$10$FfOBA/qg9xnutLDJYWp41OVe9RLzfV4sF6l2YJQN3Yw2QWDIr3q6u',0,'Active','2026-09-20 16:10:58','2026-09-20 16:10:58'),(52,'CUS-1001','sergei.makarov','s.makarov@aral-geomatics.kz','$2y$10$Sggvi.ItHfOj6qnw2NZPBeqbQuOYWbXHR9M1XJtoAQFEwF9F1i0WC',0,'Active','2026-09-20 16:11:28','2026-09-20 16:11:28'),(53,'CUS-1001','CLT-77210','client77210@vostokpribor.local','$2y$10$Sggvi.ItHfOj6qnw2NZPBeqbQuOYWbXHR9M1XJtoAQFEwF9F1i0WC',0,'Active','2026-09-20 16:11:28','2026-09-20 16:11:28'),(54,'CUS-1001','CUS-1001','cus1001@aral-geomatics.kz','$2y$10$Sggvi.ItHfOj6qnw2NZPBeqbQuOYWbXHR9M1XJtoAQFEwF9F1i0WC',0,'Active','2026-09-20 16:11:28','2026-09-20 16:11:28'),(55,'CUS-1002','kristaps.ozols','k.ozols@baltnord-systems.eu','$2y$10$Sggvi.ItHfOj6qnw2NZPBeqbQuOYWbXHR9M1XJtoAQFEwF9F1i0WC',0,'Active','2026-09-20 16:11:28','2026-09-20 16:11:28'),(56,'CUS-1002','SHP-VP-11','b2b-buyer11@baltnord.eu','$2y$10$Sggvi.ItHfOj6qnw2NZPBeqbQuOYWbXHR9M1XJtoAQFEwF9F1i0WC',0,'Active','2026-09-20 16:11:28','2026-09-20 16:11:28'),(57,'CUS-1002','CUS-1002','cus1002@baltnord.eu','$2y$10$Sggvi.ItHfOj6qnw2NZPBeqbQuOYWbXHR9M1XJtoAQFEwF9F1i0WC',0,'Active','2026-09-20 16:11:28','2026-09-20 16:11:28'),(58,'CUS-1003','yerlan.bektemis','y.bektemis@steppemining.kz','$2y$10$Sggvi.ItHfOj6qnw2NZPBeqbQuOYWbXHR9M1XJtoAQFEwF9F1i0WC',0,'Active','2026-09-20 16:11:28','2026-09-20 16:11:28'),(59,'CUS-1003','CUS-1003','cus1003@steppemining.kz','$2y$10$Sggvi.ItHfOj6qnw2NZPBeqbQuOYWbXHR9M1XJtoAQFEwF9F1i0WC',0,'Active','2026-09-20 16:11:28','2026-09-20 16:11:28'),(60,'CUS-1004','lukas.brandt','l.brandt@rheinwerk-inst.de','$2y$10$Sggvi.ItHfOj6qnw2NZPBeqbQuOYWbXHR9M1XJtoAQFEwF9F1i0WC',0,'Active','2026-09-20 16:11:28','2026-09-20 16:11:28'),(61,'CUS-1004','CUS-1004','cus1004@rheinwerk.de','$2y$10$Sggvi.ItHfOj6qnw2NZPBeqbQuOYWbXHR9M1XJtoAQFEwF9F1i0WC',0,'Active','2026-09-20 16:11:28','2026-09-20 16:11:28'),(62,'CUS-1005','dilshod.karim','d.karim@tashkent-precision.uz','$2y$10$Sggvi.ItHfOj6qnw2NZPBeqbQuOYWbXHR9M1XJtoAQFEwF9F1i0WC',0,'Active','2026-09-20 16:11:28','2026-09-20 16:11:28'),(63,'CUS-1005','CUS-1005','cus1005@tashkent-precision.uz','$2y$10$Sggvi.ItHfOj6qnw2NZPBeqbQuOYWbXHR9M1XJtoAQFEwF9F1i0WC',0,'Active','2026-09-20 16:11:28','2026-09-20 16:11:28'),(64,'CUS-1006','mara.kalnina','m.kalnina@daugava-optical.lv','$2y$10$Sggvi.ItHfOj6qnw2NZPBeqbQuOYWbXHR9M1XJtoAQFEwF9F1i0WC',0,'Active','2026-09-20 16:11:28','2026-09-20 16:11:28'),(65,'CUS-1007','murad.safarov','m.safarov@caspian-robotics.az','$2y$10$Sggvi.ItHfOj6qnw2NZPBeqbQuOYWbXHR9M1XJtoAQFEwF9F1i0WC',0,'Active','2026-09-20 16:11:28','2026-09-20 16:11:28'),(66,'CUS-1008','oleg.petrenko','o.petrenko@eurasia-water.ua','$2y$10$Sggvi.ItHfOj6qnw2NZPBeqbQuOYWbXHR9M1XJtoAQFEwF9F1i0WC',0,'Active','2026-09-20 16:11:28','2026-09-20 16:11:28'),(67,'CUS-1009','ainur.sadyk','a.sadyk@altai-env.kz','$2y$10$Sggvi.ItHfOj6qnw2NZPBeqbQuOYWbXHR9M1XJtoAQFEwF9F1i0WC',0,'Active','2026-09-20 16:11:28','2026-09-20 16:11:28'),(68,'CUS-1010','tomas.varga','t.varga@central-rail.hu','$2y$10$Sggvi.ItHfOj6qnw2NZPBeqbQuOYWbXHR9M1XJtoAQFEwF9F1i0WC',0,'Active','2026-09-20 16:11:28','2026-09-20 16:11:28'),(69,'CUS-1001','sergei.makarov','s.makarov@aral-geomatics.kz','$2y$10$RV6Vdd8wn1t12XNmHTtCbuYnzVjxjFHG3VpOoZoAwZ5gPYf4CQKPy',0,'Active','2026-09-20 16:12:06','2026-09-20 16:12:06'),(70,'CUS-1001','CLT-77210','client77210@vostokpribor.local','$2y$10$RV6Vdd8wn1t12XNmHTtCbuYnzVjxjFHG3VpOoZoAwZ5gPYf4CQKPy',0,'Active','2026-09-20 16:12:06','2026-09-20 16:12:06'),(71,'CUS-1001','CUS-1001','cus1001@aral-geomatics.kz','$2y$10$RV6Vdd8wn1t12XNmHTtCbuYnzVjxjFHG3VpOoZoAwZ5gPYf4CQKPy',0,'Active','2026-09-20 16:12:06','2026-09-20 16:12:06'),(72,'CUS-1002','kristaps.ozols','k.ozols@baltnord-systems.eu','$2y$10$RV6Vdd8wn1t12XNmHTtCbuYnzVjxjFHG3VpOoZoAwZ5gPYf4CQKPy',0,'Active','2026-09-20 16:12:06','2026-09-20 16:12:06'),(73,'CUS-1002','SHP-VP-11','b2b-buyer11@baltnord.eu','$2y$10$RV6Vdd8wn1t12XNmHTtCbuYnzVjxjFHG3VpOoZoAwZ5gPYf4CQKPy',0,'Active','2026-09-20 16:12:06','2026-09-20 16:12:06'),(74,'CUS-1002','CUS-1002','cus1002@baltnord.eu','$2y$10$RV6Vdd8wn1t12XNmHTtCbuYnzVjxjFHG3VpOoZoAwZ5gPYf4CQKPy',0,'Active','2026-09-20 16:12:06','2026-09-20 16:12:06'),(75,'CUS-1003','yerlan.bektemis','y.bektemis@steppemining.kz','$2y$10$RV6Vdd8wn1t12XNmHTtCbuYnzVjxjFHG3VpOoZoAwZ5gPYf4CQKPy',0,'Active','2026-09-20 16:12:06','2026-09-20 16:12:06'),(76,'CUS-1003','CUS-1003','cus1003@steppemining.kz','$2y$10$RV6Vdd8wn1t12XNmHTtCbuYnzVjxjFHG3VpOoZoAwZ5gPYf4CQKPy',0,'Active','2026-09-20 16:12:06','2026-09-20 16:12:06'),(77,'CUS-1004','lukas.brandt','l.brandt@rheinwerk-inst.de','$2y$10$RV6Vdd8wn1t12XNmHTtCbuYnzVjxjFHG3VpOoZoAwZ5gPYf4CQKPy',0,'Active','2026-09-20 16:12:06','2026-09-20 16:12:06'),(78,'CUS-1004','CUS-1004','cus1004@rheinwerk.de','$2y$10$RV6Vdd8wn1t12XNmHTtCbuYnzVjxjFHG3VpOoZoAwZ5gPYf4CQKPy',0,'Active','2026-09-20 16:12:06','2026-09-20 16:12:06'),(79,'CUS-1005','dilshod.karim','d.karim@tashkent-precision.uz','$2y$10$RV6Vdd8wn1t12XNmHTtCbuYnzVjxjFHG3VpOoZoAwZ5gPYf4CQKPy',0,'Active','2026-09-20 16:12:06','2026-09-20 16:12:06'),(80,'CUS-1005','CUS-1005','cus1005@tashkent-precision.uz','$2y$10$RV6Vdd8wn1t12XNmHTtCbuYnzVjxjFHG3VpOoZoAwZ5gPYf4CQKPy',0,'Active','2026-09-20 16:12:06','2026-09-20 16:12:06'),(81,'CUS-1006','mara.kalnina','m.kalnina@daugava-optical.lv','$2y$10$RV6Vdd8wn1t12XNmHTtCbuYnzVjxjFHG3VpOoZoAwZ5gPYf4CQKPy',0,'Active','2026-09-20 16:12:06','2026-09-20 16:12:06'),(82,'CUS-1007','murad.safarov','m.safarov@caspian-robotics.az','$2y$10$RV6Vdd8wn1t12XNmHTtCbuYnzVjxjFHG3VpOoZoAwZ5gPYf4CQKPy',0,'Active','2026-09-20 16:12:06','2026-09-20 16:12:06'),(83,'CUS-1008','oleg.petrenko','o.petrenko@eurasia-water.ua','$2y$10$RV6Vdd8wn1t12XNmHTtCbuYnzVjxjFHG3VpOoZoAwZ5gPYf4CQKPy',0,'Active','2026-09-20 16:12:06','2026-09-20 16:12:06'),(84,'CUS-1009','ainur.sadyk','a.sadyk@altai-env.kz','$2y$10$RV6Vdd8wn1t12XNmHTtCbuYnzVjxjFHG3VpOoZoAwZ5gPYf4CQKPy',0,'Active','2026-09-20 16:12:06','2026-09-20 16:12:06'),(85,'CUS-1010','tomas.varga','t.varga@central-rail.hu','$2y$10$RV6Vdd8wn1t12XNmHTtCbuYnzVjxjFHG3VpOoZoAwZ5gPYf4CQKPy',0,'Active','2026-09-20 16:12:06','2026-09-20 16:12:06');
+INSERT INTO `customer_accounts` VALUES (1,'CUS-1001','sergei.makarov','s.makarov@aral-geomatics.kz','$2y$12$sjpWNnksb35C7D8re5tdt.qqOiKDZqw7J2lmGOVPoyRBT5bDpEzGq',0,'Active',NULL,'2026-09-21 16:39:04'),(2,'CUS-1001','CLT-77210','client77210@vostokpribor.local','$2y$12$sjpWNnksb35C7D8re5tdt.qqOiKDZqw7J2lmGOVPoyRBT5bDpEzGq',0,'Active',NULL,'2026-09-21 16:39:04'),(3,'CUS-1001','CUS-1001','cus1001@aral-geomatics.kz','$2y$12$sjpWNnksb35C7D8re5tdt.qqOiKDZqw7J2lmGOVPoyRBT5bDpEzGq',0,'Active',NULL,'2026-09-21 16:39:04'),(4,'CUS-1002','kristaps.ozols','k.ozols@baltnord-systems.eu','$2y$12$sjpWNnksb35C7D8re5tdt.qqOiKDZqw7J2lmGOVPoyRBT5bDpEzGq',0,'Active',NULL,'2026-09-21 16:39:04'),(5,'CUS-1002','SHP-VP-11','b2b-buyer11@baltnord.eu','$2y$12$sjpWNnksb35C7D8re5tdt.qqOiKDZqw7J2lmGOVPoyRBT5bDpEzGq',0,'Active',NULL,'2026-09-21 16:39:04'),(6,'CUS-1002','CUS-1002','cus1002@baltnord.eu','$2y$12$sjpWNnksb35C7D8re5tdt.qqOiKDZqw7J2lmGOVPoyRBT5bDpEzGq',0,'Active',NULL,'2026-09-21 16:39:04'),(7,'CUS-1003','yerlan.bektemis','y.bektemis@steppemining.kz','$2y$12$sjpWNnksb35C7D8re5tdt.qqOiKDZqw7J2lmGOVPoyRBT5bDpEzGq',0,'Active',NULL,'2026-09-21 16:39:04'),(8,'CUS-1003','CUS-1003','cus1003@steppemining.kz','$2y$12$sjpWNnksb35C7D8re5tdt.qqOiKDZqw7J2lmGOVPoyRBT5bDpEzGq',0,'Active',NULL,'2026-09-21 16:39:04'),(9,'CUS-1004','lukas.brandt','l.brandt@rheinwerk-inst.de','$2y$12$sjpWNnksb35C7D8re5tdt.qqOiKDZqw7J2lmGOVPoyRBT5bDpEzGq',0,'Active',NULL,'2026-09-21 16:39:04'),(10,'CUS-1004','CUS-1004','cus1004@rheinwerk.de','$2y$12$sjpWNnksb35C7D8re5tdt.qqOiKDZqw7J2lmGOVPoyRBT5bDpEzGq',0,'Active',NULL,'2026-09-21 16:39:04'),(11,'CUS-1005','dilshod.karim','d.karim@tashkent-precision.uz','$2y$12$sjpWNnksb35C7D8re5tdt.qqOiKDZqw7J2lmGOVPoyRBT5bDpEzGq',0,'Active',NULL,'2026-09-21 16:39:04'),(12,'CUS-1005','CUS-1005','cus1005@tashkent-precision.uz','$2y$12$sjpWNnksb35C7D8re5tdt.qqOiKDZqw7J2lmGOVPoyRBT5bDpEzGq',0,'Active',NULL,'2026-09-21 16:39:04'),(13,'CUS-1006','mara.kalnina','m.kalnina@daugava-optical.lv','$2y$12$sjpWNnksb35C7D8re5tdt.qqOiKDZqw7J2lmGOVPoyRBT5bDpEzGq',0,'Active',NULL,'2026-09-21 16:39:04'),(14,'CUS-1007','murad.safarov','m.safarov@caspian-robotics.az','$2y$12$sjpWNnksb35C7D8re5tdt.qqOiKDZqw7J2lmGOVPoyRBT5bDpEzGq',0,'Active',NULL,'2026-09-21 16:39:04'),(15,'CUS-1008','oleg.petrenko','o.petrenko@eurasia-water.ua','$2y$12$sjpWNnksb35C7D8re5tdt.qqOiKDZqw7J2lmGOVPoyRBT5bDpEzGq',0,'Active',NULL,'2026-09-21 16:39:04'),(16,'CUS-1009','ainur.sadyk','a.sadyk@altai-env.kz','$2y$12$sjpWNnksb35C7D8re5tdt.qqOiKDZqw7J2lmGOVPoyRBT5bDpEzGq',0,'Active',NULL,'2026-09-21 16:39:04'),(17,'CUS-1010','tomas.varga','t.varga@central-rail.hu','$2y$12$sjpWNnksb35C7D8re5tdt.qqOiKDZqw7J2lmGOVPoyRBT5bDpEzGq',0,'Active',NULL,'2026-09-21 16:39:04');
 /*!40000 ALTER TABLE `customer_accounts` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -373,7 +471,11 @@ DROP TABLE IF EXISTS `customer_pricing`;
 CREATE TABLE `customer_pricing` (
   `cus_id` varchar(10) NOT NULL,
   `prod_id` varchar(10) NOT NULL,
-  `special_price` decimal(12,2) DEFAULT NULL
+  `special_price` decimal(12,2) DEFAULT NULL,
+  PRIMARY KEY (`cus_id`,`prod_id`),
+  KEY `fk_customer_pricing_prod_id` (`prod_id`),
+  CONSTRAINT `fk_customer_pricing_cus_id` FOREIGN KEY (`cus_id`) REFERENCES `customers` (`cus_id`),
+  CONSTRAINT `fk_customer_pricing_prod_id` FOREIGN KEY (`prod_id`) REFERENCES `products` (`prod_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -398,6 +500,7 @@ CREATE TABLE `customers` (
   `company_name` varchar(150) NOT NULL,
   `sector` varchar(100) DEFAULT NULL,
   `primary_contact_name` varchar(150) DEFAULT NULL,
+  `primary_contact_email` varchar(150) DEFAULT NULL,
   `account_manager_emp_id` varchar(10) DEFAULT NULL,
   `onboarded_at` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`cus_id`),
@@ -412,7 +515,7 @@ CREATE TABLE `customers` (
 
 LOCK TABLES `customers` WRITE;
 /*!40000 ALTER TABLE `customers` DISABLE KEYS */;
-INSERT INTO `customers` VALUES ('CUS-1001','Aral Geomatics Group','Surveying & GIS','Sergei Makarov','EMP-1007','2026-09-19 10:35:40'),('CUS-1002','BaltNord Process Systems','Industrial Automation','Kristaps Ozols','EMP-1010','2026-09-19 10:35:40'),('CUS-1003','Steppe Mining Technologies','Mining','Yerlan Bektemis','EMP-1008','2026-09-19 10:35:40'),('CUS-1004','Rhein Werk Instrumentation','Industrial Measurement','Lukas Brandt','EMP-1010','2026-09-19 10:35:40'),('CUS-1005','Tashkent Precision Controls','Manufacturing','Dilshod Karim','EMP-1008','2026-09-19 10:35:40'),('CUS-1006','Daugava Optical Research','Optical Engineering','Mara Kalnina','EMP-1007','2026-09-19 10:35:40'),('CUS-1007','Caspian Industrial Robotics','Robotics','Murad Safarov','EMP-1009','2026-09-19 10:35:40'),('CUS-1008','Eurasia Water Automation','Water Infrastructure','Oleg Petrenko','EMP-1009','2026-09-19 10:35:40'),('CUS-1009','Altai Environmental Systems','Environmental Monitoring','Ainur Sadyk','EMP-1008','2026-09-19 10:35:40'),('CUS-1010','Central Rail Diagnostics','Railway Infrastructure','Tomas Varga','EMP-1006','2026-09-19 10:35:40');
+INSERT INTO `customers` VALUES ('CUS-1001','Aral Geomatics Group','Surveying & GIS','Sergei Makarov',NULL,'EMP-1007','2026-09-19 07:35:40'),('CUS-1002','BaltNord Process Systems','Industrial Automation','Kristaps Ozols',NULL,'EMP-1010','2026-09-19 07:35:40'),('CUS-1003','Steppe Mining Technologies','Mining','Yerlan Bektemis',NULL,'EMP-1008','2026-09-19 07:35:40'),('CUS-1004','Rhein Werk Instrumentation','Industrial Measurement','Lukas Brandt',NULL,'EMP-1010','2026-09-19 07:35:40'),('CUS-1005','Tashkent Precision Controls','Manufacturing','Dilshod Karim',NULL,'EMP-1008','2026-09-19 07:35:40'),('CUS-1006','Daugava Optical Research','Optical Engineering','Mara Kalnina',NULL,'EMP-1007','2026-09-19 07:35:40'),('CUS-1007','Caspian Industrial Robotics','Robotics','Murad Safarov',NULL,'EMP-1009','2026-09-19 07:35:40'),('CUS-1008','Eurasia Water Automation','Water Infrastructure','Oleg Petrenko',NULL,'EMP-1009','2026-09-19 07:35:40'),('CUS-1009','Altai Environmental Systems','Environmental Monitoring','Ainur Sadyk',NULL,'EMP-1008','2026-09-19 07:35:40'),('CUS-1010','Central Rail Diagnostics','Railway Infrastructure','Tomas Varga',NULL,'EMP-1006','2026-09-19 07:35:40');
 /*!40000 ALTER TABLE `customers` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -424,12 +527,17 @@ DROP TABLE IF EXISTS `department_boards`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `department_boards` (
-  `board_post_id` int(11) NOT NULL,
+  `board_post_id` int(11) NOT NULL AUTO_INCREMENT,
   `department_code` varchar(4) DEFAULT NULL,
   `topic` varchar(200) DEFAULT NULL,
   `content` text DEFAULT NULL,
   `posted_by_emp_id` varchar(10) DEFAULT NULL,
-  `posted_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `posted_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`board_post_id`),
+  KEY `fk_department_boards_department_code` (`department_code`),
+  KEY `fk_department_boards_posted_by_emp_id` (`posted_by_emp_id`),
+  CONSTRAINT `fk_department_boards_department_code` FOREIGN KEY (`department_code`) REFERENCES `departments` (`dept_code`),
+  CONSTRAINT `fk_department_boards_posted_by_emp_id` FOREIGN KEY (`posted_by_emp_id`) REFERENCES `employees` (`emp_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -476,7 +584,7 @@ DROP TABLE IF EXISTS `devices`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `devices` (
-  `device_id` int(11) NOT NULL,
+  `device_id` int(11) NOT NULL AUTO_INCREMENT,
   `device_type` varchar(50) DEFAULT NULL,
   `hostname` varchar(150) DEFAULT NULL,
   `os_name` varchar(100) DEFAULT NULL,
@@ -484,7 +592,12 @@ CREATE TABLE `devices` (
   `assigned_emp_id` varchar(10) DEFAULT NULL,
   `first_seen_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `last_seen_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
-  `status` varchar(20) DEFAULT 'Active'
+  `status` varchar(20) DEFAULT 'Active',
+  PRIMARY KEY (`device_id`),
+  KEY `fk_devices_department_code` (`department_code`),
+  KEY `fk_devices_assigned_emp_id` (`assigned_emp_id`),
+  CONSTRAINT `fk_devices_assigned_emp_id` FOREIGN KEY (`assigned_emp_id`) REFERENCES `employees` (`emp_id`),
+  CONSTRAINT `fk_devices_department_code` FOREIGN KEY (`department_code`) REFERENCES `departments` (`dept_code`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -505,7 +618,7 @@ DROP TABLE IF EXISTS `document_access_log`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `document_access_log` (
-  `access_id` int(11) NOT NULL,
+  `access_id` int(11) NOT NULL AUTO_INCREMENT,
   `doc_id` varchar(15) NOT NULL,
   `accessed_by_emp_id` varchar(10) DEFAULT NULL,
   `accessed_by_cus_id` varchar(10) DEFAULT NULL,
@@ -514,7 +627,18 @@ CREATE TABLE `document_access_log` (
   `source_ip` varchar(45) DEFAULT NULL,
   `access_type` enum('View','Download','Edit','Delete') DEFAULT NULL,
   `success` tinyint(1) DEFAULT 1,
-  `accessed_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `accessed_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`access_id`),
+  KEY `fk_document_access_log_doc_id` (`doc_id`),
+  KEY `fk_document_access_log_accessed_by_emp_id` (`accessed_by_emp_id`),
+  KEY `fk_document_access_log_accessed_by_cus_id` (`accessed_by_cus_id`),
+  KEY `fk_document_access_log_system_id` (`system_id`),
+  KEY `fk_document_access_log_device_id` (`device_id`),
+  CONSTRAINT `fk_document_access_log_accessed_by_cus_id` FOREIGN KEY (`accessed_by_cus_id`) REFERENCES `customers` (`cus_id`),
+  CONSTRAINT `fk_document_access_log_accessed_by_emp_id` FOREIGN KEY (`accessed_by_emp_id`) REFERENCES `employees` (`emp_id`),
+  CONSTRAINT `fk_document_access_log_device_id` FOREIGN KEY (`device_id`) REFERENCES `devices` (`device_id`),
+  CONSTRAINT `fk_document_access_log_doc_id` FOREIGN KEY (`doc_id`) REFERENCES `documents` (`doc_id`),
+  CONSTRAINT `fk_document_access_log_system_id` FOREIGN KEY (`system_id`) REFERENCES `systems_catalog` (`system_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -535,11 +659,16 @@ DROP TABLE IF EXISTS `document_approvals`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `document_approvals` (
-  `approval_id` int(11) NOT NULL,
+  `approval_id` int(11) NOT NULL AUTO_INCREMENT,
   `doc_id` varchar(15) NOT NULL,
   `reviewer_emp_id` varchar(10) DEFAULT NULL,
   `decision` enum('Approved','Rejected','Pending') DEFAULT 'Pending',
-  `decision_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+  `decision_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`approval_id`),
+  KEY `fk_document_approvals_doc_id` (`doc_id`),
+  KEY `fk_document_approvals_reviewer_emp_id` (`reviewer_emp_id`),
+  CONSTRAINT `fk_document_approvals_doc_id` FOREIGN KEY (`doc_id`) REFERENCES `documents` (`doc_id`),
+  CONSTRAINT `fk_document_approvals_reviewer_emp_id` FOREIGN KEY (`reviewer_emp_id`) REFERENCES `employees` (`emp_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -560,12 +689,17 @@ DROP TABLE IF EXISTS `document_versions`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `document_versions` (
-  `version_id` int(11) NOT NULL,
+  `version_id` int(11) NOT NULL AUTO_INCREMENT,
   `doc_id` varchar(15) NOT NULL,
   `version_number` int(11) NOT NULL,
   `uploaded_by_emp_id` varchar(10) DEFAULT NULL,
   `uploaded_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `file_path` varchar(300) DEFAULT NULL
+  `file_path` varchar(300) DEFAULT NULL,
+  PRIMARY KEY (`version_id`),
+  KEY `fk_document_versions_doc_id` (`doc_id`),
+  KEY `fk_document_versions_uploaded_by_emp_id` (`uploaded_by_emp_id`),
+  CONSTRAINT `fk_document_versions_doc_id` FOREIGN KEY (`doc_id`) REFERENCES `documents` (`doc_id`),
+  CONSTRAINT `fk_document_versions_uploaded_by_emp_id` FOREIGN KEY (`uploaded_by_emp_id`) REFERENCES `employees` (`emp_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -593,10 +727,11 @@ CREATE TABLE `documents` (
   `owner_emp_id` varchar(10) DEFAULT NULL,
   `related_prj_id` varchar(15) DEFAULT NULL,
   `related_cus_id` varchar(10) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`doc_id`),
   KEY `fk_documents_owner_emp_id` (`owner_emp_id`),
-  KEY `fk_documents_related_cus_id` (`related_cus_id`),
   KEY `fk_documents_related_prj_id` (`related_prj_id`),
+  KEY `fk_documents_related_cus_id` (`related_cus_id`),
   CONSTRAINT `fk_documents_owner_emp_id` FOREIGN KEY (`owner_emp_id`) REFERENCES `employees` (`emp_id`),
   CONSTRAINT `fk_documents_related_cus_id` FOREIGN KEY (`related_cus_id`) REFERENCES `customers` (`cus_id`),
   CONSTRAINT `fk_documents_related_prj_id` FOREIGN KEY (`related_prj_id`) REFERENCES `projects` (`prj_id`)
@@ -609,7 +744,7 @@ CREATE TABLE `documents` (
 
 LOCK TABLES `documents` WRITE;
 /*!40000 ALTER TABLE `documents` DISABLE KEYS */;
-INSERT INTO `documents` VALUES ('DOC-2026-001','Corporate_Information_Security_Policy.pdf','TopSecret','Admin & Governance','EMP-1005',NULL,NULL),('DOC-2026-002','Customer_Onboarding_Standard.pdf','Confidential','CRM','EMP-1006',NULL,NULL),('DOC-2026-003','PRJ-2026-001_Statement_of_Work.pdf','Confidential','File Center','EMP-1019','PRJ-2026-001','CUS-1001'),('DOC-2026-004','PRJ-2026-002_Integration_Specification.pdf','TopSecret','File Center','EMP-1019','PRJ-2026-002','CUS-1002'),('DOC-2026-005','INV-2026-002_Billing_Record.pdf','Confidential','Finance','EMP-1003','PRJ-2026-002','CUS-1002'),('DOC-2026-006','Employee_Onboarding_Procedure.pdf','Confidential','HR','EMP-1005',NULL,NULL),('DOC-2026-007','Employee_Access_Matrix.xlsx','TopSecret','Admin & Governance','EMP-1005',NULL,NULL),('DOC-2026-008','Supplier_Evaluation_2026.pdf','Confidential','Operations','EMP-1013',NULL,NULL),('DOC-2026-009','Optical_Sensor_Product_Catalog.pdf','Public','E-Commerce','EMP-1006',NULL,NULL),('DOC-2026-010','API_Integration_Guide.pdf','Internal','Developer Portal','EMP-1020',NULL,NULL),('DOC-2026-011','Disaster_Recovery_Plan.pdf','TopSecret','IT Helpdesk','EMP-1018',NULL,NULL),('DOC-2026-012','Annual_Corporate_Budget_2026.xlsx','TopSecret','Finance','EMP-1003',NULL,NULL),('DOC-2026-013','Customer_Service_Handbook.pdf','Internal','Intranet','EMP-1004',NULL,NULL),('DOC-2026-014','PRJ-2026-007_Test_Report.pdf','Confidential','File Center','EMP-1019','PRJ-2026-007','CUS-1007'),('DOC-2026-015','Board_Risk_Register_2026.xlsx','TopSecret','Admin & Governance','EMP-1005',NULL,NULL);
+INSERT INTO `documents` VALUES ('DOC-2026-001','Corporate_Information_Security_Policy.pdf','TopSecret','Admin & Governance','EMP-1005',NULL,NULL,'2026-09-21 16:36:10'),('DOC-2026-002','Customer_Onboarding_Standard.pdf','Confidential','CRM','EMP-1006',NULL,NULL,'2026-09-21 16:36:10'),('DOC-2026-003','PRJ-2026-001_Statement_of_Work.pdf','Confidential','File Center','EMP-1019','PRJ-2026-001','CUS-1001','2026-09-21 16:36:10'),('DOC-2026-004','PRJ-2026-002_Integration_Specification.pdf','TopSecret','File Center','EMP-1019','PRJ-2026-002','CUS-1002','2026-09-21 16:36:10'),('DOC-2026-005','INV-2026-002_Billing_Record.pdf','Confidential','Finance','EMP-1003','PRJ-2026-002','CUS-1002','2026-09-21 16:36:10'),('DOC-2026-006','Employee_Onboarding_Procedure.pdf','Confidential','HR','EMP-1005',NULL,NULL,'2026-09-21 16:36:10'),('DOC-2026-007','Employee_Access_Matrix.xlsx','TopSecret','Admin & Governance','EMP-1005',NULL,NULL,'2026-09-21 16:36:10'),('DOC-2026-008','Supplier_Evaluation_2026.pdf','Confidential','Operations','EMP-1013',NULL,NULL,'2026-09-21 16:36:10'),('DOC-2026-009','Optical_Sensor_Product_Catalog.pdf','Public','E-Commerce','EMP-1006',NULL,NULL,'2026-09-21 16:36:10'),('DOC-2026-010','API_Integration_Guide.pdf','Internal','Developer Portal','EMP-1020',NULL,NULL,'2026-09-21 16:36:10'),('DOC-2026-011','Disaster_Recovery_Plan.pdf','TopSecret','IT Helpdesk','EMP-1018',NULL,NULL,'2026-09-21 16:36:10'),('DOC-2026-012','Annual_Corporate_Budget_2026.xlsx','TopSecret','Finance','EMP-1003',NULL,NULL,'2026-09-21 16:36:10'),('DOC-2026-013','Customer_Service_Handbook.pdf','Internal','Intranet','EMP-1004',NULL,NULL,'2026-09-21 16:36:10'),('DOC-2026-014','PRJ-2026-007_Test_Report.pdf','Confidential','File Center','EMP-1019','PRJ-2026-007','CUS-1007','2026-09-21 16:36:10'),('DOC-2026-015','Board_Risk_Register_2026.xlsx','TopSecret','Admin & Governance','EMP-1005',NULL,NULL,'2026-09-21 16:36:10');
 /*!40000 ALTER TABLE `documents` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -627,10 +762,13 @@ CREATE TABLE `employee_accounts` (
   `password_hash` varchar(255) NOT NULL,
   `mfa_enabled` tinyint(1) DEFAULT 0,
   `status` varchar(20) DEFAULT 'Active',
-  `last_login` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `last_login` timestamp NULL DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  PRIMARY KEY (`account_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=251 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  PRIMARY KEY (`account_id`),
+  UNIQUE KEY `idx_emp_account_username` (`username`),
+  KEY `idx_emp_id` (`emp_id`),
+  CONSTRAINT `fk_employee_accounts_emp_id` FOREIGN KEY (`emp_id`) REFERENCES `employees` (`emp_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=53 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -639,7 +777,7 @@ CREATE TABLE `employee_accounts` (
 
 LOCK TABLES `employee_accounts` WRITE;
 /*!40000 ALTER TABLE `employee_accounts` DISABLE KEYS */;
-INSERT INTO `employee_accounts` VALUES (1,'EMP-1001','viktor.sokolov','$2y$10$KuWJgXJV75Caakm7701XZuNCVxLt0Q8yotMAQ8tUL6OUh7reJJMcy',0,'Active','2026-09-20 16:07:17','2026-09-20 16:05:39'),(2,'EMP-1001','ADM-VP-01','$2y$10$KuWJgXJV75Caakm7701XZuNCVxLt0Q8yotMAQ8tUL6OUh7reJJMcy',0,'Active','2026-09-20 16:14:32','2026-09-20 16:05:39'),(3,'EMP-1001','EMP-1001','$2y$10$KuWJgXJV75Caakm7701XZuNCVxLt0Q8yotMAQ8tUL6OUh7reJJMcy',0,'Active','2026-09-20 16:07:17','2026-09-20 16:05:39'),(4,'EMP-1002','amina.karimova','$2y$10$KuWJgXJV75Caakm7701XZuNCVxLt0Q8yotMAQ8tUL6OUh7reJJMcy',0,'Active','2026-09-20 16:07:17','2026-09-20 16:05:39'),(5,'EMP-1002','HR-VP-201','$2y$10$KuWJgXJV75Caakm7701XZuNCVxLt0Q8yotMAQ8tUL6OUh7reJJMcy',0,'Active','2026-09-20 16:14:33','2026-09-20 16:05:39'),(6,'EMP-1002','EMP-1002','$2y$10$KuWJgXJV75Caakm7701XZuNCVxLt0Q8yotMAQ8tUL6OUh7reJJMcy',0,'Active','2026-09-20 16:07:17','2026-09-20 16:05:39'),(7,'EMP-1003','daniel.weber','$2y$10$KuWJgXJV75Caakm7701XZuNCVxLt0Q8yotMAQ8tUL6OUh7reJJMcy',0,'Active','2026-09-20 16:07:17','2026-09-20 16:05:39'),(8,'EMP-1003','FIN-VP-102','$2y$10$KuWJgXJV75Caakm7701XZuNCVxLt0Q8yotMAQ8tUL6OUh7reJJMcy',0,'Active','2026-09-20 16:07:17','2026-09-20 16:05:39'),(9,'EMP-1003','EMP-1003','$2y$10$KuWJgXJV75Caakm7701XZuNCVxLt0Q8yotMAQ8tUL6OUh7reJJMcy',0,'Active','2026-09-20 16:07:17','2026-09-20 16:05:39'),(10,'EMP-1004','elena.morozova','$2y$10$KuWJgXJV75Caakm7701XZuNCVxLt0Q8yotMAQ8tUL6OUh7reJJMcy',0,'Active','2026-09-20 16:07:17','2026-09-20 16:05:39'),(11,'EMP-1004','EMP-1004','$2y$10$KuWJgXJV75Caakm7701XZuNCVxLt0Q8yotMAQ8tUL6OUh7reJJMcy',0,'Active','2026-09-20 16:07:17','2026-09-20 16:05:39'),(12,'EMP-1005','timur.akhmetov','$2y$10$KuWJgXJV75Caakm7701XZuNCVxLt0Q8yotMAQ8tUL6OUh7reJJMcy',0,'Active','2026-09-20 16:07:17','2026-09-20 16:05:39'),(13,'EMP-1005','EMP-1005','$2y$10$KuWJgXJV75Caakm7701XZuNCVxLt0Q8yotMAQ8tUL6OUh7reJJMcy',0,'Active','2026-09-20 16:07:17','2026-09-20 16:05:39'),(14,'EMP-1006','pavel.orlov','$2y$10$YoiW88Q8n2TO3p8rn9Vbu.unlc16qhMVTQllo6zERbQ.JpUce9pmC',0,'Active','2026-09-20 16:07:17','2026-09-20 16:05:39'),(15,'EMP-1006','CRM-VP-842','$2y$10$YoiW88Q8n2TO3p8rn9Vbu.unlc16qhMVTQllo6zERbQ.JpUce9pmC',0,'Active','2026-09-20 16:14:32','2026-09-20 16:05:39'),(16,'EMP-1006','EMP-842','$2y$10$YoiW88Q8n2TO3p8rn9Vbu.unlc16qhMVTQllo6zERbQ.JpUce9pmC',0,'Active','2026-09-20 16:07:17','2026-09-20 16:05:39'),(17,'EMP-1006','EMP-1006','$2y$10$YoiW88Q8n2TO3p8rn9Vbu.unlc16qhMVTQllo6zERbQ.JpUce9pmC',0,'Active','2026-09-20 16:07:17','2026-09-20 16:05:39'),(18,'EMP-1007','sara.lindholm','$2y$10$YoiW88Q8n2TO3p8rn9Vbu.unlc16qhMVTQllo6zERbQ.JpUce9pmC',0,'Active','2026-09-20 16:07:17','2026-09-20 16:05:39'),(19,'EMP-1007','EMP-1007','$2y$10$YoiW88Q8n2TO3p8rn9Vbu.unlc16qhMVTQllo6zERbQ.JpUce9pmC',0,'Active','2026-09-20 16:07:17','2026-09-20 16:05:39'),(20,'EMP-1008','bekzod.rakhimov','$2y$10$YoiW88Q8n2TO3p8rn9Vbu.unlc16qhMVTQllo6zERbQ.JpUce9pmC',0,'Active','2026-09-20 16:07:17','2026-09-20 16:05:39'),(21,'EMP-1008','EMP-1008','$2y$10$YoiW88Q8n2TO3p8rn9Vbu.unlc16qhMVTQllo6zERbQ.JpUce9pmC',0,'Active','2026-09-20 16:07:17','2026-09-20 16:05:39'),(22,'EMP-1009','nadia.petrova','$2y$10$YoiW88Q8n2TO3p8rn9Vbu.unlc16qhMVTQllo6zERbQ.JpUce9pmC',0,'Active','2026-09-20 16:07:17','2026-09-20 16:05:39'),(23,'EMP-1009','EMP-1009','$2y$10$YoiW88Q8n2TO3p8rn9Vbu.unlc16qhMVTQllo6zERbQ.JpUce9pmC',0,'Active','2026-09-20 16:07:17','2026-09-20 16:05:39'),(24,'EMP-1010','markus.klein','$2y$10$YoiW88Q8n2TO3p8rn9Vbu.unlc16qhMVTQllo6zERbQ.JpUce9pmC',0,'Active','2026-09-20 16:07:17','2026-09-20 16:05:39'),(25,'EMP-1010','EMP-1010','$2y$10$YoiW88Q8n2TO3p8rn9Vbu.unlc16qhMVTQllo6zERbQ.JpUce9pmC',0,'Active','2026-09-20 16:07:17','2026-09-20 16:05:39'),(26,'EMP-1011','arman.tulegenov','$2y$10$YoiW88Q8n2TO3p8rn9Vbu.unlc16qhMVTQllo6zERbQ.JpUce9pmC',0,'Active','2026-09-20 16:07:17','2026-09-20 16:05:39'),(27,'EMP-1011','EMP-1011','$2y$10$YoiW88Q8n2TO3p8rn9Vbu.unlc16qhMVTQllo6zERbQ.JpUce9pmC',0,'Active','2026-09-20 16:07:17','2026-09-20 16:05:39'),(28,'EMP-1012','rustam.bekov','$2y$10$YoiW88Q8n2TO3p8rn9Vbu.unlc16qhMVTQllo6zERbQ.JpUce9pmC',0,'Active','2026-09-20 16:07:17','2026-09-20 16:05:39'),(29,'EMP-1012','EMP-1012','$2y$10$YoiW88Q8n2TO3p8rn9Vbu.unlc16qhMVTQllo6zERbQ.JpUce9pmC',0,'Active','2026-09-20 16:07:17','2026-09-20 16:05:39'),(30,'EMP-1013','ilona.vetra','$2y$10$YoiW88Q8n2TO3p8rn9Vbu.unlc16qhMVTQllo6zERbQ.JpUce9pmC',0,'Active','2026-09-20 16:07:17','2026-09-20 16:05:39'),(31,'EMP-1013','EMP-1013','$2y$10$YoiW88Q8n2TO3p8rn9Vbu.unlc16qhMVTQllo6zERbQ.JpUce9pmC',0,'Active','2026-09-20 16:07:17','2026-09-20 16:05:39'),(32,'EMP-1014','mikhail.antonov','$2y$10$YoiW88Q8n2TO3p8rn9Vbu.unlc16qhMVTQllo6zERbQ.JpUce9pmC',0,'Active','2026-09-20 16:07:17','2026-09-20 16:05:39'),(33,'EMP-1014','EMP-1014','$2y$10$YoiW88Q8n2TO3p8rn9Vbu.unlc16qhMVTQllo6zERbQ.JpUce9pmC',0,'Active','2026-09-20 16:07:17','2026-09-20 16:05:39'),(34,'EMP-1015','kamila.nurzhan','$2y$10$YoiW88Q8n2TO3p8rn9Vbu.unlc16qhMVTQllo6zERbQ.JpUce9pmC',0,'Active','2026-09-20 16:07:17','2026-09-20 16:05:39'),(35,'EMP-1015','EMP-1015','$2y$10$YoiW88Q8n2TO3p8rn9Vbu.unlc16qhMVTQllo6zERbQ.JpUce9pmC',0,'Active','2026-09-20 16:07:17','2026-09-20 16:05:39'),(36,'EMP-1016','erik.hansen','$2y$10$YoiW88Q8n2TO3p8rn9Vbu.unlc16qhMVTQllo6zERbQ.JpUce9pmC',0,'Active','2026-09-20 16:07:17','2026-09-20 16:05:39'),(37,'EMP-1016','EMP-1016','$2y$10$YoiW88Q8n2TO3p8rn9Vbu.unlc16qhMVTQllo6zERbQ.JpUce9pmC',0,'Active','2026-09-20 16:07:17','2026-09-20 16:05:39'),(38,'EMP-1017','dana.yermak','$2y$10$YoiW88Q8n2TO3p8rn9Vbu.unlc16qhMVTQllo6zERbQ.JpUce9pmC',0,'Active','2026-09-20 16:07:17','2026-09-20 16:05:39'),(39,'EMP-1017','EMP-1017','$2y$10$YoiW88Q8n2TO3p8rn9Vbu.unlc16qhMVTQllo6zERbQ.JpUce9pmC',0,'Active','2026-09-20 16:07:17','2026-09-20 16:05:39'),(40,'EMP-1018','leonid.volkov','$2y$10$YoiW88Q8n2TO3p8rn9Vbu.unlc16qhMVTQllo6zERbQ.JpUce9pmC',0,'Active','2026-09-20 16:07:17','2026-09-20 16:05:39'),(41,'EMP-1018','IT-VP-304','$2y$10$YoiW88Q8n2TO3p8rn9Vbu.unlc16qhMVTQllo6zERbQ.JpUce9pmC',0,'Active','2026-09-20 16:14:33','2026-09-20 16:05:39'),(42,'EMP-1018','EMP-1018','$2y$10$YoiW88Q8n2TO3p8rn9Vbu.unlc16qhMVTQllo6zERbQ.JpUce9pmC',0,'Active','2026-09-20 16:07:17','2026-09-20 16:05:39'),(43,'EMP-1019','farida.iskakova','$2y$10$YoiW88Q8n2TO3p8rn9Vbu.unlc16qhMVTQllo6zERbQ.JpUce9pmC',0,'Active','2026-09-20 16:07:17','2026-09-20 16:05:39'),(44,'EMP-1019','DOC-VP-501','$2y$10$YoiW88Q8n2TO3p8rn9Vbu.unlc16qhMVTQllo6zERbQ.JpUce9pmC',0,'Active','2026-09-20 16:07:17','2026-09-20 16:05:39'),(45,'EMP-1019','EMP-1019','$2y$10$YoiW88Q8n2TO3p8rn9Vbu.unlc16qhMVTQllo6zERbQ.JpUce9pmC',0,'Active','2026-09-20 16:07:17','2026-09-20 16:05:39'),(46,'EMP-1020','jonas.richter','$2y$10$YoiW88Q8n2TO3p8rn9Vbu.unlc16qhMVTQllo6zERbQ.JpUce9pmC',0,'Active','2026-09-20 16:07:17','2026-09-20 16:05:39'),(47,'EMP-1020','DEV-VP-994','$2y$10$YoiW88Q8n2TO3p8rn9Vbu.unlc16qhMVTQllo6zERbQ.JpUce9pmC',0,'Active','2026-09-20 16:14:32','2026-09-20 16:05:39'),(48,'EMP-1020','EMP-1020','$2y$10$YoiW88Q8n2TO3p8rn9Vbu.unlc16qhMVTQllo6zERbQ.JpUce9pmC',0,'Active','2026-09-20 16:07:17','2026-09-20 16:05:39'),(49,'EMP-1001','viktor.sokolov','$2y$10$Ca2sI8gGWKsJfXMJc39UvuBANytOHFEu3ZQ.Fz9idk2uTRpX3/vQu',0,'Active','2026-09-20 16:10:27','2026-09-20 16:10:27'),(50,'EMP-1001','ADM-VP-01','$2y$10$Ca2sI8gGWKsJfXMJc39UvuBANytOHFEu3ZQ.Fz9idk2uTRpX3/vQu',0,'Active','2026-09-20 16:10:27','2026-09-20 16:10:27'),(51,'EMP-1001','EMP-1001','$2y$10$Ca2sI8gGWKsJfXMJc39UvuBANytOHFEu3ZQ.Fz9idk2uTRpX3/vQu',0,'Active','2026-09-20 16:10:27','2026-09-20 16:10:27'),(52,'EMP-1002','amina.karimova','$2y$10$Ca2sI8gGWKsJfXMJc39UvuBANytOHFEu3ZQ.Fz9idk2uTRpX3/vQu',0,'Active','2026-09-20 16:10:27','2026-09-20 16:10:27'),(53,'EMP-1002','HR-VP-201','$2y$10$Ca2sI8gGWKsJfXMJc39UvuBANytOHFEu3ZQ.Fz9idk2uTRpX3/vQu',0,'Active','2026-09-20 16:10:27','2026-09-20 16:10:27'),(54,'EMP-1002','EMP-1002','$2y$10$Ca2sI8gGWKsJfXMJc39UvuBANytOHFEu3ZQ.Fz9idk2uTRpX3/vQu',0,'Active','2026-09-20 16:10:27','2026-09-20 16:10:27'),(55,'EMP-1003','daniel.weber','$2y$10$Ca2sI8gGWKsJfXMJc39UvuBANytOHFEu3ZQ.Fz9idk2uTRpX3/vQu',0,'Active','2026-09-20 16:10:27','2026-09-20 16:10:27'),(56,'EMP-1003','FIN-VP-102','$2y$10$Ca2sI8gGWKsJfXMJc39UvuBANytOHFEu3ZQ.Fz9idk2uTRpX3/vQu',0,'Active','2026-09-20 16:10:27','2026-09-20 16:10:27'),(57,'EMP-1003','EMP-1003','$2y$10$Ca2sI8gGWKsJfXMJc39UvuBANytOHFEu3ZQ.Fz9idk2uTRpX3/vQu',0,'Active','2026-09-20 16:10:27','2026-09-20 16:10:27'),(58,'EMP-1004','elena.morozova','$2y$10$Ca2sI8gGWKsJfXMJc39UvuBANytOHFEu3ZQ.Fz9idk2uTRpX3/vQu',0,'Active','2026-09-20 16:10:27','2026-09-20 16:10:27'),(59,'EMP-1004','EMP-1004','$2y$10$Ca2sI8gGWKsJfXMJc39UvuBANytOHFEu3ZQ.Fz9idk2uTRpX3/vQu',0,'Active','2026-09-20 16:10:27','2026-09-20 16:10:27'),(60,'EMP-1005','timur.akhmetov','$2y$10$Ca2sI8gGWKsJfXMJc39UvuBANytOHFEu3ZQ.Fz9idk2uTRpX3/vQu',0,'Active','2026-09-20 16:10:27','2026-09-20 16:10:27'),(61,'EMP-1005','EMP-1005','$2y$10$Ca2sI8gGWKsJfXMJc39UvuBANytOHFEu3ZQ.Fz9idk2uTRpX3/vQu',0,'Active','2026-09-20 16:10:27','2026-09-20 16:10:27'),(62,'EMP-1006','pavel.orlov','$2y$10$OCWMXFvjf/S8OQR.E1gb7uIxiZ/.kZ.TkOeqe3SpxHqvsfRcGJQaa',0,'Active','2026-09-20 16:10:27','2026-09-20 16:10:27'),(63,'EMP-1006','CRM-VP-842','$2y$10$OCWMXFvjf/S8OQR.E1gb7uIxiZ/.kZ.TkOeqe3SpxHqvsfRcGJQaa',0,'Active','2026-09-20 16:10:27','2026-09-20 16:10:27'),(64,'EMP-1006','EMP-842','$2y$10$OCWMXFvjf/S8OQR.E1gb7uIxiZ/.kZ.TkOeqe3SpxHqvsfRcGJQaa',0,'Active','2026-09-20 16:10:27','2026-09-20 16:10:27'),(65,'EMP-1006','EMP-1006','$2y$10$OCWMXFvjf/S8OQR.E1gb7uIxiZ/.kZ.TkOeqe3SpxHqvsfRcGJQaa',0,'Active','2026-09-20 16:10:27','2026-09-20 16:10:27'),(66,'EMP-1007','sara.lindholm','$2y$10$OCWMXFvjf/S8OQR.E1gb7uIxiZ/.kZ.TkOeqe3SpxHqvsfRcGJQaa',0,'Active','2026-09-20 16:10:27','2026-09-20 16:10:27'),(67,'EMP-1007','EMP-1007','$2y$10$OCWMXFvjf/S8OQR.E1gb7uIxiZ/.kZ.TkOeqe3SpxHqvsfRcGJQaa',0,'Active','2026-09-20 16:10:27','2026-09-20 16:10:27'),(68,'EMP-1008','bekzod.rakhimov','$2y$10$OCWMXFvjf/S8OQR.E1gb7uIxiZ/.kZ.TkOeqe3SpxHqvsfRcGJQaa',0,'Active','2026-09-20 16:10:27','2026-09-20 16:10:27'),(69,'EMP-1008','EMP-1008','$2y$10$OCWMXFvjf/S8OQR.E1gb7uIxiZ/.kZ.TkOeqe3SpxHqvsfRcGJQaa',0,'Active','2026-09-20 16:10:27','2026-09-20 16:10:27'),(70,'EMP-1009','nadia.petrova','$2y$10$OCWMXFvjf/S8OQR.E1gb7uIxiZ/.kZ.TkOeqe3SpxHqvsfRcGJQaa',0,'Active','2026-09-20 16:10:27','2026-09-20 16:10:27'),(71,'EMP-1009','EMP-1009','$2y$10$OCWMXFvjf/S8OQR.E1gb7uIxiZ/.kZ.TkOeqe3SpxHqvsfRcGJQaa',0,'Active','2026-09-20 16:10:27','2026-09-20 16:10:27'),(72,'EMP-1010','markus.klein','$2y$10$OCWMXFvjf/S8OQR.E1gb7uIxiZ/.kZ.TkOeqe3SpxHqvsfRcGJQaa',0,'Active','2026-09-20 16:10:27','2026-09-20 16:10:27'),(73,'EMP-1010','EMP-1010','$2y$10$OCWMXFvjf/S8OQR.E1gb7uIxiZ/.kZ.TkOeqe3SpxHqvsfRcGJQaa',0,'Active','2026-09-20 16:10:27','2026-09-20 16:10:27'),(74,'EMP-1011','arman.tulegenov','$2y$10$OCWMXFvjf/S8OQR.E1gb7uIxiZ/.kZ.TkOeqe3SpxHqvsfRcGJQaa',0,'Active','2026-09-20 16:10:27','2026-09-20 16:10:27'),(75,'EMP-1011','EMP-1011','$2y$10$OCWMXFvjf/S8OQR.E1gb7uIxiZ/.kZ.TkOeqe3SpxHqvsfRcGJQaa',0,'Active','2026-09-20 16:10:27','2026-09-20 16:10:27'),(76,'EMP-1012','rustam.bekov','$2y$10$OCWMXFvjf/S8OQR.E1gb7uIxiZ/.kZ.TkOeqe3SpxHqvsfRcGJQaa',0,'Active','2026-09-20 16:10:27','2026-09-20 16:10:27'),(77,'EMP-1012','EMP-1012','$2y$10$OCWMXFvjf/S8OQR.E1gb7uIxiZ/.kZ.TkOeqe3SpxHqvsfRcGJQaa',0,'Active','2026-09-20 16:10:27','2026-09-20 16:10:27'),(78,'EMP-1013','ilona.vetra','$2y$10$OCWMXFvjf/S8OQR.E1gb7uIxiZ/.kZ.TkOeqe3SpxHqvsfRcGJQaa',0,'Active','2026-09-20 16:10:27','2026-09-20 16:10:27'),(79,'EMP-1013','EMP-1013','$2y$10$OCWMXFvjf/S8OQR.E1gb7uIxiZ/.kZ.TkOeqe3SpxHqvsfRcGJQaa',0,'Active','2026-09-20 16:10:27','2026-09-20 16:10:27'),(80,'EMP-1014','mikhail.antonov','$2y$10$OCWMXFvjf/S8OQR.E1gb7uIxiZ/.kZ.TkOeqe3SpxHqvsfRcGJQaa',0,'Active','2026-09-20 16:10:27','2026-09-20 16:10:27'),(81,'EMP-1014','EMP-1014','$2y$10$OCWMXFvjf/S8OQR.E1gb7uIxiZ/.kZ.TkOeqe3SpxHqvsfRcGJQaa',0,'Active','2026-09-20 16:10:27','2026-09-20 16:10:27'),(82,'EMP-1015','kamila.nurzhan','$2y$10$OCWMXFvjf/S8OQR.E1gb7uIxiZ/.kZ.TkOeqe3SpxHqvsfRcGJQaa',0,'Active','2026-09-20 16:10:27','2026-09-20 16:10:27'),(83,'EMP-1015','EMP-1015','$2y$10$OCWMXFvjf/S8OQR.E1gb7uIxiZ/.kZ.TkOeqe3SpxHqvsfRcGJQaa',0,'Active','2026-09-20 16:10:27','2026-09-20 16:10:27'),(84,'EMP-1016','erik.hansen','$2y$10$OCWMXFvjf/S8OQR.E1gb7uIxiZ/.kZ.TkOeqe3SpxHqvsfRcGJQaa',0,'Active','2026-09-20 16:10:27','2026-09-20 16:10:27'),(85,'EMP-1016','EMP-1016','$2y$10$OCWMXFvjf/S8OQR.E1gb7uIxiZ/.kZ.TkOeqe3SpxHqvsfRcGJQaa',0,'Active','2026-09-20 16:10:27','2026-09-20 16:10:27'),(86,'EMP-1017','dana.yermak','$2y$10$OCWMXFvjf/S8OQR.E1gb7uIxiZ/.kZ.TkOeqe3SpxHqvsfRcGJQaa',0,'Active','2026-09-20 16:10:27','2026-09-20 16:10:27'),(87,'EMP-1017','EMP-1017','$2y$10$OCWMXFvjf/S8OQR.E1gb7uIxiZ/.kZ.TkOeqe3SpxHqvsfRcGJQaa',0,'Active','2026-09-20 16:10:27','2026-09-20 16:10:27'),(88,'EMP-1018','leonid.volkov','$2y$10$OCWMXFvjf/S8OQR.E1gb7uIxiZ/.kZ.TkOeqe3SpxHqvsfRcGJQaa',0,'Active','2026-09-20 16:10:27','2026-09-20 16:10:27'),(89,'EMP-1018','IT-VP-304','$2y$10$OCWMXFvjf/S8OQR.E1gb7uIxiZ/.kZ.TkOeqe3SpxHqvsfRcGJQaa',0,'Active','2026-09-20 16:10:27','2026-09-20 16:10:27'),(90,'EMP-1018','EMP-1018','$2y$10$OCWMXFvjf/S8OQR.E1gb7uIxiZ/.kZ.TkOeqe3SpxHqvsfRcGJQaa',0,'Active','2026-09-20 16:10:27','2026-09-20 16:10:27'),(91,'EMP-1019','farida.iskakova','$2y$10$OCWMXFvjf/S8OQR.E1gb7uIxiZ/.kZ.TkOeqe3SpxHqvsfRcGJQaa',0,'Active','2026-09-20 16:10:27','2026-09-20 16:10:27'),(92,'EMP-1019','DOC-VP-501','$2y$10$OCWMXFvjf/S8OQR.E1gb7uIxiZ/.kZ.TkOeqe3SpxHqvsfRcGJQaa',0,'Active','2026-09-20 16:10:27','2026-09-20 16:10:27'),(93,'EMP-1019','EMP-VP-1019','$2y$10$OCWMXFvjf/S8OQR.E1gb7uIxiZ/.kZ.TkOeqe3SpxHqvsfRcGJQaa',0,'Active','2026-09-20 16:14:33','2026-09-20 16:10:27'),(94,'EMP-1019','EMP-1019','$2y$10$OCWMXFvjf/S8OQR.E1gb7uIxiZ/.kZ.TkOeqe3SpxHqvsfRcGJQaa',0,'Active','2026-09-20 16:10:27','2026-09-20 16:10:27'),(95,'EMP-1020','jonas.richter','$2y$10$OCWMXFvjf/S8OQR.E1gb7uIxiZ/.kZ.TkOeqe3SpxHqvsfRcGJQaa',0,'Active','2026-09-20 16:10:27','2026-09-20 16:10:27'),(96,'EMP-1020','DEV-VP-994','$2y$10$OCWMXFvjf/S8OQR.E1gb7uIxiZ/.kZ.TkOeqe3SpxHqvsfRcGJQaa',0,'Active','2026-09-20 16:10:27','2026-09-20 16:10:27'),(97,'EMP-1020','EMP-1020','$2y$10$OCWMXFvjf/S8OQR.E1gb7uIxiZ/.kZ.TkOeqe3SpxHqvsfRcGJQaa',0,'Active','2026-09-20 16:10:27','2026-09-20 16:10:27'),(98,'EMP-1001','viktor.sokolov','$2y$10$0ozW3nDAvzNhWh8J38B8tOczfPsRcWwg/jivRPUjnEixvve.9CuQu',0,'Active','2026-09-20 16:10:58','2026-09-20 16:10:58'),(99,'EMP-1001','ADM-VP-01','$2y$10$0ozW3nDAvzNhWh8J38B8tOczfPsRcWwg/jivRPUjnEixvve.9CuQu',0,'Active','2026-09-20 16:10:58','2026-09-20 16:10:58'),(100,'EMP-1001','EMP-1001','$2y$10$0ozW3nDAvzNhWh8J38B8tOczfPsRcWwg/jivRPUjnEixvve.9CuQu',0,'Active','2026-09-20 16:10:58','2026-09-20 16:10:58'),(101,'EMP-1002','amina.karimova','$2y$10$0ozW3nDAvzNhWh8J38B8tOczfPsRcWwg/jivRPUjnEixvve.9CuQu',0,'Active','2026-09-20 16:10:58','2026-09-20 16:10:58'),(102,'EMP-1002','HR-VP-201','$2y$10$0ozW3nDAvzNhWh8J38B8tOczfPsRcWwg/jivRPUjnEixvve.9CuQu',0,'Active','2026-09-20 16:10:58','2026-09-20 16:10:58'),(103,'EMP-1002','EMP-1002','$2y$10$0ozW3nDAvzNhWh8J38B8tOczfPsRcWwg/jivRPUjnEixvve.9CuQu',0,'Active','2026-09-20 16:10:58','2026-09-20 16:10:58'),(104,'EMP-1003','daniel.weber','$2y$10$0ozW3nDAvzNhWh8J38B8tOczfPsRcWwg/jivRPUjnEixvve.9CuQu',0,'Active','2026-09-20 16:10:58','2026-09-20 16:10:58'),(105,'EMP-1003','FIN-VP-102','$2y$10$0ozW3nDAvzNhWh8J38B8tOczfPsRcWwg/jivRPUjnEixvve.9CuQu',0,'Active','2026-09-20 16:10:58','2026-09-20 16:10:58'),(106,'EMP-1003','EMP-1003','$2y$10$0ozW3nDAvzNhWh8J38B8tOczfPsRcWwg/jivRPUjnEixvve.9CuQu',0,'Active','2026-09-20 16:10:58','2026-09-20 16:10:58'),(107,'EMP-1004','elena.morozova','$2y$10$0ozW3nDAvzNhWh8J38B8tOczfPsRcWwg/jivRPUjnEixvve.9CuQu',0,'Active','2026-09-20 16:10:58','2026-09-20 16:10:58'),(108,'EMP-1004','EMP-1004','$2y$10$0ozW3nDAvzNhWh8J38B8tOczfPsRcWwg/jivRPUjnEixvve.9CuQu',0,'Active','2026-09-20 16:10:58','2026-09-20 16:10:58'),(109,'EMP-1005','timur.akhmetov','$2y$10$0ozW3nDAvzNhWh8J38B8tOczfPsRcWwg/jivRPUjnEixvve.9CuQu',0,'Active','2026-09-20 16:10:58','2026-09-20 16:10:58'),(110,'EMP-1005','EMP-1005','$2y$10$0ozW3nDAvzNhWh8J38B8tOczfPsRcWwg/jivRPUjnEixvve.9CuQu',0,'Active','2026-09-20 16:10:58','2026-09-20 16:10:58'),(111,'EMP-1006','pavel.orlov','$2y$10$gQS96DIpYPLBhUiJ00CRXuz0RnAQxefG3VPaSIAD20PZOhcAcxw0S',0,'Active','2026-09-20 16:10:58','2026-09-20 16:10:58'),(112,'EMP-1006','CRM-VP-842','$2y$10$gQS96DIpYPLBhUiJ00CRXuz0RnAQxefG3VPaSIAD20PZOhcAcxw0S',0,'Active','2026-09-20 16:10:58','2026-09-20 16:10:58'),(113,'EMP-1006','EMP-842','$2y$10$gQS96DIpYPLBhUiJ00CRXuz0RnAQxefG3VPaSIAD20PZOhcAcxw0S',0,'Active','2026-09-20 16:10:58','2026-09-20 16:10:58'),(114,'EMP-1006','EMP-1006','$2y$10$gQS96DIpYPLBhUiJ00CRXuz0RnAQxefG3VPaSIAD20PZOhcAcxw0S',0,'Active','2026-09-20 16:10:58','2026-09-20 16:10:58'),(115,'EMP-1007','sara.lindholm','$2y$10$gQS96DIpYPLBhUiJ00CRXuz0RnAQxefG3VPaSIAD20PZOhcAcxw0S',0,'Active','2026-09-20 16:10:58','2026-09-20 16:10:58'),(116,'EMP-1007','EMP-1007','$2y$10$gQS96DIpYPLBhUiJ00CRXuz0RnAQxefG3VPaSIAD20PZOhcAcxw0S',0,'Active','2026-09-20 16:10:58','2026-09-20 16:10:58'),(117,'EMP-1008','bekzod.rakhimov','$2y$10$gQS96DIpYPLBhUiJ00CRXuz0RnAQxefG3VPaSIAD20PZOhcAcxw0S',0,'Active','2026-09-20 16:10:58','2026-09-20 16:10:58'),(118,'EMP-1008','EMP-1008','$2y$10$gQS96DIpYPLBhUiJ00CRXuz0RnAQxefG3VPaSIAD20PZOhcAcxw0S',0,'Active','2026-09-20 16:10:58','2026-09-20 16:10:58'),(119,'EMP-1009','nadia.petrova','$2y$10$gQS96DIpYPLBhUiJ00CRXuz0RnAQxefG3VPaSIAD20PZOhcAcxw0S',0,'Active','2026-09-20 16:10:58','2026-09-20 16:10:58'),(120,'EMP-1009','EMP-1009','$2y$10$gQS96DIpYPLBhUiJ00CRXuz0RnAQxefG3VPaSIAD20PZOhcAcxw0S',0,'Active','2026-09-20 16:10:58','2026-09-20 16:10:58'),(121,'EMP-1010','markus.klein','$2y$10$gQS96DIpYPLBhUiJ00CRXuz0RnAQxefG3VPaSIAD20PZOhcAcxw0S',0,'Active','2026-09-20 16:10:58','2026-09-20 16:10:58'),(122,'EMP-1010','EMP-1010','$2y$10$gQS96DIpYPLBhUiJ00CRXuz0RnAQxefG3VPaSIAD20PZOhcAcxw0S',0,'Active','2026-09-20 16:10:58','2026-09-20 16:10:58'),(123,'EMP-1011','arman.tulegenov','$2y$10$gQS96DIpYPLBhUiJ00CRXuz0RnAQxefG3VPaSIAD20PZOhcAcxw0S',0,'Active','2026-09-20 16:10:58','2026-09-20 16:10:58'),(124,'EMP-1011','EMP-1011','$2y$10$gQS96DIpYPLBhUiJ00CRXuz0RnAQxefG3VPaSIAD20PZOhcAcxw0S',0,'Active','2026-09-20 16:10:58','2026-09-20 16:10:58'),(125,'EMP-1012','rustam.bekov','$2y$10$gQS96DIpYPLBhUiJ00CRXuz0RnAQxefG3VPaSIAD20PZOhcAcxw0S',0,'Active','2026-09-20 16:10:58','2026-09-20 16:10:58'),(126,'EMP-1012','EMP-1012','$2y$10$gQS96DIpYPLBhUiJ00CRXuz0RnAQxefG3VPaSIAD20PZOhcAcxw0S',0,'Active','2026-09-20 16:10:58','2026-09-20 16:10:58'),(127,'EMP-1013','ilona.vetra','$2y$10$gQS96DIpYPLBhUiJ00CRXuz0RnAQxefG3VPaSIAD20PZOhcAcxw0S',0,'Active','2026-09-20 16:10:58','2026-09-20 16:10:58'),(128,'EMP-1013','EMP-1013','$2y$10$gQS96DIpYPLBhUiJ00CRXuz0RnAQxefG3VPaSIAD20PZOhcAcxw0S',0,'Active','2026-09-20 16:10:58','2026-09-20 16:10:58'),(129,'EMP-1014','mikhail.antonov','$2y$10$gQS96DIpYPLBhUiJ00CRXuz0RnAQxefG3VPaSIAD20PZOhcAcxw0S',0,'Active','2026-09-20 16:10:58','2026-09-20 16:10:58'),(130,'EMP-1014','EMP-1014','$2y$10$gQS96DIpYPLBhUiJ00CRXuz0RnAQxefG3VPaSIAD20PZOhcAcxw0S',0,'Active','2026-09-20 16:10:58','2026-09-20 16:10:58'),(131,'EMP-1015','kamila.nurzhan','$2y$10$gQS96DIpYPLBhUiJ00CRXuz0RnAQxefG3VPaSIAD20PZOhcAcxw0S',0,'Active','2026-09-20 16:10:58','2026-09-20 16:10:58'),(132,'EMP-1015','EMP-1015','$2y$10$gQS96DIpYPLBhUiJ00CRXuz0RnAQxefG3VPaSIAD20PZOhcAcxw0S',0,'Active','2026-09-20 16:10:58','2026-09-20 16:10:58'),(133,'EMP-1016','erik.hansen','$2y$10$gQS96DIpYPLBhUiJ00CRXuz0RnAQxefG3VPaSIAD20PZOhcAcxw0S',0,'Active','2026-09-20 16:10:58','2026-09-20 16:10:58'),(134,'EMP-1016','EMP-1016','$2y$10$gQS96DIpYPLBhUiJ00CRXuz0RnAQxefG3VPaSIAD20PZOhcAcxw0S',0,'Active','2026-09-20 16:10:58','2026-09-20 16:10:58'),(135,'EMP-1017','dana.yermak','$2y$10$gQS96DIpYPLBhUiJ00CRXuz0RnAQxefG3VPaSIAD20PZOhcAcxw0S',0,'Active','2026-09-20 16:10:58','2026-09-20 16:10:58'),(136,'EMP-1017','EMP-1017','$2y$10$gQS96DIpYPLBhUiJ00CRXuz0RnAQxefG3VPaSIAD20PZOhcAcxw0S',0,'Active','2026-09-20 16:10:58','2026-09-20 16:10:58'),(137,'EMP-1018','leonid.volkov','$2y$10$gQS96DIpYPLBhUiJ00CRXuz0RnAQxefG3VPaSIAD20PZOhcAcxw0S',0,'Active','2026-09-20 16:10:58','2026-09-20 16:10:58'),(138,'EMP-1018','IT-VP-304','$2y$10$gQS96DIpYPLBhUiJ00CRXuz0RnAQxefG3VPaSIAD20PZOhcAcxw0S',0,'Active','2026-09-20 16:10:58','2026-09-20 16:10:58'),(139,'EMP-1018','EMP-1018','$2y$10$gQS96DIpYPLBhUiJ00CRXuz0RnAQxefG3VPaSIAD20PZOhcAcxw0S',0,'Active','2026-09-20 16:10:58','2026-09-20 16:10:58'),(140,'EMP-1019','farida.iskakova','$2y$10$gQS96DIpYPLBhUiJ00CRXuz0RnAQxefG3VPaSIAD20PZOhcAcxw0S',0,'Active','2026-09-20 16:10:58','2026-09-20 16:10:58'),(141,'EMP-1019','DOC-VP-501','$2y$10$gQS96DIpYPLBhUiJ00CRXuz0RnAQxefG3VPaSIAD20PZOhcAcxw0S',0,'Active','2026-09-20 16:10:58','2026-09-20 16:10:58'),(142,'EMP-1019','CST-VP-09','$2y$10$gQS96DIpYPLBhUiJ00CRXuz0RnAQxefG3VPaSIAD20PZOhcAcxw0S',0,'Active','2026-09-20 16:14:33','2026-09-20 16:10:58'),(143,'EMP-1019','EMP-VP-1019','$2y$10$gQS96DIpYPLBhUiJ00CRXuz0RnAQxefG3VPaSIAD20PZOhcAcxw0S',0,'Active','2026-09-20 16:10:58','2026-09-20 16:10:58'),(144,'EMP-1019','EMP-1019','$2y$10$gQS96DIpYPLBhUiJ00CRXuz0RnAQxefG3VPaSIAD20PZOhcAcxw0S',0,'Active','2026-09-20 16:10:58','2026-09-20 16:10:58'),(145,'EMP-1020','jonas.richter','$2y$10$gQS96DIpYPLBhUiJ00CRXuz0RnAQxefG3VPaSIAD20PZOhcAcxw0S',0,'Active','2026-09-20 16:10:58','2026-09-20 16:10:58'),(146,'EMP-1020','DEV-VP-994','$2y$10$gQS96DIpYPLBhUiJ00CRXuz0RnAQxefG3VPaSIAD20PZOhcAcxw0S',0,'Active','2026-09-20 16:10:58','2026-09-20 16:10:58'),(147,'EMP-1020','EMP-1020','$2y$10$gQS96DIpYPLBhUiJ00CRXuz0RnAQxefG3VPaSIAD20PZOhcAcxw0S',0,'Active','2026-09-20 16:10:58','2026-09-20 16:10:58'),(148,'EMP-1001','viktor.sokolov','$2y$10$xrhe857trcKAzOQpRUBJWOGNhDb07UsuFjCdCdpYzAIZ7bOEwIgpa',0,'Active','2026-09-20 16:11:28','2026-09-20 16:11:28'),(149,'EMP-1001','ADM-VP-01','$2y$10$xrhe857trcKAzOQpRUBJWOGNhDb07UsuFjCdCdpYzAIZ7bOEwIgpa',0,'Active','2026-09-20 16:11:28','2026-09-20 16:11:28'),(150,'EMP-1001','EMP-1001','$2y$10$xrhe857trcKAzOQpRUBJWOGNhDb07UsuFjCdCdpYzAIZ7bOEwIgpa',0,'Active','2026-09-20 16:11:28','2026-09-20 16:11:28'),(151,'EMP-1002','amina.karimova','$2y$10$xrhe857trcKAzOQpRUBJWOGNhDb07UsuFjCdCdpYzAIZ7bOEwIgpa',0,'Active','2026-09-20 16:11:28','2026-09-20 16:11:28'),(152,'EMP-1002','HR-VP-201','$2y$10$xrhe857trcKAzOQpRUBJWOGNhDb07UsuFjCdCdpYzAIZ7bOEwIgpa',0,'Active','2026-09-20 16:11:28','2026-09-20 16:11:28'),(153,'EMP-1002','EMP-1002','$2y$10$xrhe857trcKAzOQpRUBJWOGNhDb07UsuFjCdCdpYzAIZ7bOEwIgpa',0,'Active','2026-09-20 16:11:28','2026-09-20 16:11:28'),(154,'EMP-1003','daniel.weber','$2y$10$xrhe857trcKAzOQpRUBJWOGNhDb07UsuFjCdCdpYzAIZ7bOEwIgpa',0,'Active','2026-09-20 16:11:28','2026-09-20 16:11:28'),(155,'EMP-1003','FIN-VP-102','$2y$10$xrhe857trcKAzOQpRUBJWOGNhDb07UsuFjCdCdpYzAIZ7bOEwIgpa',0,'Active','2026-09-20 16:11:28','2026-09-20 16:11:28'),(156,'EMP-1003','FIN-VP-502','$2y$10$xrhe857trcKAzOQpRUBJWOGNhDb07UsuFjCdCdpYzAIZ7bOEwIgpa',0,'Active','2026-09-20 16:14:33','2026-09-20 16:11:28'),(157,'EMP-1003','EMP-1003','$2y$10$xrhe857trcKAzOQpRUBJWOGNhDb07UsuFjCdCdpYzAIZ7bOEwIgpa',0,'Active','2026-09-20 16:11:28','2026-09-20 16:11:28'),(158,'EMP-1004','elena.morozova','$2y$10$xrhe857trcKAzOQpRUBJWOGNhDb07UsuFjCdCdpYzAIZ7bOEwIgpa',0,'Active','2026-09-20 16:11:28','2026-09-20 16:11:28'),(159,'EMP-1004','EMP-1004','$2y$10$xrhe857trcKAzOQpRUBJWOGNhDb07UsuFjCdCdpYzAIZ7bOEwIgpa',0,'Active','2026-09-20 16:11:28','2026-09-20 16:11:28'),(160,'EMP-1005','timur.akhmetov','$2y$10$xrhe857trcKAzOQpRUBJWOGNhDb07UsuFjCdCdpYzAIZ7bOEwIgpa',0,'Active','2026-09-20 16:11:28','2026-09-20 16:11:28'),(161,'EMP-1005','EMP-1005','$2y$10$xrhe857trcKAzOQpRUBJWOGNhDb07UsuFjCdCdpYzAIZ7bOEwIgpa',0,'Active','2026-09-20 16:11:28','2026-09-20 16:11:28'),(162,'EMP-1006','pavel.orlov','$2y$10$pFkDJnHIAoPstzdg5LchReF94tzSBrFSou.pohf76.Hdx3GZzrw7S',0,'Active','2026-09-20 16:11:28','2026-09-20 16:11:28'),(163,'EMP-1006','CRM-VP-842','$2y$10$pFkDJnHIAoPstzdg5LchReF94tzSBrFSou.pohf76.Hdx3GZzrw7S',0,'Active','2026-09-20 16:11:28','2026-09-20 16:11:28'),(164,'EMP-1006','EMP-842','$2y$10$pFkDJnHIAoPstzdg5LchReF94tzSBrFSou.pohf76.Hdx3GZzrw7S',0,'Active','2026-09-20 16:11:28','2026-09-20 16:11:28'),(165,'EMP-1006','EMP-1006','$2y$10$pFkDJnHIAoPstzdg5LchReF94tzSBrFSou.pohf76.Hdx3GZzrw7S',0,'Active','2026-09-20 16:11:28','2026-09-20 16:11:28'),(166,'EMP-1007','sara.lindholm','$2y$10$pFkDJnHIAoPstzdg5LchReF94tzSBrFSou.pohf76.Hdx3GZzrw7S',0,'Active','2026-09-20 16:11:28','2026-09-20 16:11:28'),(167,'EMP-1007','EMP-1007','$2y$10$pFkDJnHIAoPstzdg5LchReF94tzSBrFSou.pohf76.Hdx3GZzrw7S',0,'Active','2026-09-20 16:11:28','2026-09-20 16:11:28'),(168,'EMP-1008','bekzod.rakhimov','$2y$10$pFkDJnHIAoPstzdg5LchReF94tzSBrFSou.pohf76.Hdx3GZzrw7S',0,'Active','2026-09-20 16:11:28','2026-09-20 16:11:28'),(169,'EMP-1008','EMP-1008','$2y$10$pFkDJnHIAoPstzdg5LchReF94tzSBrFSou.pohf76.Hdx3GZzrw7S',0,'Active','2026-09-20 16:11:28','2026-09-20 16:11:28'),(170,'EMP-1009','nadia.petrova','$2y$10$pFkDJnHIAoPstzdg5LchReF94tzSBrFSou.pohf76.Hdx3GZzrw7S',0,'Active','2026-09-20 16:11:28','2026-09-20 16:11:28'),(171,'EMP-1009','EMP-1009','$2y$10$pFkDJnHIAoPstzdg5LchReF94tzSBrFSou.pohf76.Hdx3GZzrw7S',0,'Active','2026-09-20 16:11:28','2026-09-20 16:11:28'),(172,'EMP-1010','markus.klein','$2y$10$pFkDJnHIAoPstzdg5LchReF94tzSBrFSou.pohf76.Hdx3GZzrw7S',0,'Active','2026-09-20 16:11:28','2026-09-20 16:11:28'),(173,'EMP-1010','EMP-1010','$2y$10$pFkDJnHIAoPstzdg5LchReF94tzSBrFSou.pohf76.Hdx3GZzrw7S',0,'Active','2026-09-20 16:11:28','2026-09-20 16:11:28'),(174,'EMP-1011','arman.tulegenov','$2y$10$pFkDJnHIAoPstzdg5LchReF94tzSBrFSou.pohf76.Hdx3GZzrw7S',0,'Active','2026-09-20 16:11:28','2026-09-20 16:11:28'),(175,'EMP-1011','EMP-1011','$2y$10$pFkDJnHIAoPstzdg5LchReF94tzSBrFSou.pohf76.Hdx3GZzrw7S',0,'Active','2026-09-20 16:11:28','2026-09-20 16:11:28'),(176,'EMP-1012','rustam.bekov','$2y$10$pFkDJnHIAoPstzdg5LchReF94tzSBrFSou.pohf76.Hdx3GZzrw7S',0,'Active','2026-09-20 16:11:28','2026-09-20 16:11:28'),(177,'EMP-1012','EMP-1012','$2y$10$pFkDJnHIAoPstzdg5LchReF94tzSBrFSou.pohf76.Hdx3GZzrw7S',0,'Active','2026-09-20 16:11:28','2026-09-20 16:11:28'),(178,'EMP-1013','ilona.vetra','$2y$10$pFkDJnHIAoPstzdg5LchReF94tzSBrFSou.pohf76.Hdx3GZzrw7S',0,'Active','2026-09-20 16:11:28','2026-09-20 16:11:28'),(179,'EMP-1013','EMP-1013','$2y$10$pFkDJnHIAoPstzdg5LchReF94tzSBrFSou.pohf76.Hdx3GZzrw7S',0,'Active','2026-09-20 16:11:28','2026-09-20 16:11:28'),(180,'EMP-1014','mikhail.antonov','$2y$10$pFkDJnHIAoPstzdg5LchReF94tzSBrFSou.pohf76.Hdx3GZzrw7S',0,'Active','2026-09-20 16:11:28','2026-09-20 16:11:28'),(181,'EMP-1014','EMP-1014','$2y$10$pFkDJnHIAoPstzdg5LchReF94tzSBrFSou.pohf76.Hdx3GZzrw7S',0,'Active','2026-09-20 16:11:28','2026-09-20 16:11:28'),(182,'EMP-1015','kamila.nurzhan','$2y$10$pFkDJnHIAoPstzdg5LchReF94tzSBrFSou.pohf76.Hdx3GZzrw7S',0,'Active','2026-09-20 16:11:28','2026-09-20 16:11:28'),(183,'EMP-1015','EMP-1015','$2y$10$pFkDJnHIAoPstzdg5LchReF94tzSBrFSou.pohf76.Hdx3GZzrw7S',0,'Active','2026-09-20 16:11:28','2026-09-20 16:11:28'),(184,'EMP-1016','erik.hansen','$2y$10$pFkDJnHIAoPstzdg5LchReF94tzSBrFSou.pohf76.Hdx3GZzrw7S',0,'Active','2026-09-20 16:11:28','2026-09-20 16:11:28'),(185,'EMP-1016','EMP-1016','$2y$10$pFkDJnHIAoPstzdg5LchReF94tzSBrFSou.pohf76.Hdx3GZzrw7S',0,'Active','2026-09-20 16:11:28','2026-09-20 16:11:28'),(186,'EMP-1017','dana.yermak','$2y$10$pFkDJnHIAoPstzdg5LchReF94tzSBrFSou.pohf76.Hdx3GZzrw7S',0,'Active','2026-09-20 16:11:28','2026-09-20 16:11:28'),(187,'EMP-1017','EMP-1017','$2y$10$pFkDJnHIAoPstzdg5LchReF94tzSBrFSou.pohf76.Hdx3GZzrw7S',0,'Active','2026-09-20 16:11:28','2026-09-20 16:11:28'),(188,'EMP-1018','leonid.volkov','$2y$10$pFkDJnHIAoPstzdg5LchReF94tzSBrFSou.pohf76.Hdx3GZzrw7S',0,'Active','2026-09-20 16:11:28','2026-09-20 16:11:28'),(189,'EMP-1018','IT-VP-304','$2y$10$pFkDJnHIAoPstzdg5LchReF94tzSBrFSou.pohf76.Hdx3GZzrw7S',0,'Active','2026-09-20 16:11:28','2026-09-20 16:11:28'),(190,'EMP-1018','EMP-1018','$2y$10$pFkDJnHIAoPstzdg5LchReF94tzSBrFSou.pohf76.Hdx3GZzrw7S',0,'Active','2026-09-20 16:11:28','2026-09-20 16:11:28'),(191,'EMP-1019','farida.iskakova','$2y$10$pFkDJnHIAoPstzdg5LchReF94tzSBrFSou.pohf76.Hdx3GZzrw7S',0,'Active','2026-09-20 16:11:28','2026-09-20 16:11:28'),(192,'EMP-1019','DOC-VP-501','$2y$10$pFkDJnHIAoPstzdg5LchReF94tzSBrFSou.pohf76.Hdx3GZzrw7S',0,'Active','2026-09-20 16:11:28','2026-09-20 16:11:28'),(193,'EMP-1019','CST-VP-09','$2y$10$pFkDJnHIAoPstzdg5LchReF94tzSBrFSou.pohf76.Hdx3GZzrw7S',0,'Active','2026-09-20 16:11:28','2026-09-20 16:11:28'),(194,'EMP-1019','EMP-VP-1019','$2y$10$pFkDJnHIAoPstzdg5LchReF94tzSBrFSou.pohf76.Hdx3GZzrw7S',0,'Active','2026-09-20 16:11:28','2026-09-20 16:11:28'),(195,'EMP-1019','EMP-1019','$2y$10$pFkDJnHIAoPstzdg5LchReF94tzSBrFSou.pohf76.Hdx3GZzrw7S',0,'Active','2026-09-20 16:11:28','2026-09-20 16:11:28'),(196,'EMP-1020','jonas.richter','$2y$10$pFkDJnHIAoPstzdg5LchReF94tzSBrFSou.pohf76.Hdx3GZzrw7S',0,'Active','2026-09-20 16:11:28','2026-09-20 16:11:28'),(197,'EMP-1020','DEV-VP-994','$2y$10$pFkDJnHIAoPstzdg5LchReF94tzSBrFSou.pohf76.Hdx3GZzrw7S',0,'Active','2026-09-20 16:11:28','2026-09-20 16:11:28'),(198,'EMP-1020','EMP-1020','$2y$10$pFkDJnHIAoPstzdg5LchReF94tzSBrFSou.pohf76.Hdx3GZzrw7S',0,'Active','2026-09-20 16:11:28','2026-09-20 16:11:28'),(199,'EMP-1001','viktor.sokolov','$2y$10$QR7f3aHwxHJCvCKNd7jSU.lPzZ/EkfiGYhrg8HfNbFXLdJJ0JoxA2',0,'Active','2026-09-20 16:12:06','2026-09-20 16:12:06'),(200,'EMP-1001','ADM-VP-01','$2y$10$QR7f3aHwxHJCvCKNd7jSU.lPzZ/EkfiGYhrg8HfNbFXLdJJ0JoxA2',0,'Active','2026-09-20 16:12:06','2026-09-20 16:12:06'),(201,'EMP-1001','EMP-1001','$2y$10$QR7f3aHwxHJCvCKNd7jSU.lPzZ/EkfiGYhrg8HfNbFXLdJJ0JoxA2',0,'Active','2026-09-20 16:12:06','2026-09-20 16:12:06'),(202,'EMP-1002','amina.karimova','$2y$10$QR7f3aHwxHJCvCKNd7jSU.lPzZ/EkfiGYhrg8HfNbFXLdJJ0JoxA2',0,'Active','2026-09-20 16:12:06','2026-09-20 16:12:06'),(203,'EMP-1002','HR-VP-201','$2y$10$QR7f3aHwxHJCvCKNd7jSU.lPzZ/EkfiGYhrg8HfNbFXLdJJ0JoxA2',0,'Active','2026-09-20 16:12:06','2026-09-20 16:12:06'),(204,'EMP-1002','HR-VP-104','$2y$10$QR7f3aHwxHJCvCKNd7jSU.lPzZ/EkfiGYhrg8HfNbFXLdJJ0JoxA2',0,'Active','2026-09-20 16:12:06','2026-09-20 16:12:06'),(205,'EMP-1002','EMP-1002','$2y$10$QR7f3aHwxHJCvCKNd7jSU.lPzZ/EkfiGYhrg8HfNbFXLdJJ0JoxA2',0,'Active','2026-09-20 16:12:06','2026-09-20 16:12:06'),(206,'EMP-1003','daniel.weber','$2y$10$QR7f3aHwxHJCvCKNd7jSU.lPzZ/EkfiGYhrg8HfNbFXLdJJ0JoxA2',0,'Active','2026-09-20 16:12:06','2026-09-20 16:12:06'),(207,'EMP-1003','FIN-VP-102','$2y$10$QR7f3aHwxHJCvCKNd7jSU.lPzZ/EkfiGYhrg8HfNbFXLdJJ0JoxA2',0,'Active','2026-09-20 16:12:06','2026-09-20 16:12:06'),(208,'EMP-1003','FIN-VP-502','$2y$10$QR7f3aHwxHJCvCKNd7jSU.lPzZ/EkfiGYhrg8HfNbFXLdJJ0JoxA2',0,'Active','2026-09-20 16:12:06','2026-09-20 16:12:06'),(209,'EMP-1003','EMP-1003','$2y$10$QR7f3aHwxHJCvCKNd7jSU.lPzZ/EkfiGYhrg8HfNbFXLdJJ0JoxA2',0,'Active','2026-09-20 16:12:06','2026-09-20 16:12:06'),(210,'EMP-1004','elena.morozova','$2y$10$QR7f3aHwxHJCvCKNd7jSU.lPzZ/EkfiGYhrg8HfNbFXLdJJ0JoxA2',0,'Active','2026-09-20 16:12:06','2026-09-20 16:12:06'),(211,'EMP-1004','EMP-1004','$2y$10$QR7f3aHwxHJCvCKNd7jSU.lPzZ/EkfiGYhrg8HfNbFXLdJJ0JoxA2',0,'Active','2026-09-20 16:12:06','2026-09-20 16:12:06'),(212,'EMP-1005','timur.akhmetov','$2y$10$QR7f3aHwxHJCvCKNd7jSU.lPzZ/EkfiGYhrg8HfNbFXLdJJ0JoxA2',0,'Active','2026-09-20 16:12:06','2026-09-20 16:12:06'),(213,'EMP-1005','EMP-1005','$2y$10$QR7f3aHwxHJCvCKNd7jSU.lPzZ/EkfiGYhrg8HfNbFXLdJJ0JoxA2',0,'Active','2026-09-20 16:12:06','2026-09-20 16:12:06'),(214,'EMP-1006','pavel.orlov','$2y$10$obQbSn53bF0jazjsYbsH0eawaf0YK.jPDwxgszKLJNIPubpm33oY.',0,'Active','2026-09-20 16:12:06','2026-09-20 16:12:06'),(215,'EMP-1006','CRM-VP-842','$2y$10$obQbSn53bF0jazjsYbsH0eawaf0YK.jPDwxgszKLJNIPubpm33oY.',0,'Active','2026-09-20 16:12:06','2026-09-20 16:12:06'),(216,'EMP-1006','EMP-842','$2y$10$obQbSn53bF0jazjsYbsH0eawaf0YK.jPDwxgszKLJNIPubpm33oY.',0,'Active','2026-09-20 16:12:06','2026-09-20 16:12:06'),(217,'EMP-1006','EMP-1006','$2y$10$obQbSn53bF0jazjsYbsH0eawaf0YK.jPDwxgszKLJNIPubpm33oY.',0,'Active','2026-09-20 16:12:06','2026-09-20 16:12:06'),(218,'EMP-1007','sara.lindholm','$2y$10$obQbSn53bF0jazjsYbsH0eawaf0YK.jPDwxgszKLJNIPubpm33oY.',0,'Active','2026-09-20 16:12:06','2026-09-20 16:12:06'),(219,'EMP-1007','EMP-1007','$2y$10$obQbSn53bF0jazjsYbsH0eawaf0YK.jPDwxgszKLJNIPubpm33oY.',0,'Active','2026-09-20 16:12:06','2026-09-20 16:12:06'),(220,'EMP-1008','bekzod.rakhimov','$2y$10$obQbSn53bF0jazjsYbsH0eawaf0YK.jPDwxgszKLJNIPubpm33oY.',0,'Active','2026-09-20 16:12:06','2026-09-20 16:12:06'),(221,'EMP-1008','EMP-1008','$2y$10$obQbSn53bF0jazjsYbsH0eawaf0YK.jPDwxgszKLJNIPubpm33oY.',0,'Active','2026-09-20 16:12:06','2026-09-20 16:12:06'),(222,'EMP-1009','nadia.petrova','$2y$10$obQbSn53bF0jazjsYbsH0eawaf0YK.jPDwxgszKLJNIPubpm33oY.',0,'Active','2026-09-20 16:12:06','2026-09-20 16:12:06'),(223,'EMP-1009','EMP-1009','$2y$10$obQbSn53bF0jazjsYbsH0eawaf0YK.jPDwxgszKLJNIPubpm33oY.',0,'Active','2026-09-20 16:12:06','2026-09-20 16:12:06'),(224,'EMP-1010','markus.klein','$2y$10$obQbSn53bF0jazjsYbsH0eawaf0YK.jPDwxgszKLJNIPubpm33oY.',0,'Active','2026-09-20 16:12:06','2026-09-20 16:12:06'),(225,'EMP-1010','EMP-1010','$2y$10$obQbSn53bF0jazjsYbsH0eawaf0YK.jPDwxgszKLJNIPubpm33oY.',0,'Active','2026-09-20 16:12:06','2026-09-20 16:12:06'),(226,'EMP-1011','arman.tulegenov','$2y$10$obQbSn53bF0jazjsYbsH0eawaf0YK.jPDwxgszKLJNIPubpm33oY.',0,'Active','2026-09-20 16:12:06','2026-09-20 16:12:06'),(227,'EMP-1011','EMP-1011','$2y$10$obQbSn53bF0jazjsYbsH0eawaf0YK.jPDwxgszKLJNIPubpm33oY.',0,'Active','2026-09-20 16:12:06','2026-09-20 16:12:06'),(228,'EMP-1012','rustam.bekov','$2y$10$obQbSn53bF0jazjsYbsH0eawaf0YK.jPDwxgszKLJNIPubpm33oY.',0,'Active','2026-09-20 16:12:06','2026-09-20 16:12:06'),(229,'EMP-1012','EMP-1012','$2y$10$obQbSn53bF0jazjsYbsH0eawaf0YK.jPDwxgszKLJNIPubpm33oY.',0,'Active','2026-09-20 16:12:06','2026-09-20 16:12:06'),(230,'EMP-1013','ilona.vetra','$2y$10$obQbSn53bF0jazjsYbsH0eawaf0YK.jPDwxgszKLJNIPubpm33oY.',0,'Active','2026-09-20 16:12:06','2026-09-20 16:12:06'),(231,'EMP-1013','EMP-1013','$2y$10$obQbSn53bF0jazjsYbsH0eawaf0YK.jPDwxgszKLJNIPubpm33oY.',0,'Active','2026-09-20 16:12:06','2026-09-20 16:12:06'),(232,'EMP-1014','mikhail.antonov','$2y$10$obQbSn53bF0jazjsYbsH0eawaf0YK.jPDwxgszKLJNIPubpm33oY.',0,'Active','2026-09-20 16:12:06','2026-09-20 16:12:06'),(233,'EMP-1014','EMP-1014','$2y$10$obQbSn53bF0jazjsYbsH0eawaf0YK.jPDwxgszKLJNIPubpm33oY.',0,'Active','2026-09-20 16:12:06','2026-09-20 16:12:06'),(234,'EMP-1015','kamila.nurzhan','$2y$10$obQbSn53bF0jazjsYbsH0eawaf0YK.jPDwxgszKLJNIPubpm33oY.',0,'Active','2026-09-20 16:12:06','2026-09-20 16:12:06'),(235,'EMP-1015','EMP-1015','$2y$10$obQbSn53bF0jazjsYbsH0eawaf0YK.jPDwxgszKLJNIPubpm33oY.',0,'Active','2026-09-20 16:12:06','2026-09-20 16:12:06'),(236,'EMP-1016','erik.hansen','$2y$10$obQbSn53bF0jazjsYbsH0eawaf0YK.jPDwxgszKLJNIPubpm33oY.',0,'Active','2026-09-20 16:12:06','2026-09-20 16:12:06'),(237,'EMP-1016','EMP-1016','$2y$10$obQbSn53bF0jazjsYbsH0eawaf0YK.jPDwxgszKLJNIPubpm33oY.',0,'Active','2026-09-20 16:12:06','2026-09-20 16:12:06'),(238,'EMP-1017','dana.yermak','$2y$10$obQbSn53bF0jazjsYbsH0eawaf0YK.jPDwxgszKLJNIPubpm33oY.',0,'Active','2026-09-20 16:12:06','2026-09-20 16:12:06'),(239,'EMP-1017','EMP-1017','$2y$10$obQbSn53bF0jazjsYbsH0eawaf0YK.jPDwxgszKLJNIPubpm33oY.',0,'Active','2026-09-20 16:12:06','2026-09-20 16:12:06'),(240,'EMP-1018','leonid.volkov','$2y$10$obQbSn53bF0jazjsYbsH0eawaf0YK.jPDwxgszKLJNIPubpm33oY.',0,'Active','2026-09-20 16:12:06','2026-09-20 16:12:06'),(241,'EMP-1018','IT-VP-304','$2y$10$obQbSn53bF0jazjsYbsH0eawaf0YK.jPDwxgszKLJNIPubpm33oY.',0,'Active','2026-09-20 16:12:06','2026-09-20 16:12:06'),(242,'EMP-1018','EMP-1018','$2y$10$obQbSn53bF0jazjsYbsH0eawaf0YK.jPDwxgszKLJNIPubpm33oY.',0,'Active','2026-09-20 16:12:06','2026-09-20 16:12:06'),(243,'EMP-1019','farida.iskakova','$2y$10$obQbSn53bF0jazjsYbsH0eawaf0YK.jPDwxgszKLJNIPubpm33oY.',0,'Active','2026-09-20 16:12:06','2026-09-20 16:12:06'),(244,'EMP-1019','DOC-VP-501','$2y$10$obQbSn53bF0jazjsYbsH0eawaf0YK.jPDwxgszKLJNIPubpm33oY.',0,'Active','2026-09-20 16:12:06','2026-09-20 16:12:06'),(245,'EMP-1019','CST-VP-09','$2y$10$obQbSn53bF0jazjsYbsH0eawaf0YK.jPDwxgszKLJNIPubpm33oY.',0,'Active','2026-09-20 16:12:06','2026-09-20 16:12:06'),(246,'EMP-1019','EMP-VP-1019','$2y$10$obQbSn53bF0jazjsYbsH0eawaf0YK.jPDwxgszKLJNIPubpm33oY.',0,'Active','2026-09-20 16:12:06','2026-09-20 16:12:06'),(247,'EMP-1019','EMP-1019','$2y$10$obQbSn53bF0jazjsYbsH0eawaf0YK.jPDwxgszKLJNIPubpm33oY.',0,'Active','2026-09-20 16:12:06','2026-09-20 16:12:06'),(248,'EMP-1020','jonas.richter','$2y$10$obQbSn53bF0jazjsYbsH0eawaf0YK.jPDwxgszKLJNIPubpm33oY.',0,'Active','2026-09-20 16:12:06','2026-09-20 16:12:06'),(249,'EMP-1020','DEV-VP-994','$2y$10$obQbSn53bF0jazjsYbsH0eawaf0YK.jPDwxgszKLJNIPubpm33oY.',0,'Active','2026-09-20 16:12:06','2026-09-20 16:12:06'),(250,'EMP-1020','EMP-1020','$2y$10$obQbSn53bF0jazjsYbsH0eawaf0YK.jPDwxgszKLJNIPubpm33oY.',0,'Active','2026-09-20 16:12:06','2026-09-20 16:12:06');
+INSERT INTO `employee_accounts` VALUES (1,'EMP-1001','viktor.sokolov','$2y$12$d5ZnZjG.UwfqQvfH.vDCp.1RFxhqL3iG5CWs10MtPqWaxn88qHzrC',0,'Active',NULL,'2026-09-21 16:39:04'),(2,'EMP-1001','ADM-VP-01','$2y$12$d5ZnZjG.UwfqQvfH.vDCp.1RFxhqL3iG5CWs10MtPqWaxn88qHzrC',0,'Active',NULL,'2026-09-21 16:39:04'),(3,'EMP-1001','EMP-1001','$2y$12$d5ZnZjG.UwfqQvfH.vDCp.1RFxhqL3iG5CWs10MtPqWaxn88qHzrC',0,'Active',NULL,'2026-09-21 16:39:04'),(4,'EMP-1002','amina.karimova','$2y$12$d5ZnZjG.UwfqQvfH.vDCp.1RFxhqL3iG5CWs10MtPqWaxn88qHzrC',0,'Active',NULL,'2026-09-21 16:39:04'),(5,'EMP-1002','HR-VP-201','$2y$12$d5ZnZjG.UwfqQvfH.vDCp.1RFxhqL3iG5CWs10MtPqWaxn88qHzrC',0,'Active',NULL,'2026-09-21 16:39:04'),(6,'EMP-1002','HR-VP-104','$2y$12$d5ZnZjG.UwfqQvfH.vDCp.1RFxhqL3iG5CWs10MtPqWaxn88qHzrC',0,'Active',NULL,'2026-09-21 16:39:04'),(7,'EMP-1002','EMP-1002','$2y$12$d5ZnZjG.UwfqQvfH.vDCp.1RFxhqL3iG5CWs10MtPqWaxn88qHzrC',0,'Active',NULL,'2026-09-21 16:39:04'),(8,'EMP-1003','daniel.weber','$2y$12$d5ZnZjG.UwfqQvfH.vDCp.1RFxhqL3iG5CWs10MtPqWaxn88qHzrC',0,'Active',NULL,'2026-09-21 16:39:04'),(9,'EMP-1003','FIN-VP-102','$2y$12$d5ZnZjG.UwfqQvfH.vDCp.1RFxhqL3iG5CWs10MtPqWaxn88qHzrC',0,'Active',NULL,'2026-09-21 16:39:04'),(10,'EMP-1003','FIN-VP-502','$2y$12$d5ZnZjG.UwfqQvfH.vDCp.1RFxhqL3iG5CWs10MtPqWaxn88qHzrC',0,'Active',NULL,'2026-09-21 16:39:04'),(11,'EMP-1003','EMP-1003','$2y$12$d5ZnZjG.UwfqQvfH.vDCp.1RFxhqL3iG5CWs10MtPqWaxn88qHzrC',0,'Active',NULL,'2026-09-21 16:39:04'),(12,'EMP-1004','elena.morozova','$2y$12$d5ZnZjG.UwfqQvfH.vDCp.1RFxhqL3iG5CWs10MtPqWaxn88qHzrC',0,'Active',NULL,'2026-09-21 16:39:04'),(13,'EMP-1004','EMP-1004','$2y$12$d5ZnZjG.UwfqQvfH.vDCp.1RFxhqL3iG5CWs10MtPqWaxn88qHzrC',0,'Active',NULL,'2026-09-21 16:39:04'),(14,'EMP-1005','timur.akhmetov','$2y$12$d5ZnZjG.UwfqQvfH.vDCp.1RFxhqL3iG5CWs10MtPqWaxn88qHzrC',0,'Active',NULL,'2026-09-21 16:39:04'),(15,'EMP-1005','EMP-1005','$2y$12$d5ZnZjG.UwfqQvfH.vDCp.1RFxhqL3iG5CWs10MtPqWaxn88qHzrC',0,'Active',NULL,'2026-09-21 16:39:04'),(16,'EMP-1006','pavel.orlov','$2y$12$3lgM9IJEMEqi.kwMKlBtwucD5oaUnUJAY3dt.eQlyjbXrQ6fkr/bW',0,'Active',NULL,'2026-09-21 16:39:04'),(17,'EMP-1006','CRM-VP-842','$2y$12$3lgM9IJEMEqi.kwMKlBtwucD5oaUnUJAY3dt.eQlyjbXrQ6fkr/bW',0,'Active',NULL,'2026-09-21 16:39:04'),(18,'EMP-1006','EMP-842','$2y$12$3lgM9IJEMEqi.kwMKlBtwucD5oaUnUJAY3dt.eQlyjbXrQ6fkr/bW',0,'Active',NULL,'2026-09-21 16:39:04'),(19,'EMP-1006','EMP-1006','$2y$12$3lgM9IJEMEqi.kwMKlBtwucD5oaUnUJAY3dt.eQlyjbXrQ6fkr/bW',0,'Active',NULL,'2026-09-21 16:39:04'),(20,'EMP-1007','sara.lindholm','$2y$12$3lgM9IJEMEqi.kwMKlBtwucD5oaUnUJAY3dt.eQlyjbXrQ6fkr/bW',0,'Active',NULL,'2026-09-21 16:39:04'),(21,'EMP-1007','EMP-1007','$2y$12$3lgM9IJEMEqi.kwMKlBtwucD5oaUnUJAY3dt.eQlyjbXrQ6fkr/bW',0,'Active',NULL,'2026-09-21 16:39:04'),(22,'EMP-1008','bekzod.rakhimov','$2y$12$3lgM9IJEMEqi.kwMKlBtwucD5oaUnUJAY3dt.eQlyjbXrQ6fkr/bW',0,'Active',NULL,'2026-09-21 16:39:04'),(23,'EMP-1008','EMP-1008','$2y$12$3lgM9IJEMEqi.kwMKlBtwucD5oaUnUJAY3dt.eQlyjbXrQ6fkr/bW',0,'Active',NULL,'2026-09-21 16:39:04'),(24,'EMP-1009','nadia.petrova','$2y$12$3lgM9IJEMEqi.kwMKlBtwucD5oaUnUJAY3dt.eQlyjbXrQ6fkr/bW',0,'Active',NULL,'2026-09-21 16:39:04'),(25,'EMP-1009','EMP-1009','$2y$12$3lgM9IJEMEqi.kwMKlBtwucD5oaUnUJAY3dt.eQlyjbXrQ6fkr/bW',0,'Active',NULL,'2026-09-21 16:39:04'),(26,'EMP-1010','markus.klein','$2y$12$3lgM9IJEMEqi.kwMKlBtwucD5oaUnUJAY3dt.eQlyjbXrQ6fkr/bW',0,'Active',NULL,'2026-09-21 16:39:04'),(27,'EMP-1010','EMP-1010','$2y$12$3lgM9IJEMEqi.kwMKlBtwucD5oaUnUJAY3dt.eQlyjbXrQ6fkr/bW',0,'Active',NULL,'2026-09-21 16:39:04'),(28,'EMP-1011','arman.tulegenov','$2y$12$3lgM9IJEMEqi.kwMKlBtwucD5oaUnUJAY3dt.eQlyjbXrQ6fkr/bW',0,'Active',NULL,'2026-09-21 16:39:04'),(29,'EMP-1011','EMP-1011','$2y$12$3lgM9IJEMEqi.kwMKlBtwucD5oaUnUJAY3dt.eQlyjbXrQ6fkr/bW',0,'Active',NULL,'2026-09-21 16:39:04'),(30,'EMP-1012','rustam.bekov','$2y$12$3lgM9IJEMEqi.kwMKlBtwucD5oaUnUJAY3dt.eQlyjbXrQ6fkr/bW',0,'Active',NULL,'2026-09-21 16:39:04'),(31,'EMP-1012','EMP-1012','$2y$12$3lgM9IJEMEqi.kwMKlBtwucD5oaUnUJAY3dt.eQlyjbXrQ6fkr/bW',0,'Active',NULL,'2026-09-21 16:39:04'),(32,'EMP-1013','ilona.vetra','$2y$12$3lgM9IJEMEqi.kwMKlBtwucD5oaUnUJAY3dt.eQlyjbXrQ6fkr/bW',0,'Active',NULL,'2026-09-21 16:39:04'),(33,'EMP-1013','EMP-1013','$2y$12$3lgM9IJEMEqi.kwMKlBtwucD5oaUnUJAY3dt.eQlyjbXrQ6fkr/bW',0,'Active',NULL,'2026-09-21 16:39:04'),(34,'EMP-1014','mikhail.antonov','$2y$12$3lgM9IJEMEqi.kwMKlBtwucD5oaUnUJAY3dt.eQlyjbXrQ6fkr/bW',0,'Active',NULL,'2026-09-21 16:39:04'),(35,'EMP-1014','EMP-1014','$2y$12$3lgM9IJEMEqi.kwMKlBtwucD5oaUnUJAY3dt.eQlyjbXrQ6fkr/bW',0,'Active',NULL,'2026-09-21 16:39:04'),(36,'EMP-1015','kamila.nurzhan','$2y$12$3lgM9IJEMEqi.kwMKlBtwucD5oaUnUJAY3dt.eQlyjbXrQ6fkr/bW',0,'Active',NULL,'2026-09-21 16:39:04'),(37,'EMP-1015','EMP-1015','$2y$12$3lgM9IJEMEqi.kwMKlBtwucD5oaUnUJAY3dt.eQlyjbXrQ6fkr/bW',0,'Active',NULL,'2026-09-21 16:39:04'),(38,'EMP-1016','erik.hansen','$2y$12$3lgM9IJEMEqi.kwMKlBtwucD5oaUnUJAY3dt.eQlyjbXrQ6fkr/bW',0,'Active',NULL,'2026-09-21 16:39:04'),(39,'EMP-1016','EMP-1016','$2y$12$3lgM9IJEMEqi.kwMKlBtwucD5oaUnUJAY3dt.eQlyjbXrQ6fkr/bW',0,'Active',NULL,'2026-09-21 16:39:04'),(40,'EMP-1017','dana.yermak','$2y$12$3lgM9IJEMEqi.kwMKlBtwucD5oaUnUJAY3dt.eQlyjbXrQ6fkr/bW',0,'Active',NULL,'2026-09-21 16:39:04'),(41,'EMP-1017','EMP-1017','$2y$12$3lgM9IJEMEqi.kwMKlBtwucD5oaUnUJAY3dt.eQlyjbXrQ6fkr/bW',0,'Active',NULL,'2026-09-21 16:39:04'),(42,'EMP-1018','leonid.volkov','$2y$12$3lgM9IJEMEqi.kwMKlBtwucD5oaUnUJAY3dt.eQlyjbXrQ6fkr/bW',0,'Active',NULL,'2026-09-21 16:39:04'),(43,'EMP-1018','IT-VP-304','$2y$12$3lgM9IJEMEqi.kwMKlBtwucD5oaUnUJAY3dt.eQlyjbXrQ6fkr/bW',0,'Active',NULL,'2026-09-21 16:39:04'),(44,'EMP-1018','EMP-1018','$2y$12$3lgM9IJEMEqi.kwMKlBtwucD5oaUnUJAY3dt.eQlyjbXrQ6fkr/bW',0,'Active',NULL,'2026-09-21 16:39:04'),(45,'EMP-1019','farida.iskakova','$2y$12$3lgM9IJEMEqi.kwMKlBtwucD5oaUnUJAY3dt.eQlyjbXrQ6fkr/bW',0,'Active',NULL,'2026-09-21 16:39:04'),(46,'EMP-1019','DOC-VP-501','$2y$12$3lgM9IJEMEqi.kwMKlBtwucD5oaUnUJAY3dt.eQlyjbXrQ6fkr/bW',0,'Active',NULL,'2026-09-21 16:39:04'),(47,'EMP-1019','CST-VP-09','$2y$12$3lgM9IJEMEqi.kwMKlBtwucD5oaUnUJAY3dt.eQlyjbXrQ6fkr/bW',0,'Active',NULL,'2026-09-21 16:39:04'),(48,'EMP-1019','EMP-VP-1019','$2y$12$3lgM9IJEMEqi.kwMKlBtwucD5oaUnUJAY3dt.eQlyjbXrQ6fkr/bW',0,'Active',NULL,'2026-09-21 16:39:04'),(49,'EMP-1019','EMP-1019','$2y$12$3lgM9IJEMEqi.kwMKlBtwucD5oaUnUJAY3dt.eQlyjbXrQ6fkr/bW',0,'Active',NULL,'2026-09-21 16:39:04'),(50,'EMP-1020','jonas.richter','$2y$12$3lgM9IJEMEqi.kwMKlBtwucD5oaUnUJAY3dt.eQlyjbXrQ6fkr/bW',0,'Active',NULL,'2026-09-21 16:39:04'),(51,'EMP-1020','DEV-VP-994','$2y$12$3lgM9IJEMEqi.kwMKlBtwucD5oaUnUJAY3dt.eQlyjbXrQ6fkr/bW',0,'Active',NULL,'2026-09-21 16:39:04'),(52,'EMP-1020','EMP-1020','$2y$12$3lgM9IJEMEqi.kwMKlBtwucD5oaUnUJAY3dt.eQlyjbXrQ6fkr/bW',0,'Active',NULL,'2026-09-21 16:39:04');
 /*!40000 ALTER TABLE `employee_accounts` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -651,11 +789,14 @@ DROP TABLE IF EXISTS `employee_offboarding`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `employee_offboarding` (
-  `offboarding_id` int(11) NOT NULL,
+  `offboarding_id` int(11) NOT NULL AUTO_INCREMENT,
   `emp_id` varchar(10) NOT NULL,
   `step` enum('HRInitiated','StatusChanged','ITNotified','AccessRevoked','IntranetRevoked','FileCenterReviewed','CRMRevoked','HelpdeskClosed','GovernanceVerified','AuditLogged') NOT NULL,
   `status` varchar(20) DEFAULT 'Pending',
-  `completed_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+  `completed_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`offboarding_id`),
+  KEY `fk_employee_offboarding_emp_id` (`emp_id`),
+  CONSTRAINT `fk_employee_offboarding_emp_id` FOREIGN KEY (`emp_id`) REFERENCES `employees` (`emp_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -676,11 +817,14 @@ DROP TABLE IF EXISTS `employee_onboarding`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `employee_onboarding` (
-  `onboarding_id` int(11) NOT NULL,
+  `onboarding_id` int(11) NOT NULL AUTO_INCREMENT,
   `emp_id` varchar(10) NOT NULL,
   `step` enum('RecordCreated','AccessRequested','IntranetGranted','SystemAccessGranted','DocumentsFiled','GovernanceReviewed') NOT NULL,
   `status` varchar(20) DEFAULT 'Pending',
-  `completed_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+  `completed_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`onboarding_id`),
+  KEY `fk_employee_onboarding_emp_id` (`emp_id`),
+  CONSTRAINT `fk_employee_onboarding_emp_id` FOREIGN KEY (`emp_id`) REFERENCES `employees` (`emp_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -704,7 +848,13 @@ CREATE TABLE `employee_roles` (
   `emp_id` varchar(10) NOT NULL,
   `role_id` int(11) NOT NULL,
   `granted_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `granted_by_emp_id` varchar(10) DEFAULT NULL
+  `granted_by_emp_id` varchar(10) DEFAULT NULL,
+  PRIMARY KEY (`emp_id`,`role_id`),
+  KEY `fk_employee_roles_role_id` (`role_id`),
+  KEY `fk_employee_roles_granted_by_emp_id` (`granted_by_emp_id`),
+  CONSTRAINT `fk_employee_roles_emp_id` FOREIGN KEY (`emp_id`) REFERENCES `employees` (`emp_id`),
+  CONSTRAINT `fk_employee_roles_granted_by_emp_id` FOREIGN KEY (`granted_by_emp_id`) REFERENCES `employees` (`emp_id`),
+  CONSTRAINT `fk_employee_roles_role_id` FOREIGN KEY (`role_id`) REFERENCES `roles` (`role_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -714,7 +864,7 @@ CREATE TABLE `employee_roles` (
 
 LOCK TABLES `employee_roles` WRITE;
 /*!40000 ALTER TABLE `employee_roles` DISABLE KEYS */;
-INSERT INTO `employee_roles` VALUES ('EMP-1001',1,'2026-09-20 16:05:39','EMP-1001'),('EMP-1001',1,'2026-09-20 16:05:39','EMP-1001'),('EMP-1001',1,'2026-09-20 16:05:39','EMP-1001'),('EMP-1002',7,'2026-09-20 16:05:39','EMP-1001'),('EMP-1002',7,'2026-09-20 16:05:39','EMP-1001'),('EMP-1002',7,'2026-09-20 16:05:39','EMP-1001'),('EMP-1003',6,'2026-09-20 16:05:39','EMP-1001'),('EMP-1003',6,'2026-09-20 16:05:39','EMP-1001'),('EMP-1003',6,'2026-09-20 16:05:39','EMP-1001'),('EMP-1004',4,'2026-09-20 16:05:39','EMP-1001'),('EMP-1004',4,'2026-09-20 16:05:39','EMP-1001'),('EMP-1005',2,'2026-09-20 16:05:39','EMP-1001'),('EMP-1005',2,'2026-09-20 16:05:39','EMP-1001'),('EMP-1006',3,'2026-09-20 16:05:39','EMP-1001'),('EMP-1006',3,'2026-09-20 16:05:39','EMP-1001'),('EMP-1006',3,'2026-09-20 16:05:39','EMP-1001'),('EMP-1006',3,'2026-09-20 16:05:39','EMP-1001'),('EMP-1007',3,'2026-09-20 16:05:39','EMP-1001'),('EMP-1007',3,'2026-09-20 16:05:39','EMP-1001'),('EMP-1008',3,'2026-09-20 16:05:39','EMP-1001'),('EMP-1008',3,'2026-09-20 16:05:39','EMP-1001'),('EMP-1009',3,'2026-09-20 16:05:39','EMP-1001'),('EMP-1009',3,'2026-09-20 16:05:39','EMP-1001'),('EMP-1010',3,'2026-09-20 16:05:39','EMP-1001'),('EMP-1010',3,'2026-09-20 16:05:39','EMP-1001'),('EMP-1011',8,'2026-09-20 16:05:39','EMP-1001'),('EMP-1011',8,'2026-09-20 16:05:39','EMP-1001'),('EMP-1012',8,'2026-09-20 16:05:39','EMP-1001'),('EMP-1012',8,'2026-09-20 16:05:39','EMP-1001'),('EMP-1013',8,'2026-09-20 16:05:39','EMP-1001'),('EMP-1013',8,'2026-09-20 16:05:39','EMP-1001'),('EMP-1014',8,'2026-09-20 16:05:39','EMP-1001'),('EMP-1014',8,'2026-09-20 16:05:39','EMP-1001'),('EMP-1015',8,'2026-09-20 16:05:39','EMP-1001'),('EMP-1015',8,'2026-09-20 16:05:39','EMP-1001'),('EMP-1016',4,'2026-09-20 16:05:39','EMP-1001'),('EMP-1016',4,'2026-09-20 16:05:39','EMP-1001'),('EMP-1017',4,'2026-09-20 16:05:39','EMP-1001'),('EMP-1017',4,'2026-09-20 16:05:39','EMP-1001'),('EMP-1018',5,'2026-09-20 16:05:39','EMP-1001'),('EMP-1018',5,'2026-09-20 16:05:39','EMP-1001'),('EMP-1018',5,'2026-09-20 16:05:39','EMP-1001'),('EMP-1019',4,'2026-09-20 16:05:39','EMP-1001'),('EMP-1019',4,'2026-09-20 16:05:39','EMP-1001'),('EMP-1019',4,'2026-09-20 16:05:39','EMP-1001'),('EMP-1020',4,'2026-09-20 16:05:39','EMP-1001'),('EMP-1020',4,'2026-09-20 16:05:39','EMP-1001'),('EMP-1020',4,'2026-09-20 16:05:39','EMP-1001'),('EMP-1001',1,'2026-09-20 16:10:27','EMP-1001'),('EMP-1001',1,'2026-09-20 16:10:27','EMP-1001'),('EMP-1001',1,'2026-09-20 16:10:27','EMP-1001'),('EMP-1002',7,'2026-09-20 16:10:27','EMP-1001'),('EMP-1002',7,'2026-09-20 16:10:27','EMP-1001'),('EMP-1002',7,'2026-09-20 16:10:27','EMP-1001'),('EMP-1003',6,'2026-09-20 16:10:27','EMP-1001'),('EMP-1003',6,'2026-09-20 16:10:27','EMP-1001'),('EMP-1003',6,'2026-09-20 16:10:27','EMP-1001'),('EMP-1004',4,'2026-09-20 16:10:27','EMP-1001'),('EMP-1004',4,'2026-09-20 16:10:27','EMP-1001'),('EMP-1005',2,'2026-09-20 16:10:27','EMP-1001'),('EMP-1005',2,'2026-09-20 16:10:27','EMP-1001'),('EMP-1006',3,'2026-09-20 16:10:27','EMP-1001'),('EMP-1006',3,'2026-09-20 16:10:27','EMP-1001'),('EMP-1006',3,'2026-09-20 16:10:27','EMP-1001'),('EMP-1006',3,'2026-09-20 16:10:27','EMP-1001'),('EMP-1007',3,'2026-09-20 16:10:27','EMP-1001'),('EMP-1007',3,'2026-09-20 16:10:27','EMP-1001'),('EMP-1008',3,'2026-09-20 16:10:27','EMP-1001'),('EMP-1008',3,'2026-09-20 16:10:27','EMP-1001'),('EMP-1009',3,'2026-09-20 16:10:27','EMP-1001'),('EMP-1009',3,'2026-09-20 16:10:27','EMP-1001'),('EMP-1010',3,'2026-09-20 16:10:27','EMP-1001'),('EMP-1010',3,'2026-09-20 16:10:27','EMP-1001'),('EMP-1011',8,'2026-09-20 16:10:27','EMP-1001'),('EMP-1011',8,'2026-09-20 16:10:27','EMP-1001'),('EMP-1012',8,'2026-09-20 16:10:27','EMP-1001'),('EMP-1012',8,'2026-09-20 16:10:27','EMP-1001'),('EMP-1013',8,'2026-09-20 16:10:27','EMP-1001'),('EMP-1013',8,'2026-09-20 16:10:27','EMP-1001'),('EMP-1014',8,'2026-09-20 16:10:27','EMP-1001'),('EMP-1014',8,'2026-09-20 16:10:27','EMP-1001'),('EMP-1015',8,'2026-09-20 16:10:27','EMP-1001'),('EMP-1015',8,'2026-09-20 16:10:27','EMP-1001'),('EMP-1016',4,'2026-09-20 16:10:27','EMP-1001'),('EMP-1016',4,'2026-09-20 16:10:27','EMP-1001'),('EMP-1017',4,'2026-09-20 16:10:27','EMP-1001'),('EMP-1017',4,'2026-09-20 16:10:27','EMP-1001'),('EMP-1018',5,'2026-09-20 16:10:27','EMP-1001'),('EMP-1018',5,'2026-09-20 16:10:27','EMP-1001'),('EMP-1018',5,'2026-09-20 16:10:27','EMP-1001'),('EMP-1019',4,'2026-09-20 16:10:27','EMP-1001'),('EMP-1019',4,'2026-09-20 16:10:27','EMP-1001'),('EMP-1019',4,'2026-09-20 16:10:27','EMP-1001'),('EMP-1019',4,'2026-09-20 16:10:27','EMP-1001'),('EMP-1020',4,'2026-09-20 16:10:27','EMP-1001'),('EMP-1020',4,'2026-09-20 16:10:27','EMP-1001'),('EMP-1020',4,'2026-09-20 16:10:27','EMP-1001'),('EMP-1001',1,'2026-09-20 16:10:58','EMP-1001'),('EMP-1001',1,'2026-09-20 16:10:58','EMP-1001'),('EMP-1001',1,'2026-09-20 16:10:58','EMP-1001'),('EMP-1002',7,'2026-09-20 16:10:58','EMP-1001'),('EMP-1002',7,'2026-09-20 16:10:58','EMP-1001'),('EMP-1002',7,'2026-09-20 16:10:58','EMP-1001'),('EMP-1003',6,'2026-09-20 16:10:58','EMP-1001'),('EMP-1003',6,'2026-09-20 16:10:58','EMP-1001'),('EMP-1003',6,'2026-09-20 16:10:58','EMP-1001'),('EMP-1004',4,'2026-09-20 16:10:58','EMP-1001'),('EMP-1004',4,'2026-09-20 16:10:58','EMP-1001'),('EMP-1005',2,'2026-09-20 16:10:58','EMP-1001'),('EMP-1005',2,'2026-09-20 16:10:58','EMP-1001'),('EMP-1006',3,'2026-09-20 16:10:58','EMP-1001'),('EMP-1006',3,'2026-09-20 16:10:58','EMP-1001'),('EMP-1006',3,'2026-09-20 16:10:58','EMP-1001'),('EMP-1006',3,'2026-09-20 16:10:58','EMP-1001'),('EMP-1007',3,'2026-09-20 16:10:58','EMP-1001'),('EMP-1007',3,'2026-09-20 16:10:58','EMP-1001'),('EMP-1008',3,'2026-09-20 16:10:58','EMP-1001'),('EMP-1008',3,'2026-09-20 16:10:58','EMP-1001'),('EMP-1009',3,'2026-09-20 16:10:58','EMP-1001'),('EMP-1009',3,'2026-09-20 16:10:58','EMP-1001'),('EMP-1010',3,'2026-09-20 16:10:58','EMP-1001'),('EMP-1010',3,'2026-09-20 16:10:58','EMP-1001'),('EMP-1011',8,'2026-09-20 16:10:58','EMP-1001'),('EMP-1011',8,'2026-09-20 16:10:58','EMP-1001'),('EMP-1012',8,'2026-09-20 16:10:58','EMP-1001'),('EMP-1012',8,'2026-09-20 16:10:58','EMP-1001'),('EMP-1013',8,'2026-09-20 16:10:58','EMP-1001'),('EMP-1013',8,'2026-09-20 16:10:58','EMP-1001'),('EMP-1014',8,'2026-09-20 16:10:58','EMP-1001'),('EMP-1014',8,'2026-09-20 16:10:58','EMP-1001'),('EMP-1015',8,'2026-09-20 16:10:58','EMP-1001'),('EMP-1015',8,'2026-09-20 16:10:58','EMP-1001'),('EMP-1016',4,'2026-09-20 16:10:58','EMP-1001'),('EMP-1016',4,'2026-09-20 16:10:58','EMP-1001'),('EMP-1017',4,'2026-09-20 16:10:58','EMP-1001'),('EMP-1017',4,'2026-09-20 16:10:58','EMP-1001'),('EMP-1018',5,'2026-09-20 16:10:58','EMP-1001'),('EMP-1018',5,'2026-09-20 16:10:58','EMP-1001'),('EMP-1018',5,'2026-09-20 16:10:58','EMP-1001'),('EMP-1019',4,'2026-09-20 16:10:58','EMP-1001'),('EMP-1019',4,'2026-09-20 16:10:58','EMP-1001'),('EMP-1019',4,'2026-09-20 16:10:58','EMP-1001'),('EMP-1019',4,'2026-09-20 16:10:58','EMP-1001'),('EMP-1019',4,'2026-09-20 16:10:58','EMP-1001'),('EMP-1020',4,'2026-09-20 16:10:58','EMP-1001'),('EMP-1020',4,'2026-09-20 16:10:58','EMP-1001'),('EMP-1020',4,'2026-09-20 16:10:58','EMP-1001'),('EMP-1001',1,'2026-09-20 16:11:28','EMP-1001'),('EMP-1001',1,'2026-09-20 16:11:28','EMP-1001'),('EMP-1001',1,'2026-09-20 16:11:28','EMP-1001'),('EMP-1002',7,'2026-09-20 16:11:28','EMP-1001'),('EMP-1002',7,'2026-09-20 16:11:28','EMP-1001'),('EMP-1002',7,'2026-09-20 16:11:28','EMP-1001'),('EMP-1003',6,'2026-09-20 16:11:28','EMP-1001'),('EMP-1003',6,'2026-09-20 16:11:28','EMP-1001'),('EMP-1003',6,'2026-09-20 16:11:28','EMP-1001'),('EMP-1003',6,'2026-09-20 16:11:28','EMP-1001'),('EMP-1004',4,'2026-09-20 16:11:28','EMP-1001'),('EMP-1004',4,'2026-09-20 16:11:28','EMP-1001'),('EMP-1005',2,'2026-09-20 16:11:28','EMP-1001'),('EMP-1005',2,'2026-09-20 16:11:28','EMP-1001'),('EMP-1006',3,'2026-09-20 16:11:28','EMP-1001'),('EMP-1006',3,'2026-09-20 16:11:28','EMP-1001'),('EMP-1006',3,'2026-09-20 16:11:28','EMP-1001'),('EMP-1006',3,'2026-09-20 16:11:28','EMP-1001'),('EMP-1007',3,'2026-09-20 16:11:28','EMP-1001'),('EMP-1007',3,'2026-09-20 16:11:28','EMP-1001'),('EMP-1008',3,'2026-09-20 16:11:28','EMP-1001'),('EMP-1008',3,'2026-09-20 16:11:28','EMP-1001'),('EMP-1009',3,'2026-09-20 16:11:28','EMP-1001'),('EMP-1009',3,'2026-09-20 16:11:28','EMP-1001'),('EMP-1010',3,'2026-09-20 16:11:28','EMP-1001'),('EMP-1010',3,'2026-09-20 16:11:28','EMP-1001'),('EMP-1011',8,'2026-09-20 16:11:28','EMP-1001'),('EMP-1011',8,'2026-09-20 16:11:28','EMP-1001'),('EMP-1012',8,'2026-09-20 16:11:28','EMP-1001'),('EMP-1012',8,'2026-09-20 16:11:28','EMP-1001'),('EMP-1013',8,'2026-09-20 16:11:28','EMP-1001'),('EMP-1013',8,'2026-09-20 16:11:28','EMP-1001'),('EMP-1014',8,'2026-09-20 16:11:28','EMP-1001'),('EMP-1014',8,'2026-09-20 16:11:28','EMP-1001'),('EMP-1015',8,'2026-09-20 16:11:28','EMP-1001'),('EMP-1015',8,'2026-09-20 16:11:28','EMP-1001'),('EMP-1016',4,'2026-09-20 16:11:28','EMP-1001'),('EMP-1016',4,'2026-09-20 16:11:28','EMP-1001'),('EMP-1017',4,'2026-09-20 16:11:28','EMP-1001'),('EMP-1017',4,'2026-09-20 16:11:28','EMP-1001'),('EMP-1018',5,'2026-09-20 16:11:28','EMP-1001'),('EMP-1018',5,'2026-09-20 16:11:28','EMP-1001'),('EMP-1018',5,'2026-09-20 16:11:28','EMP-1001'),('EMP-1019',4,'2026-09-20 16:11:28','EMP-1001'),('EMP-1019',4,'2026-09-20 16:11:28','EMP-1001'),('EMP-1019',4,'2026-09-20 16:11:28','EMP-1001'),('EMP-1019',4,'2026-09-20 16:11:28','EMP-1001'),('EMP-1019',4,'2026-09-20 16:11:28','EMP-1001'),('EMP-1020',4,'2026-09-20 16:11:28','EMP-1001'),('EMP-1020',4,'2026-09-20 16:11:28','EMP-1001'),('EMP-1020',4,'2026-09-20 16:11:28','EMP-1001'),('EMP-1001',1,'2026-09-20 16:12:06','EMP-1001'),('EMP-1001',1,'2026-09-20 16:12:06','EMP-1001'),('EMP-1001',1,'2026-09-20 16:12:06','EMP-1001'),('EMP-1002',7,'2026-09-20 16:12:06','EMP-1001'),('EMP-1002',7,'2026-09-20 16:12:06','EMP-1001'),('EMP-1002',7,'2026-09-20 16:12:06','EMP-1001'),('EMP-1002',7,'2026-09-20 16:12:06','EMP-1001'),('EMP-1003',6,'2026-09-20 16:12:06','EMP-1001'),('EMP-1003',6,'2026-09-20 16:12:06','EMP-1001'),('EMP-1003',6,'2026-09-20 16:12:06','EMP-1001'),('EMP-1003',6,'2026-09-20 16:12:06','EMP-1001'),('EMP-1004',4,'2026-09-20 16:12:06','EMP-1001'),('EMP-1004',4,'2026-09-20 16:12:06','EMP-1001'),('EMP-1005',2,'2026-09-20 16:12:06','EMP-1001'),('EMP-1005',2,'2026-09-20 16:12:06','EMP-1001'),('EMP-1006',3,'2026-09-20 16:12:06','EMP-1001'),('EMP-1006',3,'2026-09-20 16:12:06','EMP-1001'),('EMP-1006',3,'2026-09-20 16:12:06','EMP-1001'),('EMP-1006',3,'2026-09-20 16:12:06','EMP-1001'),('EMP-1007',3,'2026-09-20 16:12:06','EMP-1001'),('EMP-1007',3,'2026-09-20 16:12:06','EMP-1001'),('EMP-1008',3,'2026-09-20 16:12:06','EMP-1001'),('EMP-1008',3,'2026-09-20 16:12:06','EMP-1001'),('EMP-1009',3,'2026-09-20 16:12:06','EMP-1001'),('EMP-1009',3,'2026-09-20 16:12:06','EMP-1001'),('EMP-1010',3,'2026-09-20 16:12:06','EMP-1001'),('EMP-1010',3,'2026-09-20 16:12:06','EMP-1001'),('EMP-1011',8,'2026-09-20 16:12:06','EMP-1001'),('EMP-1011',8,'2026-09-20 16:12:06','EMP-1001'),('EMP-1012',8,'2026-09-20 16:12:06','EMP-1001'),('EMP-1012',8,'2026-09-20 16:12:06','EMP-1001'),('EMP-1013',8,'2026-09-20 16:12:06','EMP-1001'),('EMP-1013',8,'2026-09-20 16:12:06','EMP-1001'),('EMP-1014',8,'2026-09-20 16:12:06','EMP-1001'),('EMP-1014',8,'2026-09-20 16:12:06','EMP-1001'),('EMP-1015',8,'2026-09-20 16:12:06','EMP-1001'),('EMP-1015',8,'2026-09-20 16:12:06','EMP-1001'),('EMP-1016',4,'2026-09-20 16:12:06','EMP-1001'),('EMP-1016',4,'2026-09-20 16:12:06','EMP-1001'),('EMP-1017',4,'2026-09-20 16:12:06','EMP-1001'),('EMP-1017',4,'2026-09-20 16:12:06','EMP-1001'),('EMP-1018',5,'2026-09-20 16:12:06','EMP-1001'),('EMP-1018',5,'2026-09-20 16:12:06','EMP-1001'),('EMP-1018',5,'2026-09-20 16:12:06','EMP-1001'),('EMP-1019',4,'2026-09-20 16:12:06','EMP-1001'),('EMP-1019',4,'2026-09-20 16:12:06','EMP-1001'),('EMP-1019',4,'2026-09-20 16:12:06','EMP-1001'),('EMP-1019',4,'2026-09-20 16:12:06','EMP-1001'),('EMP-1019',4,'2026-09-20 16:12:06','EMP-1001'),('EMP-1020',4,'2026-09-20 16:12:06','EMP-1001'),('EMP-1020',4,'2026-09-20 16:12:06','EMP-1001'),('EMP-1020',4,'2026-09-20 16:12:06','EMP-1001');
+INSERT INTO `employee_roles` VALUES ('EMP-1001',1,'2026-09-21 16:36:11','EMP-1001'),('EMP-1002',7,'2026-09-21 16:36:11','EMP-1001'),('EMP-1003',6,'2026-09-21 16:36:11','EMP-1001'),('EMP-1004',4,'2026-09-21 16:36:11','EMP-1001'),('EMP-1005',2,'2026-09-21 16:36:11','EMP-1001'),('EMP-1006',3,'2026-09-21 16:36:11','EMP-1001'),('EMP-1007',3,'2026-09-21 16:36:11','EMP-1001'),('EMP-1008',3,'2026-09-21 16:36:11','EMP-1001'),('EMP-1009',3,'2026-09-21 16:36:11','EMP-1001'),('EMP-1010',3,'2026-09-21 16:36:11','EMP-1001'),('EMP-1011',8,'2026-09-21 16:36:11','EMP-1001'),('EMP-1012',8,'2026-09-21 16:36:11','EMP-1001'),('EMP-1013',8,'2026-09-21 16:36:11','EMP-1001'),('EMP-1014',8,'2026-09-21 16:36:11','EMP-1001'),('EMP-1015',8,'2026-09-21 16:36:11','EMP-1001'),('EMP-1016',4,'2026-09-21 16:36:11','EMP-1001'),('EMP-1017',4,'2026-09-21 16:36:11','EMP-1001'),('EMP-1018',5,'2026-09-21 16:36:11','EMP-1001'),('EMP-1019',4,'2026-09-21 16:36:11','EMP-1001'),('EMP-1020',4,'2026-09-21 16:36:11','EMP-1001');
 /*!40000 ALTER TABLE `employee_roles` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -734,6 +884,7 @@ CREATE TABLE `employees` (
   `email` varchar(150) NOT NULL,
   `manager_emp_id` varchar(10) DEFAULT NULL,
   `employment_status` enum('Active','OnLeave','Suspended','Terminated') DEFAULT 'Active',
+  `hire_date` date DEFAULT NULL,
   PRIMARY KEY (`emp_id`),
   UNIQUE KEY `email` (`email`),
   KEY `fk_employees_department_code` (`department_code`),
@@ -749,7 +900,7 @@ CREATE TABLE `employees` (
 
 LOCK TABLES `employees` WRITE;
 /*!40000 ALTER TABLE `employees` DISABLE KEYS */;
-INSERT INTO `employees` VALUES ('EMP-1001','Viktor Sokolov','Chief Executive Officer (CEO)','EXE','L4','viktor.sokolov@vostokpribor.local',NULL,'Active'),('EMP-1002','Amina Karimova','Chief Operating Officer (COO)','EXE','L4','amina.karimova@vostokpribor.local','EMP-1001','Active'),('EMP-1003','Daniel Weber','Chief Financial Officer (CFO)','EXE','L4','daniel.weber@vostokpribor.local','EMP-1001','Active'),('EMP-1004','Elena Morozova','Chief Technology Officer (CTO)','EXE','L4','elena.morozova@vostokpribor.local','EMP-1001','Active'),('EMP-1005','Timur Akhmetov','Chief Governance Officer','EXE','L4','timur.akhmetov@vostokpribor.local','EMP-1001','Active'),('EMP-1006','Pavel Orlov','Sales Director','SAL','L3','pavel.orlov@vostokpribor.local','EMP-1001','Active'),('EMP-1007','Sara Lindholm','Senior Account Manager','SAL','L3','sara.lindholm@vostokpribor.local','EMP-1006','Active'),('EMP-1008','Bekzod Rakhimov','Account Manager','SAL','L3','bekzod.rakhimov@vostokpribor.local','EMP-1006','Active'),('EMP-1009','Nadia Petrova','Strategic Sales Manager','SAL','L3','nadia.petrova@vostokpribor.local','EMP-1006','Active'),('EMP-1010','Markus Klein','Regional Sales Manager','SAL','L3','markus.klein@vostokpribor.local','EMP-1006','Active'),('EMP-1011','Arman Tulegenov','Operations Manager','OPS','L3','arman.tulegenov@vostokpribor.local','EMP-1002','Active'),('EMP-1012','Rustam Bekov','Logistics Manager','OPS','L3','rustam.bekov@vostokpribor.local','EMP-1011','Active'),('EMP-1013','Ilona Vetra','Procurement Manager','OPS','L3','ilona.vetra@vostokpribor.local','EMP-1011','Active'),('EMP-1014','Mikhail Antonov','Warehouse Supervisor','OPS','L2','mikhail.antonov@vostokpribor.local','EMP-1011','Active'),('EMP-1015','Kamila Nurzhan','Supply Chain Analyst','OPS','L2','kamila.nurzhan@vostokpribor.local','EMP-1011','Active'),('EMP-1016','Erik Hansen','Senior Automation Engineer','ENG','L3','erik.hansen@vostokpribor.local','EMP-1004','Active'),('EMP-1017','Dana Yermak','Software Integration Engineer','ENG','L3','dana.yermak@vostokpribor.local','EMP-1004','Active'),('EMP-1018','Leonid Volkov','Systems Engineer','ENG','L3','leonid.volkov@vostokpribor.local','EMP-1004','Active'),('EMP-1019','Farida Iskakova','Project Manager','ENG','L3','farida.iskakova@vostokpribor.local','EMP-1004','Active'),('EMP-1020','Jonas Richter','Senior Developer','ENG','L3','jonas.richter@vostokpribor.local','EMP-1004','Active');
+INSERT INTO `employees` VALUES ('EMP-1001','Viktor Sokolov','Chief Executive Officer (CEO)','EXE','L4','viktor.sokolov@vostokpribor.local',NULL,'Active',NULL),('EMP-1002','Amina Karimova','Chief Operating Officer (COO)','EXE','L4','amina.karimova@vostokpribor.local','EMP-1001','Active',NULL),('EMP-1003','Daniel Weber','Chief Financial Officer (CFO)','EXE','L4','daniel.weber@vostokpribor.local','EMP-1001','Active',NULL),('EMP-1004','Elena Morozova','Chief Technology Officer (CTO)','EXE','L4','elena.morozova@vostokpribor.local','EMP-1001','Active',NULL),('EMP-1005','Timur Akhmetov','Chief Governance Officer','EXE','L4','timur.akhmetov@vostokpribor.local','EMP-1001','Active',NULL),('EMP-1006','Pavel Orlov','Sales Director','SAL','L3','pavel.orlov@vostokpribor.local','EMP-1001','Active',NULL),('EMP-1007','Sara Lindholm','Senior Account Manager','SAL','L3','sara.lindholm@vostokpribor.local','EMP-1006','Active',NULL),('EMP-1008','Bekzod Rakhimov','Account Manager','SAL','L3','bekzod.rakhimov@vostokpribor.local','EMP-1006','Active',NULL),('EMP-1009','Nadia Petrova','Strategic Sales Manager','SAL','L3','nadia.petrova@vostokpribor.local','EMP-1006','Active',NULL),('EMP-1010','Markus Klein','Regional Sales Manager','SAL','L3','markus.klein@vostokpribor.local','EMP-1006','Active',NULL),('EMP-1011','Arman Tulegenov','Operations Manager','OPS','L3','arman.tulegenov@vostokpribor.local','EMP-1002','Active',NULL),('EMP-1012','Rustam Bekov','Logistics Manager','OPS','L3','rustam.bekov@vostokpribor.local','EMP-1011','Active',NULL),('EMP-1013','Ilona Vetra','Procurement Manager','OPS','L3','ilona.vetra@vostokpribor.local','EMP-1011','Active',NULL),('EMP-1014','Mikhail Antonov','Warehouse Supervisor','OPS','L2','mikhail.antonov@vostokpribor.local','EMP-1011','Active',NULL),('EMP-1015','Kamila Nurzhan','Supply Chain Analyst','OPS','L2','kamila.nurzhan@vostokpribor.local','EMP-1011','Active',NULL),('EMP-1016','Erik Hansen','Senior Automation Engineer','ENG','L3','erik.hansen@vostokpribor.local','EMP-1004','Active',NULL),('EMP-1017','Dana Yermak','Software Integration Engineer','ENG','L3','dana.yermak@vostokpribor.local','EMP-1004','Active',NULL),('EMP-1018','Leonid Volkov','Systems Engineer','ENG','L3','leonid.volkov@vostokpribor.local','EMP-1004','Active',NULL),('EMP-1019','Farida Iskakova','Project Manager','ENG','L3','farida.iskakova@vostokpribor.local','EMP-1004','Active',NULL),('EMP-1020','Jonas Richter','Senior Developer','ENG','L3','jonas.richter@vostokpribor.local','EMP-1004','Active',NULL);
 /*!40000 ALTER TABLE `employees` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -761,11 +912,14 @@ DROP TABLE IF EXISTS `integration_logs`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `integration_logs` (
-  `log_id` bigint(20) NOT NULL,
+  `log_id` bigint(20) NOT NULL AUTO_INCREMENT,
   `partner_id` int(11) DEFAULT NULL,
   `endpoint` varchar(200) DEFAULT NULL,
   `request_time` timestamp NOT NULL DEFAULT current_timestamp(),
-  `response_status` int(11) DEFAULT NULL
+  `response_status` int(11) DEFAULT NULL,
+  PRIMARY KEY (`log_id`),
+  KEY `fk_integration_logs_partner_id` (`partner_id`),
+  CONSTRAINT `fk_integration_logs_partner_id` FOREIGN KEY (`partner_id`) REFERENCES `api_partners` (`partner_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -786,12 +940,19 @@ DROP TABLE IF EXISTS `integration_requirements`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `integration_requirements` (
-  `req_id` int(11) NOT NULL,
+  `req_id` int(11) NOT NULL AUTO_INCREMENT,
   `cus_id` varchar(10) DEFAULT NULL,
   `prj_id` varchar(15) DEFAULT NULL,
   `reviewed_by_emp_id` varchar(10) DEFAULT NULL,
   `description` text DEFAULT NULL,
-  `status` varchar(30) DEFAULT 'UnderReview'
+  `status` varchar(30) DEFAULT 'UnderReview',
+  PRIMARY KEY (`req_id`),
+  KEY `fk_integration_requirements_cus_id` (`cus_id`),
+  KEY `fk_integration_requirements_prj_id` (`prj_id`),
+  KEY `fk_integration_requirements_reviewed_by_emp_id` (`reviewed_by_emp_id`),
+  CONSTRAINT `fk_integration_requirements_cus_id` FOREIGN KEY (`cus_id`) REFERENCES `customers` (`cus_id`),
+  CONSTRAINT `fk_integration_requirements_prj_id` FOREIGN KEY (`prj_id`) REFERENCES `projects` (`prj_id`),
+  CONSTRAINT `fk_integration_requirements_reviewed_by_emp_id` FOREIGN KEY (`reviewed_by_emp_id`) REFERENCES `employees` (`emp_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -812,10 +973,13 @@ DROP TABLE IF EXISTS `internal_policies`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `internal_policies` (
-  `policy_id` int(11) NOT NULL,
+  `policy_id` int(11) NOT NULL AUTO_INCREMENT,
   `title` varchar(200) DEFAULT NULL,
   `doc_id` varchar(15) DEFAULT NULL,
-  `effective_date` date DEFAULT NULL
+  `effective_date` date DEFAULT NULL,
+  PRIMARY KEY (`policy_id`),
+  KEY `fk_internal_policies_doc_id` (`doc_id`),
+  CONSTRAINT `fk_internal_policies_doc_id` FOREIGN KEY (`doc_id`) REFERENCES `documents` (`doc_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -842,6 +1006,8 @@ CREATE TABLE `invoices` (
   `total_value` decimal(14,2) NOT NULL,
   `currency` char(3) DEFAULT 'EUR',
   `payment_status` enum('Paid','Pending','Overdue') NOT NULL,
+  `issued_at` date DEFAULT NULL,
+  `paid_at` date DEFAULT NULL,
   PRIMARY KEY (`inv_id`),
   KEY `fk_invoices_cus_id` (`cus_id`),
   KEY `fk_invoices_prj_id` (`prj_id`),
@@ -856,7 +1022,7 @@ CREATE TABLE `invoices` (
 
 LOCK TABLES `invoices` WRITE;
 /*!40000 ALTER TABLE `invoices` DISABLE KEYS */;
-INSERT INTO `invoices` VALUES ('INV-2026-001','CUS-1001','PRJ-2026-001',46250.00,'EUR','Paid'),('INV-2026-002','CUS-1002','PRJ-2026-002',80000.00,'EUR','Pending'),('INV-2026-003','CUS-1003','PRJ-2026-003',137500.00,'EUR','Paid'),('INV-2026-004','CUS-1004','PRJ-2026-004',55000.00,'EUR','Pending'),('INV-2026-005','CUS-1005','PRJ-2026-005',42000.00,'EUR','Paid'),('INV-2026-006','CUS-1006','PRJ-2026-006',32000.00,'EUR','Pending'),('INV-2026-007','CUS-1007','PRJ-2026-007',105000.00,'EUR','Paid'),('INV-2026-008','CUS-1008','PRJ-2026-008',68333.00,'EUR','Pending'),('INV-2026-009','CUS-1009','PRJ-2026-012',47333.00,'EUR','Paid'),('INV-2026-010','CUS-1010','PRJ-2026-010',91667.00,'EUR','Pending');
+INSERT INTO `invoices` VALUES ('INV-2026-001','CUS-1001','PRJ-2026-001',46250.00,'EUR','Paid',NULL,NULL),('INV-2026-002','CUS-1002','PRJ-2026-002',80000.00,'EUR','Pending',NULL,NULL),('INV-2026-003','CUS-1003','PRJ-2026-003',137500.00,'EUR','Paid',NULL,NULL),('INV-2026-004','CUS-1004','PRJ-2026-004',55000.00,'EUR','Pending',NULL,NULL),('INV-2026-005','CUS-1005','PRJ-2026-005',42000.00,'EUR','Paid',NULL,NULL),('INV-2026-006','CUS-1006','PRJ-2026-006',32000.00,'EUR','Pending',NULL,NULL),('INV-2026-007','CUS-1007','PRJ-2026-007',105000.00,'EUR','Paid',NULL,NULL),('INV-2026-008','CUS-1008','PRJ-2026-008',68333.00,'EUR','Pending',NULL,NULL),('INV-2026-009','CUS-1009','PRJ-2026-012',47333.00,'EUR','Paid',NULL,NULL),('INV-2026-010','CUS-1010','PRJ-2026-010',91667.00,'EUR','Pending',NULL,NULL);
 /*!40000 ALTER TABLE `invoices` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -868,13 +1034,16 @@ DROP TABLE IF EXISTS `ip_addresses`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `ip_addresses` (
-  `ip_id` int(11) NOT NULL,
+  `ip_id` int(11) NOT NULL AUTO_INCREMENT,
   `ip_address` varchar(45) NOT NULL,
   `device_id` int(11) DEFAULT NULL,
   `is_internal` tinyint(1) DEFAULT 1,
   `geo_country` varchar(100) DEFAULT NULL,
   `first_seen_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `last_seen_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00'
+  `last_seen_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  PRIMARY KEY (`ip_id`),
+  KEY `fk_ip_addresses_device_id` (`device_id`),
+  CONSTRAINT `fk_ip_addresses_device_id` FOREIGN KEY (`device_id`) REFERENCES `devices` (`device_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -895,7 +1064,7 @@ DROP TABLE IF EXISTS `it_assets`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `it_assets` (
-  `asset_id` int(11) NOT NULL,
+  `asset_id` int(11) NOT NULL AUTO_INCREMENT,
   `emp_id` varchar(10) DEFAULT NULL,
   `department_code` varchar(4) DEFAULT NULL,
   `system_id` varchar(4) DEFAULT NULL,
@@ -909,7 +1078,15 @@ CREATE TABLE `it_assets` (
   `criticality` varchar(20) DEFAULT NULL,
   `environment` varchar(20) DEFAULT NULL,
   `status` varchar(30) DEFAULT 'Active',
-  `last_seen_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+  `last_seen_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`asset_id`),
+  UNIQUE KEY `serial_number` (`serial_number`),
+  KEY `fk_it_assets_emp_id` (`emp_id`),
+  KEY `fk_it_assets_department_code` (`department_code`),
+  KEY `fk_it_assets_system_id` (`system_id`),
+  CONSTRAINT `fk_it_assets_department_code` FOREIGN KEY (`department_code`) REFERENCES `departments` (`dept_code`),
+  CONSTRAINT `fk_it_assets_emp_id` FOREIGN KEY (`emp_id`) REFERENCES `employees` (`emp_id`),
+  CONSTRAINT `fk_it_assets_system_id` FOREIGN KEY (`system_id`) REFERENCES `systems_catalog` (`system_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -930,11 +1107,14 @@ DROP TABLE IF EXISTS `job_postings`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `job_postings` (
-  `posting_id` int(11) NOT NULL,
+  `posting_id` int(11) NOT NULL AUTO_INCREMENT,
   `title` varchar(150) DEFAULT NULL,
   `department_code` varchar(4) DEFAULT NULL,
   `is_published` tinyint(1) DEFAULT 1,
-  `posted_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `posted_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`posting_id`),
+  KEY `fk_job_postings_department_code` (`department_code`),
+  CONSTRAINT `fk_job_postings_department_code` FOREIGN KEY (`department_code`) REFERENCES `departments` (`dept_code`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -955,12 +1135,15 @@ DROP TABLE IF EXISTS `knowledge_base_articles`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `knowledge_base_articles` (
-  `kb_id` int(11) NOT NULL,
+  `kb_id` int(11) NOT NULL AUTO_INCREMENT,
   `title` varchar(200) DEFAULT NULL,
   `content` text DEFAULT NULL,
   `category` varchar(100) DEFAULT NULL,
   `created_by_emp_id` varchar(10) DEFAULT NULL,
-  `updated_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`kb_id`),
+  KEY `fk_knowledge_base_articles_created_by_emp_id` (`created_by_emp_id`),
+  CONSTRAINT `fk_knowledge_base_articles_created_by_emp_id` FOREIGN KEY (`created_by_emp_id`) REFERENCES `employees` (`emp_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -981,7 +1164,7 @@ DROP TABLE IF EXISTS `leads`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `leads` (
-  `lead_id` int(11) NOT NULL,
+  `lead_id` int(11) NOT NULL AUTO_INCREMENT,
   `full_name` varchar(150) DEFAULT NULL,
   `email` varchar(150) DEFAULT NULL,
   `phone` varchar(50) DEFAULT NULL,
@@ -991,7 +1174,12 @@ CREATE TABLE `leads` (
   `status` enum('New','Qualified','Converted','Rejected') DEFAULT 'New',
   `assigned_sales_emp_id` varchar(10) DEFAULT NULL,
   `converted_cus_id` varchar(10) DEFAULT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`lead_id`),
+  KEY `fk_leads_assigned_sales_emp_id` (`assigned_sales_emp_id`),
+  KEY `fk_leads_converted_cus_id` (`converted_cus_id`),
+  CONSTRAINT `fk_leads_assigned_sales_emp_id` FOREIGN KEY (`assigned_sales_emp_id`) REFERENCES `employees` (`emp_id`),
+  CONSTRAINT `fk_leads_converted_cus_id` FOREIGN KEY (`converted_cus_id`) REFERENCES `customers` (`cus_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1012,13 +1200,18 @@ DROP TABLE IF EXISTS `leave_requests`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `leave_requests` (
-  `leave_id` int(11) NOT NULL,
+  `leave_id` int(11) NOT NULL AUTO_INCREMENT,
   `emp_id` varchar(10) NOT NULL,
   `leave_type` varchar(50) DEFAULT NULL,
   `start_date` date DEFAULT NULL,
   `end_date` date DEFAULT NULL,
   `status` varchar(20) DEFAULT 'Pending',
-  `approved_by_emp_id` varchar(10) DEFAULT NULL
+  `approved_by_emp_id` varchar(10) DEFAULT NULL,
+  PRIMARY KEY (`leave_id`),
+  KEY `fk_leave_requests_emp_id` (`emp_id`),
+  KEY `fk_leave_requests_approved_by_emp_id` (`approved_by_emp_id`),
+  CONSTRAINT `fk_leave_requests_approved_by_emp_id` FOREIGN KEY (`approved_by_emp_id`) REFERENCES `employees` (`emp_id`),
+  CONSTRAINT `fk_leave_requests_emp_id` FOREIGN KEY (`emp_id`) REFERENCES `employees` (`emp_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1039,13 +1232,20 @@ DROP TABLE IF EXISTS `opportunities`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `opportunities` (
-  `opp_id` int(11) NOT NULL,
+  `opp_id` int(11) NOT NULL AUTO_INCREMENT,
   `lead_id` int(11) DEFAULT NULL,
   `cus_id` varchar(10) DEFAULT NULL,
   `sales_emp_id` varchar(10) DEFAULT NULL,
   `stage` enum('Qualification','Proposal','Negotiation','Won','Lost') DEFAULT 'Qualification',
   `estimated_value` decimal(14,2) DEFAULT NULL,
-  `expected_close_date` date DEFAULT NULL
+  `expected_close_date` date DEFAULT NULL,
+  PRIMARY KEY (`opp_id`),
+  KEY `fk_opportunities_lead_id` (`lead_id`),
+  KEY `fk_opportunities_cus_id` (`cus_id`),
+  KEY `fk_opportunities_sales_emp_id` (`sales_emp_id`),
+  CONSTRAINT `fk_opportunities_cus_id` FOREIGN KEY (`cus_id`) REFERENCES `customers` (`cus_id`),
+  CONSTRAINT `fk_opportunities_lead_id` FOREIGN KEY (`lead_id`) REFERENCES `leads` (`lead_id`),
+  CONSTRAINT `fk_opportunities_sales_emp_id` FOREIGN KEY (`sales_emp_id`) REFERENCES `employees` (`emp_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1066,11 +1266,16 @@ DROP TABLE IF EXISTS `order_items`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `order_items` (
-  `order_item_id` int(11) NOT NULL,
+  `order_item_id` int(11) NOT NULL AUTO_INCREMENT,
   `order_id` int(11) NOT NULL,
   `prod_id` varchar(10) NOT NULL,
   `quantity` int(11) NOT NULL,
-  `unit_price` decimal(12,2) DEFAULT NULL
+  `unit_price` decimal(12,2) DEFAULT NULL,
+  PRIMARY KEY (`order_item_id`),
+  KEY `fk_order_items_order_id` (`order_id`),
+  KEY `fk_order_items_prod_id` (`prod_id`),
+  CONSTRAINT `fk_order_items_order_id` FOREIGN KEY (`order_id`) REFERENCES `orders` (`order_id`),
+  CONSTRAINT `fk_order_items_prod_id` FOREIGN KEY (`prod_id`) REFERENCES `products` (`prod_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1091,11 +1296,14 @@ DROP TABLE IF EXISTS `orders`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `orders` (
-  `order_id` int(11) NOT NULL,
+  `order_id` int(11) NOT NULL AUTO_INCREMENT,
   `cus_id` varchar(10) NOT NULL,
   `order_date` timestamp NOT NULL DEFAULT current_timestamp(),
   `status` varchar(30) DEFAULT 'Cart',
-  `total_amount` decimal(14,2) DEFAULT NULL
+  `total_amount` decimal(14,2) DEFAULT NULL,
+  PRIMARY KEY (`order_id`),
+  KEY `fk_orders_cus_id` (`cus_id`),
+  CONSTRAINT `fk_orders_cus_id` FOREIGN KEY (`cus_id`) REFERENCES `customers` (`cus_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1116,12 +1324,15 @@ DROP TABLE IF EXISTS `payments`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `payments` (
-  `payment_id` int(11) NOT NULL,
+  `payment_id` int(11) NOT NULL AUTO_INCREMENT,
   `inv_id` varchar(15) NOT NULL,
   `amount` decimal(14,2) DEFAULT NULL,
   `payment_date` date DEFAULT NULL,
   `method` varchar(50) DEFAULT NULL,
-  `reconciled` tinyint(1) DEFAULT 0
+  `reconciled` tinyint(1) DEFAULT 0,
+  PRIMARY KEY (`payment_id`),
+  KEY `fk_payments_inv_id` (`inv_id`),
+  CONSTRAINT `fk_payments_inv_id` FOREIGN KEY (`inv_id`) REFERENCES `invoices` (`inv_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1142,9 +1353,10 @@ DROP TABLE IF EXISTS `permissions`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `permissions` (
-  `permission_id` int(11) NOT NULL,
+  `permission_id` int(11) NOT NULL AUTO_INCREMENT,
   `permission_name` varchar(150) DEFAULT NULL,
-  `system_name` varchar(50) DEFAULT NULL
+  `system_name` varchar(50) DEFAULT NULL,
+  PRIMARY KEY (`permission_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1165,12 +1377,16 @@ DROP TABLE IF EXISTS `portal_accounts`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `portal_accounts` (
-  `portal_user_id` int(11) NOT NULL,
+  `portal_user_id` int(11) NOT NULL AUTO_INCREMENT,
   `cus_id` varchar(10) NOT NULL,
   `username` varchar(100) DEFAULT NULL,
   `email` varchar(150) DEFAULT NULL,
   `mfa_enabled` tinyint(1) DEFAULT 0,
-  `last_login` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+  `last_login` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`portal_user_id`),
+  UNIQUE KEY `username` (`username`),
+  KEY `fk_portal_accounts_cus_id` (`cus_id`),
+  CONSTRAINT `fk_portal_accounts_cus_id` FOREIGN KEY (`cus_id`) REFERENCES `customers` (`cus_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1191,13 +1407,16 @@ DROP TABLE IF EXISTS `portal_notifications`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `portal_notifications` (
-  `notification_id` int(11) NOT NULL,
+  `notification_id` int(11) NOT NULL AUTO_INCREMENT,
   `portal_user_id` int(11) NOT NULL,
   `message` text DEFAULT NULL,
   `related_entity_type` varchar(30) DEFAULT NULL,
   `related_entity_id` varchar(15) DEFAULT NULL,
   `is_read` tinyint(1) DEFAULT 0,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`notification_id`),
+  KEY `fk_portal_notifications_portal_user_id` (`portal_user_id`),
+  CONSTRAINT `fk_portal_notifications_portal_user_id` FOREIGN KEY (`portal_user_id`) REFERENCES `portal_accounts` (`portal_user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1218,11 +1437,14 @@ DROP TABLE IF EXISTS `portal_sessions`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `portal_sessions` (
-  `session_id` int(11) NOT NULL,
+  `session_id` int(11) NOT NULL AUTO_INCREMENT,
   `portal_user_id` int(11) NOT NULL,
   `login_time` timestamp NOT NULL DEFAULT current_timestamp(),
   `logout_time` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
-  `ip_address` varchar(45) DEFAULT NULL
+  `ip_address` varchar(45) DEFAULT NULL,
+  PRIMARY KEY (`session_id`),
+  KEY `fk_portal_sessions_portal_user_id` (`portal_user_id`),
+  CONSTRAINT `fk_portal_sessions_portal_user_id` FOREIGN KEY (`portal_user_id`) REFERENCES `portal_accounts` (`portal_user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1247,7 +1469,8 @@ CREATE TABLE `product_inventory` (
   `warehouse_location` varchar(100) DEFAULT NULL,
   `quantity_on_hand` int(11) DEFAULT 0,
   `reorder_level` int(11) DEFAULT 0,
-  PRIMARY KEY (`prod_id`)
+  PRIMARY KEY (`prod_id`),
+  CONSTRAINT `fk_product_inventory_prod_id` FOREIGN KEY (`prod_id`) REFERENCES `products` (`prod_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1257,6 +1480,7 @@ CREATE TABLE `product_inventory` (
 
 LOCK TABLES `product_inventory` WRITE;
 /*!40000 ALTER TABLE `product_inventory` DISABLE KEYS */;
+INSERT INTO `product_inventory` VALUES ('PROD-1001','WH-North-A1',45,15),('PROD-1002','WH-Central-B3',57,15),('PROD-1003','WH-East-C2',69,15),('PROD-1004','WH-South-D4',81,15),('PROD-1005','WH-North-A1',93,15),('PROD-1006','WH-Central-B3',105,15),('PROD-1007','WH-East-C2',117,15),('PROD-1008','WH-South-D4',129,15),('PROD-1009','WH-North-A1',141,15),('PROD-1010','WH-Central-B3',153,15);
 /*!40000 ALTER TABLE `product_inventory` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1300,6 +1524,8 @@ CREATE TABLE `projects` (
   `budget` decimal(14,2) DEFAULT NULL,
   `currency` char(3) DEFAULT 'EUR',
   `status` enum('Planning','Procurement','Design','Integration','Testing','Execution','ContractReview','Maintenance','Closed') DEFAULT NULL,
+  `start_date` date DEFAULT NULL,
+  `end_date` date DEFAULT NULL,
   PRIMARY KEY (`prj_id`),
   KEY `fk_projects_cus_id` (`cus_id`),
   KEY `fk_projects_project_manager_emp_id` (`project_manager_emp_id`),
@@ -1314,7 +1540,7 @@ CREATE TABLE `projects` (
 
 LOCK TABLES `projects` WRITE;
 /*!40000 ALTER TABLE `projects` DISABLE KEYS */;
-INSERT INTO `projects` VALUES ('PRJ-2026-001','CUS-1001','EMP-1019',185000.00,'EUR','Execution'),('PRJ-2026-002','CUS-1002','EMP-1019',240000.00,'EUR','Integration'),('PRJ-2026-003','CUS-1003','EMP-1016',410000.00,'EUR','Procurement'),('PRJ-2026-004','CUS-1004','EMP-1019',165000.00,'EUR','Execution'),('PRJ-2026-005','CUS-1005','EMP-1017',128000.00,'EUR','Integration'),('PRJ-2026-006','CUS-1006','EMP-1016',96000.00,'EUR','Design'),('PRJ-2026-007','CUS-1007','EMP-1019',315000.00,'EUR','Integration'),('PRJ-2026-008','CUS-1008','EMP-1017',205000.00,'EUR','Execution'),('PRJ-2026-009','CUS-1001','EMP-1019',275000.00,'EUR','Design'),('PRJ-2026-010','CUS-1002','EMP-1017',74000.00,'EUR','ContractReview'),('PRJ-2026-011','CUS-1005','EMP-1016',188000.00,'EUR','Testing'),('PRJ-2026-012','CUS-1009','EMP-1016',142000.00,'EUR','Maintenance'),('PRJ-2026-013','CUS-1010','EMP-1019',112000.00,'EUR','Procurement'),('PRJ-2026-014','CUS-1007','EMP-1017',260000.00,'EUR','Procurement'),('PRJ-2026-015','CUS-1010','EMP-1016',151000.00,'EUR','Planning');
+INSERT INTO `projects` VALUES ('PRJ-2026-001','CUS-1001','EMP-1019',185000.00,'EUR','Execution',NULL,NULL),('PRJ-2026-002','CUS-1002','EMP-1019',240000.00,'EUR','Integration',NULL,NULL),('PRJ-2026-003','CUS-1003','EMP-1016',410000.00,'EUR','Procurement',NULL,NULL),('PRJ-2026-004','CUS-1004','EMP-1019',165000.00,'EUR','Execution',NULL,NULL),('PRJ-2026-005','CUS-1005','EMP-1017',128000.00,'EUR','Integration',NULL,NULL),('PRJ-2026-006','CUS-1006','EMP-1016',96000.00,'EUR','Design',NULL,NULL),('PRJ-2026-007','CUS-1007','EMP-1019',315000.00,'EUR','Integration',NULL,NULL),('PRJ-2026-008','CUS-1008','EMP-1017',205000.00,'EUR','Execution',NULL,NULL),('PRJ-2026-009','CUS-1001','EMP-1019',275000.00,'EUR','Design',NULL,NULL),('PRJ-2026-010','CUS-1002','EMP-1017',74000.00,'EUR','ContractReview',NULL,NULL),('PRJ-2026-011','CUS-1005','EMP-1016',188000.00,'EUR','Testing',NULL,NULL),('PRJ-2026-012','CUS-1009','EMP-1016',142000.00,'EUR','Maintenance',NULL,NULL),('PRJ-2026-013','CUS-1010','EMP-1019',112000.00,'EUR','Procurement',NULL,NULL),('PRJ-2026-014','CUS-1007','EMP-1017',260000.00,'EUR','Procurement',NULL,NULL),('PRJ-2026-015','CUS-1010','EMP-1016',151000.00,'EUR','Planning',NULL,NULL);
 /*!40000 ALTER TABLE `projects` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1331,7 +1557,15 @@ CREATE TABLE `quotes` (
   `prod_id` varchar(10) NOT NULL,
   `quantity` int(11) NOT NULL,
   `unit_price` decimal(12,2) DEFAULT NULL,
-  PRIMARY KEY (`quote_id`)
+  `created_by_emp_id` varchar(10) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`quote_id`),
+  KEY `fk_quotes_cus_id` (`cus_id`),
+  KEY `fk_quotes_prod_id` (`prod_id`),
+  KEY `fk_quotes_created_by_emp_id` (`created_by_emp_id`),
+  CONSTRAINT `fk_quotes_created_by_emp_id` FOREIGN KEY (`created_by_emp_id`) REFERENCES `employees` (`emp_id`),
+  CONSTRAINT `fk_quotes_cus_id` FOREIGN KEY (`cus_id`) REFERENCES `customers` (`cus_id`),
+  CONSTRAINT `fk_quotes_prod_id` FOREIGN KEY (`prod_id`) REFERENCES `products` (`prod_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1342,6 +1576,35 @@ CREATE TABLE `quotes` (
 LOCK TABLES `quotes` WRITE;
 /*!40000 ALTER TABLE `quotes` DISABLE KEYS */;
 /*!40000 ALTER TABLE `quotes` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `recruitment_candidates`
+--
+
+DROP TABLE IF EXISTS `recruitment_candidates`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `recruitment_candidates` (
+  `candidate_id` int(11) NOT NULL AUTO_INCREMENT,
+  `full_name` varchar(150) DEFAULT NULL,
+  `applied_position` varchar(150) DEFAULT NULL,
+  `department_code` varchar(4) DEFAULT NULL,
+  `status` varchar(30) DEFAULT 'Applied',
+  `applied_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`candidate_id`),
+  KEY `fk_recruitment_candidates_department_code` (`department_code`),
+  CONSTRAINT `fk_recruitment_candidates_department_code` FOREIGN KEY (`department_code`) REFERENCES `departments` (`dept_code`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `recruitment_candidates`
+--
+
+LOCK TABLES `recruitment_candidates` WRITE;
+/*!40000 ALTER TABLE `recruitment_candidates` DISABLE KEYS */;
+/*!40000 ALTER TABLE `recruitment_candidates` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -1359,7 +1622,9 @@ CREATE TABLE `risk_register` (
   `owner_emp_id` varchar(10) DEFAULT NULL,
   `status` varchar(30) DEFAULT 'Open',
   `review_date` date DEFAULT NULL,
-  PRIMARY KEY (`risk_id`)
+  PRIMARY KEY (`risk_id`),
+  KEY `fk_risk_register_owner_emp_id` (`owner_emp_id`),
+  CONSTRAINT `fk_risk_register_owner_emp_id` FOREIGN KEY (`owner_emp_id`) REFERENCES `employees` (`emp_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1382,7 +1647,10 @@ DROP TABLE IF EXISTS `role_permissions`;
 CREATE TABLE `role_permissions` (
   `role_id` int(11) NOT NULL,
   `permission_id` int(11) NOT NULL,
-  PRIMARY KEY (`role_id`,`permission_id`)
+  PRIMARY KEY (`role_id`,`permission_id`),
+  KEY `fk_role_permissions_permission_id` (`permission_id`),
+  CONSTRAINT `fk_role_permissions_permission_id` FOREIGN KEY (`permission_id`) REFERENCES `permissions` (`permission_id`),
+  CONSTRAINT `fk_role_permissions_role_id` FOREIGN KEY (`role_id`) REFERENCES `roles` (`role_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1405,8 +1673,11 @@ DROP TABLE IF EXISTS `role_system_access`;
 CREATE TABLE `role_system_access` (
   `role_id` int(11) NOT NULL,
   `system_id` varchar(4) NOT NULL,
-  `access_level` varchar(30) DEFAULT 'Full',
-  PRIMARY KEY (`role_id`,`system_id`)
+  `access_level` varchar(30) DEFAULT NULL,
+  PRIMARY KEY (`role_id`,`system_id`),
+  KEY `fk_role_system_access_system_id` (`system_id`),
+  CONSTRAINT `fk_role_system_access_role_id` FOREIGN KEY (`role_id`) REFERENCES `roles` (`role_id`),
+  CONSTRAINT `fk_role_system_access_system_id` FOREIGN KEY (`system_id`) REFERENCES `systems_catalog` (`system_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1429,9 +1700,10 @@ DROP TABLE IF EXISTS `roles`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `roles` (
   `role_id` int(11) NOT NULL AUTO_INCREMENT,
-  `role_name` varchar(100) NOT NULL,
+  `role_name` varchar(100) DEFAULT NULL,
   `description` text DEFAULT NULL,
-  PRIMARY KEY (`role_id`)
+  PRIMARY KEY (`role_id`),
+  UNIQUE KEY `role_name` (`role_name`)
 ) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1443,6 +1715,173 @@ LOCK TABLES `roles` WRITE;
 /*!40000 ALTER TABLE `roles` DISABLE KEYS */;
 INSERT INTO `roles` VALUES (1,'Executive SuperAdmin','Full administrative authority and governance oversight across all 11 VOSTOKPRIBOR systems'),(2,'Chief Governance Officer','Compliance, legal audits, executive risk registries and policy oversight'),(3,'Sales Director & Manager','CRM pipeline oversight, B2B quotes, enterprise client accounts and order approval'),(4,'Senior Automation & Developer','Engineering codebase, API developer portal, telemetry and system integrations'),(5,'Systems Engineer & IT Support','Infrastructure management, IT Helpdesk ticketing, device telemetry, network security'),(6,'Chief Financial Officer & Controller','Invoices, enterprise billing cycles, audits, and payment records'),(7,'HR Director & Operations','Personnel records, department assignments, onboarding, payroll compliance'),(8,'Logistics & Supply Chain Specialist','Warehouse inventory, product catalog, delivery telemetry and procurement'),(9,'Customer Client Account','Access to Customer Portal, project tracking, ticket creation, B2B purchasing');
 /*!40000 ALTER TABLE `roles` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `sales_forecasts`
+--
+
+DROP TABLE IF EXISTS `sales_forecasts`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `sales_forecasts` (
+  `forecast_id` int(11) NOT NULL AUTO_INCREMENT,
+  `sales_emp_id` varchar(10) DEFAULT NULL,
+  `period` varchar(20) DEFAULT NULL,
+  `forecast_amount` decimal(14,2) DEFAULT NULL,
+  `actual_amount` decimal(14,2) DEFAULT NULL,
+  PRIMARY KEY (`forecast_id`),
+  KEY `fk_sales_forecasts_sales_emp_id` (`sales_emp_id`),
+  CONSTRAINT `fk_sales_forecasts_sales_emp_id` FOREIGN KEY (`sales_emp_id`) REFERENCES `employees` (`emp_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `sales_forecasts`
+--
+
+LOCK TABLES `sales_forecasts` WRITE;
+/*!40000 ALTER TABLE `sales_forecasts` DISABLE KEYS */;
+/*!40000 ALTER TABLE `sales_forecasts` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `security_events`
+--
+
+DROP TABLE IF EXISTS `security_events`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `security_events` (
+  `event_id` int(11) NOT NULL AUTO_INCREMENT,
+  `event_type` varchar(50) DEFAULT NULL,
+  `source_system` varchar(50) DEFAULT NULL,
+  `source_system_id` varchar(4) DEFAULT NULL,
+  `source_device_id` int(11) DEFAULT NULL,
+  `source_ip_id` int(11) DEFAULT NULL,
+  `actor_emp_id` varchar(10) DEFAULT NULL,
+  `actor_customer_id` varchar(10) DEFAULT NULL,
+  `target_account_id` int(11) DEFAULT NULL,
+  `target_device_id` int(11) DEFAULT NULL,
+  `description` text DEFAULT NULL,
+  `severity` enum('Low','Medium','High','Critical') DEFAULT NULL,
+  `event_time` timestamp NOT NULL DEFAULT current_timestamp(),
+  `raw_event` text DEFAULT NULL,
+  `status` varchar(30) DEFAULT 'New',
+  `related_tkt_id` varchar(15) DEFAULT NULL,
+  `reported_to_governance` tinyint(1) DEFAULT 0,
+  PRIMARY KEY (`event_id`),
+  KEY `fk_security_events_source_system_id` (`source_system_id`),
+  KEY `fk_security_events_source_device_id` (`source_device_id`),
+  KEY `fk_security_events_source_ip_id` (`source_ip_id`),
+  KEY `fk_security_events_actor_emp_id` (`actor_emp_id`),
+  KEY `fk_security_events_actor_customer_id` (`actor_customer_id`),
+  KEY `fk_security_events_target_device_id` (`target_device_id`),
+  KEY `fk_security_events_related_tkt_id` (`related_tkt_id`),
+  CONSTRAINT `fk_security_events_actor_customer_id` FOREIGN KEY (`actor_customer_id`) REFERENCES `customers` (`cus_id`),
+  CONSTRAINT `fk_security_events_actor_emp_id` FOREIGN KEY (`actor_emp_id`) REFERENCES `employees` (`emp_id`),
+  CONSTRAINT `fk_security_events_related_tkt_id` FOREIGN KEY (`related_tkt_id`) REFERENCES `tickets` (`tkt_id`),
+  CONSTRAINT `fk_security_events_source_device_id` FOREIGN KEY (`source_device_id`) REFERENCES `devices` (`device_id`),
+  CONSTRAINT `fk_security_events_source_ip_id` FOREIGN KEY (`source_ip_id`) REFERENCES `ip_addresses` (`ip_id`),
+  CONSTRAINT `fk_security_events_source_system_id` FOREIGN KEY (`source_system_id`) REFERENCES `systems_catalog` (`system_id`),
+  CONSTRAINT `fk_security_events_target_device_id` FOREIGN KEY (`target_device_id`) REFERENCES `devices` (`device_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `security_events`
+--
+
+LOCK TABLES `security_events` WRITE;
+/*!40000 ALTER TABLE `security_events` DISABLE KEYS */;
+/*!40000 ALTER TABLE `security_events` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `security_incidents`
+--
+
+DROP TABLE IF EXISTS `security_incidents`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `security_incidents` (
+  `incident_id` int(11) NOT NULL AUTO_INCREMENT,
+  `title` varchar(200) DEFAULT NULL,
+  `description` text DEFAULT NULL,
+  `severity` enum('Low','Medium','High','Critical') DEFAULT NULL,
+  `status` varchar(30) DEFAULT 'Open',
+  `reported_by_emp_id` varchar(10) DEFAULT NULL,
+  `assigned_to_emp_id` varchar(10) DEFAULT NULL,
+  `opened_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `closed_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  PRIMARY KEY (`incident_id`),
+  KEY `fk_security_incidents_reported_by_emp_id` (`reported_by_emp_id`),
+  KEY `fk_security_incidents_assigned_to_emp_id` (`assigned_to_emp_id`),
+  CONSTRAINT `fk_security_incidents_assigned_to_emp_id` FOREIGN KEY (`assigned_to_emp_id`) REFERENCES `employees` (`emp_id`),
+  CONSTRAINT `fk_security_incidents_reported_by_emp_id` FOREIGN KEY (`reported_by_emp_id`) REFERENCES `employees` (`emp_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `security_incidents`
+--
+
+LOCK TABLES `security_incidents` WRITE;
+/*!40000 ALTER TABLE `security_incidents` DISABLE KEYS */;
+/*!40000 ALTER TABLE `security_incidents` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `security_policies`
+--
+
+DROP TABLE IF EXISTS `security_policies`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `security_policies` (
+  `policy_id` int(11) NOT NULL AUTO_INCREMENT,
+  `doc_id` varchar(15) DEFAULT NULL,
+  `title` varchar(200) DEFAULT NULL,
+  `effective_date` date DEFAULT NULL,
+  PRIMARY KEY (`policy_id`),
+  KEY `fk_security_policies_doc_id` (`doc_id`),
+  CONSTRAINT `fk_security_policies_doc_id` FOREIGN KEY (`doc_id`) REFERENCES `documents` (`doc_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `security_policies`
+--
+
+LOCK TABLES `security_policies` WRITE;
+/*!40000 ALTER TABLE `security_policies` DISABLE KEYS */;
+/*!40000 ALTER TABLE `security_policies` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `sla_policies`
+--
+
+DROP TABLE IF EXISTS `sla_policies`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `sla_policies` (
+  `sla_id` int(11) NOT NULL AUTO_INCREMENT,
+  `priority` enum('Low','Medium','High','Critical') DEFAULT NULL,
+  `response_time_hours` int(11) DEFAULT NULL,
+  `resolution_time_hours` int(11) DEFAULT NULL,
+  PRIMARY KEY (`sla_id`),
+  UNIQUE KEY `priority` (`priority`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `sla_policies`
+--
+
+LOCK TABLES `sla_policies` WRITE;
+/*!40000 ALTER TABLE `sla_policies` DISABLE KEYS */;
+/*!40000 ALTER TABLE `sla_policies` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -1473,6 +1912,66 @@ INSERT INTO `systems_catalog` VALUES ('ADM','Admin & Governance Portal','admin.v
 UNLOCK TABLES;
 
 --
+-- Table structure for table `ticket_comments`
+--
+
+DROP TABLE IF EXISTS `ticket_comments`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `ticket_comments` (
+  `comment_id` int(11) NOT NULL AUTO_INCREMENT,
+  `tkt_id` varchar(15) NOT NULL,
+  `author_emp_id` varchar(10) DEFAULT NULL,
+  `comment_text` text DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`comment_id`),
+  KEY `fk_ticket_comments_tkt_id` (`tkt_id`),
+  KEY `fk_ticket_comments_author_emp_id` (`author_emp_id`),
+  CONSTRAINT `fk_ticket_comments_author_emp_id` FOREIGN KEY (`author_emp_id`) REFERENCES `employees` (`emp_id`),
+  CONSTRAINT `fk_ticket_comments_tkt_id` FOREIGN KEY (`tkt_id`) REFERENCES `tickets` (`tkt_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `ticket_comments`
+--
+
+LOCK TABLES `ticket_comments` WRITE;
+/*!40000 ALTER TABLE `ticket_comments` DISABLE KEYS */;
+/*!40000 ALTER TABLE `ticket_comments` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `ticket_escalations`
+--
+
+DROP TABLE IF EXISTS `ticket_escalations`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `ticket_escalations` (
+  `escalation_id` int(11) NOT NULL AUTO_INCREMENT,
+  `tkt_id` varchar(15) NOT NULL,
+  `escalated_to_emp_id` varchar(10) DEFAULT NULL,
+  `escalated_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `reason` text DEFAULT NULL,
+  PRIMARY KEY (`escalation_id`),
+  KEY `fk_ticket_escalations_tkt_id` (`tkt_id`),
+  KEY `fk_ticket_escalations_escalated_to_emp_id` (`escalated_to_emp_id`),
+  CONSTRAINT `fk_ticket_escalations_escalated_to_emp_id` FOREIGN KEY (`escalated_to_emp_id`) REFERENCES `employees` (`emp_id`),
+  CONSTRAINT `fk_ticket_escalations_tkt_id` FOREIGN KEY (`tkt_id`) REFERENCES `tickets` (`tkt_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `ticket_escalations`
+--
+
+LOCK TABLES `ticket_escalations` WRITE;
+/*!40000 ALTER TABLE `ticket_escalations` DISABLE KEYS */;
+/*!40000 ALTER TABLE `ticket_escalations` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `tickets`
 --
 
@@ -1488,10 +1987,12 @@ CREATE TABLE `tickets` (
   `priority` enum('Low','Medium','High','Critical') NOT NULL,
   `assigned_emp_id` varchar(10) DEFAULT NULL,
   `status` enum('Open','InProgress','Investigating','Escalated','Resolved') NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `resolved_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
   PRIMARY KEY (`tkt_id`),
-  KEY `fk_tickets_assigned_emp_id` (`assigned_emp_id`),
   KEY `fk_tickets_requester_cus_id` (`requester_cus_id`),
   KEY `fk_tickets_requester_emp_id` (`requester_emp_id`),
+  KEY `fk_tickets_assigned_emp_id` (`assigned_emp_id`),
   CONSTRAINT `fk_tickets_assigned_emp_id` FOREIGN KEY (`assigned_emp_id`) REFERENCES `employees` (`emp_id`),
   CONSTRAINT `fk_tickets_requester_cus_id` FOREIGN KEY (`requester_cus_id`) REFERENCES `customers` (`cus_id`),
   CONSTRAINT `fk_tickets_requester_emp_id` FOREIGN KEY (`requester_emp_id`) REFERENCES `employees` (`emp_id`)
@@ -1504,8 +2005,38 @@ CREATE TABLE `tickets` (
 
 LOCK TABLES `tickets` WRITE;
 /*!40000 ALTER TABLE `tickets` DISABLE KEYS */;
-INSERT INTO `tickets` VALUES ('TKT-2026-001','Customer','CUS-1002',NULL,'Customer Portal','High','EMP-1018','InProgress'),('TKT-2026-002','Employee',NULL,'EMP-1007','CRM','Medium','EMP-1018','Resolved'),('TKT-2026-003','Customer','CUS-1004',NULL,'E-Commerce','High','EMP-1018','Investigating'),('TKT-2026-004','Employee',NULL,'EMP-1015','Intranet','Low','EMP-1018','Resolved'),('TKT-2026-005','Customer','CUS-1007',NULL,'Customer Portal','Critical','EMP-1018','Escalated'),('TKT-2026-006','Employee',NULL,'EMP-1020','Developer Portal','Medium','EMP-1018','Resolved'),('TKT-2026-007','Customer','CUS-1005',NULL,'E-Commerce','Medium','EMP-1018','Resolved'),('TKT-2026-008','Employee',NULL,'EMP-1016','File Center','Medium','EMP-1018','InProgress'),('TKT-2026-009','Customer','CUS-1001',NULL,'Customer Portal','Low','EMP-1018','Resolved'),('TKT-2026-010','Employee',NULL,'EMP-1017','Developer Portal','High','EMP-1018','Investigating'),('TKT-2026-011','Customer','CUS-1008',NULL,'Customer Portal','High','EMP-1018','Escalated'),('TKT-2026-012','Employee',NULL,'EMP-1013','Intranet','Medium','EMP-1018','Resolved'),('TKT-2026-013','Customer','CUS-1009',NULL,'E-Commerce','Low','EMP-1018','Resolved'),('TKT-2026-014','Employee',NULL,'EMP-1019','File Center','Medium','EMP-1018','InProgress'),('TKT-2026-015','Customer','CUS-1010',NULL,'Customer Portal','High','EMP-1018','Investigating');
+INSERT INTO `tickets` VALUES ('TKT-2026-001','Customer','CUS-1002',NULL,'Customer Portal','High','EMP-1018','InProgress','2026-09-21 16:36:10','0000-00-00 00:00:00'),('TKT-2026-002','Employee',NULL,'EMP-1007','CRM','Medium','EMP-1018','Resolved','2026-09-21 16:36:10','0000-00-00 00:00:00'),('TKT-2026-003','Customer','CUS-1004',NULL,'E-Commerce','High','EMP-1018','Investigating','2026-09-21 16:36:10','0000-00-00 00:00:00'),('TKT-2026-004','Employee',NULL,'EMP-1015','Intranet','Low','EMP-1018','Resolved','2026-09-21 16:36:10','0000-00-00 00:00:00'),('TKT-2026-005','Customer','CUS-1007',NULL,'Customer Portal','Critical','EMP-1018','Escalated','2026-09-21 16:36:10','0000-00-00 00:00:00'),('TKT-2026-006','Employee',NULL,'EMP-1020','Developer Portal','Medium','EMP-1018','Resolved','2026-09-21 16:36:10','0000-00-00 00:00:00'),('TKT-2026-007','Customer','CUS-1005',NULL,'E-Commerce','Medium','EMP-1018','Resolved','2026-09-21 16:36:10','0000-00-00 00:00:00'),('TKT-2026-008','Employee',NULL,'EMP-1016','File Center','Medium','EMP-1018','InProgress','2026-09-21 16:36:10','0000-00-00 00:00:00'),('TKT-2026-009','Customer','CUS-1001',NULL,'Customer Portal','Low','EMP-1018','Resolved','2026-09-21 16:36:10','0000-00-00 00:00:00'),('TKT-2026-010','Employee',NULL,'EMP-1017','Developer Portal','High','EMP-1018','Investigating','2026-09-21 16:36:10','0000-00-00 00:00:00'),('TKT-2026-011','Customer','CUS-1008',NULL,'Customer Portal','High','EMP-1018','Escalated','2026-09-21 16:36:10','0000-00-00 00:00:00'),('TKT-2026-012','Employee',NULL,'EMP-1013','Intranet','Medium','EMP-1018','Resolved','2026-09-21 16:36:10','0000-00-00 00:00:00'),('TKT-2026-013','Customer','CUS-1009',NULL,'E-Commerce','Low','EMP-1018','Resolved','2026-09-21 16:36:10','0000-00-00 00:00:00'),('TKT-2026-014','Employee',NULL,'EMP-1019','File Center','Medium','EMP-1018','InProgress','2026-09-21 16:36:10','0000-00-00 00:00:00'),('TKT-2026-015','Customer','CUS-1010',NULL,'Customer Portal','High','EMP-1018','Investigating','2026-09-21 16:36:10','0000-00-00 00:00:00');
 /*!40000 ALTER TABLE `tickets` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `training_records`
+--
+
+DROP TABLE IF EXISTS `training_records`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `training_records` (
+  `training_id` int(11) NOT NULL AUTO_INCREMENT,
+  `emp_id` varchar(10) NOT NULL,
+  `training_name` varchar(150) DEFAULT NULL,
+  `completed_at` date DEFAULT NULL,
+  `certificate_doc_id` varchar(15) DEFAULT NULL,
+  PRIMARY KEY (`training_id`),
+  KEY `fk_training_records_emp_id` (`emp_id`),
+  KEY `fk_training_records_certificate_doc_id` (`certificate_doc_id`),
+  CONSTRAINT `fk_training_records_certificate_doc_id` FOREIGN KEY (`certificate_doc_id`) REFERENCES `documents` (`doc_id`),
+  CONSTRAINT `fk_training_records_emp_id` FOREIGN KEY (`emp_id`) REFERENCES `employees` (`emp_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `training_records`
+--
+
+LOCK TABLES `training_records` WRITE;
+/*!40000 ALTER TABLE `training_records` DISABLE KEYS */;
+/*!40000 ALTER TABLE `training_records` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -1516,17 +2047,27 @@ DROP TABLE IF EXISTS `user_sessions`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `user_sessions` (
-  `session_id` varchar(64) NOT NULL,
+  `session_id` bigint(20) NOT NULL AUTO_INCREMENT,
   `account_type` varchar(20) NOT NULL,
   `employee_account_id` int(11) DEFAULT NULL,
   `customer_account_id` int(11) DEFAULT NULL,
-  `system_id` varchar(4) NOT NULL,
-  `ip_address` varchar(45) DEFAULT NULL,
-  `user_agent` text DEFAULT NULL,
+  `system_id` varchar(4) DEFAULT NULL,
+  `device_id` int(11) DEFAULT NULL,
+  `ip_id` int(11) DEFAULT NULL,
+  `started_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `ended_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
   `status` varchar(20) DEFAULT 'Active',
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `expires_at` timestamp NULL DEFAULT NULL,
-  PRIMARY KEY (`session_id`)
+  PRIMARY KEY (`session_id`),
+  KEY `fk_user_sessions_employee_account_id` (`employee_account_id`),
+  KEY `fk_user_sessions_customer_account_id` (`customer_account_id`),
+  KEY `fk_user_sessions_system_id` (`system_id`),
+  KEY `fk_user_sessions_device_id` (`device_id`),
+  KEY `fk_user_sessions_ip_id` (`ip_id`),
+  CONSTRAINT `fk_user_sessions_customer_account_id` FOREIGN KEY (`customer_account_id`) REFERENCES `customer_accounts` (`account_id`),
+  CONSTRAINT `fk_user_sessions_device_id` FOREIGN KEY (`device_id`) REFERENCES `devices` (`device_id`),
+  CONSTRAINT `fk_user_sessions_employee_account_id` FOREIGN KEY (`employee_account_id`) REFERENCES `employee_accounts` (`account_id`),
+  CONSTRAINT `fk_user_sessions_ip_id` FOREIGN KEY (`ip_id`) REFERENCES `ip_addresses` (`ip_id`),
+  CONSTRAINT `fk_user_sessions_system_id` FOREIGN KEY (`system_id`) REFERENCES `systems_catalog` (`system_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1536,7 +2077,6 @@ CREATE TABLE `user_sessions` (
 
 LOCK TABLES `user_sessions` WRITE;
 /*!40000 ALTER TABLE `user_sessions` DISABLE KEYS */;
-INSERT INTO `user_sessions` VALUES ('0hlc95vdrabn2k5r8620clpifg','Employee',47,NULL,'DEV','127.0.0.1','curl/8.21.0','Active','2026-09-20 16:07:52','2026-09-21 00:07:52'),('17o014m3e0ephkobmp87m9r2gh','Employee',2,NULL,'ADM','127.0.0.1','curl/8.21.0','Active','2026-09-20 16:07:46','2026-09-21 00:07:46'),('50ovasektdkj4cjh10oev11uts','Employee',5,NULL,'HR','127.0.0.1','Unknown','Active','2026-09-20 16:14:33','2026-09-21 00:14:33'),('61lhog85l44nc9s73eo7qm8q8u','Customer',NULL,2,'CUS','127.0.0.1','Unknown','Active','2026-09-20 16:14:32','2026-09-21 00:14:32'),('bdks6vr1oibg7dprjdqc4k3sm1','Employee',41,NULL,'IT','127.0.0.1','Unknown','Active','2026-09-20 16:14:33','2026-09-21 00:14:33'),('c8769tfu0r3irrkrc4251lr975','Employee',93,NULL,'EMP','127.0.0.1','Unknown','Active','2026-09-20 16:14:33','2026-09-21 00:14:33'),('mdslfunsks6ev3t2377fgo0ipl','Customer',NULL,2,'CUS','127.0.0.1','curl/8.21.0','Active','2026-09-20 16:08:00','2026-09-21 00:08:00'),('muvoq1581e1mj7s64vnlbuftdt','Employee',156,NULL,'FIN','127.0.0.1','Unknown','Active','2026-09-20 16:14:33','2026-09-21 00:14:33'),('opt13ko3f2h2g9cnled0l36sm0','Employee',15,NULL,'CRM','127.0.0.1','Unknown','Active','2026-09-20 16:14:32','2026-09-21 00:14:32'),('qovsvuic0b25go4gla28vgga6d','Employee',142,NULL,'DOC','127.0.0.1','Unknown','Active','2026-09-20 16:14:33','2026-09-21 00:14:33'),('s3l5bqrniqfa3h2b3g5rhp7a3r','Customer',NULL,5,'SHP','127.0.0.1','Unknown','Active','2026-09-20 16:14:33','2026-09-21 00:14:33'),('s78ib2jb9bijmeanjpdev92b3h','Employee',2,NULL,'ADM','127.0.0.1','Unknown','Active','2026-09-20 16:14:32','2026-09-21 00:14:32'),('ul3lf1bfklpgj2vklck6quarhn','Employee',47,NULL,'DEV','127.0.0.1','Unknown','Active','2026-09-20 16:14:32','2026-09-21 00:14:32');
 /*!40000 ALTER TABLE `user_sessions` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -1549,4 +2089,7 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-09-20 19:14:41
+-- Dump completed on 2026-09-21 19:42:47
+
+
+SET FOREIGN_KEY_CHECKS = 1;
