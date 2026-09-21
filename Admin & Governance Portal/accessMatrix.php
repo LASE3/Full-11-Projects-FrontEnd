@@ -1,3 +1,13 @@
+<?php
+require_once __DIR__ . '/../config/db.php';
+require_once __DIR__ . '/../includes/auth_guard.php';
+requireAuth('ADM');
+require_once __DIR__ . '/gov_service.php';
+
+$currentUser = gov_getActiveUserProfile();
+$rolesCatalog = gov_getRolesCatalog();
+$metrics = gov_getGovernanceMetrics();
+?>
 <!DOCTYPE html>
 
 <html lang="en">
@@ -153,10 +163,7 @@
                     </div>
                 </a></nav>
         </div>
-                    <a class="flex items-center gap-space-sm px-space-sm py-space-xs rounded text-error hover:bg-error-container hover:text-on-error-container transition-all font-body-compact text-body-compact mt-space-sm" href="../api/logout.php?system=Admin%20%26%20Governance%20Portal&redirect=../Admin%20%26%20Governance%20Portal/login.php" id="btn-logout" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" onclick="(function(){sessionStorage.clear();localStorage.clear();})()">
-                <span class="material-symbols-outlined text-[18px] text-error">logout</span>
-                <span>Log Out</span>
-            </a>
+                    
             <div class="p-space-md bg-primary-container/40 border-t border-outline/20 flex flex-col gap-space-2xs">
             <div class="flex items-center justify-between"><span
                     class="font-security-stamp text-[10px] text-secondary-fixed-dim uppercase tracking-wider">SEC-OPS
@@ -253,14 +260,14 @@
                         class="mt-space-md pt-space-sm border-t border-outline-variant/40 grid grid-cols-2 md:grid-cols-4 gap-space-sm text-telemetry-micro font-telemetry-micro">
                         <div class="flex items-center gap-space-xs">
                             <span class="text-on-surface-variant">Active Role Profiles:</span>
-                            <span class="font-bold text-on-surface font-telemetry-data">14 Defined</span>
+                            <span class="font-bold text-on-surface font-telemetry-data"><?= count($rolesCatalog) ?> Defined</span>
                             <span
                                 class="text-on-error-container bg-error-container px-space-2xs rounded font-semibold text-[10px]">2
                                 Deprecated</span>
                         </div>
                         <div class="flex items-center gap-space-xs">
                             <span class="text-on-surface-variant">Cross-System Accounts:</span>
-                            <span class="font-bold text-on-surface font-telemetry-data">20 Validated Identities</span>
+                            <span class="font-bold text-on-surface font-telemetry-data"><?= $metrics['total_employees'] ?> Validated Identities</span>
                         </div>
                         <div class="flex items-center gap-space-xs">
                             <span class="text-on-surface-variant">SoD Structural Violations:</span>
@@ -470,288 +477,54 @@
                                     </tr>
                                 </thead>
                                 <tbody class="font-body-compact text-body-compact divide-y divide-outline-variant/50">
-                                    <!-- Role 1: ROLE-SEC-01 (Root) -->
+                                    <?php foreach ($rolesCatalog as $idx => $r): 
+                                        $sysCount = count($r['systems']);
+                                        $clearance = ($r['role_id'] == 1 || $sysCount >= 8) ? 'L5+' : (($sysCount >= 5) ? 'L4' : 'L2-L3');
+                                        $colorBorder = ($clearance === 'L5+') ? '#B23A32' : (($clearance === 'L4') ? '#D9822B' : '#3E7CB1');
+                                    ?>
                                     <tr class="hover:bg-surface-container-low transition-colors group">
-                                        <td
-                                            class="py-space-sm px-space-sm text-center border-l-4 border-[#B23A32] font-telemetry-micro text-on-surface-variant font-mono">
-                                            01
+                                        <td class="py-space-sm px-space-sm text-center border-l-4 font-telemetry-micro text-on-surface-variant font-mono" style="border-left-color: <?= $colorBorder ?>;">
+                                            <?= sprintf('%02d', $idx + 1) ?>
                                         </td>
                                         <td class="py-space-sm px-space-sm">
-                                            <div class="font-telemetry-data font-bold text-primary">ROLE-SEC-01</div>
-                                            <div class="text-[11px] text-on-surface-variant font-sans">Chief Governance
-                                                &amp; Root Trustee</div>
+                                            <div class="font-telemetry-data font-bold text-primary">ROLE-<?= sprintf('%03d', $r['role_id']) ?></div>
+                                            <div class="text-[11px] text-on-surface-variant font-sans"><?= htmlspecialchars($r['role_name']) ?></div>
+                                            <div class="text-[10px] text-on-surface-variant/70 font-sans italic"><?= htmlspecialchars($r['description']) ?></div>
                                         </td>
                                         <td class="py-space-sm px-space-xs text-center">
-                                            <span
-                                                class="inline-block px-space-xs py-[1px] bg-error-container text-on-error-container font-security-stamp text-[10px] font-extrabold rounded">
-                                                L5+
+                                            <span class="inline-block px-space-xs py-[1px] <?= ($clearance === 'L5+') ? 'bg-error-container text-on-error-container' : (($clearance === 'L4') ? 'bg-tertiary-fixed text-on-tertiary-fixed-variant' : 'bg-primary-fixed/40 text-on-surface') ?> font-security-stamp text-[10px] font-extrabold rounded">
+                                                <?= $clearance ?>
                                             </span>
                                         </td>
                                         <td class="py-space-sm px-space-sm">
-                                            <div
-                                                class="flex items-center gap-[2px] flex-wrap font-telemetry-micro text-[10px]">
-                                                <span
-                                                    class="px-1 bg-primary text-on-primary rounded font-mono font-bold">ALL:
-                                                    01-11</span>
-                                                <span
-                                                    class="px-1 bg-secondary-container/40 text-on-secondary-container rounded font-mono">SYS-11
-                                                    ROOT</span>
+                                            <div class="flex items-center gap-[2px] flex-wrap font-telemetry-micro text-[10px]">
+                                                <?php if ($sysCount >= 11): ?>
+                                                    <span class="px-1 bg-primary text-on-primary rounded font-mono font-bold">ALL: 01-11</span>
+                                                    <span class="px-1 bg-secondary-container/40 text-on-secondary-container rounded font-mono">ROOT</span>
+                                                <?php else: ?>
+                                                    <?php foreach ($r['systems'] as $sCode): ?>
+                                                        <span class="px-1 bg-surface-container-highest text-on-surface rounded font-mono"><?= htmlspecialchars($sCode) ?></span>
+                                                    <?php endforeach; ?>
+                                                <?php endif; ?>
                                             </div>
                                         </td>
                                         <td class="py-space-sm px-space-sm font-telemetry-micro text-on-surface">
-                                            Almaty Central Vault
+                                            <?= ($clearance === 'L5+') ? 'Almaty Central Vault' : 'Karaganda Enclave' ?>
                                         </td>
                                         <td class="py-space-sm px-space-sm">
-                                            <span class="text-[11px] text-error font-medium flex items-center gap-1">
-                                                <span class="material-symbols-outlined text-[13px]">lock</span>
-                                                Dual-signoff on bypass
+                                            <span class="text-[11px] text-on-surface-variant font-medium flex items-center gap-1">
+                                                <span class="material-symbols-outlined text-[13px] text-secondary">verified</span>
+                                                Enforced RBAC Boundary
                                             </span>
                                         </td>
-                                        <td
-                                            class="py-space-sm px-space-xs text-center font-telemetry-data font-bold text-primary">
-                                            2
+                                        <td class="py-space-sm px-space-xs text-center font-telemetry-data font-bold text-primary">
+                                            <?= (int)$r['assignee_count'] ?>
                                         </td>
                                         <td class="py-space-sm px-space-sm text-right">
-                                            <span
-                                                class="px-space-xs py-[2px] bg-secondary-fixed/30 text-on-secondary-fixed font-telemetry-micro text-[10px] font-bold rounded">ENFORCED</span>
+                                            <span class="px-space-xs py-[2px] bg-secondary-fixed/30 text-on-secondary-fixed font-telemetry-micro text-[10px] font-bold rounded">ENFORCED</span>
                                         </td>
                                     </tr>
-                                    <!-- Role 2: ROLE-AUT-02 (Selected/Inspected) -->
-                                    <tr
-                                        class="bg-primary-fixed/20 border-l-4 border-secondary hover:bg-primary-fixed/30 transition-colors">
-                                        <td
-                                            class="py-space-sm px-space-sm text-center font-telemetry-micro text-secondary font-mono font-bold">
-                                            02
-                                        </td>
-                                        <td class="py-space-sm px-space-sm">
-                                            <div class="flex items-center gap-space-xs">
-                                                <span
-                                                    class="font-telemetry-data font-bold text-primary">ROLE-AUT-02</span>
-                                                <span
-                                                    class="px-space-2xs py-[1px] bg-secondary text-on-secondary text-[9px] font-mono uppercase font-bold rounded">INSPECTING</span>
-                                            </div>
-                                            <div class="text-[11px] text-on-surface font-medium font-sans">SCADA
-                                                Automation Lead Engineer</div>
-                                        </td>
-                                        <td class="py-space-sm px-space-xs text-center">
-                                            <span
-                                                class="inline-block px-space-xs py-[1px] bg-tertiary-fixed text-on-tertiary-fixed-variant font-security-stamp text-[10px] font-extrabold rounded">
-                                                L5
-                                            </span>
-                                        </td>
-                                        <td class="py-space-sm px-space-sm">
-                                            <div
-                                                class="flex items-center gap-[3px] flex-wrap font-telemetry-micro text-[10px]">
-                                                <span
-                                                    class="px-1 bg-surface-container-highest text-on-surface rounded font-mono">02</span>
-                                                <span
-                                                    class="px-1 bg-secondary text-on-secondary rounded font-mono font-bold">03</span>
-                                                <span
-                                                    class="px-1 bg-secondary text-on-secondary rounded font-mono font-bold">05</span>
-                                                <span
-                                                    class="px-1 bg-surface-container-high text-on-surface-variant line-through rounded font-mono">11</span>
-                                            </div>
-                                        </td>
-                                        <td class="py-space-sm px-space-sm font-telemetry-micro text-on-surface">
-                                            Karaganda Enclave
-                                        </td>
-                                        <td class="py-space-sm px-space-sm">
-                                            <span class="text-[11px] text-on-surface-variant font-medium">
-                                                Cannot self-approve CNC tool-paths
-                                            </span>
-                                        </td>
-                                        <td
-                                            class="py-space-sm px-space-xs text-center font-telemetry-data font-bold text-primary">
-                                            4
-                                        </td>
-                                        <td class="py-space-sm px-space-sm text-right">
-                                            <span
-                                                class="px-space-xs py-[2px] bg-secondary-fixed/30 text-on-secondary-fixed font-telemetry-micro text-[10px] font-bold rounded">ACTIVE</span>
-                                        </td>
-                                    </tr>
-                                    <!-- Role 3: ROLE-OPS-04 (Grid Specialist) -->
-                                    <tr class="hover:bg-surface-container-low transition-colors">
-                                        <td
-                                            class="py-space-sm px-space-sm text-center border-l-4 border-[#D9822B] font-telemetry-micro text-on-surface-variant font-mono">
-                                            03
-                                        </td>
-                                        <td class="py-space-sm px-space-sm">
-                                            <div class="font-telemetry-data font-bold text-primary">ROLE-OPS-04</div>
-                                            <div class="text-[11px] text-on-surface-variant font-sans">Heavy Grid
-                                                Telemetry Specialist</div>
-                                        </td>
-                                        <td class="py-space-sm px-space-xs text-center">
-                                            <span
-                                                class="inline-block px-space-xs py-[1px] bg-tertiary-fixed text-on-tertiary-fixed-variant font-security-stamp text-[10px] font-extrabold rounded">
-                                                L4
-                                            </span>
-                                        </td>
-                                        <td class="py-space-sm px-space-sm">
-                                            <div
-                                                class="flex items-center gap-[3px] flex-wrap font-telemetry-micro text-[10px]">
-                                                <span
-                                                    class="px-1 bg-surface-container-highest text-on-surface rounded font-mono">01</span>
-                                                <span
-                                                    class="px-1 bg-secondary text-on-secondary rounded font-mono font-bold">05</span>
-                                                <span
-                                                    class="px-1 bg-surface-container-highest text-on-surface rounded font-mono">10</span>
-                                            </div>
-                                        </td>
-                                        <td class="py-space-sm px-space-sm font-telemetry-micro text-on-surface">
-                                            Ekibastuz Substations
-                                        </td>
-                                        <td class="py-space-sm px-space-sm">
-                                            <span class="text-[11px] text-on-surface-variant font-medium">
-                                                Restricted from primary turbine breakers
-                                            </span>
-                                        </td>
-                                        <td
-                                            class="py-space-sm px-space-xs text-center font-telemetry-data font-bold text-primary">
-                                            3
-                                        </td>
-                                        <td class="py-space-sm px-space-sm text-right">
-                                            <span
-                                                class="px-space-xs py-[2px] bg-secondary-fixed/30 text-on-secondary-fixed font-telemetry-micro text-[10px] font-bold rounded">ACTIVE</span>
-                                        </td>
-                                    </tr>
-                                    <!-- Role 4: ROLE-MET-03 (Metrology & QA) -->
-                                    <tr class="hover:bg-surface-container-low transition-colors">
-                                        <td
-                                            class="py-space-sm px-space-sm text-center border-l-4 border-[#3E7CB1] font-telemetry-micro text-on-surface-variant font-mono">
-                                            04
-                                        </td>
-                                        <td class="py-space-sm px-space-sm">
-                                            <div class="font-telemetry-data font-bold text-primary">ROLE-MET-03</div>
-                                            <div class="text-[11px] text-on-surface-variant font-sans">Metrology &amp;
-                                                QA Lead Inspector</div>
-                                        </td>
-                                        <td class="py-space-sm px-space-xs text-center">
-                                            <span
-                                                class="inline-block px-space-xs py-[1px] bg-tertiary-fixed text-on-tertiary-fixed-variant font-security-stamp text-[10px] font-extrabold rounded">
-                                                L4
-                                            </span>
-                                        </td>
-                                        <td class="py-space-sm px-space-sm">
-                                            <div
-                                                class="flex items-center gap-[3px] flex-wrap font-telemetry-micro text-[10px]">
-                                                <span
-                                                    class="px-1 bg-surface-container-highest text-on-surface rounded font-mono">01</span>
-                                                <span
-                                                    class="px-1 bg-secondary text-on-secondary rounded font-mono font-bold">04</span>
-                                                <span
-                                                    class="px-1 bg-surface-container-highest text-on-surface rounded font-mono">09</span>
-                                            </div>
-                                        </td>
-                                        <td class="py-space-sm px-space-sm font-telemetry-micro text-on-surface">
-                                            Ust-Kamenogorsk Labs
-                                        </td>
-                                        <td class="py-space-sm px-space-sm">
-                                            <span class="text-[11px] text-on-surface-variant font-medium">
-                                                Calibration write-access requires 2-key check
-                                            </span>
-                                        </td>
-                                        <td
-                                            class="py-space-sm px-space-xs text-center font-telemetry-data font-bold text-primary">
-                                            5
-                                        </td>
-                                        <td class="py-space-sm px-space-sm text-right">
-                                            <span
-                                                class="px-space-xs py-[2px] bg-secondary-fixed/30 text-on-secondary-fixed font-telemetry-micro text-[10px] font-bold rounded">AUDIT</span>
-                                        </td>
-                                    </tr>
-                                    <!-- Role 5: ROLE-LOG-09 (Logistics) -->
-                                    <tr class="hover:bg-surface-container-low transition-colors">
-                                        <td
-                                            class="py-space-sm px-space-sm text-center border-l-4 border-[#8A94A0] font-telemetry-micro text-on-surface-variant font-mono">
-                                            05
-                                        </td>
-                                        <td class="py-space-sm px-space-sm">
-                                            <div class="font-telemetry-data font-bold text-primary">ROLE-LOG-09</div>
-                                            <div class="text-[11px] text-on-surface-variant font-sans">Intermodal
-                                                Logistics Dispatcher</div>
-                                        </td>
-                                        <td class="py-space-sm px-space-xs text-center">
-                                            <span
-                                                class="inline-block px-space-xs py-[1px] bg-surface-variant text-on-surface font-security-stamp text-[10px] font-bold rounded">
-                                                L2
-                                            </span>
-                                        </td>
-                                        <td class="py-space-sm px-space-sm">
-                                            <div
-                                                class="flex items-center gap-[3px] flex-wrap font-telemetry-micro text-[10px]">
-                                                <span
-                                                    class="px-1 bg-secondary text-on-secondary rounded font-mono font-bold">07</span>
-                                                <span
-                                                    class="px-1 bg-secondary text-on-secondary rounded font-mono font-bold">08</span>
-                                            </div>
-                                        </td>
-                                        <td class="py-space-sm px-space-sm font-telemetry-micro text-on-surface">
-                                            Khorgos Dry Port
-                                        </td>
-                                        <td class="py-space-sm px-space-sm">
-                                            <span class="text-[11px] text-on-surface-variant font-medium">
-                                                Zero access to industrial automation registers
-                                            </span>
-                                        </td>
-                                        <td
-                                            class="py-space-sm px-space-xs text-center font-telemetry-data font-bold text-primary">
-                                            6
-                                        </td>
-                                        <td class="py-space-sm px-space-sm text-right">
-                                            <span
-                                                class="px-space-xs py-[2px] bg-surface-container-high text-on-surface font-telemetry-micro text-[10px] font-bold rounded">ACTIVE</span>
-                                        </td>
-                                    </tr>
-                                    <!-- Role 6: ROLE-EXT-11 (Isolated Contractor) -->
-                                    <tr class="bg-error-container/10 hover:bg-error-container/20 transition-colors">
-                                        <td
-                                            class="py-space-sm px-space-sm text-center border-l-4 border-error font-telemetry-micro text-error font-mono">
-                                            06
-                                        </td>
-                                        <td class="py-space-sm px-space-sm">
-                                            <div class="flex items-center gap-space-xs">
-                                                <span
-                                                    class="font-telemetry-data font-bold text-error">ROLE-EXT-11</span>
-                                                <span
-                                                    class="px-space-2xs py-[1px] bg-error text-on-error text-[9px] font-mono font-bold rounded">LOCKED</span>
-                                            </div>
-                                            <div class="text-[11px] text-on-surface-variant font-sans">SCADA External
-                                                Contractor [RESTRICTED]</div>
-                                        </td>
-                                        <td class="py-space-sm px-space-xs text-center">
-                                            <span
-                                                class="inline-block px-space-xs py-[1px] bg-outline-variant text-on-surface font-security-stamp text-[10px] font-bold rounded">
-                                                L3
-                                            </span>
-                                        </td>
-                                        <td class="py-space-sm px-space-sm">
-                                            <div
-                                                class="flex items-center gap-[3px] flex-wrap font-telemetry-micro text-[10px]">
-                                                <span
-                                                    class="px-1 bg-outline-variant/80 text-on-surface-variant rounded font-mono line-through">03</span>
-                                                <span
-                                                    class="px-1 bg-outline-variant/80 text-on-surface-variant rounded font-mono line-through">05</span>
-                                            </div>
-                                        </td>
-                                        <td
-                                            class="py-space-sm px-space-sm font-telemetry-micro text-error font-semibold">
-                                            DMZ Proxy Only
-                                        </td>
-                                        <td class="py-space-sm px-space-sm">
-                                            <span class="text-[11px] text-error font-semibold flex items-center gap-1">
-                                                <span class="material-symbols-outlined text-[13px]">warning</span>
-                                                Sponsor SLA Expired: 0 Assignees Permitted
-                                            </span>
-                                        </td>
-                                        <td
-                                            class="py-space-sm px-space-xs text-center font-telemetry-data font-bold text-error">
-                                            0
-                                        </td>
-                                        <td class="py-space-sm px-space-sm text-right">
-                                            <span
-                                                class="px-space-xs py-[2px] bg-error text-on-error font-telemetry-micro text-[10px] font-bold rounded">REVOKED</span>
-                                        </td>
-                                    </tr>
+                                    <?php endforeach; ?>
                                 </tbody>
                             </table>
                         </div>
@@ -759,7 +532,7 @@
                         <div
                             class="p-space-sm bg-surface-container flex flex-wrap items-center justify-between gap-space-sm text-telemetry-micro font-telemetry-micro border-t border-outline-variant/60">
                             <div class="flex items-center gap-space-sm text-on-surface-variant">
-                                <span>Showing 6 of 14 Role Profiles</span>
+                                <span>Showing <?= count($rolesCatalog) ?> Defined Role Profiles</span>
                                 <span class="text-outline-variant">|</span>
                                 <span class="font-mono">Filter mode: DEFENSE-GRADE ZERO-ORPHAN</span>
                             </div>

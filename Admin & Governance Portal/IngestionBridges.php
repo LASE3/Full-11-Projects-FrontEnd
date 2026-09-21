@@ -1,3 +1,13 @@
+<?php
+require_once __DIR__ . '/../config/db.php';
+require_once __DIR__ . '/../includes/auth_guard.php';
+requireAuth('ADM');
+require_once __DIR__ . '/gov_service.php';
+
+$currentUser = gov_getActiveUserProfile();
+$ingestionBridges = gov_getIngestionBridges();
+$metrics = gov_getGovernanceMetrics();
+?>
 <!DOCTYPE html>
 
 <html lang="en">
@@ -154,10 +164,7 @@
                     </div>
                 </a></nav>
         </div>
-                    <a class="flex items-center gap-space-sm px-space-sm py-space-xs rounded text-error hover:bg-error-container hover:text-on-error-container transition-all font-body-compact text-body-compact mt-space-sm" href="../api/logout.php?system=Admin%20%26%20Governance%20Portal&redirect=../Admin%20%26%20Governance%20Portal/login.php" id="btn-logout" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" onclick="(function(){sessionStorage.clear();localStorage.clear();})()">
-                <span class="material-symbols-outlined text-[18px] text-error">logout</span>
-                <span>Log Out</span>
-            </a>
+                    
             <div class="p-space-md bg-primary-container/40 border-t border-outline/20 flex flex-col gap-space-2xs">
             <div class="flex items-center justify-between"><span
                     class="font-security-stamp text-[10px] text-secondary-fixed-dim uppercase tracking-wider">SEC-OPS
@@ -353,441 +360,50 @@
                                         </tr>
                                     </thead>
                                     <tbody class="divide-transparent" id="bridge-table-body">
-                                        <!-- SYS-01: Smelting Karaganda -->
-                                        <tr class="bg-surface-container-lowest hover:bg-surface-container-low transition-colors cursor-pointer group"
-                                            onclick="selectBridge('SYS-01', 'Smelting &amp; Heavy Foundry', 'Karaganda Plant 1', 'OPC-UA over TLS 1.3', 4812, 12, 18, 'Nominal', 'SEC-CONFIDENTIAL')">
+                                        <?php foreach ($ingestionBridges as $b): 
+                                            $source = $b['source_system_id'] ?? $b['source_system'] ?? 'SYS-01';
+                                            $target = $b['target_system_id'] ?? $b['target_system'] ?? 'SYS-02';
+                                            $linkCode = $b['link_code'] ?? 'LINK-01';
+                                            $protocol = $b['api_protocol'] ?? $b['protocol'] ?? 'REST / JSON';
+                                            $auth = $b['authentication_method'] ?? $b['auth_method'] ?? 'HMAC-SHA256';
+                                            $dir = $b['direction'] ?? 'Outbound';
+                                            $dataEx = $b['data_exchanged'] ?? 'Telemetry stream';
+                                            $txCount = (int)($b['transaction_count'] ?? 0);
+                                            $lastSync = !empty($b['last_sync']) ? date('H:i:s', strtotime($b['last_sync'])) : 'Sync Nominal';
+                                        ?>
+                                        <tr class="bg-surface-container-lowest hover:bg-surface-container-low transition-colors cursor-pointer group">
                                             <td class="py-space-sm px-space-sm flex items-center gap-space-sm">
-                                                <div class="w-1 h-7 bg-[#3E7CB1]"></div>
+                                                <div class="w-1 h-7 bg-secondary"></div>
                                                 <div>
                                                     <div class="flex items-center gap-space-xs">
-                                                        <span
-                                                            class="font-telemetry-data text-telemetry-data font-bold text-primary">SYS-01</span>
-                                                        <span
-                                                            class="font-label-uppercase text-[9px] px-1 bg-surface-container-high text-on-surface-variant">KARAGANDA-1</span>
+                                                        <span class="font-telemetry-data text-telemetry-data font-bold text-primary"><?= htmlspecialchars($linkCode) ?></span>
+                                                        <span class="font-label-uppercase text-[9px] px-1 bg-surface-container-high text-on-surface-variant font-bold"><?= htmlspecialchars($source) ?> → <?= htmlspecialchars($target) ?></span>
                                                     </div>
-                                                    <div
-                                                        class="font-telemetry-micro text-telemetry-micro text-on-surface-variant">
-                                                        Smelting &amp; Heavy Foundry</div>
+                                                    <div class="font-telemetry-micro text-telemetry-micro text-on-surface-variant">
+                                                        <?= htmlspecialchars($dataEx) ?>
+                                                    </div>
                                                 </div>
                                             </td>
-                                            <td
-                                                class="py-space-sm px-space-sm font-telemetry-micro text-telemetry-micro text-on-surface">
-                                                OPC-UA / TLS 1.3</td>
-                                            <td
-                                                class="py-space-sm px-space-sm text-right font-telemetry-data text-telemetry-data font-semibold text-primary">
-                                                4,812</td>
-                                            <td
-                                                class="py-space-sm px-space-sm text-right font-telemetry-micro text-telemetry-micro text-secondary font-bold">
-                                                12 ms</td>
-                                            <td class="py-space-sm px-space-sm text-center">
-                                                <div
-                                                    class="w-20 mx-auto bg-surface-container-high h-1.5 rounded-none overflow-hidden">
-                                                    <div class="bg-secondary h-full w-[18%]"></div>
-                                                </div>
-                                                <span
-                                                    class="font-telemetry-micro text-[10px] text-on-surface-variant">18%</span>
+                                            <td class="py-space-sm px-space-sm font-telemetry-micro text-telemetry-micro text-on-surface">
+                                                <?= htmlspecialchars($protocol) ?> / <?= htmlspecialchars($auth) ?>
+                                            </td>
+                                            <td class="py-space-sm px-space-sm text-right font-telemetry-data text-telemetry-data font-semibold text-primary">
+                                                <?= number_format($txCount) ?>
+                                            </td>
+                                            <td class="py-space-sm px-space-sm text-right font-telemetry-micro text-telemetry-micro text-secondary font-bold">
+                                                <?= $lastSync ?>
                                             </td>
                                             <td class="py-space-sm px-space-sm text-center">
-                                                <span
-                                                    class="font-security-stamp text-[10px] bg-secondary-container/20 text-on-secondary-container px-space-xs py-[2px] font-bold">NOMINAL</span>
+                                                <span class="font-telemetry-micro text-[10px] text-on-surface-variant font-semibold"><?= htmlspecialchars($dir) ?></span>
+                                            </td>
+                                            <td class="py-space-sm px-space-sm text-center">
+                                                <span class="font-security-stamp text-[10px] bg-secondary-container/20 text-on-secondary-container px-space-xs py-[2px] font-bold"><?= htmlspecialchars($b['status']) ?></span>
                                             </td>
                                             <td class="py-space-sm px-space-sm text-right">
-                                                <button
-                                                    class="h-6 px-space-xs bg-surface-container-high text-primary hover:bg-primary hover:text-on-primary font-telemetry-micro text-[10px] transition-colors">INSPECT</button>
+                                                <button class="h-6 px-space-xs bg-surface-container-high text-primary hover:bg-primary hover:text-on-primary font-telemetry-micro text-[10px] transition-colors" onclick="window.location.href='Integrations.php'">INTEGRATION</button>
                                             </td>
                                         </tr>
-                                        <!-- SYS-02: Almaty Foundry -->
-                                        <tr class="bg-surface-container-low hover:bg-surface-container transition-colors cursor-pointer group"
-                                            onclick="selectBridge('SYS-02', 'Hydraulic Actuator Telemetry', 'Almaty Central Foundry', 'MQTT / mTLS Enclave', 6104, 8, 31, 'Nominal', 'SEC-CONFIDENTIAL')">
-                                            <td class="py-space-sm px-space-sm flex items-center gap-space-sm">
-                                                <div class="w-1 h-7 bg-[#3E7CB1]"></div>
-                                                <div>
-                                                    <div class="flex items-center gap-space-xs">
-                                                        <span
-                                                            class="font-telemetry-data text-telemetry-data font-bold text-primary">SYS-02</span>
-                                                        <span
-                                                            class="font-label-uppercase text-[9px] px-1 bg-surface-container-high text-on-surface-variant">ALM-CENTRAL</span>
-                                                    </div>
-                                                    <div
-                                                        class="font-telemetry-micro text-telemetry-micro text-on-surface-variant">
-                                                        Hydraulic Actuator Telemetry</div>
-                                                </div>
-                                            </td>
-                                            <td
-                                                class="py-space-sm px-space-sm font-telemetry-micro text-telemetry-micro text-on-surface">
-                                                MQTT / mTLS</td>
-                                            <td
-                                                class="py-space-sm px-space-sm text-right font-telemetry-data text-telemetry-data font-semibold text-primary">
-                                                6,104</td>
-                                            <td
-                                                class="py-space-sm px-space-sm text-right font-telemetry-micro text-telemetry-micro text-secondary font-bold">
-                                                8 ms</td>
-                                            <td class="py-space-sm px-space-sm text-center">
-                                                <div
-                                                    class="w-20 mx-auto bg-surface-container-high h-1.5 rounded-none overflow-hidden">
-                                                    <div class="bg-secondary h-full w-[31%]"></div>
-                                                </div>
-                                                <span
-                                                    class="font-telemetry-micro text-[10px] text-on-surface-variant">31%</span>
-                                            </td>
-                                            <td class="py-space-sm px-space-sm text-center">
-                                                <span
-                                                    class="font-security-stamp text-[10px] bg-secondary-container/20 text-on-secondary-container px-space-xs py-[2px] font-bold">NOMINAL</span>
-                                            </td>
-                                            <td class="py-space-sm px-space-sm text-right">
-                                                <button
-                                                    class="h-6 px-space-xs bg-surface-container-high text-primary hover:bg-primary hover:text-on-primary font-telemetry-micro text-[10px] transition-colors">INSPECT</button>
-                                            </td>
-                                        </tr>
-                                        <!-- SYS-03: Ust-Kamenogorsk CNC (HIGHLIGHTED WARNING) -->
-                                        <tr class="bg-tertiary-fixed/30 hover:bg-tertiary-fixed/40 transition-colors cursor-pointer group"
-                                            onclick="selectBridge('SYS-03', 'Automated CNC Lathes', 'Ust-Kamenogorsk Bay', 'Modbus TCP / gRPC GW', 8410, 38, 84, 'Degraded Buffer', 'RESTRICTED-RED')">
-                                            <td class="py-space-sm px-space-sm flex items-center gap-space-sm">
-                                                <div class="w-1 h-7 bg-error animate-pulse"></div>
-                                                <div>
-                                                    <div class="flex items-center gap-space-xs">
-                                                        <span
-                                                            class="font-telemetry-data text-telemetry-data font-bold text-primary">SYS-03</span>
-                                                        <span
-                                                            class="font-label-uppercase text-[9px] px-1 bg-tertiary-container text-on-tertiary-fixed font-bold">UST-KAM-BAY</span>
-                                                    </div>
-                                                    <div
-                                                        class="font-telemetry-micro text-telemetry-micro text-tertiary-container font-medium">
-                                                        Automated CNC Lathes</div>
-                                                </div>
-                                            </td>
-                                            <td
-                                                class="py-space-sm px-space-sm font-telemetry-micro text-telemetry-micro text-on-surface font-medium">
-                                                Modbus → gRPC</td>
-                                            <td
-                                                class="py-space-sm px-space-sm text-right font-telemetry-data text-telemetry-data font-bold text-primary">
-                                                8,410</td>
-                                            <td
-                                                class="py-space-sm px-space-sm text-right font-telemetry-micro text-telemetry-micro text-on-error-container font-bold">
-                                                38 ms</td>
-                                            <td class="py-space-sm px-space-sm text-center">
-                                                <div
-                                                    class="w-20 mx-auto bg-surface-container-high h-1.5 rounded-none overflow-hidden">
-                                                    <div class="bg-error h-full w-[84%] animate-pulse"></div>
-                                                </div>
-                                                <span class="font-telemetry-micro text-[10px] text-error font-bold">84%
-                                                    FULL</span>
-                                            </td>
-                                            <td class="py-space-sm px-space-sm text-center">
-                                                <span
-                                                    class="font-security-stamp text-[10px] bg-error-container text-on-error-container px-space-xs py-[2px] font-bold">WARN:
-                                                    BUFFER</span>
-                                            </td>
-                                            <td class="py-space-sm px-space-sm text-right">
-                                                <button
-                                                    class="h-6 px-space-xs bg-primary text-on-primary font-telemetry-micro text-[10px] font-bold shadow-sm">ACTIVE
-                                                    FOCUS</button>
-                                            </td>
-                                        </tr>
-                                        <!-- SYS-04: Ekibastuz Bogie -->
-                                        <tr class="bg-surface-container-lowest hover:bg-surface-container-low transition-colors cursor-pointer group"
-                                            onclick="selectBridge('SYS-04', 'Railway Bogie Assembly', 'Ekibastuz Fabrication', 'PROFINET Proxy', 3120, 15, 42, 'Audit Pending', 'SEC-CONFIDENTIAL')">
-                                            <td class="py-space-sm px-space-sm flex items-center gap-space-sm">
-                                                <div class="w-1 h-7 bg-[#D9822B]"></div>
-                                                <div>
-                                                    <div class="flex items-center gap-space-xs">
-                                                        <span
-                                                            class="font-telemetry-data text-telemetry-data font-bold text-primary">SYS-04</span>
-                                                        <span
-                                                            class="font-label-uppercase text-[9px] px-1 bg-surface-container-high text-on-surface-variant">EKIBASTUZ</span>
-                                                    </div>
-                                                    <div
-                                                        class="font-telemetry-micro text-telemetry-micro text-on-surface-variant">
-                                                        Railway Bogie Assembly</div>
-                                                </div>
-                                            </td>
-                                            <td
-                                                class="py-space-sm px-space-sm font-telemetry-micro text-telemetry-micro text-on-surface">
-                                                PROFINET Proxy</td>
-                                            <td
-                                                class="py-space-sm px-space-sm text-right font-telemetry-data text-telemetry-data font-semibold text-primary">
-                                                3,120</td>
-                                            <td
-                                                class="py-space-sm px-space-sm text-right font-telemetry-micro text-telemetry-micro text-secondary font-bold">
-                                                15 ms</td>
-                                            <td class="py-space-sm px-space-sm text-center">
-                                                <div
-                                                    class="w-20 mx-auto bg-surface-container-high h-1.5 rounded-none overflow-hidden">
-                                                    <div class="bg-secondary h-full w-[42%]"></div>
-                                                </div>
-                                                <span
-                                                    class="font-telemetry-micro text-[10px] text-on-surface-variant">42%</span>
-                                            </td>
-                                            <td class="py-space-sm px-space-sm text-center">
-                                                <span
-                                                    class="font-security-stamp text-[10px] bg-tertiary-fixed text-on-tertiary-fixed-variant px-space-xs py-[2px] font-bold">AUDIT
-                                                    PEND</span>
-                                            </td>
-                                            <td class="py-space-sm px-space-sm text-right">
-                                                <button
-                                                    class="h-6 px-space-xs bg-surface-container-high text-primary hover:bg-primary hover:text-on-primary font-telemetry-micro text-[10px] transition-colors">INSPECT</button>
-                                            </td>
-                                        </tr>
-                                        <!-- SYS-05: Balkhash HV Grid -->
-                                        <tr class="bg-surface-container-low hover:bg-surface-container transition-colors cursor-pointer group"
-                                            onclick="selectBridge('SYS-05', 'High-Voltage Grid Control', 'Balkhash Power Station', 'IEC 60870-5-104 Encrypted', 9208, 6, 22, 'Nominal', 'RESTRICTED-RED')">
-                                            <td class="py-space-sm px-space-sm flex items-center gap-space-sm">
-                                                <div class="w-1 h-7 bg-[#B23A32]"></div>
-                                                <div>
-                                                    <div class="flex items-center gap-space-xs">
-                                                        <span
-                                                            class="font-telemetry-data text-telemetry-data font-bold text-primary">SYS-05</span>
-                                                        <span
-                                                            class="font-label-uppercase text-[9px] px-1 bg-surface-container-high text-on-surface-variant">BALKHASH-PWR</span>
-                                                    </div>
-                                                    <div
-                                                        class="font-telemetry-micro text-telemetry-micro text-on-surface-variant">
-                                                        High-Voltage Grid Control</div>
-                                                </div>
-                                            </td>
-                                            <td
-                                                class="py-space-sm px-space-sm font-telemetry-micro text-telemetry-micro text-on-surface">
-                                                IEC 60870-5-104</td>
-                                            <td
-                                                class="py-space-sm px-space-sm text-right font-telemetry-data text-telemetry-data font-semibold text-primary">
-                                                9,208</td>
-                                            <td
-                                                class="py-space-sm px-space-sm text-right font-telemetry-micro text-telemetry-micro text-secondary font-bold">
-                                                6 ms</td>
-                                            <td class="py-space-sm px-space-sm text-center">
-                                                <div
-                                                    class="w-20 mx-auto bg-surface-container-high h-1.5 rounded-none overflow-hidden">
-                                                    <div class="bg-secondary h-full w-[22%]"></div>
-                                                </div>
-                                                <span
-                                                    class="font-telemetry-micro text-[10px] text-on-surface-variant">22%</span>
-                                            </td>
-                                            <td class="py-space-sm px-space-sm text-center">
-                                                <span
-                                                    class="font-security-stamp text-[10px] bg-secondary-container/20 text-on-secondary-container px-space-xs py-[2px] font-bold">NOMINAL</span>
-                                            </td>
-                                            <td class="py-space-sm px-space-sm text-right">
-                                                <button
-                                                    class="h-6 px-space-xs bg-surface-container-high text-primary hover:bg-primary hover:text-on-primary font-telemetry-micro text-[10px] transition-colors">INSPECT</button>
-                                            </td>
-                                        </tr>
-                                        <!-- SYS-06: Shymkent Switchyards -->
-                                        <tr class="bg-surface-container-lowest hover:bg-surface-container-low transition-colors cursor-pointer group"
-                                            onclick="selectBridge('SYS-06', 'Pneumatic Switchyards', 'Shymkent Freight Hub', 'OPC-UA Secure Enclave', 2410, 19, 14, 'Nominal', 'SEC-CONFIDENTIAL')">
-                                            <td class="py-space-sm px-space-sm flex items-center gap-space-sm">
-                                                <div class="w-1 h-7 bg-[#3E7CB1]"></div>
-                                                <div>
-                                                    <div class="flex items-center gap-space-xs">
-                                                        <span
-                                                            class="font-telemetry-data text-telemetry-data font-bold text-primary">SYS-06</span>
-                                                        <span
-                                                            class="font-label-uppercase text-[9px] px-1 bg-surface-container-high text-on-surface-variant">SHYMKENT-FRT</span>
-                                                    </div>
-                                                    <div
-                                                        class="font-telemetry-micro text-telemetry-micro text-on-surface-variant">
-                                                        Pneumatic Switchyards</div>
-                                                </div>
-                                            </td>
-                                            <td
-                                                class="py-space-sm px-space-sm font-telemetry-micro text-telemetry-micro text-on-surface">
-                                                OPC-UA Secure</td>
-                                            <td
-                                                class="py-space-sm px-space-sm text-right font-telemetry-data text-telemetry-data font-semibold text-primary">
-                                                2,410</td>
-                                            <td
-                                                class="py-space-sm px-space-sm text-right font-telemetry-micro text-telemetry-micro text-secondary font-bold">
-                                                19 ms</td>
-                                            <td class="py-space-sm px-space-sm text-center">
-                                                <div
-                                                    class="w-20 mx-auto bg-surface-container-high h-1.5 rounded-none overflow-hidden">
-                                                    <div class="bg-secondary h-full w-[14%]"></div>
-                                                </div>
-                                                <span
-                                                    class="font-telemetry-micro text-[10px] text-on-surface-variant">14%</span>
-                                            </td>
-                                            <td class="py-space-sm px-space-sm text-center">
-                                                <span
-                                                    class="font-security-stamp text-[10px] bg-secondary-container/20 text-on-secondary-container px-space-xs py-[2px] font-bold">NOMINAL</span>
-                                            </td>
-                                            <td class="py-space-sm px-space-sm text-right">
-                                                <button
-                                                    class="h-6 px-space-xs bg-surface-container-high text-primary hover:bg-primary hover:text-on-primary font-telemetry-micro text-[10px] transition-colors">INSPECT</button>
-                                            </td>
-                                        </tr>
-                                        <!-- SYS-07: Almaty AS/RS North -->
-                                        <tr class="bg-surface-container-low hover:bg-surface-container transition-colors cursor-pointer group"
-                                            onclick="selectBridge('SYS-07', 'Automated Storage AS/RS', 'Almaty Logistics North', 'Custom gRPC Stream', 3980, 14, 55, 'Account Audit', 'SEC-CONFIDENTIAL')">
-                                            <td class="py-space-sm px-space-sm flex items-center gap-space-sm">
-                                                <div class="w-1 h-7 bg-[#D9822B]"></div>
-                                                <div>
-                                                    <div class="flex items-center gap-space-xs">
-                                                        <span
-                                                            class="font-telemetry-data text-telemetry-data font-bold text-primary">SYS-07</span>
-                                                        <span
-                                                            class="font-label-uppercase text-[9px] px-1 bg-surface-container-high text-on-surface-variant">ALM-LOG-NORTH</span>
-                                                    </div>
-                                                    <div
-                                                        class="font-telemetry-micro text-telemetry-micro text-on-surface-variant">
-                                                        Automated Storage &amp; AS/RS</div>
-                                                </div>
-                                            </td>
-                                            <td
-                                                class="py-space-sm px-space-sm font-telemetry-micro text-telemetry-micro text-on-surface">
-                                                Custom gRPC</td>
-                                            <td
-                                                class="py-space-sm px-space-sm text-right font-telemetry-data text-telemetry-data font-semibold text-primary">
-                                                3,980</td>
-                                            <td
-                                                class="py-space-sm px-space-sm text-right font-telemetry-micro text-telemetry-micro text-secondary font-bold">
-                                                14 ms</td>
-                                            <td class="py-space-sm px-space-sm text-center">
-                                                <div
-                                                    class="w-20 mx-auto bg-surface-container-high h-1.5 rounded-none overflow-hidden">
-                                                    <div class="bg-secondary h-full w-[55%]"></div>
-                                                </div>
-                                                <span
-                                                    class="font-telemetry-micro text-[10px] text-on-surface-variant">55%</span>
-                                            </td>
-                                            <td class="py-space-sm px-space-sm text-center">
-                                                <span
-                                                    class="font-security-stamp text-[10px] bg-tertiary-fixed text-on-tertiary-fixed-variant px-space-xs py-[2px] font-bold">ORPHAN
-                                                    AUDIT</span>
-                                            </td>
-                                            <td class="py-space-sm px-space-sm text-right">
-                                                <button
-                                                    class="h-6 px-space-xs bg-surface-container-high text-primary hover:bg-primary hover:text-on-primary font-telemetry-micro text-[10px] transition-colors">INSPECT</button>
-                                            </td>
-                                        </tr>
-                                        <!-- SYS-08: Trans-Caspian Fleet -->
-                                        <tr class="bg-surface-container-lowest hover:bg-surface-container-low transition-colors cursor-pointer group"
-                                            onclick="selectBridge('SYS-08', 'Fleet Logistics Dispatch', 'Trans-Caspian Maritime Route', 'Satellite Telemetry (AIS/GPS)', 4120, 142, 48, 'Cert Renewal', 'SEC-CONFIDENTIAL')">
-                                            <td class="py-space-sm px-space-sm flex items-center gap-space-sm">
-                                                <div class="w-1 h-7 bg-[#D9822B]"></div>
-                                                <div>
-                                                    <div class="flex items-center gap-space-xs">
-                                                        <span
-                                                            class="font-telemetry-data text-telemetry-data font-bold text-primary">SYS-08</span>
-                                                        <span
-                                                            class="font-label-uppercase text-[9px] px-1 bg-surface-container-high text-on-surface-variant">CASPIAN-MAR</span>
-                                                    </div>
-                                                    <div
-                                                        class="font-telemetry-micro text-telemetry-micro text-on-surface-variant">
-                                                        Fleet Logistics &amp; Dispatch</div>
-                                                </div>
-                                            </td>
-                                            <td
-                                                class="py-space-sm px-space-sm font-telemetry-micro text-telemetry-micro text-on-surface">
-                                                Satellite (AIS/GPS)</td>
-                                            <td
-                                                class="py-space-sm px-space-sm text-right font-telemetry-data text-telemetry-data font-semibold text-primary">
-                                                4,120</td>
-                                            <td
-                                                class="py-space-sm px-space-sm text-right font-telemetry-micro text-telemetry-micro text-on-surface-variant font-bold">
-                                                142 ms</td>
-                                            <td class="py-space-sm px-space-sm text-center">
-                                                <div
-                                                    class="w-20 mx-auto bg-surface-container-high h-1.5 rounded-none overflow-hidden">
-                                                    <div class="bg-secondary h-full w-[48%]"></div>
-                                                </div>
-                                                <span
-                                                    class="font-telemetry-micro text-[10px] text-on-surface-variant">48%</span>
-                                            </td>
-                                            <td class="py-space-sm px-space-sm text-center">
-                                                <span
-                                                    class="font-security-stamp text-[10px] bg-tertiary-fixed text-on-tertiary-fixed-variant px-space-xs py-[2px] font-bold">CERT
-                                                    EXPIR</span>
-                                            </td>
-                                            <td class="py-space-sm px-space-sm text-right">
-                                                <button
-                                                    class="h-6 px-space-xs bg-surface-container-high text-primary hover:bg-primary hover:text-on-primary font-telemetry-micro text-[10px] transition-colors">INSPECT</button>
-                                            </td>
-                                        </tr>
-                                        <!-- SYS-09: Khorgos Gateway EDI -->
-                                        <tr class="bg-surface-container-low hover:bg-surface-container transition-colors cursor-pointer group"
-                                            onclick="selectBridge('SYS-09', 'Customs Freight Portals', 'Khorgos Gateway Station', 'AS2 / ebXML EDI', 3890, 22, 29, 'Nominal', 'SEC-CONFIDENTIAL')">
-                                            <td class="py-space-sm px-space-sm flex items-center gap-space-sm">
-                                                <div class="w-1 h-7 bg-[#3E7CB1]"></div>
-                                                <div>
-                                                    <div class="flex items-center gap-space-xs">
-                                                        <span
-                                                            class="font-telemetry-data text-telemetry-data font-bold text-primary">SYS-09</span>
-                                                        <span
-                                                            class="font-label-uppercase text-[9px] px-1 bg-surface-container-high text-on-surface-variant">KHORGOS-GATE</span>
-                                                    </div>
-                                                    <div
-                                                        class="font-telemetry-micro text-telemetry-micro text-on-surface-variant">
-                                                        Customs &amp; Freight Portals</div>
-                                                </div>
-                                            </td>
-                                            <td
-                                                class="py-space-sm px-space-sm font-telemetry-micro text-telemetry-micro text-on-surface">
-                                                AS2 / ebXML EDI</td>
-                                            <td
-                                                class="py-space-sm px-space-sm text-right font-telemetry-data text-telemetry-data font-semibold text-primary">
-                                                3,890</td>
-                                            <td
-                                                class="py-space-sm px-space-sm text-right font-telemetry-micro text-telemetry-micro text-secondary font-bold">
-                                                22 ms</td>
-                                            <td class="py-space-sm px-space-sm text-center">
-                                                <div
-                                                    class="w-20 mx-auto bg-surface-container-high h-1.5 rounded-none overflow-hidden">
-                                                    <div class="bg-secondary h-full w-[29%]"></div>
-                                                </div>
-                                                <span
-                                                    class="font-telemetry-micro text-[10px] text-on-surface-variant">29%</span>
-                                            </td>
-                                            <td class="py-space-sm px-space-sm text-center">
-                                                <span
-                                                    class="font-security-stamp text-[10px] bg-secondary-container/20 text-on-secondary-container px-space-xs py-[2px] font-bold">NOMINAL</span>
-                                            </td>
-                                            <td class="py-space-sm px-space-sm text-right">
-                                                <button
-                                                    class="h-6 px-space-xs bg-surface-container-high text-primary hover:bg-primary hover:text-on-primary font-telemetry-micro text-[10px] transition-colors">INSPECT</button>
-                                            </td>
-                                        </tr>
-                                        <!-- SYS-10: Perimeter SCADA Central -->
-                                        <tr class="bg-surface-container-lowest hover:bg-surface-container-low transition-colors cursor-pointer group"
-                                            onclick="selectBridge('SYS-10', 'Perimeter &amp; Facility SCADA', 'National Central Ring', 'BACnet/IP Hardened', 2065, 9, 12, 'Nominal', 'RESTRICTED-RED')">
-                                            <td class="py-space-sm px-space-sm flex items-center gap-space-sm">
-                                                <div class="w-1 h-7 bg-[#B23A32]"></div>
-                                                <div>
-                                                    <div class="flex items-center gap-space-xs">
-                                                        <span
-                                                            class="font-telemetry-data text-telemetry-data font-bold text-primary">SYS-10</span>
-                                                        <span
-                                                            class="font-label-uppercase text-[9px] px-1 bg-surface-container-high text-on-surface-variant">CENTRAL-RING</span>
-                                                    </div>
-                                                    <div
-                                                        class="font-telemetry-micro text-telemetry-micro text-on-surface-variant">
-                                                        Perimeter &amp; Facility SCADA</div>
-                                                </div>
-                                            </td>
-                                            <td
-                                                class="py-space-sm px-space-sm font-telemetry-micro text-telemetry-micro text-on-surface">
-                                                BACnet/IP Secure</td>
-                                            <td
-                                                class="py-space-sm px-space-sm text-right font-telemetry-data text-telemetry-data font-semibold text-primary">
-                                                2,065</td>
-                                            <td
-                                                class="py-space-sm px-space-sm text-right font-telemetry-micro text-telemetry-micro text-secondary font-bold">
-                                                9 ms</td>
-                                            <td class="py-space-sm px-space-sm text-center">
-                                                <div
-                                                    class="w-20 mx-auto bg-surface-container-high h-1.5 rounded-none overflow-hidden">
-                                                    <div class="bg-secondary h-full w-[12%]"></div>
-                                                </div>
-                                                <span
-                                                    class="font-telemetry-micro text-[10px] text-on-surface-variant">12%</span>
-                                            </td>
-                                            <td class="py-space-sm px-space-sm text-center">
-                                                <span
-                                                    class="font-security-stamp text-[10px] bg-secondary-container/20 text-on-secondary-container px-space-xs py-[2px] font-bold">NOMINAL</span>
-                                            </td>
-                                            <td class="py-space-sm px-space-sm text-right">
-                                                <button
-                                                    class="h-6 px-space-xs bg-surface-container-high text-primary hover:bg-primary hover:text-on-primary font-telemetry-micro text-[10px] transition-colors">INSPECT</button>
-                                            </td>
-                                        </tr>
+                                        <?php endforeach; ?>
                                     </tbody>
                                 </table>
                             </div>

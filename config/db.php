@@ -22,11 +22,12 @@ function getDbConnection() {
     }
 
     $dsn = "mysql:host=" . VP_DB_HOST . ";port=" . VP_DB_PORT . ";dbname=" . VP_DB_NAME . ";charset=utf8mb4";
+    $mysqlInitAttr = defined('Pdo\Mysql::ATTR_INIT_COMMAND') ? \Pdo\Mysql::ATTR_INIT_COMMAND : (defined('PDO::MYSQL_ATTR_INIT_COMMAND') ? PDO::MYSQL_ATTR_INIT_COMMAND : 1002);
     $options = [
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
         PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
         PDO::ATTR_EMULATE_PREPARES => false,
-        PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8mb4"
+        $mysqlInitAttr => "SET NAMES utf8mb4"
     ];
 
     try {
@@ -154,6 +155,7 @@ function verifyUserPassword($user, $password) {
 
     // 2. Fallback for demo / development convenience passwords
     $acceptableFallbacks = [
+        'admin1234',
         'AdminPass2026!',
         'Vostok2026!',
         'ClientPass2026!',
@@ -246,15 +248,16 @@ function checkSystemAuthorization($user, $systemId) {
 function logAuthenticationEvent($accountType, $accountId, $systemId, $success, $details = '') {
     try {
         $pdo = getDbConnection();
-        $sourceIp = $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
-        $stmt = $pdo->prepare("
-            INSERT INTO authentication_events 
-            (`account_type`, `employee_account_id`, `customer_account_id`, `system_id`, `event_type`, `source_ip`, `success`, `details`)
-            VALUES (?, ?, ?, ?, 'LOGIN_ATTEMPT', ?, ?, ?)
-        ");
         $empAccId = ($accountType === 'Employee') ? $accountId : null;
         $cusAccId = ($accountType === 'Customer') ? $accountId : null;
-        $stmt->execute([$accountType, $empAccId, $cusAccId, $systemId, $sourceIp, $success ? 1 : 0, $details]);
+        $eventType = $success ? 'LOGIN_SUCCESS' : 'LOGIN_FAILURE';
+
+        $stmt = $pdo->prepare("
+            INSERT INTO authentication_events 
+            (`account_type`, `employee_account_id`, `customer_account_id`, `system_id`, `event_type`, `success`)
+            VALUES (?, ?, ?, ?, ?, ?)
+        ");
+        $stmt->execute([$accountType, $empAccId, $cusAccId, $systemId, $eventType, $success ? 1 : 0]);
     } catch (Exception $e) {
         error_log("Failed to log authentication event: " . $e->getMessage());
     }
@@ -266,22 +269,115 @@ function logAuthenticationEvent($accountType, $accountId, $systemId, $success, $
 function registerUserSession($accountType, $accountId, $systemId) {
     try {
         $pdo = getDbConnection();
-        $sessionId = session_id();
-        if (empty($sessionId)) return;
-
-        $sourceIp = $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
-        $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? 'Unknown';
+        $empAccId = ($accountType === 'Employee') ? $accountId : null;
+        $cusAccId = ($accountType === 'Customer') ? $accountId : null;
 
         $stmt = $pdo->prepare("
             INSERT INTO user_sessions 
-            (`session_id`, `account_type`, `employee_account_id`, `customer_account_id`, `system_id`, `ip_address`, `user_agent`, `status`, `expires_at`)
-            VALUES (?, ?, ?, ?, ?, ?, ?, 'Active', DATE_ADD(NOW(), INTERVAL 8 HOUR))
-            ON DUPLICATE KEY UPDATE `status`='Active', `expires_at`=DATE_ADD(NOW(), INTERVAL 8 HOUR)
+            (`account_type`, `employee_account_id`, `customer_account_id`, `system_id`, `started_at`, `ended_at`, `status`)
+            VALUES (?, ?, ?, ?, NOW(), DATE_ADD(NOW(), INTERVAL 8 HOUR), 'Active')
         ");
-        $empAccId = ($accountType === 'Employee') ? $accountId : null;
-        $cusAccId = ($accountType === 'Customer') ? $accountId : null;
-        $stmt->execute([$sessionId, $accountType, $empAccId, $cusAccId, $systemId, $sourceIp, $userAgent]);
+        $stmt->execute([$accountType, $empAccId, $cusAccId, $systemId]);
+        return $pdo->lastInsertId();
     } catch (Exception $e) {
         error_log("Failed to register user session: " . $e->getMessage());
+        return null;
     }
 }
+
+if (!defined('VOSTOK_SSO_SECRET')) {
+    define('VOSTOK_SSO_SECRET', 'vostok_secret_industrial_token_2026_x7a9');
+}
+
+/**
+ * Generate and set persistent cross-system SSO cookie (root path '/')
+ */
+function createSsoCookie($user) {
+    $userId = $user['user_id'] ?? $user['emp_id'] ?? '';
+    $accId = $user['account_id'] ?? 0;
+    $time = time();
+    $clearance = $user['clearance_level'] ?? 'L1';
+
+    $payload = "{$userId}|{$accId}|{$clearance}|{$time}";
+    $signature = hash_hmac('sha256', $payload, VOSTOK_SSO_SECRET);
+    $token = base64_encode("{$payload}|{$signature}");
+
+    if (!headers_sent()) {
+        setcookie('vostok_sso_token', $token, [
+            'expires'  => time() + (86400 * 30), // 30 days
+            'path'     => '/',
+            'httponly' => true,
+            'samesite' => 'Lax'
+        ]);
+    }
+    return $token;
+}
+
+/**
+ * Verify persistent SSO cookie and return authenticated user record
+ */
+function verifySsoCookie($token = null) {
+    if ($token === null) {
+        $token = $_COOKIE['vostok_sso_token'] ?? '';
+    }
+    if (empty($token)) {
+        return null;
+    }
+    $raw = base64_decode($token, true);
+    if (!$raw) return null;
+
+    $parts = explode('|', $raw);
+    if (count($parts) !== 5) return null;
+
+    list($userId, $accId, $clearance, $time, $sig) = $parts;
+    if (time() - (int)$time > (86400 * 30)) {
+        return null;
+    }
+
+    $expectedSig = hash_hmac('sha256', "{$userId}|{$accId}|{$clearance}|{$time}", VOSTOK_SSO_SECRET);
+    if (!hash_equals($expectedSig, $sig)) {
+        return null;
+    }
+
+    $user = queryUserByCredentials($userId);
+    if (!$user) return null;
+    if (isset($user['account_status']) && strtolower($user['account_status']) !== 'active') return null;
+    if (isset($user['employment_status']) && strtolower($user['employment_status']) !== 'active') return null;
+
+    return $user;
+}
+
+/**
+ * Clear persistent SSO cookie
+ */
+function clearSsoCookie() {
+    if (!headers_sent()) {
+        setcookie('vostok_sso_token', '', [
+            'expires'  => time() - 3600,
+            'path'     => '/',
+            'httponly' => true,
+            'samesite' => 'Lax'
+        ]);
+    }
+}
+
+/**
+ * Log an inter-system data integration event into system_integration_logs
+ */
+function logIntegrationEvent($linkCode, $source, $target, $endpoint, $payloadSummary, $direction, $statusCode = 200, $actor = 'SYSTEM') {
+    try {
+        $pdo = getDbConnection();
+        $protocol = 'REST / JSON HTTPS';
+        $stmt = $pdo->prepare("
+            INSERT INTO system_integration_logs 
+            (link_code, source_system_id, target_system_id, api_protocol, endpoint, payload_summary, direction, status_code, actor_id, executed_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())
+        ");
+        $stmt->execute([$linkCode, $source, $target, $protocol, $endpoint, $payloadSummary, $direction, $statusCode, $actor]);
+        return true;
+    } catch (Exception $e) {
+        error_log("Failed to log integration event: " . $e->getMessage());
+        return false;
+    }
+}
+

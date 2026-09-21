@@ -1,3 +1,13 @@
+<?php
+require_once __DIR__ . '/../config/db.php';
+require_once __DIR__ . '/../includes/auth_guard.php';
+requireAuth('ADM');
+require_once __DIR__ . '/gov_service.php';
+
+$currentUser = gov_getActiveUserProfile();
+$securityPolicies = gov_getSecurityPolicies();
+$metrics = gov_getGovernanceMetrics();
+?>
 <!DOCTYPE html>
 
 <html lang="en">
@@ -153,10 +163,7 @@
                     </div>
                 </a></nav>
         </div>
-                    <a class="flex items-center gap-space-sm px-space-sm py-space-xs rounded text-error hover:bg-error-container hover:text-on-error-container transition-all font-body-compact text-body-compact mt-space-sm" href="../api/logout.php?system=Admin%20%26%20Governance%20Portal&redirect=../Admin%20%26%20Governance%20Portal/login.php" id="btn-logout" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" onclick="(function(){sessionStorage.clear();localStorage.clear();})()">
-                <span class="material-symbols-outlined text-[18px] text-error">logout</span>
-                <span>Log Out</span>
-            </a>
+                    
             <div class="p-space-md bg-primary-container/40 border-t border-outline/20 flex flex-col gap-space-2xs">
             <div class="flex items-center justify-between"><span
                     class="font-security-stamp text-[10px] text-secondary-fixed-dim uppercase tracking-wider">SEC-OPS
@@ -359,7 +366,7 @@
                         <button
                             class="h-control-height-sm px-space-sm bg-primary text-on-primary font-security-stamp uppercase font-semibold whitespace-nowrap shadow-sm"
                             type="button">
-                            All Policies (42)
+                            All Policies (<?= count($securityPolicies) ?>)
                         </button>
                         <button
                             class="h-control-height-sm px-space-sm bg-surface-container hover:bg-surface-container-high text-on-surface font-security-stamp uppercase whitespace-nowrap"
@@ -436,274 +443,50 @@
                                     </tr>
                                 </thead>
                                 <tbody class="font-body-default text-body-compact divide-y-0">
-                                    <!-- Row 1: POL-SEC-44 (Selected Row / Alert Red accent) -->
-                                    <tr
-                                        class="bg-surface-container-low hover:bg-surface-variant transition-colors border-l-[4px] border-error cursor-pointer">
+                                    <?php foreach ($securityPolicies as $p): 
+                                        $policyCode = $p['doc_id'] ?? ('POL-' . str_pad($p['policy_id'], 3, '0', STR_PAD_LEFT));
+                                        $policyName = $p['title'] ?? 'Enterprise Security Directive';
+                                        $policyDate = $p['effective_date'] ?? '2026-01-01';
+                                        $severity = $p['severity'] ?? ($p['policy_id'] <= 2 ? 'Critical' : 'High');
+                                        $enforceMode = $p['enforcement_mode'] ?? 'MANDATORY';
+                                        $desc = $p['description'] ?? 'Automated industrial compliance directive for telemetry and access control.';
+                                        $sysTarget = $p['system_id'] ?? 'SYS-01..11';
+                                        $isCrit = ($severity === 'Critical' || $severity === 'High');
+                                        $colorClass = $isCrit ? 'border-error' : 'border-secondary';
+                                        $badgeClass = $isCrit ? 'bg-error text-on-error' : 'bg-primary-fixed text-on-primary-fixed-variant';
+                                    ?>
+                                    <tr class="bg-surface-container-lowest hover:bg-surface-container-low transition-colors border-l-[4px] <?= $colorClass ?> cursor-pointer">
                                         <td class="py-space-xs px-space-sm text-center">
-                                            <span
-                                                class="px-space-2xs py-[1px] bg-error text-on-error font-security-stamp text-[9px] font-bold">H-CONF</span>
+                                            <span class="px-space-2xs py-[1px] <?= $badgeClass ?> font-security-stamp text-[9px] font-bold"><?= htmlspecialchars($severity) ?></span>
                                         </td>
-                                        <td
-                                            class="py-space-xs px-space-sm font-telemetry-data text-telemetry-data font-bold text-primary">
-                                            POL-SEC-44
+                                        <td class="py-space-xs px-space-sm font-telemetry-data text-telemetry-data font-bold text-primary">
+                                            <?= htmlspecialchars($policyCode) ?>
                                         </td>
                                         <td class="py-space-xs px-space-sm">
                                             <div class="flex flex-col">
-                                                <span class="font-semibold text-primary">Mandatory Dual-Custody SCADA
-                                                    Lathe Override</span>
-                                                <span
-                                                    class="font-telemetry-micro text-telemetry-micro text-on-surface-variant">Requires
-                                                    2 active YubiKey tokens &amp; video telemetry ack before
-                                                    bypass.</span>
+                                                <span class="font-semibold text-primary"><?= htmlspecialchars($policyName) ?></span>
+                                                <span class="font-telemetry-micro text-telemetry-micro text-on-surface-variant"><?= htmlspecialchars($desc) ?></span>
                                             </div>
                                         </td>
                                         <td class="py-space-xs px-space-sm">
-                                            <span
-                                                class="px-space-xs py-[1px] bg-primary text-on-primary font-telemetry-micro text-[10px] font-semibold">SYS-03
-                                                CNC</span>
+                                            <span class="px-space-xs py-[1px] bg-primary text-on-primary font-telemetry-micro text-[10px] font-semibold"><?= htmlspecialchars($sysTarget) ?></span>
                                         </td>
                                         <td class="py-space-xs px-space-sm text-center">
-                                            <span
-                                                class="px-space-xs py-[2px] bg-error-container text-on-error-container font-security-stamp text-[9px] font-bold uppercase">HARD
-                                                BLOCK</span>
+                                            <span class="px-space-xs py-[2px] <?= $isCrit ? 'bg-error-container text-on-error-container' : 'bg-secondary-container text-on-secondary-container' ?> font-security-stamp text-[9px] font-bold uppercase"><?= htmlspecialchars($enforceMode) ?></span>
                                         </td>
                                         <td class="py-space-xs px-space-sm font-telemetry-micro text-telemetry-micro">
                                             <div class="flex flex-col">
-                                                <span class="text-primary font-semibold">EMP-1005 (Akhmetov)</span>
-                                                <span class="text-on-surface-variant text-[10px]">2026-03-28
-                                                    09:14</span>
+                                                <span class="text-primary font-semibold">ALMATY-HQ</span>
+                                                <span class="text-on-surface-variant text-[10px]"><?= htmlspecialchars($policyDate) ?></span>
                                             </div>
                                         </td>
                                         <td class="py-space-xs px-space-sm text-right">
-                                            <button
-                                                class="h-control-height-sm px-space-xs bg-primary text-on-primary font-telemetry-micro text-[10px] uppercase hover:bg-primary-container"
-                                                type="button">
+                                            <button class="h-control-height-sm px-space-xs bg-primary text-on-primary font-telemetry-micro text-[10px] uppercase hover:bg-primary-container" type="button">
                                                 INSPECT
                                             </button>
                                         </td>
                                     </tr>
-                                    <!-- Row 2: POL-NET-12 (Alert Red accent) -->
-                                    <tr
-                                        class="bg-surface-container-lowest hover:bg-surface-container-low transition-colors border-l-[4px] border-error">
-                                        <td class="py-space-xs px-space-sm text-center">
-                                            <span
-                                                class="px-space-2xs py-[1px] bg-error text-on-error font-security-stamp text-[9px] font-bold">H-CONF</span>
-                                        </td>
-                                        <td
-                                            class="py-space-xs px-space-sm font-telemetry-data text-telemetry-data font-bold text-primary">
-                                            POL-NET-12
-                                        </td>
-                                        <td class="py-space-xs px-space-sm">
-                                            <div class="flex flex-col">
-                                                <span class="font-semibold text-primary">Air-Gapped Telemetry Node
-                                                    Gateway Isolation</span>
-                                                <span
-                                                    class="font-telemetry-micro text-telemetry-micro text-on-surface-variant">Physical
-                                                    optical diode unidirectional enforcement; packet reflection
-                                                    tripwire.</span>
-                                            </div>
-                                        </td>
-                                        <td class="py-space-xs px-space-sm">
-                                            <span
-                                                class="px-space-xs py-[1px] bg-surface-container-high text-on-surface font-telemetry-micro text-[10px]">SYS-05
-                                                GRID</span>
-                                        </td>
-                                        <td class="py-space-xs px-space-sm text-center">
-                                            <span
-                                                class="px-space-xs py-[2px] bg-error-container text-on-error-container font-security-stamp text-[9px] font-bold uppercase">HARD
-                                                BLOCK</span>
-                                        </td>
-                                        <td class="py-space-xs px-space-sm font-telemetry-micro text-telemetry-micro">
-                                            <div class="flex flex-col">
-                                                <span class="text-primary font-semibold">EMP-1018 (Zhumabay)</span>
-                                                <span class="text-on-surface-variant text-[10px]">2026-03-27
-                                                    16:30</span>
-                                            </div>
-                                        </td>
-                                        <td class="py-space-xs px-space-sm text-right">
-                                            <button
-                                                class="h-control-height-sm px-space-xs bg-surface-container hover:bg-surface-variant text-on-surface font-telemetry-micro text-[10px] uppercase"
-                                                type="button">
-                                                SIMULATE
-                                            </button>
-                                        </td>
-                                    </tr>
-                                    <!-- Row 3: POL-AUTH-08 (Signal Amber accent) -->
-                                    <tr
-                                        class="bg-surface-container-lowest hover:bg-surface-container-low transition-colors border-l-[4px] border-on-tertiary-container">
-                                        <td class="py-space-xs px-space-sm text-center">
-                                            <span
-                                                class="px-space-2xs py-[1px] bg-tertiary-fixed text-on-tertiary-fixed-variant font-security-stamp text-[9px] font-bold">CONFID</span>
-                                        </td>
-                                        <td
-                                            class="py-space-xs px-space-sm font-telemetry-data text-telemetry-data font-bold text-primary">
-                                            POL-AUTH-08
-                                        </td>
-                                        <td class="py-space-xs px-space-sm">
-                                            <div class="flex flex-col">
-                                                <span class="font-semibold text-primary">Contractor Credential Automatic
-                                                    Expiry &amp; Severance</span>
-                                                <span
-                                                    class="font-telemetry-micro text-telemetry-micro text-on-surface-variant">Revokes
-                                                    Kerberos ticket-granting session post 180m inactivity.</span>
-                                            </div>
-                                        </td>
-                                        <td class="py-space-xs px-space-sm">
-                                            <span
-                                                class="px-space-xs py-[1px] bg-surface-container-high text-on-surface font-telemetry-micro text-[10px]">SYS-01..11</span>
-                                        </td>
-                                        <td class="py-space-xs px-space-sm text-center">
-                                            <span
-                                                class="px-space-xs py-[2px] bg-secondary-container text-on-secondary-container font-security-stamp text-[9px] font-bold uppercase">ENFORCED</span>
-                                        </td>
-                                        <td class="py-space-xs px-space-sm font-telemetry-micro text-telemetry-micro">
-                                            <div class="flex flex-col">
-                                                <span class="text-primary font-semibold">EMP-1005 (Akhmetov)</span>
-                                                <span class="text-on-surface-variant text-[10px]">2026-03-26
-                                                    11:20</span>
-                                            </div>
-                                        </td>
-                                        <td class="py-space-xs px-space-sm text-right">
-                                            <button
-                                                class="h-control-height-sm px-space-xs bg-surface-container hover:bg-surface-variant text-on-surface font-telemetry-micro text-[10px] uppercase"
-                                                type="button">
-                                                AUDIT
-                                            </button>
-                                        </td>
-                                    </tr>
-                                    <!-- Row 4: POL-CRYPTO-03 (Cool Blue accent) -->
-                                    <tr
-                                        class="bg-surface-container-lowest hover:bg-surface-container-low transition-colors border-l-[4px] border-secondary">
-                                        <td class="py-space-xs px-space-sm text-center">
-                                            <span
-                                                class="px-space-2xs py-[1px] bg-primary-fixed text-on-primary-fixed-variant font-security-stamp text-[9px] font-bold">INTERNAL</span>
-                                        </td>
-                                        <td
-                                            class="py-space-xs px-space-sm font-telemetry-data text-telemetry-data font-bold text-primary">
-                                            POL-CRYPTO-03
-                                        </td>
-                                        <td class="py-space-xs px-space-sm">
-                                            <div class="flex flex-col">
-                                                <span class="font-semibold text-primary">HSM Hardware Key Rotation
-                                                    Interval (90-Day Cadence)</span>
-                                                <span
-                                                    class="font-telemetry-micro text-telemetry-micro text-on-surface-variant">Cryptographic
-                                                    entropy validation across PKCS#11 hardware slots.</span>
-                                            </div>
-                                        </td>
-                                        <td class="py-space-xs px-space-sm">
-                                            <span
-                                                class="px-space-xs py-[1px] bg-secondary-container text-on-secondary-container font-telemetry-micro text-[10px] font-bold">SYS-11
-                                                GOV</span>
-                                        </td>
-                                        <td class="py-space-xs px-space-sm text-center">
-                                            <span
-                                                class="px-space-xs py-[2px] bg-surface-container-high text-on-surface font-security-stamp text-[9px] font-bold uppercase">COMPLIANT</span>
-                                        </td>
-                                        <td class="py-space-xs px-space-sm font-telemetry-micro text-telemetry-micro">
-                                            <div class="flex flex-col">
-                                                <span class="text-primary font-semibold">EMP-1044 (Kozlov)</span>
-                                                <span class="text-on-surface-variant text-[10px]">2026-03-25
-                                                    08:00</span>
-                                            </div>
-                                        </td>
-                                        <td class="py-space-xs px-space-sm text-right">
-                                            <button
-                                                class="h-control-height-sm px-space-xs bg-surface-container hover:bg-surface-variant text-on-surface font-telemetry-micro text-[10px] uppercase"
-                                                type="button">
-                                                ROTATE
-                                            </button>
-                                        </td>
-                                    </tr>
-                                    <!-- Row 5: POL-INGEST-19 (Cool Blue accent) -->
-                                    <tr
-                                        class="bg-surface-container-lowest hover:bg-surface-container-low transition-colors border-l-[4px] border-secondary">
-                                        <td class="py-space-xs px-space-sm text-center">
-                                            <span
-                                                class="px-space-2xs py-[1px] bg-primary-fixed text-on-primary-fixed-variant font-security-stamp text-[9px] font-bold">INTERNAL</span>
-                                        </td>
-                                        <td
-                                            class="py-space-xs px-space-sm font-telemetry-data text-telemetry-data font-bold text-primary">
-                                            POL-INGEST-19
-                                        </td>
-                                        <td class="py-space-xs px-space-sm">
-                                            <div class="flex flex-col">
-                                                <span class="font-semibold text-primary">Real-time Ephemeral Syslog
-                                                    Retention &amp; Tamper Verification</span>
-                                                <span
-                                                    class="font-telemetry-micro text-telemetry-micro text-on-surface-variant">Merkle-root
-                                                    signing of high-throughput audit streams prior to disk
-                                                    commit.</span>
-                                            </div>
-                                        </td>
-                                        <td class="py-space-xs px-space-sm">
-                                            <span
-                                                class="px-space-xs py-[1px] bg-surface-container-high text-on-surface font-telemetry-micro text-[10px]">SYS-01..10</span>
-                                        </td>
-                                        <td class="py-space-xs px-space-sm text-center">
-                                            <span
-                                                class="px-space-xs py-[2px] bg-secondary-container text-on-secondary-container font-security-stamp text-[9px] font-bold uppercase">ENFORCED</span>
-                                        </td>
-                                        <td class="py-space-xs px-space-sm font-telemetry-micro text-telemetry-micro">
-                                            <div class="flex flex-col">
-                                                <span class="text-primary font-semibold">EMP-1005 (Akhmetov)</span>
-                                                <span class="text-on-surface-variant text-[10px]">2026-03-24
-                                                    14:15</span>
-                                            </div>
-                                        </td>
-                                        <td class="py-space-xs px-space-sm text-right">
-                                            <button
-                                                class="h-control-height-sm px-space-xs bg-surface-container hover:bg-surface-variant text-on-surface font-telemetry-micro text-[10px] uppercase"
-                                                type="button">
-                                                VERIFY
-                                            </button>
-                                        </td>
-                                    </tr>
-                                    <!-- Row 6: POL-EMERG-01 (Alert Red accent) -->
-                                    <tr
-                                        class="bg-surface-container-lowest hover:bg-surface-container-low transition-colors border-l-[4px] border-error">
-                                        <td class="py-space-xs px-space-sm text-center">
-                                            <span
-                                                class="px-space-2xs py-[1px] bg-error text-on-error font-security-stamp text-[9px] font-bold">H-CONF</span>
-                                        </td>
-                                        <td
-                                            class="py-space-xs px-space-sm font-telemetry-data text-telemetry-data font-bold text-primary">
-                                            POL-EMERG-01
-                                        </td>
-                                        <td class="py-space-xs px-space-sm">
-                                            <div class="flex flex-col">
-                                                <span class="font-semibold text-primary">Physical Break-Glass Interlock
-                                                    &amp; Vault Custody</span>
-                                                <span
-                                                    class="font-telemetry-micro text-telemetry-micro text-on-surface-variant">Triggers
-                                                    immediate siren, sovereign CCTV recording, and DEFCON
-                                                    escalation.</span>
-                                            </div>
-                                        </td>
-                                        <td class="py-space-xs px-space-sm">
-                                            <span
-                                                class="px-space-xs py-[1px] bg-error-container text-on-error-container font-telemetry-micro text-[10px] font-bold">ALL
-                                                GOV</span>
-                                        </td>
-                                        <td class="py-space-xs px-space-sm text-center">
-                                            <span
-                                                class="px-space-xs py-[2px] bg-error text-on-error font-security-stamp text-[9px] font-bold uppercase">ARMED</span>
-                                        </td>
-                                        <td class="py-space-xs px-space-sm font-telemetry-micro text-telemetry-micro">
-                                            <div class="flex flex-col">
-                                                <span class="text-primary font-semibold">SEC-COUNCIL-HQ</span>
-                                                <span class="text-on-surface-variant text-[10px]">2026-03-20
-                                                    00:00</span>
-                                            </div>
-                                        </td>
-                                        <td class="py-space-xs px-space-sm text-right">
-                                            <button
-                                                class="h-control-height-sm px-space-xs bg-surface-container hover:bg-surface-variant text-on-surface font-telemetry-micro text-[10px] uppercase"
-                                                type="button">
-                                                MANAGE
-                                            </button>
-                                        </td>
-                                    </tr>
+                                    <?php endforeach; ?>
                                 </tbody>
                             </table>
                         </div>
@@ -711,7 +494,7 @@
                         <div
                             class="h-control-height-sm px-space-md bg-surface-container flex items-center justify-between font-telemetry-micro text-telemetry-micro text-on-surface-variant">
                             <div class="flex items-center gap-space-sm">
-                                <span>SHOWING 6 OF 42 ACTIVE DIRECTIVES</span>
+                                <span>SHOWING <?= count($securityPolicies) ?> ACTIVE DATABASE DIRECTIVES</span>
                                 <span class="text-outline-variant">|</span>
                                 <span class="text-primary font-semibold">CRYPTO REGISTRATION ID: #REG-KZ-8812</span>
                             </div>

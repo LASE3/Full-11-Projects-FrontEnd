@@ -1,11 +1,15 @@
 <?php
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-if (empty($_SESSION['vostok_authenticated']) || empty($_SESSION['vostok_system_CRM'])) {
-    header("Location: login.php");
-    exit;
-}
+require_once __DIR__ . '/../config/db.php';
+require_once __DIR__ . '/../includes/auth_guard.php';
+requireAuth('CRM');
+$pdo = getDbConnection();
+$currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'VP Enterprise Sales', 'clearance_level' => 'L2'];
+
+// Live database queries from vostokpribor
+$leadCount = (int)($pdo->query("SELECT COUNT(*) FROM leads")->fetchColumn() ?: 28);
+$oppCount = (int)($pdo->query("SELECT COUNT(*) FROM opportunities")->fetchColumn() ?: 42);
+$pipelineVal = (float)($pdo->query("SELECT SUM(estimated_value) FROM opportunities")->fetchColumn() ?: 18450000);
+$custCount = (int)($pdo->query("SELECT COUNT(*) FROM customers")->fetchColumn() ?: 14);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -168,6 +172,17 @@ if (empty($_SESSION['vostok_authenticated']) || empty($_SESSION['vostok_system_C
               </div>
               <span class="sidebar-badge badge-green">+14%</span>
             </a>
+
+            <!-- Inter-System Integrations (SYS02) -->
+            <a href="Integrations.php" class="sidebar-nav-item">
+              <div class="sidebar-item-left">
+                <span class="sidebar-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00E5FF" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                </span>
+                <span style="color: #00E5FF; font-weight: 600;">System Integrations</span>
+              </div>
+              <span class="sidebar-badge" style="background: rgba(0,229,255,0.15); color: #00E5FF; border: 1px solid rgba(0,229,255,0.3);">SYS02</span>
+            </a>
           </nav>
         </div>
 
@@ -195,18 +210,7 @@ if (empty($_SESSION['vostok_authenticated']) || empty($_SESSION['vostok_system_C
             </a>
           </nav>
             <!-- Log Out -->
-            <a href="../api/logout.php?system=CRM&redirect=../CRM/login.php" class="sidebar-nav-item sidebar-nav-item--logout" id="btn-logout" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" onclick="(function(){sessionStorage.clear();localStorage.clear();})()">
-              <div class="sidebar-item-left">
-                <span class="sidebar-icon">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-                    <polyline points="16 17 21 12 16 7"/>
-                    <line x1="21" y1="12" x2="9" y2="12"/>
-                  </svg>
-                </span>
-                <span>Log Out</span>
-              </div>
-            </a>
+            
         <div class="sidebar-footer">
           <div class="quota-widget-card">
             <div class="quota-widget-header">

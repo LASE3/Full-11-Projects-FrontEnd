@@ -121,11 +121,7 @@ $initError = $_GET['error'] ?? '';
             <span class="btn-text">Log In as Employee</span>
           </button>
 
-          <div class="auth-demo-helper">
-            <button type="button" class="btn-demo-autofill" onclick="fillDemoCredentials()">
-              ⚡ Autofill Demo Credentials
-            </button>
-          </div>
+          
         </form>
       </div>
 
@@ -188,11 +184,14 @@ $initError = $_GET['error'] ?? '';
 
         const userId = userIdInput.value.trim();
         const password = passwordInput.value;
-
-        let finalUserId = userId || 'EMP-1002';
-        let finalPassword = password || 'SalesPass2026!';
-        if (!userId) userIdInput.value = 'EMP-1002';
-        if (!password) passwordInput.value = 'SalesPass2026!';
+        if (!userId) {
+          showAlert('Please enter your User ID or email.', true);
+          return;
+        }
+        if (!password) {
+          showAlert('Please enter your password.', true);
+          return;
+        }
 
         submitBtn.classList.add('is-loading');
         submitBtn.disabled = true;
@@ -234,12 +233,6 @@ $initError = $_GET['error'] ?? '';
           showAlert('Database connection error: ' + err.message, true);
         });
       });
-
-      window.fillDemoCredentials = function () {
-        userIdInput.value = 'EMP-VP-1019';
-        passwordInput.value = 'Vostok2026!';
-        hideAlert();
-      };
 
       window.handleForgotCredentials = function () {
         showAlert('Contact HR or Internal IT Helpdesk (ext. 2244) for password reset.', true);

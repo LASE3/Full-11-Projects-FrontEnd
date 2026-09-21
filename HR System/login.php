@@ -80,7 +80,7 @@ $initError = $_GET['error'] ?? '';
           <input type="hidden" name="redirect" value="Dashboard.php">
           <div class="form-group">
             <label for="userId" class="form-label">
-              <span>HR Personnel ID</span>
+              <span>HR Personnel ID / Email</span>
               <span style="color: var(--auth-accent);">*</span>
             </label>
             <div class="input-container">
@@ -91,8 +91,8 @@ $initError = $_GET['error'] ?? '';
                 <line x1="15" y1="12" x2="17" y2="12"></line>
                 <line x1="7" y1="16" x2="17" y2="16"></line>
               </svg>
-              <input type="text" id="userId" name="userId" class="form-input" placeholder="EMP-842 or HR-VP-104"
-                autocomplete="username"  autofocus>
+              <input type="text" id="userId" name="userId" class="form-input" placeholder="e.g. EMP-1002 or username"
+                autocomplete="username" autofocus>
             </div>
           </div>
 
@@ -107,7 +107,7 @@ $initError = $_GET['error'] ?? '';
                 <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
               </svg>
               <input type="password" id="password" name="password" class="form-input" placeholder="••••••••"
-                autocomplete="current-password" >
+                autocomplete="current-password">
               <button type="button" id="toggle-password-btn" class="password-toggle-btn"
                 aria-label="Toggle password visibility" title="Show/Hide Password">
                 <svg id="eye-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -131,14 +131,7 @@ $initError = $_GET['error'] ?? '';
             <span class="btn-text">Authenticate Session</span>
           </button>
 
-          <!-- Quick Autofill Helper -->
-          <div class="demo-credentials-box">
-            <div class="demo-credentials-info">
-              <span class="demo-title">Default Demo Access</span>
-              <span class="demo-desc">Valeria Zaytseva (Chief HR Officer · Level 4)</span>
-            </div>
-            <button type="button" class="demo-fill-btn" onclick="fillDemoCredentials()">Autofill</button>
-          </div>
+          </button>
         </form>
       </div>
 
@@ -205,10 +198,14 @@ $initError = $_GET['error'] ?? '';
         const userId = userIdInput.value.trim();
         const password = passwordInput.value;
 
-        let finalUserId = userId || 'EMP-1003';
-        let finalPassword = password || 'HrPass2026!';
-        if (!userId) userIdInput.value = 'EMP-1003';
-        if (!password) passwordInput.value = 'HrPass2026!';
+        if (!userId) {
+          showAlert('Please enter your HR Personnel ID or email.', true);
+          return;
+        }
+        if (!password) {
+          showAlert('Please enter your security clearance password.', true);
+          return;
+        }
 
         submitBtn.classList.add('is-loading');
         submitBtn.disabled = true;
@@ -241,7 +238,7 @@ $initError = $_GET['error'] ?? '';
           } else {
             submitBtn.classList.remove('is-loading');
             submitBtn.disabled = false;
-            showAlert(data.message || 'Authentication failed: Invalid credentials or insufficient clearance.', true);
+            showAlert(data.message || 'Authentication failed. Please verify credentials.', true);
           }
         })
         .catch(err => {
@@ -250,13 +247,6 @@ $initError = $_GET['error'] ?? '';
           showAlert('Database connection error: ' + err.message, true);
         });
       });
-
-      // Quick autofill for demonstration
-      window.fillDemoCredentials = function () {
-        userIdInput.value = 'HR-VP-201';
-        passwordInput.value = 'AdminPass2026!';
-        hideAlert();
-      };
 
       window.handleForgotCredentials = function () {
         showAlert('Clearance Recovery: Please contact Root SecOps or the Internal Affairs Registry.', true);

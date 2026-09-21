@@ -1,3 +1,13 @@
+<?php
+require_once __DIR__ . '/../config/db.php';
+require_once __DIR__ . '/../includes/auth_guard.php';
+requireAuth('ADM');
+require_once __DIR__ . '/gov_service.php';
+
+$currentUser = gov_getActiveUserProfile();
+$metrics = gov_getGovernanceMetrics();
+$breakGlassEvents = gov_getBreakGlassEvents();
+?>
 <!DOCTYPE html>
 
 <html lang="en">
@@ -154,10 +164,7 @@
                     </div>
                 </a></nav>
         </div>
-                    <a class="flex items-center gap-space-sm px-space-sm py-space-xs rounded text-error hover:bg-error-container hover:text-on-error-container transition-all font-body-compact text-body-compact mt-space-sm" href="../api/logout.php?system=Admin%20%26%20Governance%20Portal&redirect=../Admin%20%26%20Governance%20Portal/login.php" id="btn-logout" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" onclick="(function(){sessionStorage.clear();localStorage.clear();})()">
-                <span class="material-symbols-outlined text-[18px] text-error">logout</span>
-                <span>Log Out</span>
-            </a>
+                    
             <div class="p-space-md bg-primary-container/40 border-t border-outline/20 flex flex-col gap-space-2xs">
             <div class="flex items-center justify-between"><span
                     class="font-security-stamp text-[10px] text-secondary-fixed-dim uppercase tracking-wider">SEC-OPS
@@ -733,39 +740,22 @@
                             <span class="font-telemetry-micro text-telemetry-micro text-on-surface-variant font-bold">2
                                 SESSIONS RECORDED</span>
                         </div>
+                        
                         <div class="space-y-space-xs font-telemetry-micro text-telemetry-micro">
-                            <!-- Session 1 -->
-                            <div class="p-space-xs bg-surface-container-low">
+                            <?php foreach ($breakGlassEvents as $idx => $bge): ?>
+                            <div class="p-space-xs bg-surface-container-low mb-space-xs">
                                 <div class="flex items-center justify-between">
-                                    <span class="font-bold text-on-surface font-telemetry-data">#BG-1092 // 14 JAN
-                                        2026</span>
-                                    <span
-                                        class="bg-surface-container text-on-surface-variant font-label-uppercase text-label-uppercase px-space-2xs">PURGED
-                                        &amp; AUDITED</span>
+                                    <span class="font-bold text-on-surface font-telemetry-data">#EVT-<?= sprintf('%04d', $bge['event_id']) ?> // <?= htmlspecialchars(substr($bge['event_time'], 0, 16)) ?></span>
+                                    <span class="bg-surface-container text-on-surface-variant font-label-uppercase text-label-uppercase px-space-2xs font-bold"><?= htmlspecialchars($bge['severity']) ?></span>
                                 </div>
                                 <div class="text-on-surface-variant text-[11px] mt-space-2xs">
-                                    Facility: Karaganda Foundry Sub-Station 2<br />
-                                    Duration: 14m 22s | Reason: RC-01 (Grid Phase Desync)<br />
-                                    Custodians: T. Akhmetov &amp; Leonid Volkov<br />
-                                    Merkle Root: <span class="font-mono text-primary">0x5f9a...88c1</span>
+                                    System Node: <strong class="text-primary"><?= htmlspecialchars($bge['system_id'] ?? 'SYS-11') ?></strong><br />
+                                    Actor: <?= htmlspecialchars($bge['actor_emp_id'] ?? 'SYS-AUTO') ?> (<?= htmlspecialchars($bge['actor_name'] ?? 'System Core') ?>)<br />
+                                    Log: <?= htmlspecialchars($bge['description']) ?><br />
+                                    Type: <span class="font-mono text-primary font-bold"><?= htmlspecialchars($bge['event_type']) ?></span>
                                 </div>
                             </div>
-                            <!-- Session 2 -->
-                            <div class="p-space-xs bg-surface-container-low">
-                                <div class="flex items-center justify-between">
-                                    <span class="font-bold text-on-surface font-telemetry-data">#BG-1088 // 02 NOV
-                                        2025</span>
-                                    <span
-                                        class="bg-surface-container text-on-surface-variant font-label-uppercase text-label-uppercase px-space-2xs">SEALED
-                                        STATE ARCHIVE</span>
-                                </div>
-                                <div class="text-on-surface-variant text-[11px] mt-space-2xs">
-                                    Facility: Central Vault Microcode Enclave<br />
-                                    Duration: 28m 10s | Reason: RC-07 (Root Re-Attestation)<br />
-                                    Custodians: T. Akhmetov &amp; K. Nurmagambetov<br />
-                                    Merkle Root: <span class="font-mono text-primary">0x911e...34d8</span>
-                                </div>
-                            </div>
+                            <?php endforeach; ?>
                         </div>
                     </div>
                     <!-- CENTER: SOVEREIGN STATE NETWORK TELEMETRY LINK TOPOLOGY (4 COLS) -->

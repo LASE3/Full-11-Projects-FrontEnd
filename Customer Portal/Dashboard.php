@@ -1,11 +1,9 @@
 <?php
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-if (empty($_SESSION['vostok_authenticated']) || empty($_SESSION['vostok_system_CUS'])) {
-    header("Location: login.php");
-    exit;
-}
+require_once __DIR__ . '/../config/db.php';
+require_once __DIR__ . '/../includes/auth_guard.php';
+requireAuth('Customer');
+$pdo = getDbConnection();
+$currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clearance_level' => 'L2'];
 ?>
 <!DOCTYPE html>
 
@@ -159,16 +157,10 @@ if (empty($_SESSION['vostok_authenticated']) || empty($_SESSION['vostok_system_C
                         </path>
                         <circle cx="12" cy="12" r="3"></circle>
                     </svg><span class="">Account Settings</span></a>
+<a class="flex items-center gap-unit-sm px-unit-base py-unit-sm text-secondary-fixed hover:bg-surface-container-high/5 hover:text-on-primary transition-colors font-headline-sm text-headline-sm font-semibold" data-path="integrations" href="Integrations.php"><svg class="w-4 h-4 shrink-0 text-secondary-fixed" fill="none" stroke="#00E5FF" stroke-width="1.75" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg><span style="color: #00E5FF;">System Integrations</span><span class="ml-auto text-[10px] px-1.5 py-0.5 rounded bg-secondary-fixed/20 text-secondary-fixed font-mono">SYS03</span></a>
             </nav>
         </div>
-                <a class="flex items-center gap-unit-sm px-unit-base py-unit-sm text-error hover:bg-error-container/20 hover:text-on-error-container transition-colors font-headline-sm text-headline-sm font-normal border-t border-outline/20 mt-1" href="../api/logout.php?system=Customer%20Portal&redirect=../Customer%20Portal/login.php" id="btn-logout" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" onclick="(function(){sessionStorage.clear();localStorage.clear();})()">
-            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
-                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-                <polyline points="16 17 21 12 16 7"/>
-                <line x1="21" y1="12" x2="9" y2="12"/>
-            </svg>
-            <span>Log Out</span>
-        </a>
+                
         <div class="portal-manager-card p-3 m-3 rounded-lg bg-primary/95 border border-outline/25 shadow-sm text-xs select-none">
             <div class="flex items-center justify-between mb-1.5">
                 <span class="font-label-caps text-[10px] text-tertiary-fixed uppercase font-bold tracking-wider">Assigned Manager</span>

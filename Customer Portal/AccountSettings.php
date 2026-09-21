@@ -1,3 +1,8 @@
+<?php
+require_once __DIR__ . '/../config/db.php';
+require_once __DIR__ . '/../includes/auth_guard.php';
+requireAuth('CUS');
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -150,14 +155,7 @@
                     </svg><span class="">Account Settings</span></a>
             </nav>
         </div>
-                <a class="flex items-center gap-unit-sm px-unit-base py-unit-sm text-error hover:bg-error-container/20 hover:text-on-error-container transition-colors font-headline-sm text-headline-sm font-normal border-t border-outline/20 mt-1" href="../api/logout.php?system=Customer%20Portal&redirect=../Customer%20Portal/login.php" id="btn-logout" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" onclick="(function(){sessionStorage.clear();localStorage.clear();})()">
-            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
-                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-                <polyline points="16 17 21 12 16 7"/>
-                <line x1="21" y1="12" x2="9" y2="12"/>
-            </svg>
-            <span>Log Out</span>
-        </a>
+                
         <div class="portal-manager-card p-3 m-3 rounded-lg bg-primary/95 border border-outline/25 shadow-sm text-xs select-none">
             <div class="flex items-center justify-between mb-1.5">
                 <span class="font-label-caps text-[10px] text-tertiary-fixed uppercase font-bold tracking-wider">Assigned Manager</span>

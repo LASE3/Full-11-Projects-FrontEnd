@@ -119,11 +119,7 @@ $initError = $_GET['error'] ?? '';
             <span class="btn-text">Log In to Online Shop</span>
           </button>
 
-          <div class="auth-demo-helper">
-            <button type="button" class="btn-demo-autofill" onclick="fillDemoCredentials()">
-              ⚡ Autofill Demo Credentials
-            </button>
-          </div>
+          
         </form>
       </div>
 
@@ -186,11 +182,14 @@ $initError = $_GET['error'] ?? '';
 
         const userId = userIdInput.value.trim();
         const password = passwordInput.value;
-
-        let finalUserId = userId || 'CUS-1001';
-        let finalPassword = password || 'CustomerPass2026!';
-        if (!userId) userIdInput.value = 'CUS-1001';
-        if (!password) passwordInput.value = 'CustomerPass2026!';
+        if (!userId) {
+          showAlert('Please enter your User ID or email.', true);
+          return;
+        }
+        if (!password) {
+          showAlert('Please enter your password.', true);
+          return;
+        }
 
         submitBtn.classList.add('is-loading');
         submitBtn.disabled = true;
@@ -232,12 +231,6 @@ $initError = $_GET['error'] ?? '';
           showAlert('Database connection error: ' + err.message, true);
         });
       });
-
-      window.fillDemoCredentials = function () {
-        userIdInput.value = 'SHP-VP-11';
-        passwordInput.value = 'ClientPass2026!';
-        hideAlert();
-      };
 
       window.handleForgotCredentials = function () {
         showAlert('Contact VP B2B Commerce Administrator for account recovery.', true);

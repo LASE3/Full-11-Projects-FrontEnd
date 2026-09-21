@@ -1,3 +1,22 @@
+<?php
+require_once __DIR__ . '/../config/db.php';
+require_once __DIR__ . '/../includes/auth_guard.php';
+requireAuth('ADM');
+require_once __DIR__ . '/gov_service.php';
+
+$currentUser = gov_getActiveUserProfile();
+$compliance = gov_getComplianceOversight();
+$metrics = gov_getGovernanceMetrics();
+
+$reviews = $compliance['reviews'];
+$incidents = $compliance['incidents'];
+
+$totalReviews = count($reviews);
+$compliantReviews = count(array_filter($reviews, fn($r) => stripos($r['action_taken'], 'Attested') !== false || stripos($r['action_taken'], 'Validated') !== false));
+$deviationReviews = count(array_filter($reviews, fn($r) => stripos($r['finding'], 'Breach') !== false || stripos($r['action_taken'], 'Orphan') !== false || stripos($r['finding'], 'Unlawful') !== false));
+$remediationReviews = $totalReviews - $compliantReviews - $deviationReviews;
+if ($remediationReviews < 0) $remediationReviews = 0;
+?>
 <!DOCTYPE html>
 
 <html lang="en">
@@ -154,10 +173,7 @@
                     </div>
                 </a></nav>
         </div>
-                    <a class="flex items-center gap-space-sm px-space-sm py-space-xs rounded text-error hover:bg-error-container hover:text-on-error-container transition-all font-body-compact text-body-compact mt-space-sm" href="../api/logout.php?system=Admin%20%26%20Governance%20Portal&redirect=../Admin%20%26%20Governance%20Portal/login.php" id="btn-logout" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" onclick="(function(){sessionStorage.clear();localStorage.clear();})()">
-                <span class="material-symbols-outlined text-[18px] text-error">logout</span>
-                <span>Log Out</span>
-            </a>
+                    
             <div class="p-space-md bg-primary-container/40 border-t border-outline/20 flex flex-col gap-space-2xs">
             <div class="flex items-center justify-between"><span
                     class="font-security-stamp text-[10px] text-secondary-fixed-dim uppercase tracking-wider">SEC-OPS

@@ -1,14 +1,45 @@
+<?php
+/**
+ * VOSTOKPRIBOR HR System - Organizational Structure & Hierarchy
+ * Database-driven corporate division mapping and reporting lines from MySQL.
+ */
+require_once __DIR__ . '/hr_service.php';
+requireAuth('HR');
+
+$currUser    = hr_getCurrentUser();
+$departments = hr_getDepartments();
+$employees   = hr_getOrgStructure();
+$canManage   = hr_canManageHR();
+
+// Group employees by department
+$employeesByDept = [];
+foreach ($departments as $d) {
+    $employeesByDept[$d['dept_code']] = [];
+}
+foreach ($employees as $emp) {
+    $dc = $emp['department_code'];
+    if (!isset($employeesByDept[$dc])) {
+        $employeesByDept[$dc] = [];
+    }
+    $employeesByDept[$dc][] = $emp;
+}
+
+$nameParts = explode(' ', trim($currUser['full_name']));
+$initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? substr($nameParts[1], 0, 1) : ''));
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>VOSTOKPRIBOR HR System · Organizational Structure &amp; Divisions</title>
+  <title>VOSTOKPRIBOR HR System · Organizational Hierarchy</title>
   <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 </head>
 <body>
 
   <div class="app-container">
+    <!-- TOP NAVIGATION BAR -->
     <header class="top-nav">
       <div class="top-nav__accent-stripe"></div>
       <div class="top-nav__content">
@@ -34,7 +65,7 @@
         <div class="top-search-bar">
           <div class="search-input-wrapper">
             <span class="search-icon">🔍</span>
-            <input type="text" class="search-input" id="global-omni-search" placeholder="Search employee records, EMP-ID, clearance level, department..." />
+            <input type="text" class="search-input" id="global-omni-search" placeholder="Search division roles..." />
             <span class="search-kbd">Ctrl+K</span>
           </div>
         </div>
@@ -45,23 +76,22 @@
             <span>HIGHLY CONFIDENTIAL SYSTEM</span>
           </div>
 
-          <button class="icon-button" onclick="window.hrApp.showToast('Org Registry', 'Hierarchical division map refreshed.')">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-            <span class="badge-dot"></span>
-          </button>
-
-          <div class="top-user-profile" onclick="window.hrApp.showToast('Active User Session', 'Valeria Zaytseva · Chief Human Capital Officer')">
-            <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDZ9P2QbrRU2xObdFOu9aNA-iyUeUZ6UvBFT0l0KnTu1MKDRX0c84gVy9VkzAjtaXzw0JcEGYWbxd3RDqaIh7AyD6h4njnD-XTgLNnu6wa-UaOplKQCaWIDACINffaFufLMrEaDfvX7J3bqgPCT5b9oY66PI4s0dfAwRgA_V8p0oKzRnCAU0tihwWPq8xzU4FbT1iUoh0cBzt9pq7gPkXJVjA32ZA7kWXQvcLq090IXW-8Ihh_efhmM" alt="Valeria" class="user-avatar-top" />
+          <div class="top-user-profile" title="Active Session: <?= htmlspecialchars($currUser['full_name']) ?>">
+            <div style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg, #7A284E 0%, #3D1427 100%);color:#FFFFFF;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12.5px;border:2px solid #FF8080;">
+              <?= $initials ?>
+            </div>
             <div class="user-details-top">
-              <span class="user-name-top">Valeria Zaytseva</span>
-              <span class="user-role-top">Chief HR Officer · Level 4</span>
+              <span class="user-name-top"><?= htmlspecialchars($currUser['full_name']) ?></span>
+              <span class="user-role-top"><?= htmlspecialchars($currUser['role_name'] ?? 'Authorized User') ?> · <?= htmlspecialchars($currUser['clearance_level'] ?? 'L1') ?></span>
             </div>
           </div>
+
+          <a href="../api/logout.php?system=HR%20System&redirect=../HR%20System/login.php" class="top-signout-btn" title="Sign Out" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" style="display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:4px;background:rgba(178,58,50,0.2);border:1px solid rgba(178,58,50,0.5);color:#FF8080;font-size:12px;font-weight:600;text-decoration:none;cursor:pointer;margin-left:8px;vertical-align:middle;">
+            <span class="material-symbols-outlined" style="font-size:15px;line-height:1;">logout</span>
+            <span>Sign Out</span>
+          </a>
         </div>
-      
-<!-- Top Bar Sign Out -->
-<a href="../api/logout.php?system=HR%20System&redirect=../HR%20System/login.php" class="top-signout-btn" title="Sign Out of HR System" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" style="display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:4px;background:rgba(178,58,50,0.2);border:1px solid rgba(178,58,50,0.5);color:#FF8080;font-size:12px;font-weight:600;text-decoration:none;cursor:pointer;margin-left:8px;vertical-align:middle;transition:all 0.2s;" onmouseover="this.style.background='rgba(178,58,50,0.4)';this.style.color='#FFFFFF'" onmouseout="this.style.background='rgba(178,58,50,0.2)';this.style.color='#FF8080'"><span class="material-symbols-outlined" style="font-size:15px;line-height:1;">logout</span><span>Sign Out</span></a>
-</div>
+      </div>
     </header>
 
     <div class="main-layout">
@@ -70,245 +100,105 @@
         <div>
           <div class="sidebar-section-title">Human Resources</div>
           <nav class="sidebar-nav">
-            <a href="Dashboard.php" class="sidebar-nav-item">
-              <div class="sidebar-item-left">
-                <span class="sidebar-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></span>
-                <span>Dashboard</span>
-              </div>
-            </a>
-            <a href="EmployeeRecords.php" class="sidebar-nav-item">
-              <div class="sidebar-item-left">
-                <span class="sidebar-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>
-                <span>Employee Records</span>
-              </div>
-              <span class="sidebar-badge">1,428</span>
-            </a>
-            <a href="OnboardingTracker.php" class="sidebar-nav-item">
-              <div class="sidebar-item-left">
-                <span class="sidebar-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><polyline points="16 11 18 13 22 9"/></svg></span>
-                <span>Recruitment &amp; Onboarding</span>
-              </div>
-              <span class="sidebar-badge">12</span>
-            </a>
-            <a href="LeaveManagement.php" class="sidebar-nav-item">
-              <div class="sidebar-item-left">
-                <span class="sidebar-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></span>
-                <span>Leave Management</span>
-              </div>
-              <span class="sidebar-badge badge-amber">19</span>
-            </a>
+            <a href="Dashboard.php" class="sidebar-nav-item"><div class="sidebar-item-left"><span class="sidebar-icon">📊</span><span>Dashboard</span></div></a>
+            <a href="EmployeeRecords.php" class="sidebar-nav-item"><div class="sidebar-item-left"><span class="sidebar-icon">👥</span><span>Employee Records</span></div></a>
+            <a href="OnboardingTracker.php" class="sidebar-nav-item"><div class="sidebar-item-left"><span class="sidebar-icon">⚡</span><span>Onboarding Pipeline</span></div></a>
+            <a href="Offboarding.php" class="sidebar-nav-item"><div class="sidebar-item-left"><span class="sidebar-icon">🔒</span><span>Offboarding &amp; Revocation</span></div></a>
+            <a href="LeaveManagement.php" class="sidebar-nav-item"><div class="sidebar-item-left"><span class="sidebar-icon">📅</span><span>Leave Management</span></div></a>
             <a href="OrgStructure.php" class="sidebar-nav-item active">
-              <div class="sidebar-item-left">
-                <span class="sidebar-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="3"/><circle cx="5" cy="19" r="3"/><circle cx="19" cy="19" r="3"/><path d="M12 8v4"/><path d="M5 16v-2a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v2"/></svg></span>
-                <span>Org Structure</span>
-              </div>
-              <span class="sidebar-badge">8</span>
+              <div class="sidebar-item-left"><span class="sidebar-icon">🏛️</span><span>Org Hierarchy</span></div>
+              <span class="sidebar-pill"><?= count($departments) ?></span>
             </a>
-            <a href="Training.php" class="sidebar-nav-item">
-              <div class="sidebar-item-left">
-                <span class="sidebar-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></span>
-                <span>Training &amp; Certs</span>
-              </div>
-              <span class="sidebar-badge">94%</span>
-            </a>
-            <a href="Offboarding.php" class="sidebar-nav-item">
-              <div class="sidebar-item-left">
-                <span class="sidebar-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></span>
-                <span>Offboarding</span>
-              </div>
-              <span class="sidebar-badge badge-red">3</span>
-            </a>
-
-                      <div class="sidebar-section-title" style="margin-top: 1rem;">Unified Ecosystem</div>
-          <nav class="sidebar-nav" style="margin-bottom: 0.5rem;">
-            <a href="../VOSTOKPRIBOR Corporate Web Platform/index.php" class="sidebar-nav-item">
-              <div class="sidebar-item-left">
-                <span class="sidebar-icon">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-                </span>
-                <span>Corporate Platform</span>
-              </div>
-              <span class="sidebar-badge" style="font-size: 10px;">SYS 01</span>
-            </a>
-            <a href="../Employee Intranet/index.php" class="sidebar-nav-item">
-              <div class="sidebar-item-left">
-                <span class="sidebar-icon">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-                </span>
-                <span>Employee Intranet</span>
-              </div>
-              <span class="sidebar-badge" style="font-size: 10px;">SYS 04</span>
-            </a>
+            <a href="Training.php" class="sidebar-nav-item"><div class="sidebar-item-left"><span class="sidebar-icon">🎓</span><span>Training &amp; Certs</span></div></a>
           </nav>
-            <!-- Log Out -->
-            <a href="../api/logout.php?system=HR%20System&redirect=../HR%20System/login.php" class="sidebar-nav-item sidebar-nav-item--logout" id="btn-logout" onclick="(function(){sessionStorage.clear();localStorage.clear();})()"
-              onclick="(function(){sessionStorage.clear();localStorage.clear();})()">
-              <div class="sidebar-item-left">
-                <span class="sidebar-icon">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-                </span>
-                <span>Log Out</span>
-              </div>
-            </a>
-          </nav>
-        </div>
-
-        <div class="sidebar-footer">
-          <div class="security-widget-card">
-            <div class="security-widget-header">
-              <span>Security Clearance Registry</span>
-              <span class="security-badge-status">● GOST 1G</span>
-            </div>
-            <div style="font-size: 11px; color: var(--hr-text-inverse-muted); margin-top: 2px;">
-              Active Level 4 Clearances: <strong>24 Vetted</strong>
-            </div>
-          </div>
         </div>
       </aside>
 
       <!-- MAIN CONTENT -->
       <main class="content-wrapper">
-        <div class="portal-container">
+        <div class="portal-container" style="max-width: 1200px;">
+          <!-- Page Header -->
           <div class="page-header">
             <div class="page-header-info">
               <div class="breadcrumb-trail">
                 <a href="Dashboard.php">HR System</a>
                 <span class="breadcrumb-separator">/</span>
-                <span class="breadcrumb-current">Org Structure &amp; Engineering Hierarchy</span>
+                <span class="breadcrumb-current">Executive Structure &amp; Division Map</span>
               </div>
-              <h1 class="page-title">Organizational Structure &amp; Division Matrix</h1>
-              <p class="page-subtitle">Governance chain, reporting hierarchies, and personnel distribution across 8 technical divisions</p>
+              <h1 class="page-title">Enterprise Organizational Hierarchy</h1>
+              <p class="page-subtitle">Live hierarchical structure of <?= count($departments) ?> operational divisions queried from MySQL database</p>
             </div>
             <div class="page-header-actions">
-              <button class="btn btn-outline" onclick="window.hrApp.showToast('Hierarchy Export', 'Enterprise Org Chart PDF rendered with security clearings.')">
-                <span>🖨️ Export Hierarchy (.PDF)</span>
-              </button>
+              <a href="EmployeeRecords.php" class="btn btn-outline">
+                <span>View Full Ledger (<?= count($employees) ?> Active) →</span>
+              </a>
             </div>
           </div>
 
-          <!-- Executive Directorate Tier -->
-          <div class="hr-card" style="margin-bottom: 1.5rem; border-top: 4px solid var(--hr-plum);">
-            <div style="font-size: 11px; text-transform: uppercase; color: var(--hr-plum); font-weight: 700; letter-spacing: 0.06em; margin-bottom: 0.4rem;">
-              Executive Leadership &amp; Scientific Directorate
-            </div>
-            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;">
-              <div style="background: var(--hr-surface-dim); padding: 1rem; border-radius: var(--hr-radius-md); border-left: 3px solid var(--hr-clearance-l4);">
-                <div style="font-weight: 700; color: var(--hr-navy); font-size: 14px;">Director General &amp; Board of Governors</div>
-                <div style="font-size: 11.5px; color: var(--hr-text-secondary); margin-top: 2px;">General Strategic &amp; Industrial Governance</div>
-                <div style="margin-top: 0.5rem;"><span class="clearance-badge clearance-l4">Level 4 · Executive</span></div>
-              </div>
+          <!-- Department Division Cards Grid -->
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 1.5rem;">
+            <?php 
+            $deptBadges = [
+                'EXE' => ['icon' => '🏛️', 'color' => '#B23A32'],
+                'GOV' => ['icon' => '⚖️', 'color' => '#7A284E'],
+                'SAL' => ['icon' => '💼', 'color' => '#D97706'],
+                'ENG' => ['icon' => '⚙️', 'color' => '#3D7A99'],
+                'ITD' => ['icon' => '💻', 'color' => '#1B3B5C'],
+                'FIN' => ['icon' => '💳', 'color' => '#2E7D32'],
+                'HRA' => ['icon' => '👥', 'color' => '#7A284E'],
+                'OPS' => ['icon' => '📦', 'color' => '#8C5E28']
+            ];
 
-              <div style="background: var(--hr-surface-dim); padding: 1rem; border-radius: var(--hr-radius-md); border-left: 3px solid var(--hr-clearance-l4);">
-                <div style="font-weight: 700; color: var(--hr-navy); font-size: 14px;">Chief Human Capital Officer</div>
-                <div style="font-size: 11.5px; color: var(--hr-text-secondary); margin-top: 2px;">Valeria Zaytseva · Personnel &amp; Clearances</div>
-                <div style="margin-top: 0.5rem;"><span class="clearance-badge clearance-l4">Level 4 · Executive</span></div>
-              </div>
+            foreach ($departments as $d): 
+                $code = $d['dept_code'];
+                $meta = $deptBadges[$code] ?? ['icon' => '🏢', 'color' => 'var(--hr-navy)'];
+                $staff = $employeesByDept[$code] ?? [];
+            ?>
+              <div class="hr-card" style="padding: 1.25rem; border-top: 3px solid <?= $meta['color'] ?>;">
+                <div style="display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 0.75rem;">
+                  <div>
+                    <div style="display: flex; align-items: center; gap: 0.4rem;">
+                      <span style="font-size: 16px;"><?= $meta['icon'] ?></span>
+                      <h3 style="font-size: 15px; font-weight: 700; color: var(--hr-navy);"><?= htmlspecialchars($d['dept_name']) ?></h3>
+                    </div>
+                    <div style="font-size: 11px; color: var(--hr-text-muted); font-family: var(--hr-font-mono); margin-top: 2px;">
+                      CODE: <?= htmlspecialchars($code) ?> · Target: <?= htmlspecialchars($d['employee_count_target'] ?: 10) ?> Staff
+                    </div>
+                  </div>
+                  <span class="sidebar-pill" style="background: <?= $meta['color'] ?>; color: #FFF;">
+                    <?= count($staff) ?> Staff
+                  </span>
+                </div>
 
-              <div style="background: var(--hr-surface-dim); padding: 1rem; border-radius: var(--hr-radius-md); border-left: 3px solid var(--hr-clearance-l4);">
-                <div style="font-weight: 700; color: var(--hr-navy); font-size: 14px;">Chief Optical Calibration Architect</div>
-                <div style="font-size: 11.5px; color: var(--hr-text-secondary); margin-top: 2px;">Dr. Elena Rostova · R&amp;D &amp; Photonics</div>
-                <div style="margin-top: 0.5rem;"><span class="clearance-badge clearance-l4">Level 4 · Executive</span></div>
-              </div>
-            </div>
-          </div>
+                <div style="font-size: 11.5px; color: var(--hr-text-secondary); margin-bottom: 1rem; line-height: 1.4;">
+                  <?= htmlspecialchars($d['main_function'] ?? 'Operational Division of VOSTOKPRIBOR Group') ?>
+                </div>
 
-          <!-- 8 Engineering Divisions Grid -->
-          <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.25rem;">
-            <!-- Division 1 -->
-            <div class="hr-card" style="border-left: 4px solid #7B2CBF;">
-              <div style="display: flex; align-items: center; justify-content: space-between;">
-                <h4 style="font-size: 14px; font-weight: 700; color: var(--hr-navy);">1. Optical Sensors Engineering</h4>
-                <span class="sidebar-badge" style="background: var(--hr-plum); color: #FFF;">342 Staff</span>
+                <!-- Staff in this Department -->
+                <div style="border-top: 1px solid var(--hr-surface-border); padding-top: 0.75rem;">
+                  <div style="font-size: 11px; font-weight: 700; color: var(--hr-navy); text-transform: uppercase; margin-bottom: 0.5rem; letter-spacing: 0.04em;">
+                    Assigned Personnel
+                  </div>
+                  <div style="display: flex; flex-direction: column; gap: 0.4rem; max-height: 180px; overflow-y: auto;">
+                    <?php if (empty($staff)): ?>
+                      <div style="font-size: 11.5px; color: var(--hr-text-muted); font-style: italic;">No active personnel registered in this division.</div>
+                    <?php else: ?>
+                      <?php foreach ($staff as $s): ?>
+                        <div style="display: flex; align-items: center; justify-content: space-between; font-size: 12px; background: var(--hr-surface-dim); padding: 0.35rem 0.6rem; border-radius: 4px;">
+                          <div>
+                            <span style="font-weight: 600; color: var(--hr-navy);"><?= htmlspecialchars($s['full_name']) ?></span>
+                            <span style="font-size: 10.5px; color: var(--hr-text-muted);">· <?= htmlspecialchars($s['job_title']) ?></span>
+                          </div>
+                          <span class="clearance-badge clearance-l<?= substr($s['clearance_level'], 1) ?>" style="font-size: 9.5px; padding: 1px 5px;">
+                            <?= htmlspecialchars($s['clearance_level']) ?>
+                          </span>
+                        </div>
+                      <?php endforeach; ?>
+                    <?php endif; ?>
+                  </div>
+                </div>
               </div>
-              <p style="font-size: 12px; color: var(--hr-text-secondary); margin: 0.4rem 0 0.85rem;">Infrared pyrometry, laser triangulation probes, and optical spectrometer engineering.</p>
-              <div style="font-size: 11.5px; color: var(--hr-text-muted);">
-                Lead Director: <strong>Dr. Elena Rostova</strong> · St. Petersburg Complex
-              </div>
-            </div>
-
-            <!-- Division 2 -->
-            <div class="hr-card" style="border-left: 4px solid #1B3A5C;">
-              <div style="display: flex; align-items: center; justify-content: space-between;">
-                <h4 style="font-size: 14px; font-weight: 700; color: var(--hr-navy);">2. SCADA &amp; Automation Systems</h4>
-                <span class="sidebar-badge" style="background: var(--hr-steel-blue); color: #FFF;">284 Staff</span>
-              </div>
-              <p style="font-size: 12px; color: var(--hr-text-secondary); margin: 0.4rem 0 0.85rem;">PLC industrial firmware, MODBUS/PROFINET industrial buses, and telemetry gateways.</p>
-              <div style="font-size: 11.5px; color: var(--hr-text-muted);">
-                Lead Director: <strong>Viktor Morozov</strong> · Lipetsk Integration Bay
-              </div>
-            </div>
-
-            <!-- Division 3 -->
-            <div class="hr-card" style="border-left: 4px solid #007799;">
-              <div style="display: flex; align-items: center; justify-content: space-between;">
-                <h4 style="font-size: 14px; font-weight: 700; color: var(--hr-navy);">3. Blast Furnace Robotics</h4>
-                <span class="sidebar-badge" style="background: #007799; color: #FFF;">198 Staff</span>
-              </div>
-              <p style="font-size: 12px; color: var(--hr-text-secondary); margin: 0.4rem 0 0.85rem;">High-temperature robotic arms, hydraulic manipulators, and slag tap telemetry units.</p>
-              <div style="font-size: 11.5px; color: var(--hr-text-muted);">
-                Lead Director: <strong>Denis Sokolov</strong> · Nizhny Tagil Heavy Bay #4
-              </div>
-            </div>
-
-            <!-- Division 4 -->
-            <div class="hr-card" style="border-left: 4px solid #E8A33D;">
-              <div style="display: flex; align-items: center; justify-content: space-between;">
-                <h4 style="font-size: 14px; font-weight: 700; color: var(--hr-navy);">4. R&amp;D Labs &amp; Sensor Fabrication</h4>
-                <span class="sidebar-badge" style="background: var(--hr-amber); color: #101418;">165 Staff</span>
-              </div>
-              <p style="font-size: 12px; color: var(--hr-text-secondary); margin: 0.4rem 0 0.85rem;">Nanofabrication cleanrooms, silicon wafer etching, and specialized semiconductor diodes.</p>
-              <div style="font-size: 11.5px; color: var(--hr-text-muted);">
-                Lead Director: <strong>Dr. Mikhail Abramov</strong> · Cleanroom Bay B
-              </div>
-            </div>
-
-            <!-- Division 5 -->
-            <div class="hr-card" style="border-left: 4px solid #1E824C;">
-              <div style="display: flex; align-items: center; justify-content: space-between;">
-                <h4 style="font-size: 14px; font-weight: 700; color: var(--hr-navy);">5. Quality &amp; Factory Acceptance Testing (FAT)</h4>
-                <span class="sidebar-badge" style="background: var(--hr-success); color: #FFF;">142 Staff</span>
-              </div>
-              <p style="font-size: 12px; color: var(--hr-text-secondary); margin: 0.4rem 0 0.85rem;">ISO 9001 and GOST compliance verification, vibration testing, and thermal calibration chambers.</p>
-              <div style="font-size: 11.5px; color: var(--hr-text-muted);">
-                Lead Director: <strong>Anna Belova</strong> · St. Petersburg Cleanroom
-              </div>
-            </div>
-
-            <!-- Division 6 -->
-            <div class="hr-card" style="border-left: 4px solid #6B2D5C;">
-              <div style="display: flex; align-items: center; justify-content: space-between;">
-                <h4 style="font-size: 14px; font-weight: 700; color: var(--hr-navy);">6. Field Operations &amp; Metallurgy</h4>
-                <span class="sidebar-badge" style="background: #6B2D5C; color: #FFF;">128 Staff</span>
-              </div>
-              <p style="font-size: 12px; color: var(--hr-text-secondary); margin: 0.4rem 0 0.85rem;">On-site metallurgical plant installations, high-voltage sensor cabling, and field commissioning.</p>
-              <div style="font-size: 11.5px; color: var(--hr-text-muted);">
-                Lead Director: <strong>Mikhail Sorokin</strong> · Cherepovets Field Hub
-              </div>
-            </div>
-
-            <!-- Division 7 -->
-            <div class="hr-card" style="border-left: 4px solid #4A5568;">
-              <div style="display: flex; align-items: center; justify-content: space-between;">
-                <h4 style="font-size: 14px; font-weight: 700; color: var(--hr-navy);">7. Procurement &amp; Logistics</h4>
-                <span class="sidebar-badge" style="background: #4A5568; color: #FFF;">94 Staff</span>
-              </div>
-              <p style="font-size: 12px; color: var(--hr-text-secondary); margin: 0.4rem 0 0.85rem;">Rare-earth materials sourcing, optical quartz procurement, and customs logistics.</p>
-              <div style="font-size: 11.5px; color: var(--hr-text-muted);">
-                Lead Director: <strong>Svetlana Petrova</strong> · St. Petersburg Central Hub
-              </div>
-            </div>
-
-            <!-- Division 8 -->
-            <div class="hr-card" style="border-left: 4px solid #B23A32;">
-              <div style="display: flex; align-items: center; justify-content: space-between;">
-                <h4 style="font-size: 14px; font-weight: 700; color: var(--hr-navy);">8. Corporate &amp; Legal Governance</h4>
-                <span class="sidebar-badge" style="background: var(--hr-confidential); color: #FFF;">75 Staff</span>
-              </div>
-              <p style="font-size: 12px; color: var(--hr-text-secondary); margin: 0.4rem 0 0.85rem;">State secrets compliance, Rostrud labor covenants, industrial IP protection, and NDA security.</p>
-              <div style="font-size: 11.5px; color: var(--hr-text-muted);">
-                Lead Director: <strong>Yury Vasiliev</strong> · Executive Legal Office
-              </div>
-            </div>
+            <?php endforeach; ?>
           </div>
         </div>
       </main>

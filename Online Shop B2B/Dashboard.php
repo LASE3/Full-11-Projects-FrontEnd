@@ -1,10 +1,10 @@
 <?php
 if (session_status() === PHP_SESSION_NONE) {
-    session_start();
+  session_start();
 }
 if (empty($_SESSION['vostok_authenticated']) || empty($_SESSION['vostok_system_SHP'])) {
-    header("Location: login.php");
-    exit;
+  header("Location: login.php");
+  exit;
 }
 ?>
 <!DOCTYPE html>
@@ -16,7 +16,7 @@ if (empty($_SESSION['vostok_authenticated']) || empty($_SESSION['vostok_system_S
   <title>VOSTOKPRIBOR | B2B Industrial E-Commerce Platform (shop.vostokpribor.local)</title>
 
   <script>
-    (function () {
+    (function() {
       const isAuthenticated = localStorage.getItem('vostok_authenticated');
 
       if (!isAuthenticated || isAuthenticated !== 'true') {
@@ -109,6 +109,14 @@ if (empty($_SESSION['vostok_authenticated']) || empty($_SESSION['vostok_system_S
             <line x1="3" y1="18" x2="3.01" y2="18" />
           </svg>
           <span>Orders</span>
+        </a>
+        <a class="nav-link" href="Integrations.php" style="color: #00E5FF; border: 1px solid rgba(0,229,255,0.3); border-radius: 4px; padding: 0.35rem 0.6rem; margin-left: 0.5rem;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#00E5FF" stroke-width="2">
+            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+          </svg>
+          <span style="font-weight: 600;">Integrations</span>
+          <span class="nav-badge-count" style="background: rgba(0,229,255,0.2); color: #00E5FF;">SYS10</span>
         </a>
       </nav>
 
@@ -215,10 +223,10 @@ if (empty($_SESSION['vostok_authenticated']) || empty($_SESSION['vostok_system_S
           <span>RFQ Builder</span>
         </button>
       </div>
-    
-<!-- Top Bar Sign Out -->
-<a href="../api/logout.php?system=Online%20Shop%20B2B&redirect=../Online%20Shop%20B2B/login.php" class="top-signout-btn" title="Sign Out of Online Shop B2B" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" style="display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:4px;background:rgba(178,58,50,0.2);border:1px solid rgba(178,58,50,0.5);color:#FF8080;font-size:12px;font-weight:600;text-decoration:none;cursor:pointer;margin-left:8px;vertical-align:middle;transition:all 0.2s;" onmouseover="this.style.background='rgba(178,58,50,0.4)';this.style.color='#FFFFFF'" onmouseout="this.style.background='rgba(178,58,50,0.2)';this.style.color='#FF8080'"><span class="material-symbols-outlined" style="font-size:15px;line-height:1;">logout</span><span>Sign Out</span></a>
-</div>
+
+      <!-- Top Bar Sign Out -->
+      <a href="../api/logout.php?system=Online%20Shop%20B2B&redirect=../Online%20Shop%20B2B/login.php" class="top-signout-btn" title="Sign Out of Online Shop B2B" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" style="display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:4px;background:rgba(178,58,50,0.2);border:1px solid rgba(178,58,50,0.5);color:#FF8080;font-size:12px;font-weight:600;text-decoration:none;cursor:pointer;margin-left:8px;vertical-align:middle;transition:all 0.2s;" onmouseover="this.style.background='rgba(178,58,50,0.4)';this.style.color='#FFFFFF'" onmouseout="this.style.background='rgba(178,58,50,0.2)';this.style.color='#FF8080'"><span class="material-symbols-outlined" style="font-size:15px;line-height:1;">Sign Out</span></a>
+    </div>
   </header>
 
   <!-- ========================================================================
@@ -463,19 +471,7 @@ if (empty($_SESSION['vostok_authenticated']) || empty($_SESSION['vostok_system_S
           </div>
 
           <!-- Log Out -->
-          <a href="../api/logout.php?system=Online%20Shop%20B2B&redirect=../Online%20Shop%20B2B/login.php" class="sidebar-nav-item sidebar-nav-item--logout" id="btn-logout" onclick="(function(){sessionStorage.clear();localStorage.clear();})()"
-            onclick="(function(){sessionStorage.clear();localStorage.clear();})()">
-            <div class="sidebar-item-left">
-              <span class="sidebar-icon">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-                  <polyline points="16 17 21 12 16 7" />
-                  <line x1="21" y1="12" x2="9" y2="12" />
-                </svg>
-              </span>
-              <span>Log Out</span>
-            </div>
-          </a>
+
         </aside>
 
         <!-- Main Product Catalog Area -->

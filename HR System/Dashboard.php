@@ -1,11 +1,18 @@
 <?php
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-if (empty($_SESSION['vostok_authenticated']) || empty($_SESSION['vostok_system_HR'])) {
-    header("Location: login.php");
-    exit;
-}
+/**
+ * VOSTOKPRIBOR HR System - Dashboard
+ * Dynamic, database-driven Human Capital Operations overview.
+ */
+require_once __DIR__ . '/hr_service.php';
+requireAuth('HR');
+
+$currUser  = hr_getCurrentUser();
+$metrics   = hr_getDashboardMetrics();
+$canManage = hr_canManageHR();
+
+// Calculate initials for profile badge
+$nameParts = explode(' ', trim($currUser['full_name']));
+$initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? substr($nameParts[1], 0, 1) : ''));
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -14,15 +21,13 @@ if (empty($_SESSION['vostok_authenticated']) || empty($_SESSION['vostok_system_H
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>VOSTOKPRIBOR HR System · Human Capital Operations</title>
   <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 </head>
 <body>
 
   <div class="app-container">
-    <!-- ========================================================================
-         TOP NAVIGATION BAR (#0F2438 Navy + Plum Accent Stripe + Confidential Badge)
-         ======================================================================== -->
+    <!-- TOP NAVIGATION BAR -->
     <header class="top-nav">
-      <!-- 4px System Identity Stripe (Plum) -->
       <div class="top-nav__accent-stripe"></div>
 
       <div class="top-nav__content">
@@ -57,40 +62,44 @@ if (empty($_SESSION['vostok_authenticated']) || empty($_SESSION['vostok_system_H
 
         <!-- Right System Metrics, Red Confidential Badge & Profile -->
         <div class="top-nav__actions">
-          <!-- Small Red "Highly Confidential System" Badge -->
           <div class="confidential-system-pill" title="Restricted Personnel & Security Clearance System (GOST Class 1G)">
             <span>🔒</span>
             <span>HIGHLY CONFIDENTIAL SYSTEM</span>
           </div>
 
-          <button class="icon-button" title="Personnel Telemetry Notifications" onclick="window.hrApp.showToast('Security Clearance Update', 'Level 4 Clearance ratified for Dr. Elena Rostova.')">
+          <button class="icon-button" title="Pending Leave Requests" onclick="window.location.href='LeaveManagement.php'">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-            <span class="badge-dot"></span>
+            <?php if ($metrics['pending_leaves'] > 0): ?>
+              <span class="badge-dot" style="background:#FF8080;"></span>
+            <?php endif; ?>
           </button>
 
-          <div class="top-user-profile" onclick="window.hrApp.showToast('Active User Session', 'Valeria Zaytseva · Chief Human Capital Officer · Level 4 Authorization')">
-            <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDZ9P2QbrRU2xObdFOu9aNA-iyUeUZ6UvBFT0l0KnTu1MKDRX0c84gVy9VkzAjtaXzw0JcEGYWbxd3RDqaIh7AyD6h4njnD-XTgLNnu6wa-UaOplKQCaWIDACINffaFufLMrEaDfvX7J3bqgPCT5b9oY66PI4s0dfAwRgA_V8p0oKzRnCAU0tihwWPq8xzU4FbT1iUoh0cBzt9pq7gPkXJVjA32ZA7kWXQvcLq090IXW-8Ihh_efhmM" alt="Valeria Zaytseva" class="user-avatar-top" />
+          <!-- Dynamic Active User Profile -->
+          <div class="top-user-profile" title="Active Session: <?= htmlspecialchars($currUser['full_name']) ?> (Clearance: <?= htmlspecialchars($currUser['clearance_level'] ?? 'L1') ?>)">
+            <div style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg, #7A284E 0%, #3D1427 100%);color:#FFFFFF;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12.5px;border:2px solid #FF8080;box-shadow:0 0 8px rgba(255,128,128,0.3);">
+              <?= $initials ?>
+            </div>
             <div class="user-details-top">
-              <span class="user-name-top">Valeria Zaytseva</span>
-              <span class="user-role-top">Chief HR Officer · Level 4</span>
+              <span class="user-name-top"><?= htmlspecialchars($currUser['full_name']) ?></span>
+              <span class="user-role-top"><?= htmlspecialchars($currUser['role_name'] ?? 'Authorized User') ?> · <?= htmlspecialchars($currUser['clearance_level'] ?? 'L1') ?></span>
             </div>
           </div>
+
+          <!-- Sign Out -->
+          <a href="../api/logout.php?system=HR%20System&redirect=../HR%20System/login.php" class="top-signout-btn" title="Sign Out of HR System" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" style="display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:4px;background:rgba(178,58,50,0.2);border:1px solid rgba(178,58,50,0.5);color:#FF8080;font-size:12px;font-weight:600;text-decoration:none;cursor:pointer;margin-left:8px;vertical-align:middle;transition:all 0.2s;">
+            <span class="material-symbols-outlined" style="font-size:15px;line-height:1;">logout</span>
+            <span>Sign Out</span>
+          </a>
         </div>
-      
-<!-- Top Bar Sign Out -->
-<a href="../api/logout.php?system=HR%20System&redirect=../HR%20System/login.php" class="top-signout-btn" title="Sign Out of HR System" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" style="display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:4px;background:rgba(178,58,50,0.2);border:1px solid rgba(178,58,50,0.5);color:#FF8080;font-size:12px;font-weight:600;text-decoration:none;cursor:pointer;margin-left:8px;vertical-align:middle;transition:all 0.2s;" onmouseover="this.style.background='rgba(178,58,50,0.4)';this.style.color='#FFFFFF'" onmouseout="this.style.background='rgba(178,58,50,0.2)';this.style.color='#FF8080'"><span class="material-symbols-outlined" style="font-size:15px;line-height:1;">logout</span><span>Sign Out</span></a>
-</div>
+      </div>
     </header>
 
     <div class="main-layout">
-      <!-- ========================================================================
-           LEFT SIDEBAR NAVIGATION (#0F2438 Navy + Plum Accent Active & Hover)
-           ======================================================================== -->
+      <!-- LEFT SIDEBAR NAVIGATION -->
       <aside class="sidebar">
         <div>
           <div class="sidebar-section-title">Human Resources</div>
           <nav class="sidebar-nav">
-            <!-- Screen 1: Dashboard (Active) -->
             <a href="Dashboard.php" class="sidebar-nav-item active">
               <div class="sidebar-item-left">
                 <span class="sidebar-icon">
@@ -100,7 +109,6 @@ if (empty($_SESSION['vostok_authenticated']) || empty($_SESSION['vostok_system_H
               </div>
             </a>
 
-            <!-- Screen 2: Employee Records -->
             <a href="EmployeeRecords.php" class="sidebar-nav-item">
               <div class="sidebar-item-left">
                 <span class="sidebar-icon">
@@ -108,21 +116,33 @@ if (empty($_SESSION['vostok_authenticated']) || empty($_SESSION['vostok_system_H
                 </span>
                 <span>Employee Records</span>
               </div>
-              <span class="sidebar-badge">1,428</span>
+              <span class="sidebar-pill"><?= $metrics['active_headcount'] ?></span>
             </a>
 
-            <!-- Screen 3: Recruitment & Onboarding -->
             <a href="OnboardingTracker.php" class="sidebar-nav-item">
               <div class="sidebar-item-left">
                 <span class="sidebar-icon">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><polyline points="16 11 18 13 22 9"/></svg>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
                 </span>
-                <span>Recruitment &amp; Onboarding</span>
+                <span>Onboarding Pipeline</span>
               </div>
-              <span class="sidebar-badge">12</span>
+              <?php if ($metrics['active_onboarding'] > 0): ?>
+                <span class="sidebar-pill amber"><?= $metrics['active_onboarding'] ?></span>
+              <?php endif; ?>
             </a>
 
-            <!-- Leave Management -->
+            <a href="Offboarding.php" class="sidebar-nav-item">
+              <div class="sidebar-item-left">
+                <span class="sidebar-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="17" y1="11" x2="23" y2="11"/></svg>
+                </span>
+                <span>Offboarding &amp; Revocation</span>
+              </div>
+              <?php if ($metrics['active_offboarding'] > 0): ?>
+                <span class="sidebar-pill alert"><?= $metrics['active_offboarding'] ?></span>
+              <?php endif; ?>
+            </a>
+
             <a href="LeaveManagement.php" class="sidebar-nav-item">
               <div class="sidebar-item-left">
                 <span class="sidebar-icon">
@@ -130,21 +150,20 @@ if (empty($_SESSION['vostok_authenticated']) || empty($_SESSION['vostok_system_H
                 </span>
                 <span>Leave Management</span>
               </div>
-              <span class="sidebar-badge badge-amber">19</span>
+              <?php if ($metrics['pending_leaves'] > 0): ?>
+                <span class="sidebar-pill alert"><?= $metrics['pending_leaves'] ?></span>
+              <?php endif; ?>
             </a>
 
-            <!-- Org Structure -->
             <a href="OrgStructure.php" class="sidebar-nav-item">
               <div class="sidebar-item-left">
                 <span class="sidebar-icon">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="3"/><circle cx="5" cy="19" r="3"/><circle cx="19" cy="19" r="3"/><path d="M12 8v4"/><path d="M5 16v-2a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v2"/></svg>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="8.5" y="14" width="7" height="7"/><line x1="6.5" y1="10" x2="6.5" y2="12"/><line x1="17.5" y1="10" x2="17.5" y2="12"/><line x1="6.5" y1="12" x2="17.5" y2="12"/><line x1="12" y1="12" x2="12" y2="14"/></svg>
                 </span>
-                <span>Org Structure</span>
+                <span>Org Hierarchy</span>
               </div>
-              <span class="sidebar-badge">8</span>
             </a>
 
-            <!-- Training -->
             <a href="Training.php" class="sidebar-nav-item">
               <div class="sidebar-item-left">
                 <span class="sidebar-icon">
@@ -152,55 +171,34 @@ if (empty($_SESSION['vostok_authenticated']) || empty($_SESSION['vostok_system_H
                 </span>
                 <span>Training &amp; Certs</span>
               </div>
-              <span class="sidebar-badge">94%</span>
             </a>
+<a href="Integrations.php" class="sidebar-nav-item"><div class="sidebar-item-left"><span class="sidebar-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00E5FF" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></span><span style="color: #00E5FF; font-weight: 600;">System Integrations</span></div><span class="sidebar-badge" style="background: rgba(0,229,255,0.15); color: #00E5FF;">SYS08</span></a>
+          </nav>
 
-            <!-- Offboarding -->
-            <a href="Offboarding.php" class="sidebar-nav-item">
+          <div class="sidebar-section-title" style="margin-top: 1.5rem;">Ecosystem Gateways</div>
+          <nav class="sidebar-nav">
+            <a href="../Admin & Governance Portal/index.php" class="sidebar-nav-item">
               <div class="sidebar-item-left">
-                <span class="sidebar-icon">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-                </span>
-                <span>Offboarding</span>
+                <span class="sidebar-icon">🛡️</span>
+                <span>Admin &amp; Governance</span>
               </div>
-              <span class="sidebar-badge badge-red">3</span>
-            </a>
-
-                      <div class="sidebar-section-title" style="margin-top: 1rem;">Unified Ecosystem</div>
-          <nav class="sidebar-nav" style="margin-bottom: 0.5rem;">
-            <a href="../VOSTOKPRIBOR Corporate Web Platform/index.php" class="sidebar-nav-item">
-              <div class="sidebar-item-left">
-                <span class="sidebar-icon">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-                </span>
-                <span>Corporate Platform</span>
-              </div>
-              <span class="sidebar-badge" style="font-size: 10px;">SYS 01</span>
             </a>
             <a href="../Employee Intranet/index.php" class="sidebar-nav-item">
               <div class="sidebar-item-left">
-                <span class="sidebar-icon">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-                </span>
+                <span class="sidebar-icon">🏢</span>
                 <span>Employee Intranet</span>
               </div>
-              <span class="sidebar-badge" style="font-size: 10px;">SYS 04</span>
             </a>
-          </nav>
-            <!-- Log Out -->
-            <a href="../api/logout.php?system=HR%20System&redirect=../HR%20System/login.php" class="sidebar-nav-item sidebar-nav-item--logout" id="btn-logout" onclick="(function(){sessionStorage.clear();localStorage.clear();})()"
-              onclick="(function(){sessionStorage.clear();localStorage.clear();})()">
+            <a href="../index.php" class="sidebar-nav-item">
               <div class="sidebar-item-left">
-                <span class="sidebar-icon">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-                </span>
-                <span>Log Out</span>
+                <span class="sidebar-icon">🌐</span>
+                <span>Ecosystem Launchpad</span>
               </div>
             </a>
           </nav>
         </div>
 
-        <!-- Sidebar Bottom Clearance & Security Widget -->
+        <!-- Clearance & Security Widget -->
         <div class="sidebar-footer">
           <div class="security-widget-card">
             <div class="security-widget-header">
@@ -208,15 +206,13 @@ if (empty($_SESSION['vostok_authenticated']) || empty($_SESSION['vostok_system_H
               <span class="security-badge-status">● GOST 1G</span>
             </div>
             <div style="font-size: 11px; color: var(--hr-text-inverse-muted); margin-top: 2px;">
-              Active Level 4 Clearances: <strong>24 Vetted</strong>
+              Executive L4 Clearances: <strong><?= $metrics['clearance_counts']['L4'] ?> Vetted</strong>
             </div>
           </div>
         </div>
       </aside>
 
-      <!-- ========================================================================
-           MAIN CONTENT AREA
-           ======================================================================== -->
+      <!-- MAIN CONTENT AREA -->
       <main class="content-wrapper">
         <div class="portal-container">
           <!-- Page Header -->
@@ -230,65 +226,71 @@ if (empty($_SESSION['vostok_authenticated']) || empty($_SESSION['vostok_system_H
                 <span class="breadcrumb-current">Executive Overview</span>
               </div>
               <h1 class="page-title">Human Capital &amp; Personnel Operations Dashboard</h1>
-              <p class="page-subtitle">Workforce analytics, security clearance governance, and onboarding pipeline across 8 engineering divisions</p>
+              <p class="page-subtitle">Live workforce metrics, security clearance governance, and onboarding pipeline from MySQL database</p>
             </div>
             <div class="page-header-actions">
               <button class="btn btn-outline" onclick="window.hrApp.showToast('Personnel Export', 'Workforce census generated with Rostrud &amp; GOST metadata.')">
                 <span>📥 Export Census (.CSV)</span>
               </button>
-              <a href="OnboardingTracker.php" class="btn btn-primary-amber">
-                <span>+ Initiate Onboarding</span>
-              </a>
+              <?php if ($canManage): ?>
+                <a href="EmployeeRecords.php?openAdd=1" class="btn btn-primary-amber">
+                  <span>+ Register Employee</span>
+                </a>
+              <?php endif; ?>
             </div>
           </div>
 
-          <!-- Top Row 4 KPI Cards -->
+          <!-- Top Row 4 KPI Cards (LIVE DATABASE DRIVEN) -->
           <div class="kpi-grid">
             <!-- Card 1: Total Headcount -->
             <div class="hr-card kpi-card">
               <div class="kpi-header">
-                <span class="kpi-title">Total Headcount</span>
+                <span class="kpi-title">Active Headcount</span>
                 <div class="kpi-icon-pill plum">👥</div>
               </div>
               <div class="kpi-value-row">
-                <span class="kpi-value kpi-value-mono">1,428</span>
+                <span class="kpi-value kpi-value-mono"><?= number_format($metrics['active_headcount']) ?></span>
                 <span style="font-size: 13px; color: var(--hr-text-muted); font-weight: 500;">Staff</span>
               </div>
               <div class="kpi-footer">
-                <span>Full-time Engineers: 1,180</span>
-                <span class="kpi-trend up">▲ +3.4% YoY</span>
+                <span>Top Secret L4: <?= $metrics['clearance_counts']['L4'] ?></span>
+                <span class="kpi-trend up">● Active Database</span>
               </div>
             </div>
 
-            <!-- Card 2: Open Positions -->
+            <!-- Card 2: Security Clearance Tiers -->
             <div class="hr-card kpi-card">
               <div class="kpi-header">
-                <span class="kpi-title">Open Positions</span>
-                <div class="kpi-icon-pill steel">💼</div>
+                <span class="kpi-title">Clearance Distribution</span>
+                <div class="kpi-icon-pill steel">🔒</div>
               </div>
               <div class="kpi-value-row">
-                <span class="kpi-value kpi-value-mono">46</span>
-                <span style="font-size: 13px; color: var(--hr-text-muted); font-weight: 500;">Requisitions</span>
+                <span class="kpi-value kpi-value-mono" style="font-size: 20px;">
+                  <span style="color:#B23A32;">L4: <?= $metrics['clearance_counts']['L4'] ?></span> | 
+                  <span style="color:#7A284E;">L3: <?= $metrics['clearance_counts']['L3'] ?></span>
+                </span>
               </div>
               <div class="kpi-footer">
-                <span>18 Optical &amp; SCADA Roles</span>
-                <span class="kpi-trend up">Priority Hiring</span>
+                <span>L2: <?= $metrics['clearance_counts']['L2'] ?> · L1: <?= $metrics['clearance_counts']['L1'] ?></span>
+                <span class="kpi-trend up">SCADA Gated</span>
               </div>
             </div>
 
             <!-- Card 3: Pending Onboarding -->
             <div class="hr-card kpi-card">
               <div class="kpi-header">
-                <span class="kpi-title">Pending Onboarding</span>
+                <span class="kpi-title">Active Onboarding</span>
                 <div class="kpi-icon-pill amber">⚡</div>
               </div>
               <div class="kpi-value-row">
-                <span class="kpi-value kpi-value-mono">12</span>
-                <span style="font-size: 13px; color: var(--hr-text-muted); font-weight: 500;">New Hires</span>
+                <span class="kpi-value kpi-value-mono"><?= $metrics['active_onboarding'] ?></span>
+                <span style="font-size: 13px; color: var(--hr-text-muted); font-weight: 500;">Pipelines</span>
               </div>
               <div class="kpi-footer">
-                <span>4 Security Gating In Progress</span>
-                <span class="kpi-trend alert">Action Required</span>
+                <span>Sequential Stage Gating</span>
+                <span class="kpi-trend <?= $metrics['active_onboarding'] > 0 ? 'alert' : 'up' ?>">
+                  <?= $metrics['active_onboarding'] > 0 ? 'In Progress' : 'Clean' ?>
+                </span>
               </div>
             </div>
 
@@ -299,136 +301,65 @@ if (empty($_SESSION['vostok_authenticated']) || empty($_SESSION['vostok_system_H
                 <div class="kpi-icon-pill red">📅</div>
               </div>
               <div class="kpi-value-row">
-                <span class="kpi-value kpi-value-mono">19</span>
+                <span class="kpi-value kpi-value-mono"><?= $metrics['pending_leaves'] ?></span>
                 <span style="font-size: 13px; color: var(--hr-text-muted); font-weight: 500;">Requests</span>
               </div>
               <div class="kpi-footer">
-                <span>5 Scheduled next week</span>
-                <span class="kpi-trend up">SLA: &lt;24h</span>
+                <span>Offboarding Cases: <?= $metrics['active_offboarding'] ?></span>
+                <span class="kpi-trend <?= $metrics['pending_leaves'] > 0 ? 'alert' : 'up' ?>">SLA: &lt;24h</span>
               </div>
             </div>
           </div>
 
-          <!-- Horizontal Bar Chart: Headcount by Department (8 Bars) -->
+          <!-- Horizontal Bar Chart: Headcount by Department (LIVE SQL DATA) -->
           <div class="hr-card" style="margin-bottom: 1.5rem;">
             <div class="card-header-row">
               <div>
-                <h3 class="card-title">Headcount Distribution by Engineering Division</h3>
+                <h3 class="card-title">Live Headcount by Enterprise Department</h3>
                 <p style="font-size: 11.5px; color: var(--hr-text-secondary); margin-top: 2px;">
-                  Active staff across 8 specialized divisions and industrial research laboratories
+                  Active staff queried from MySQL across all registered operational divisions
                 </p>
               </div>
               <a href="EmployeeRecords.php" class="btn btn-plum btn-sm">
-                <span>View Full Employee Ledger (1,428) →</span>
+                <span>View Full Employee Ledger (<?= $metrics['active_headcount'] ?>) →</span>
               </a>
             </div>
 
             <div class="dept-chart-container">
-              <!-- Bar 1: Optical Sensors Engineering -->
-              <div class="dept-bar-row">
-                <div class="dept-bar-label">
-                  <span>🔬</span>
-                  <span>Optical Sensors Engineering</span>
+              <?php 
+              $maxStaff = 1;
+              foreach ($metrics['dept_distribution'] as $dd) {
+                  if ($dd['current'] > $maxStaff) $maxStaff = $dd['current'];
+              }
+              $deptIcons = [
+                  'ENG' => '⚙️', 'EXE' => '🏛️', 'FIN' => '💳', 'GOV' => '⚖️',
+                  'HRA' => '👥', 'ITD' => '💻', 'OPS' => '📦', 'SAL' => '💼'
+              ];
+              foreach ($metrics['dept_distribution'] as $d): 
+                  $pct = round(($d['current'] / $maxStaff) * 100);
+                  $icon = $deptIcons[$d['code']] ?? '🏢';
+              ?>
+                <div class="dept-bar-row">
+                  <div class="dept-bar-label">
+                    <span><?= $icon ?></span>
+                    <span><?= htmlspecialchars($d['name']) ?> (<?= htmlspecialchars($d['code']) ?>)</span>
+                  </div>
+                  <div class="dept-bar-track">
+                    <div class="dept-bar-fill" style="width: <?= max(5, $pct) ?>%;"></div>
+                  </div>
+                  <div class="dept-bar-val"><?= $d['current'] ?> Staff</div>
                 </div>
-                <div class="dept-bar-track">
-                  <div class="dept-bar-fill" style="width: 100%;"></div>
-                </div>
-                <div class="dept-bar-val">342 Staff</div>
-              </div>
-
-              <!-- Bar 2: SCADA & Automation -->
-              <div class="dept-bar-row">
-                <div class="dept-bar-label">
-                  <span>⚙️</span>
-                  <span>SCADA &amp; Automation</span>
-                </div>
-                <div class="dept-bar-track">
-                  <div class="dept-bar-fill" style="width: 83%;"></div>
-                </div>
-                <div class="dept-bar-val">284 Staff</div>
-              </div>
-
-              <!-- Bar 3: Blast Furnace Robotics -->
-              <div class="dept-bar-row">
-                <div class="dept-bar-label">
-                  <span>🏭</span>
-                  <span>Blast Furnace Robotics</span>
-                </div>
-                <div class="dept-bar-track">
-                  <div class="dept-bar-fill" style="width: 58%;"></div>
-                </div>
-                <div class="dept-bar-val">198 Staff</div>
-              </div>
-
-              <!-- Bar 4: R&D Labs & Sensor Fabrication -->
-              <div class="dept-bar-row">
-                <div class="dept-bar-label">
-                  <span>🧪</span>
-                  <span>R&amp;D Labs &amp; Sensor Fab</span>
-                </div>
-                <div class="dept-bar-track">
-                  <div class="dept-bar-fill" style="width: 48%;"></div>
-                </div>
-                <div class="dept-bar-val">165 Staff</div>
-              </div>
-
-              <!-- Bar 5: Quality & FAT Testing -->
-              <div class="dept-bar-row">
-                <div class="dept-bar-label">
-                  <span>✓</span>
-                  <span>Quality &amp; FAT Testing</span>
-                </div>
-                <div class="dept-bar-track">
-                  <div class="dept-bar-fill" style="width: 41.5%;"></div>
-                </div>
-                <div class="dept-bar-val">142 Staff</div>
-              </div>
-
-              <!-- Bar 6: Field Operations & Metallurgy -->
-              <div class="dept-bar-row">
-                <div class="dept-bar-label">
-                  <span>⚡</span>
-                  <span>Field Operations &amp; Metallurgy</span>
-                </div>
-                <div class="dept-bar-track">
-                  <div class="dept-bar-fill" style="width: 37.4%;"></div>
-                </div>
-                <div class="dept-bar-val">128 Staff</div>
-              </div>
-
-              <!-- Bar 7: Procurement & Logistics -->
-              <div class="dept-bar-row">
-                <div class="dept-bar-label">
-                  <span>📦</span>
-                  <span>Procurement &amp; Logistics</span>
-                </div>
-                <div class="dept-bar-track">
-                  <div class="dept-bar-fill" style="width: 27.5%;"></div>
-                </div>
-                <div class="dept-bar-val">94 Staff</div>
-              </div>
-
-              <!-- Bar 8: Corporate & Legal Governance -->
-              <div class="dept-bar-row">
-                <div class="dept-bar-label">
-                  <span>⚖️</span>
-                  <span>Corporate &amp; Legal Governance</span>
-                </div>
-                <div class="dept-bar-track">
-                  <div class="dept-bar-fill" style="width: 21.9%;"></div>
-                </div>
-                <div class="dept-bar-val">75 Staff</div>
-              </div>
+              <?php endforeach; ?>
             </div>
           </div>
 
-          <!-- Action Needed List Widget (IT Provisioning & Offboarding) -->
+          <!-- Priority Actions & Security Compliance Queue (LIVE DATABASE DRIVEN) -->
           <div class="hr-card">
             <div class="card-header-row">
               <div>
-                <h3 class="card-title">Priority Actions &amp; Security Compliance Queue</h3>
+                <h3 class="card-title">Priority Personnel Actions &amp; Security Compliance Queue</h3>
                 <p style="font-size: 11.5px; color: var(--hr-text-secondary); margin-top: 2px;">
-                  Pending IT provisioning clearances, security credential audits, and scheduled offboarding revocations
+                  Recent personnel records, pending onboarding clearances, and active offboarding revocations
                 </p>
               </div>
               <span class="confidential-system-pill" style="font-size: 9.5px; padding: 2px 6px;">
@@ -437,50 +368,49 @@ if (empty($_SESSION['vostok_authenticated']) || empty($_SESSION['vostok_system_H
             </div>
 
             <div class="action-needed-list">
-              <!-- Item 1: IT Provisioning for Onboarding Candidate -->
+              <!-- Item 1: Active Onboarding Candidate -->
               <div class="action-item action-it">
                 <div class="action-item-left">
                   <div class="action-badge-icon" style="background: var(--hr-warning-light); color: var(--hr-amber-hover);">💻</div>
                   <div>
-                    <div class="action-item-title">Pending IT SCADA Provisioning · Dr. Mikhail Abramov</div>
-                    <div class="action-item-desc">Issue VPN token &amp; Intranet credentials for R&amp;D Sensor Fab Lab (EMP-VP-0492 · Level 3 Clearance).</div>
+                    <div class="action-item-title">Onboarding Pipeline Active · <?= $metrics['active_onboarding'] ?> Candidate(s)</div>
+                    <div class="action-item-desc">Sequential provisioning, cryptographic token assignment, and security clearance gating.</div>
                   </div>
                 </div>
                 <div style="display: flex; align-items: center; gap: 0.75rem;">
-                  <span style="font-family: var(--hr-font-mono); font-size: 11px; color: var(--hr-amber-hover); font-weight: 700;">Stage 6 / 8</span>
-                  <a href="OnboardingTracker.php" class="btn btn-primary-amber btn-sm">Open Tracker →</a>
+                  <a href="OnboardingTracker.php" class="btn btn-primary-amber btn-sm">Open Onboarding Tracker →</a>
                 </div>
               </div>
 
-              <!-- Item 2: Offboarding IT Revocation -->
+              <!-- Item 2: Offboarding Status -->
               <div class="action-item action-offboarding">
                 <div class="action-item-left">
                   <div class="action-badge-icon" style="background: var(--hr-confidential-bg); color: var(--hr-confidential);">🔒</div>
                   <div>
-                    <div class="action-item-title">Security Clearance Revocation &amp; IT Lock · Boris Kamenev</div>
-                    <div class="action-item-desc">Scheduled Offboarding: Revoke Level 3 SCADA tokens, retrieve cryptographic smartcard, archive NDA.</div>
+                    <div class="action-item-title">Security Clearance Revocation &amp; IT Lock · <?= $metrics['active_offboarding'] ?> Case(s)</div>
+                    <div class="action-item-desc">Revoke SCADA tokens, retrieve cryptographic smartcards, and archive NDA records.</div>
                   </div>
                 </div>
                 <div style="display: flex; align-items: center; gap: 0.75rem;">
-                  <span style="font-family: var(--hr-font-mono); font-size: 11px; color: var(--hr-confidential); font-weight: 700;">Final Day: Nov 15</span>
                   <a href="Offboarding.php" class="btn btn-outline btn-sm">Process Revocation →</a>
                 </div>
               </div>
 
-              <!-- Item 3: Level 4 Executive Recertification -->
-              <div class="action-item">
-                <div class="action-item-left">
-                  <div class="action-badge-icon" style="background: var(--hr-plum-light); color: var(--hr-plum);">🔏</div>
-                  <div>
-                    <div class="action-item-title">Annual GOST Security Clearance Audit · 4 Executive Engineers</div>
-                    <div class="action-item-desc">Dr. Elena Rostova, Mikhail Sorokin, Yury Vasiliev, and Valeria Zaytseva biometric key renewals.</div>
+              <!-- Item 3: Pending Leaves -->
+              <?php if ($metrics['pending_leaves'] > 0): ?>
+                <div class="action-item">
+                  <div class="action-item-left">
+                    <div class="action-badge-icon" style="background: var(--hr-plum-light); color: var(--hr-plum);">📅</div>
+                    <div>
+                      <div class="action-item-title">Pending Leave Requests · <?= $metrics['pending_leaves'] ?> Submitted</div>
+                      <div class="action-item-desc">Operational personnel requests awaiting department director approval.</div>
+                    </div>
+                  </div>
+                  <div style="display: flex; align-items: center; gap: 0.75rem;">
+                    <a href="LeaveManagement.php" class="btn btn-plum btn-sm">Review Leave Queue →</a>
                   </div>
                 </div>
-                <div style="display: flex; align-items: center; gap: 0.75rem;">
-                  <span style="font-family: var(--hr-font-mono); font-size: 11px; color: var(--hr-plum); font-weight: 700;">Due Nov 30</span>
-                  <button class="btn btn-outline btn-sm" onclick="window.hrApp.showToast('Audit Triggered', 'Automated security renewal notices sent.')">Review Dossier</button>
-                </div>
-              </div>
+              <?php endif; ?>
             </div>
           </div>
         </div>

@@ -1,3 +1,14 @@
+<?php
+require_once __DIR__ . '/../config/db.php';
+require_once __DIR__ . '/../includes/auth_guard.php';
+requireAuth('ADM');
+require_once __DIR__ . '/gov_service.php';
+
+$currentUser = gov_getActiveUserProfile();
+$auditLogs = gov_getUnifiedAuditLogs(50);
+$privilegedAccounts = gov_getPrivilegedAccounts();
+$metrics = gov_getGovernanceMetrics();
+?>
 <!DOCTYPE html>
 
 <html lang="en">
@@ -154,10 +165,7 @@
                     </div>
                 </a></nav>
         </div>
-                    <a class="flex items-center gap-space-sm px-space-sm py-space-xs rounded text-error hover:bg-error-container hover:text-on-error-container transition-all font-body-compact text-body-compact mt-space-sm" href="../api/logout.php?system=Admin%20%26%20Governance%20Portal&redirect=../Admin%20%26%20Governance%20Portal/login.php" id="btn-logout" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" onclick="(function(){sessionStorage.clear();localStorage.clear();})()">
-                <span class="material-symbols-outlined text-[18px] text-error">logout</span>
-                <span>Log Out</span>
-            </a>
+                    
             <div class="p-space-md bg-primary-container/40 border-t border-outline/20 flex flex-col gap-space-2xs">
             <div class="flex items-center justify-between"><span
                     class="font-security-stamp text-[10px] text-secondary-fixed-dim uppercase tracking-wider">SEC-OPS
@@ -353,146 +361,32 @@
                             <!-- Terminal Body / Monospaced Stream Entries -->
                             <div class="p-space-sm overflow-x-auto flex flex-col gap-[2px] max-h-[580px] overflow-y-auto"
                                 id="terminalStreamBox">
-                                <!-- Line 1: Critical Emergency Override -->
-                                <div
-                                    class="flex items-start gap-space-xs font-telemetry-data text-telemetry-data py-space-2xs px-space-xs bg-error-container/20 rounded hover:bg-error-container/30 transition-colors">
-                                    <span
-                                        class="text-on-primary-container select-none font-telemetry-micro w-8 text-right shrink-0">1042</span>
-                                    <span class="text-secondary-fixed shrink-0 font-telemetry-micro">2026-03-31
-                                        10:48:19.402</span>
-                                    <span
-                                        class="bg-error text-on-error px-space-2xs py-0 rounded font-security-stamp text-security-stamp shrink-0">CRITICAL</span>
-                                    <span class="text-secondary-fixed-dim font-bold shrink-0">[SYS-03-CNC]</span>
-                                    <span class="text-tertiary-fixed-dim shrink-0">[POL-OVERRIDE]</span>
+                                <?php foreach ($auditLogs as $idx => $al): 
+                                    $isCrit = ($al['result'] === 'Failed' || strpos($al['action'], 'Override') !== false || strpos($al['action'], 'Breach') !== false || strpos($al['action'], 'Revocation') !== false);
+                                    $isWarn = ($al['result'] === 'Warning');
+                                    $sysLabel = !empty($al['system_id']) ? $al['system_id'] : (!empty($al['actor_system']) ? $al['actor_system'] : 'SYS-11');
+                                ?>
+                                <div class="flex items-start gap-space-xs font-telemetry-data text-telemetry-data py-space-2xs px-space-xs <?= $isCrit ? 'bg-error-container/20 rounded hover:bg-error-container/30' : 'hover:bg-surface-container-highest/10' ?> transition-colors">
+                                    <span class="text-on-primary-container select-none font-telemetry-micro w-8 text-right shrink-0"><?= sprintf('%04d', $al['audit_id']) ?></span>
+                                    <span class="text-secondary-fixed shrink-0 font-telemetry-micro"><?= htmlspecialchars($al['occurred_at']) ?></span>
+                                    <?php if ($isCrit): ?>
+                                        <span class="bg-error text-on-error px-space-2xs py-0 rounded font-security-stamp text-security-stamp shrink-0">CRITICAL</span>
+                                    <?php elseif ($isWarn): ?>
+                                        <span class="bg-tertiary-container text-tertiary-fixed px-space-2xs py-0 rounded font-security-stamp text-security-stamp shrink-0">WARN</span>
+                                    <?php else: ?>
+                                        <span class="bg-primary-container text-on-primary-container px-space-2xs py-0 rounded font-security-stamp text-security-stamp shrink-0">INFO</span>
+                                    <?php endif; ?>
+                                    <span class="text-secondary-fixed-dim font-bold shrink-0">[<?= htmlspecialchars($sysLabel) ?>]</span>
+                                    <span class="text-tertiary-fixed-dim shrink-0">[<?= htmlspecialchars($al['action']) ?>]</span>
                                     <span class="text-on-primary">
-                                        <strong class="text-secondary-fixed underline">EMP-1005</strong> (Akhmetov, T.)
-                                        executed emergency override on Lathe Controller #4 (Ticket <span
-                                            class="text-tertiary-fixed font-bold">REF-99023</span>, Emergency coolant
-                                        bypass approved).
+                                        <strong class="text-secondary-fixed underline"><?= htmlspecialchars($al['actor_emp_id'] ?? 'SYS-AUTO') ?></strong> 
+                                        (<?= htmlspecialchars($al['actor_name'] ?? 'System Service') ?>)
+                                        <?= htmlspecialchars($al['action']) ?> on <?= htmlspecialchars($al['target_entity_type'] ?? 'SYS') ?>:<?= htmlspecialchars($al['target_entity_id'] ?? 'CORE') ?> 
+                                        [Result: <span class="<?= ($al['result'] === 'Success') ? 'text-secondary-fixed font-bold' : 'text-error font-bold' ?>"><?= htmlspecialchars($al['result']) ?></span>, IP: <?= htmlspecialchars($al['source_ip'] ?? '10.240.0.1') ?>]
                                     </span>
                                 </div>
-                                <!-- Line 2: Unauthorized ASRS Batch Read -->
-                                <div
-                                    class="flex items-start gap-space-xs font-telemetry-data text-telemetry-data py-space-2xs px-space-xs bg-surface-container-highest/10 rounded hover:bg-surface-container-highest/20 transition-colors">
-                                    <span
-                                        class="text-on-primary-container select-none font-telemetry-micro w-8 text-right shrink-0">1041</span>
-                                    <span class="text-secondary-fixed shrink-0 font-telemetry-micro">2026-03-31
-                                        10:47:55.118</span>
-                                    <span
-                                        class="bg-tertiary-container text-tertiary-fixed px-space-2xs py-0 rounded font-security-stamp text-security-stamp shrink-0">WARN</span>
-                                    <span class="text-secondary-fixed-dim font-bold shrink-0">[SYS-07-ASRS]</span>
-                                    <span class="text-on-tertiary-container shrink-0">[AUTH-WARN]</span>
-                                    <span class="text-on-primary">
-                                        Orphaned service account <code
-                                            class="text-secondary-fixed bg-primary-container px-1">SVC_ASRS_ROBOT</code>
-                                        attempted batch read on restricted rack 14B. <span
-                                            class="text-error font-bold">Access Denied</span> by Rule AC-409.
-                                    </span>
-                                </div>
-                                <!-- Line 3: Break-Glass Hardware Token Tapped -->
-                                <div
-                                    class="flex items-start gap-space-xs font-telemetry-data text-telemetry-data py-space-2xs px-space-xs bg-primary-container/60 rounded hover:bg-primary-container transition-colors">
-                                    <span
-                                        class="text-on-primary-container select-none font-telemetry-micro w-8 text-right shrink-0">1040</span>
-                                    <span class="text-secondary-fixed shrink-0 font-telemetry-micro">2026-03-31
-                                        10:45:02.871</span>
-                                    <span
-                                        class="bg-secondary text-on-secondary px-space-2xs py-0 rounded font-security-stamp text-security-stamp shrink-0">ALERT</span>
-                                    <span class="text-secondary-fixed-dim font-bold shrink-0">[SYS-11-GOV]</span>
-                                    <span class="text-secondary-fixed shrink-0">[BREAK-GLASS]</span>
-                                    <span class="text-on-primary">
-                                        Hardware Token <span
-                                            class="text-secondary-fixed font-bold">YubiKey-FIPS-8832</span> tapped by
-                                        <strong class="text-on-primary underline">EMP-1018</strong> (Sadykova, D.) -
-                                        Dual-custody token verification passed for Root Policy Update.
-                                    </span>
-                                </div>
-                                <!-- Line 4: Normal Grid Telemetry Packet -->
-                                <div
-                                    class="flex items-start gap-space-xs font-telemetry-data text-telemetry-data py-space-2xs px-space-xs hover:bg-surface-container-highest/10 transition-colors">
-                                    <span
-                                        class="text-on-primary-container select-none font-telemetry-micro w-8 text-right shrink-0">1039</span>
-                                    <span class="text-secondary-fixed shrink-0 font-telemetry-micro">2026-03-31
-                                        10:42:11.004</span>
-                                    <span
-                                        class="bg-primary-container text-on-primary-container px-space-2xs py-0 rounded font-security-stamp text-security-stamp shrink-0">INFO</span>
-                                    <span class="text-secondary-fixed-dim font-bold shrink-0">[SYS-05-GRID]</span>
-                                    <span class="text-outline-variant shrink-0">[TELEMETRY]</span>
-                                    <span class="text-on-primary">
-                                        110kV Substation telecontrol packet acknowledged. SHA-256 integrity verified
-                                        (<span
-                                            class="font-telemetry-micro text-secondary-fixed">9a818ec0...4df1712a</span>).
-                                    </span>
-                                </div>
-                                <!-- Line 5: Session Termination -->
-                                <div
-                                    class="flex items-start gap-space-xs font-telemetry-data text-telemetry-data py-space-2xs px-space-xs hover:bg-surface-container-highest/10 transition-colors">
-                                    <span
-                                        class="text-on-primary-container select-none font-telemetry-micro w-8 text-right shrink-0">1038</span>
-                                    <span class="text-secondary-fixed shrink-0 font-telemetry-micro">2026-03-31
-                                        10:39:48.650</span>
-                                    <span
-                                        class="bg-surface-variant/30 text-on-primary-container px-space-2xs py-0 rounded font-security-stamp text-security-stamp shrink-0">AUDIT</span>
-                                    <span class="text-secondary-fixed-dim font-bold shrink-0">[SYS-08-FLEET]</span>
-                                    <span class="text-outline-variant shrink-0">[SESSION-TERM]</span>
-                                    <span class="text-on-primary">
-                                        <strong class="text-secondary-fixed">EMP-1007</strong> privileged session
-                                        terminated normally. Duration: <span class="text-tertiary-fixed">01h 14m
-                                            22s</span>. 48 commands recorded to immutable vault.
-                                    </span>
-                                </div>
-                                <!-- Line 6: Unauthorized Rule Tamper & Automated Rollback -->
-                                <div
-                                    class="flex items-start gap-space-xs font-telemetry-data text-telemetry-data py-space-2xs px-space-xs bg-error-container/20 rounded hover:bg-error-container/30 transition-colors">
-                                    <span
-                                        class="text-on-primary-container select-none font-telemetry-micro w-8 text-right shrink-0">1037</span>
-                                    <span class="text-secondary-fixed shrink-0 font-telemetry-micro">2026-03-31
-                                        10:35:12.229</span>
-                                    <span
-                                        class="bg-error text-on-error px-space-2xs py-0 rounded font-security-stamp text-security-stamp shrink-0">CRITICAL</span>
-                                    <span class="text-secondary-fixed-dim font-bold shrink-0">[SYS-02-HYDR]</span>
-                                    <span class="text-tertiary-fixed-dim shrink-0">[RULE-TAMPER]</span>
-                                    <span class="text-on-primary">
-                                        Unauthorized iptables rule modification detected on Gateway <span
-                                            class="text-secondary-fixed font-bold">GW-ALM-02</span>. <span
-                                            class="text-secondary-fixed font-bold">Reverted automatically</span> by
-                                        System 11 Agent.
-                                    </span>
-                                </div>
-                                <!-- Line 7: Ingestion Bridge Keepalive -->
-                                <div
-                                    class="flex items-start gap-space-xs font-telemetry-data text-telemetry-data py-space-2xs px-space-xs hover:bg-surface-container-highest/10 transition-colors">
-                                    <span
-                                        class="text-on-primary-container select-none font-telemetry-micro w-8 text-right shrink-0">1036</span>
-                                    <span class="text-secondary-fixed shrink-0 font-telemetry-micro">2026-03-31
-                                        10:32:01.114</span>
-                                    <span
-                                        class="bg-primary-container text-on-primary-container px-space-2xs py-0 rounded font-security-stamp text-security-stamp shrink-0">INFO</span>
-                                    <span class="text-secondary-fixed-dim font-bold shrink-0">[INGEST-BR-04]</span>
-                                    <span class="text-outline-variant shrink-0">[HEARTBEAT]</span>
-                                    <span class="text-on-primary">
-                                        Modbus-TCP bridge sync acknowledged. Delta latency: 1.4ms. State: SYNCHRONIZED.
-                                    </span>
-                                </div>
-                                <!-- Line 8: Privilege Escalation Request Raised -->
-                                <div
-                                    class="flex items-start gap-space-xs font-telemetry-data text-telemetry-data py-space-2xs px-space-xs hover:bg-surface-container-highest/10 transition-colors">
-                                    <span
-                                        class="text-on-primary-container select-none font-telemetry-micro w-8 text-right shrink-0">1035</span>
-                                    <span class="text-secondary-fixed shrink-0 font-telemetry-micro">2026-03-31
-                                        10:30:40.098</span>
-                                    <span
-                                        class="bg-surface-variant/30 text-on-primary-container px-space-2xs py-0 rounded font-security-stamp text-security-stamp shrink-0">AUDIT</span>
-                                    <span class="text-secondary-fixed-dim font-bold shrink-0">[SYS-11-GOV]</span>
-                                    <span class="text-outline-variant shrink-0">[IAM-ELEVATE]</span>
-                                    <span class="text-on-primary">
-                                        Transient ticket ELEV-4491 requested for role <span
-                                            class="text-secondary-fixed">SCADA_MAINT_L3</span>. Awaiting dual-key
-                                        signature.
-                                    </span>
-                                </div>
-                            </div>
-                            <!-- Terminal Footer Status & Command Input Simulator -->
+                                <?php endforeach; ?>
+                            </div>\n                            <!-- Terminal Footer Status & Command Input Simulator -->
                             <div
                                 class="h-[32px] bg-primary-container/80 px-space-md flex items-center justify-between font-telemetry-micro text-telemetry-micro text-on-primary-container">
                                 <div class="flex items-center gap-space-xs">

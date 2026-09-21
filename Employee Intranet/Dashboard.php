@@ -1,11 +1,9 @@
 <?php
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-if (empty($_SESSION['vostok_authenticated']) || empty($_SESSION['vostok_system_EMP'])) {
-    header("Location: login.php");
-    exit;
-}
+require_once __DIR__ . '/../config/db.php';
+require_once __DIR__ . '/../includes/auth_guard.php';
+requireAuth('Employee');
+$pdo = getDbConnection();
+$currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clearance_level' => 'L2'];
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -323,6 +321,7 @@ if (empty($_SESSION['vostok_authenticated']) || empty($_SESSION['vostok_system_E
                 <span class="material-symbols-outlined" style="font-size: 1.25rem;">policy</span>
                 <span class="sidebar-label">Policies & Forms</span>
             </a>
+<a href="Integrations.php" class="sidebar-link"><span class="material-symbols-outlined" style="font-size: 1.25rem; color: #00E5FF;">hub</span><span class="sidebar-label" style="color: #00E5FF; font-weight: 600;">System Integrations</span><span class="sidebar-badge" style="margin-left: auto; background: rgba(0,229,255,0.15); color: #00E5FF; font-family: var(--font-mono); font-size: 0.6875rem; padding: 0.1rem 0.4rem; border-radius: 4px;">SYS05</span></a>
 
             <div style="padding: 1rem 1rem 0.5rem; font-size: 0.6875rem; font-family: var(--font-mono); color: #687482; font-weight: 600; text-transform: uppercase;"
                 class="sidebar-section-title">
@@ -381,19 +380,7 @@ if (empty($_SESSION['vostok_authenticated']) || empty($_SESSION['vostok_system_E
 
 
         <!-- Log Out -->
-        <a href="../api/logout.php?system=Employee%20Intranet&redirect=../Employee%20Intranet/login.php" class="sidebar-nav-item sidebar-nav-item--logout" id="btn-logout" onclick="(function(){sessionStorage.clear();localStorage.clear();})()"
-            onclick="(function(){sessionStorage.clear();localStorage.clear();})()">
-            <div class="sidebar-item-left">
-                <span class="sidebar-icon">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-                        <polyline points="16 17 21 12 16 7" />
-                        <line x1="21" y1="12" x2="9" y2="12" />
-                    </svg>
-                </span>
-                <span>Log Out</span>
-            </div>
-        </a>
+        
     </aside>
 
     <!-- Left-edge hover detection strip for collapsed rail state -->

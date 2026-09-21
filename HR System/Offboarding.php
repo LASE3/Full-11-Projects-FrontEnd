@@ -1,10 +1,29 @@
+<?php
+/**
+ * VOSTOKPRIBOR HR System - Offboarding & Security Clearance Revocation
+ * Database-driven offboarding case management, credential locking, and audit progression.
+ */
+require_once __DIR__ . '/hr_service.php';
+requireAuth('HR');
+
+$currUser            = hr_getCurrentUser();
+$offboardingCases    = hr_getOffboardingCases();
+$offboardingStats    = hr_getOffboardingStats();
+$activeEmployees     = hr_getEmployees('', '', '', 'Active');
+$terminatedEmployees = hr_getTerminatedEmployees();
+$canManage           = hr_canManageHR();
+
+$nameParts = explode(' ', trim($currUser['full_name']));
+$initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? substr($nameParts[1], 0, 1) : ''));
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>VOSTOKPRIBOR HR System · Offboarding &amp; Security Clearance Revocation</title>
+  <title>VOSTOKPRIBOR HR System · Offboarding &amp; Security Revocation</title>
   <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 </head>
 <body>
 
@@ -12,6 +31,7 @@
     <!-- TOP NAVIGATION BAR -->
     <header class="top-nav">
       <div class="top-nav__accent-stripe"></div>
+
       <div class="top-nav__content">
         <div class="brand-section">
           <a href="Dashboard.php" class="brand-logo-container">
@@ -35,7 +55,7 @@
         <div class="top-search-bar">
           <div class="search-input-wrapper">
             <span class="search-icon">🔍</span>
-            <input type="text" class="search-input" id="global-omni-search" placeholder="Search employee records, EMP-ID, clearance level, department..." />
+            <input type="text" class="search-input" id="global-omni-search" placeholder="Search offboarding records..." />
             <span class="search-kbd">Ctrl+K</span>
           </div>
         </div>
@@ -46,23 +66,22 @@
             <span>HIGHLY CONFIDENTIAL SYSTEM</span>
           </div>
 
-          <button class="icon-button" onclick="window.hrApp.showToast('Security Alert', '3 active offboarding revocations in progress.')">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-            <span class="badge-dot"></span>
-          </button>
-
-          <div class="top-user-profile" onclick="window.hrApp.showToast('Active User Session', 'Valeria Zaytseva · Chief Human Capital Officer')">
-            <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDZ9P2QbrRU2xObdFOu9aNA-iyUeUZ6UvBFT0l0KnTu1MKDRX0c84gVy9VkzAjtaXzw0JcEGYWbxd3RDqaIh7AyD6h4njnD-XTgLNnu6wa-UaOplKQCaWIDACINffaFufLMrEaDfvX7J3bqgPCT5b9oY66PI4s0dfAwRgA_V8p0oKzRnCAU0tihwWPq8xzU4FbT1iUoh0cBzt9pq7gPkXJVjA32ZA7kWXQvcLq090IXW-8Ihh_efhmM" alt="Valeria" class="user-avatar-top" />
+          <div class="top-user-profile" title="Active Session: <?= htmlspecialchars($currUser['full_name']) ?>">
+            <div style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg, #7A284E 0%, #3D1427 100%);color:#FFFFFF;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12.5px;border:2px solid #FF8080;">
+              <?= $initials ?>
+            </div>
             <div class="user-details-top">
-              <span class="user-name-top">Valeria Zaytseva</span>
-              <span class="user-role-top">Chief HR Officer · Level 4</span>
+              <span class="user-name-top"><?= htmlspecialchars($currUser['full_name']) ?></span>
+              <span class="user-role-top"><?= htmlspecialchars($currUser['role_name'] ?? 'Authorized User') ?> · <?= htmlspecialchars($currUser['clearance_level'] ?? 'L1') ?></span>
             </div>
           </div>
+
+          <a href="../api/logout.php?system=HR%20System&redirect=../HR%20System/login.php" class="top-signout-btn" title="Sign Out" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" style="display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:4px;background:rgba(178,58,50,0.2);border:1px solid rgba(178,58,50,0.5);color:#FF8080;font-size:12px;font-weight:600;text-decoration:none;cursor:pointer;margin-left:8px;vertical-align:middle;">
+            <span class="material-symbols-outlined" style="font-size:15px;line-height:1;">logout</span>
+            <span>Sign Out</span>
+          </a>
         </div>
-      
-<!-- Top Bar Sign Out -->
-<a href="../api/logout.php?system=HR%20System&redirect=../HR%20System/login.php" class="top-signout-btn" title="Sign Out of HR System" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" style="display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:4px;background:rgba(178,58,50,0.2);border:1px solid rgba(178,58,50,0.5);color:#FF8080;font-size:12px;font-weight:600;text-decoration:none;cursor:pointer;margin-left:8px;vertical-align:middle;transition:all 0.2s;" onmouseover="this.style.background='rgba(178,58,50,0.4)';this.style.color='#FFFFFF'" onmouseout="this.style.background='rgba(178,58,50,0.2)';this.style.color='#FF8080'"><span class="material-symbols-outlined" style="font-size:15px;line-height:1;">logout</span><span>Sign Out</span></a>
-</div>
+      </div>
     </header>
 
     <div class="main-layout">
@@ -71,105 +90,24 @@
         <div>
           <div class="sidebar-section-title">Human Resources</div>
           <nav class="sidebar-nav">
-            <a href="Dashboard.php" class="sidebar-nav-item">
-              <div class="sidebar-item-left">
-                <span class="sidebar-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></span>
-                <span>Dashboard</span>
-              </div>
-            </a>
-            <a href="EmployeeRecords.php" class="sidebar-nav-item">
-              <div class="sidebar-item-left">
-                <span class="sidebar-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>
-                <span>Employee Records</span>
-              </div>
-              <span class="sidebar-badge">1,428</span>
-            </a>
-            <a href="OnboardingTracker.php" class="sidebar-nav-item">
-              <div class="sidebar-item-left">
-                <span class="sidebar-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><polyline points="16 11 18 13 22 9"/></svg></span>
-                <span>Recruitment &amp; Onboarding</span>
-              </div>
-              <span class="sidebar-badge">12</span>
-            </a>
-            <a href="LeaveManagement.php" class="sidebar-nav-item">
-              <div class="sidebar-item-left">
-                <span class="sidebar-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></span>
-                <span>Leave Management</span>
-              </div>
-              <span class="sidebar-badge badge-amber">19</span>
-            </a>
-            <a href="OrgStructure.php" class="sidebar-nav-item">
-              <div class="sidebar-item-left">
-                <span class="sidebar-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="3"/><circle cx="5" cy="19" r="3"/><circle cx="19" cy="19" r="3"/><path d="M12 8v4"/><path d="M5 16v-2a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v2"/></svg></span>
-                <span>Org Structure</span>
-              </div>
-              <span class="sidebar-badge">8</span>
-            </a>
-            <a href="Training.php" class="sidebar-nav-item">
-              <div class="sidebar-item-left">
-                <span class="sidebar-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></span>
-                <span>Training &amp; Certs</span>
-              </div>
-              <span class="sidebar-badge">94%</span>
-            </a>
+            <a href="Dashboard.php" class="sidebar-nav-item"><div class="sidebar-item-left"><span class="sidebar-icon">📊</span><span>Dashboard</span></div></a>
+            <a href="EmployeeRecords.php" class="sidebar-nav-item"><div class="sidebar-item-left"><span class="sidebar-icon">👥</span><span>Employee Records</span></div></a>
+            <a href="OnboardingTracker.php" class="sidebar-nav-item"><div class="sidebar-item-left"><span class="sidebar-icon">⚡</span><span>Onboarding Pipeline</span></div></a>
             <a href="Offboarding.php" class="sidebar-nav-item active">
-              <div class="sidebar-item-left">
-                <span class="sidebar-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></span>
-                <span>Offboarding</span>
-              </div>
-              <span class="sidebar-badge badge-red">3</span>
+              <div class="sidebar-item-left"><span class="sidebar-icon">🔒</span><span>Offboarding &amp; Revocation</span></div>
+              <span class="sidebar-pill alert"><?= $offboardingStats['active_cases'] ?></span>
             </a>
-
-                      <div class="sidebar-section-title" style="margin-top: 1rem;">Unified Ecosystem</div>
-          <nav class="sidebar-nav" style="margin-bottom: 0.5rem;">
-            <a href="../VOSTOKPRIBOR Corporate Web Platform/index.php" class="sidebar-nav-item">
-              <div class="sidebar-item-left">
-                <span class="sidebar-icon">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-                </span>
-                <span>Corporate Platform</span>
-              </div>
-              <span class="sidebar-badge" style="font-size: 10px;">SYS 01</span>
-            </a>
-            <a href="../Employee Intranet/index.php" class="sidebar-nav-item">
-              <div class="sidebar-item-left">
-                <span class="sidebar-icon">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-                </span>
-                <span>Employee Intranet</span>
-              </div>
-              <span class="sidebar-badge" style="font-size: 10px;">SYS 04</span>
-            </a>
+            <a href="LeaveManagement.php" class="sidebar-nav-item"><div class="sidebar-item-left"><span class="sidebar-icon">📅</span><span>Leave Management</span></div></a>
+            <a href="OrgStructure.php" class="sidebar-nav-item"><div class="sidebar-item-left"><span class="sidebar-icon">🏛️</span><span>Org Hierarchy</span></div></a>
+            <a href="Training.php" class="sidebar-nav-item"><div class="sidebar-item-left"><span class="sidebar-icon">🎓</span><span>Training &amp; Certs</span></div></a>
           </nav>
-            <!-- Log Out -->
-            <a href="../api/logout.php?system=HR%20System&redirect=../HR%20System/login.php" class="sidebar-nav-item sidebar-nav-item--logout" id="btn-logout" onclick="(function(){sessionStorage.clear();localStorage.clear();})()"
-              onclick="(function(){sessionStorage.clear();localStorage.clear();})()">
-              <div class="sidebar-item-left">
-                <span class="sidebar-icon">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-                </span>
-                <span>Log Out</span>
-              </div>
-            </a>
-          </nav>
-        </div>
-
-        <div class="sidebar-footer">
-          <div class="security-widget-card">
-            <div class="security-widget-header">
-              <span>Security Clearance Registry</span>
-              <span class="security-badge-status">● GOST 1G</span>
-            </div>
-            <div style="font-size: 11px; color: var(--hr-text-inverse-muted); margin-top: 2px;">
-              Active Level 4 Clearances: <strong>24 Vetted</strong>
-            </div>
-          </div>
         </div>
       </aside>
 
       <!-- MAIN CONTENT -->
       <main class="content-wrapper">
-        <div class="portal-container">
+        <div class="portal-container" style="max-width: 1200px;">
+          <!-- Page Header -->
           <div class="page-header">
             <div class="page-header-info">
               <div class="breadcrumb-trail">
@@ -177,200 +115,315 @@
                 <span class="breadcrumb-separator">/</span>
                 <span class="breadcrumb-current">Offboarding &amp; Security Revocation</span>
               </div>
-              <h1 class="page-title">Offboarding Workflow &amp; Clearance Revocation</h1>
-              <p class="page-subtitle">Mandatory smartcard deactivation, physical cleanroom token retrieval, and post-employment NDA re-affirmation</p>
+              <h1 class="page-title">Offboarding Workflow &amp; Access Revocation</h1>
+              <p class="page-subtitle">Security clearance revocation, hardware asset recovery, and automated SSO account de-provisioning</p>
             </div>
             <div class="page-header-actions">
-              <button class="btn btn-outline" onclick="window.hrApp.showToast('Security Ledger', 'Revocation certificates encrypted and archived with timestamp SHA-256.')">
-                <span>🔒 Security Clearance Audit</span>
-              </button>
-              <button class="btn btn-primary-amber" onclick="window.hrApp.showToast('Offboarding Initiated', 'New clearance revocation pipeline opened.')">
-                <span>+ Initiate Offboarding</span>
-              </button>
+              <?php if ($canManage): ?>
+                <button class="btn btn-primary-amber" onclick="window.hrApp.openModal('modal-initiate-offboarding')">
+                  <span>🔒 Initiate Offboarding / Revoke Access</span>
+                </button>
+              <?php endif; ?>
             </div>
           </div>
 
-          <!-- Offboarding KPI Summary Strip -->
-          <div class="kpi-grid" style="grid-template-columns: repeat(4, 1fr); margin-bottom: 1.5rem;">
+          <!-- Top Row KPI Cards - 100% Database Driven -->
+          <div class="kpi-grid">
             <div class="hr-card kpi-card" style="border-top: 3px solid var(--hr-confidential);">
               <div class="kpi-header">
                 <span class="kpi-title">Active Offboardings</span>
                 <div class="kpi-icon-pill red">🔒</div>
               </div>
               <div class="kpi-value-row">
-                <span class="kpi-value kpi-value-mono">3</span>
-                <span style="font-size: 13px; color: var(--hr-text-muted);">Cases</span>
+                <span class="kpi-value kpi-value-mono"><?= $offboardingStats['active_cases'] ?></span>
+                <span style="font-size: 13px; color: var(--hr-text-muted);">Cases in DB</span>
               </div>
               <div class="kpi-footer">
-                <span>2 Level 3, 1 Level 2</span>
-                <span class="kpi-trend alert">SLA &lt; 24h</span>
+                <span>Security Clearance Gated</span>
+                <span class="kpi-trend alert"><?= $offboardingStats['active_cases'] > 0 ? 'Active Workflow' : 'Clear' ?></span>
               </div>
             </div>
 
             <div class="hr-card kpi-card" style="border-top: 3px solid var(--hr-amber);">
               <div class="kpi-header">
-                <span class="kpi-title">Hardware Returns</span>
-                <div class="kpi-icon-pill amber">💻</div>
+                <span class="kpi-title">Completed Revocations</span>
+                <div class="kpi-icon-pill amber">⚖️</div>
               </div>
               <div class="kpi-value-row">
-                <span class="kpi-value kpi-value-mono">5/7</span>
-                <span style="font-size: 13px; color: var(--hr-text-muted);">Assets</span>
+                <span class="kpi-value kpi-value-mono"><?= $offboardingStats['completed_cases'] ?></span>
+                <span style="font-size: 13px; color: var(--hr-text-muted);">Finalized</span>
               </div>
               <div class="kpi-footer">
-                <span>2 Laptops, 3 Smartcards</span>
-                <span class="kpi-trend up">71% Returned</span>
+                <span>Audit Logs Logged</span>
+                <span class="kpi-trend up"><?= $offboardingStats['total_steps'] ?> Total Steps</span>
               </div>
             </div>
 
             <div class="hr-card kpi-card" style="border-top: 3px solid var(--hr-steel-blue);">
               <div class="kpi-header">
-                <span class="kpi-title">Credentials Revoked</span>
+                <span class="kpi-title">Suspended Accounts</span>
                 <div class="kpi-icon-pill steel">⚡</div>
               </div>
               <div class="kpi-value-row">
-                <span class="kpi-value kpi-value-mono">100%</span>
-                <span style="font-size: 13px; color: var(--hr-text-muted);">SCADA Tokens</span>
+                <span class="kpi-value kpi-value-mono"><?= $offboardingStats['suspended_accounts'] ?></span>
+                <span style="font-size: 13px; color: var(--hr-text-muted);">Accounts</span>
               </div>
               <div class="kpi-footer">
-                <span>Automated LDAP Lock</span>
-                <span class="kpi-trend up">Enforced</span>
+                <span>employee_accounts status</span>
+                <span class="kpi-trend alert">Locked Out</span>
               </div>
             </div>
 
             <div class="hr-card kpi-card" style="border-top: 3px solid var(--hr-plum);">
               <div class="kpi-header">
-                <span class="kpi-title">NDA Re-affirmations</span>
+                <span class="kpi-title">Terminated Personnel</span>
                 <div class="kpi-icon-pill plum">📜</div>
               </div>
               <div class="kpi-value-row">
-                <span class="kpi-value kpi-value-mono">3/3</span>
-                <span style="font-size: 13px; color: var(--hr-text-muted);">Signed</span>
+                <span class="kpi-value kpi-value-mono"><?= $offboardingStats['terminated_employees'] ?></span>
+                <span style="font-size: 13px; color: var(--hr-text-muted);">Records</span>
               </div>
               <div class="kpi-footer">
-                <span>GOST R 34.10 Standard</span>
+                <span>employees status</span>
                 <span class="kpi-trend up">Archived</span>
               </div>
             </div>
           </div>
 
-          <!-- Active Cases Container -->
-          <div class="hr-card" style="padding: 0; overflow: hidden; margin-bottom: 1.5rem;">
-            <div style="padding: 1rem 1.25rem; background: #FFFFFF; border-bottom: 1px solid var(--hr-surface-border); display: flex; align-items: center; justify-content: space-between;">
+          <?php if (empty($offboardingCases)): ?>
+            <div class="hr-card" style="text-align: center; padding: 3rem; margin-top: 1.5rem;">
+              <h3>No Active Offboarding Cases</h3>
+              <p style="color: var(--hr-text-muted); margin: 0.5rem 0 1.5rem;">All employee accounts and security tokens are in active standing in MySQL.</p>
+              <?php if ($canManage): ?>
+                <button class="btn btn-primary-amber" onclick="window.hrApp.openModal('modal-initiate-offboarding')">+ Initiate Personnel Offboarding</button>
+              <?php endif; ?>
+            </div>
+          <?php else: ?>
+            <!-- Offboarding Cases List -->
+            <div style="display: flex; flex-direction: column; gap: 1.5rem; margin-top: 1.5rem;">
+              <?php foreach ($offboardingCases as $case): ?>
+                <div class="hr-card" style="padding: 1.5rem;">
+                  <!-- Case Header -->
+                  <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--hr-surface-border); padding-bottom: 1rem; margin-bottom: 1.25rem;">
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                      <div style="width: 48px; height: 48px; border-radius: var(--hr-radius-md); background: #B23A32; color: #FFF; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 700;">
+                        🔒
+                      </div>
+                      <div>
+                        <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+                          <h3 style="font-size: 16px; font-weight: 700; color: var(--hr-navy);"><?= htmlspecialchars($case['full_name']) ?></h3>
+                          <span class="status-pill status-offboarding"><?= htmlspecialchars($case['employment_status']) ?></span>
+                          <span class="clearance-badge clearance-l<?= substr($case['clearance_level'], 1) ?>">Level <?= substr($case['clearance_level'], 1) ?></span>
+                        </div>
+                        <div style="font-size: 12px; color: var(--hr-text-muted); margin-top: 2px;">
+                          <?= htmlspecialchars($case['job_title']) ?> · <strong><?= htmlspecialchars($case['dept_name']) ?></strong> · ID: <span style="font-family: var(--hr-font-mono); color: var(--hr-plum);"><?= htmlspecialchars($case['emp_id']) ?></span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div style="display: flex; align-items: center; gap: 1.5rem;">
+                      <div style="text-align: right;">
+                        <div style="font-size: 11px; text-transform: uppercase; color: var(--hr-text-muted); font-weight: 600;">Revocation Progress</div>
+                        <div style="font-size: 18px; font-weight: 700; color: var(--hr-confidential); font-family: var(--hr-font-mono);">
+                          <?= $case['progress_percent'] ?>% (<?= $case['completed_steps'] ?>/<?= $case['total_steps'] ?>)
+                        </div>
+                        <div style="font-size: 11px; color: var(--hr-text-muted); margin-top: 2px;">
+                          Account Status: <strong style="color: #B23A32;"><?= htmlspecialchars($case['account_status'] ?? 'Suspended') ?></strong>
+                        </div>
+                      </div>
+
+                      <?php if ($canManage): ?>
+                        <div style="display: flex; flex-direction: column; gap: 0.4rem;">
+                          <button class="btn btn-sm" style="background: #2E7D32; color: #FFF; border: 1px solid #2E7D32;"
+                                  onclick="window.hrApp.completeOffboarding('<?= htmlspecialchars($case['emp_id']) ?>')"
+                                  title="Complete all steps and set status to Terminated in MySQL">
+                            ✓ Complete &amp; Terminate
+                          </button>
+                          <button class="btn btn-outline btn-sm" style="color: #B23A32; border-color: rgba(178,58,50,0.4);"
+                                  onclick="window.hrApp.deleteEmployee('<?= htmlspecialchars($case['emp_id']) ?>', '<?= addslashes($case['full_name']) ?>')"
+                                  title="Purge record or mark Terminated in MySQL">
+                            🗑 Remove Record
+                          </button>
+                        </div>
+                      <?php endif; ?>
+                    </div>
+                  </div>
+
+                  <!-- 10 Step Checklist Grid -->
+                  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0.75rem;">
+                    <?php 
+                    $stepTitles = [
+                        'HRInitiated'        => '1. HR Notification',
+                        'StatusChanged'      => '2. Status Suspended',
+                        'ITNotified'         => '3. IT Security Alert',
+                        'AccessRevoked'      => '4. SCADA Revoked',
+                        'IntranetRevoked'    => '5. Intranet Locked',
+                        'FileCenterReviewed' => '6. Files Archived',
+                        'CRMRevoked'         => '7. CRM Locked',
+                        'HelpdeskClosed'     => '8. Tickets Reassigned',
+                        'GovernanceVerified' => '9. Governance Signoff',
+                        'AuditLogged'        => '10. Audit Hashed'
+                    ];
+
+                    foreach ($case['steps'] as $st): 
+                        $isDone = ($st['status'] === 'Completed');
+                        $isInProg = ($st['status'] === 'In Progress');
+                        $cardBg = $isDone ? 'rgba(46,125,50,0.08)' : ($isInProg ? 'rgba(217,119,6,0.08)' : 'var(--hr-surface-dim)');
+                        $borderCol = $isDone ? '#2E7D32' : ($isInProg ? '#D97706' : 'var(--hr-surface-border)');
+                    ?>
+                      <div style="background: <?= $cardBg ?>; border: 1px solid <?= $borderCol ?>; border-radius: var(--hr-radius-sm); padding: 0.65rem 0.85rem; display: flex; align-items: center; justify-content: space-between;">
+                        <div>
+                          <div style="font-size: 11.5px; font-weight: 600; color: var(--hr-navy);">
+                            <?= htmlspecialchars($stepTitles[$st['step']] ?? $st['step']) ?>
+                          </div>
+                          <div style="font-size: 10px; color: var(--hr-text-muted); margin-top: 2px;">
+                            <?= htmlspecialchars($st['status']) ?>
+                          </div>
+                        </div>
+                        <?php if ($canManage): ?>
+                          <button class="btn btn-outline btn-sm" style="padding: 2px 6px; font-size: 10px;" 
+                                  onclick="window.hrApp.advanceOffboarding('<?= htmlspecialchars($case['emp_id']) ?>', '<?= htmlspecialchars($st['step']) ?>', '<?= $isDone ? 'Pending' : 'Completed' ?>')">
+                            <?= $isDone ? '✓ Done' : 'Complete' ?>
+                          </button>
+                        <?php endif; ?>
+                      </div>
+                    <?php endforeach; ?>
+                  </div>
+                </div>
+              <?php endforeach; ?>
+            </div>
+          <?php endif; ?>
+
+          <!-- Terminated & Suspended Personnel History -->
+          <div class="hr-card" style="padding: 0; overflow: hidden; margin-top: 2rem;">
+            <div style="padding: 1rem 1.25rem; background-color: #FFFFFF; border-bottom: 1px solid var(--hr-surface-border); display: flex; align-items: center; justify-content: space-between;">
               <div>
-                <h3 class="card-title">Active Security Clearance Revocation &amp; Asset Reclamation Queue</h3>
+                <h3 class="card-title">Terminated &amp; Suspended Personnel Roster</h3>
                 <p style="font-size: 11.5px; color: var(--hr-text-secondary); margin-top: 2px;">
-                  Execute mandatory token invalidation, cryptographic key wiping, and physical asset returns
+                  Archived records of personnel departed or decommissioned in MySQL
                 </p>
               </div>
-              <span class="confidential-system-pill" style="font-size: 9px; padding: 2px 6px;">MANDATORY RETRIEVAL</span>
+              <span class="status-pill status-offboarding" style="font-size: 11px;">
+                <?= count($terminatedEmployees) ?> Archived Records
+              </span>
             </div>
 
-            <div style="padding: 1.25rem; display: flex; flex-direction: column; gap: 1rem;">
-              <!-- Case 1 -->
-              <div class="action-item action-offboarding" style="background: #FFFFFF; flex-direction: column; align-items: stretch; gap: 0.85rem;">
-                <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem;">
-                  <div class="action-item-left">
-                    <div class="action-badge-icon" style="background: var(--hr-confidential-bg); color: var(--hr-confidential);">🔒</div>
-                    <div>
-                      <div style="display: flex; align-items: center; gap: 0.5rem;">
-                        <span class="action-item-title">Boris Kamenev</span>
-                        <span style="font-size: 11px; font-family: var(--hr-font-mono); color: var(--hr-text-muted);">EMP-VP-0199</span>
-                        <span class="clearance-badge clearance-l3">Level 3 · Secret SCADA</span>
-                        <span class="status-pill status-offboarding">Pending Revocation</span>
-                      </div>
-                      <div class="action-item-desc" style="margin-top: 2px;">
-                        Senior SCADA Engineer · SCADA &amp; Automation Division · Supervisor: Viktor Morozov
-                      </div>
-                    </div>
-                  </div>
-                  <div style="display: flex; align-items: center; gap: 0.5rem;">
-                    <span style="font-family: var(--hr-font-mono); font-size: 11px; color: var(--hr-confidential); font-weight: 700;">Final Date: Nov 15, 2024</span>
-                    <button class="btn btn-primary-amber btn-sm" onclick="this.textContent='Revoked ✓'; this.classList.remove('btn-primary-amber'); this.classList.add('btn-outline'); this.style.borderColor='var(--hr-success)'; this.style.color='var(--hr-success)'; window.hrApp.showToast('Revocation Completed', 'Boris Kamenev smartcard & tokens permanently nullified.', 'success');">
-                      Execute Security Revocation
-                    </button>
-                  </div>
-                </div>
-
-                <!-- Checklist steps for Case 1 -->
-                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; background: var(--hr-surface-dim); padding: 0.65rem 0.85rem; border-radius: var(--hr-radius-sm); font-size: 11px;">
-                  <div style="color: var(--hr-success); font-weight: 600;">✓ Smartcard #SC-9821 Retrieved</div>
-                  <div style="color: var(--hr-success); font-weight: 600;">✓ VPN Token Revoked</div>
-                  <div style="color: var(--hr-warning); font-weight: 600;">⚡ Cleanroom Biometric Pass Pending</div>
-                  <div style="color: var(--hr-success); font-weight: 600;">✓ NDA Re-affirmation Signed</div>
-                </div>
-              </div>
-
-              <!-- Case 2 -->
-              <div class="action-item action-offboarding" style="background: #FFFFFF; flex-direction: column; align-items: stretch; gap: 0.85rem;">
-                <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem;">
-                  <div class="action-item-left">
-                    <div class="action-badge-icon" style="background: var(--hr-confidential-bg); color: var(--hr-confidential);">🔒</div>
-                    <div>
-                      <div style="display: flex; align-items: center; gap: 0.5rem;">
-                        <span class="action-item-title">Oleg Tarasov</span>
-                        <span style="font-size: 11px; font-family: var(--hr-font-mono); color: var(--hr-text-muted);">EMP-VP-0248</span>
-                        <span class="clearance-badge clearance-l2">Level 2 · Confidential</span>
-                        <span class="status-pill status-offboarding">In Progress</span>
-                      </div>
-                      <div class="action-item-desc" style="margin-top: 2px;">
-                        Optical Metrology Technician · Optical Sensors Engineering · Supervisor: Dr. Elena Rostova
-                      </div>
-                    </div>
-                  </div>
-                  <div style="display: flex; align-items: center; gap: 0.5rem;">
-                    <span style="font-family: var(--hr-font-mono); font-size: 11px; color: var(--hr-confidential); font-weight: 700;">Final Date: Nov 22, 2024</span>
-                    <button class="btn btn-outline btn-sm" onclick="this.textContent='Revoked ✓'; this.style.borderColor='var(--hr-success)'; this.style.color='var(--hr-success)'; window.hrApp.showToast('Revocation Completed', 'Oleg Tarasov optical pass revoked.', 'success');">
-                      Execute Security Revocation
-                    </button>
-                  </div>
-                </div>
-
-                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; background: var(--hr-surface-dim); padding: 0.65rem 0.85rem; border-radius: var(--hr-radius-sm); font-size: 11px;">
-                  <div style="color: var(--hr-success); font-weight: 600;">✓ Optical Lab Key Handover</div>
-                  <div style="color: var(--hr-warning); font-weight: 600;">⚡ Calibrated Gauge Tool Return</div>
-                  <div style="color: var(--hr-success); font-weight: 600;">✓ LDAP Mailbox Deactivated</div>
-                  <div style="color: var(--hr-success); font-weight: 600;">✓ NDA Re-affirmation Signed</div>
-                </div>
-              </div>
-
-              <!-- Case 3 -->
-              <div class="action-item action-offboarding" style="background: #FFFFFF; flex-direction: column; align-items: stretch; gap: 0.85rem;">
-                <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem;">
-                  <div class="action-item-left">
-                    <div class="action-badge-icon" style="background: var(--hr-confidential-bg); color: var(--hr-confidential);">🔒</div>
-                    <div>
-                      <div style="display: flex; align-items: center; gap: 0.5rem;">
-                        <span class="action-item-title">Igor Grigoriev</span>
-                        <span style="font-size: 11px; font-family: var(--hr-font-mono); color: var(--hr-text-muted);">EMP-VP-0382</span>
-                        <span class="clearance-badge clearance-l3">Level 3 · Secret SCADA</span>
-                        <span class="status-pill status-offboarding">Scheduled</span>
-                      </div>
-                      <div class="action-item-desc" style="margin-top: 2px;">
-                        Procurement Specialist · Rare Earth Sourcing · Supervisor: Svetlana Petrova
-                      </div>
-                    </div>
-                  </div>
-                  <div style="display: flex; align-items: center; gap: 0.5rem;">
-                    <span style="font-family: var(--hr-font-mono); font-size: 11px; color: var(--hr-confidential); font-weight: 700;">Final Date: Nov 30, 2024</span>
-                    <button class="btn btn-outline btn-sm" onclick="this.textContent='Revoked ✓'; this.style.borderColor='var(--hr-success)'; this.style.color='var(--hr-success)'; window.hrApp.showToast('Revocation Completed', 'Igor Grigoriev signing authority revoked.', 'success');">
-                      Execute Security Revocation
-                    </button>
-                  </div>
-                </div>
-
-                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; background: var(--hr-surface-dim); padding: 0.65rem 0.85rem; border-radius: var(--hr-radius-sm); font-size: 11px;">
-                  <div style="color: var(--hr-text-muted); font-weight: 500;">○ ERP Signing Authority Handover</div>
-                  <div style="color: var(--hr-text-muted); font-weight: 500;">○ Secure Laptop Sanitization</div>
-                  <div style="color: var(--hr-text-muted); font-weight: 500;">○ Building RFID Return</div>
-                  <div style="color: var(--hr-text-muted); font-weight: 500;">○ Exit Interview Scheduled</div>
-                </div>
-              </div>
-            </div>
+            <table class="employee-table">
+              <thead>
+                <tr>
+                  <th style="width: 100px;">EMP ID</th>
+                  <th>Employee Name</th>
+                  <th>Department</th>
+                  <th>Clearance</th>
+                  <th>Status in MySQL</th>
+                  <th>Account Status</th>
+                  <th style="width: 130px; text-align: right;">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <?php if (empty($terminatedEmployees)): ?>
+                  <tr>
+                    <td colspan="7" style="text-align:center; padding: 2rem; color: var(--hr-text-muted);">
+                      No terminated or suspended personnel recorded in database.
+                    </td>
+                  </tr>
+                <?php else: ?>
+                  <?php foreach ($terminatedEmployees as $te): ?>
+                    <tr>
+                      <td style="font-family: var(--hr-font-mono); font-weight: 700; color: var(--hr-confidential);">
+                        <?= htmlspecialchars($te['emp_id']) ?>
+                      </td>
+                      <td>
+                        <div style="font-weight: 700; color: var(--hr-navy);"><?= htmlspecialchars($te['full_name']) ?></div>
+                        <div style="font-size: 11px; color: var(--hr-text-muted);"><?= htmlspecialchars($te['job_title']) ?></div>
+                      </td>
+                      <td><?= htmlspecialchars($te['dept_name'] ?? $te['department_code']) ?></td>
+                      <td>
+                        <span class="clearance-badge clearance-l<?= substr($te['clearance_level'], 1) ?>">
+                          Level <?= substr($te['clearance_level'], 1) ?>
+                        </span>
+                      </td>
+                      <td>
+                        <span class="status-pill status-offboarding"><?= htmlspecialchars($te['employment_status']) ?></span>
+                      </td>
+                      <td>
+                        <span style="font-size: 11px; font-weight: 600; color: #B23A32;">
+                          <?= htmlspecialchars($te['account_status'] ?? 'Locked') ?>
+                        </span>
+                      </td>
+                      <td style="text-align: right;">
+                        <?php if ($canManage): ?>
+                          <button class="btn btn-outline btn-sm" style="color: #B23A32; border-color: rgba(178,58,50,0.4);"
+                                  onclick="window.hrApp.deleteEmployee('<?= htmlspecialchars($te['emp_id']) ?>', '<?= addslashes($te['full_name']) ?>')">
+                            Purge Record
+                          </button>
+                        <?php endif; ?>
+                      </td>
+                    </tr>
+                  <?php endforeach; ?>
+                <?php endif; ?>
+              </tbody>
+            </table>
           </div>
+
         </div>
       </main>
     </div>
   </div>
+
+  <?php if ($canManage): ?>
+  <!-- MODAL: INITIATE OFFBOARDING / REMOVE PERSONNEL -->
+  <div id="modal-initiate-offboarding" class="modal-backdrop">
+    <div class="modal-card" style="max-width: 560px;">
+      <div class="modal-header" style="background-color: var(--hr-navy); color: #FFFFFF; border-bottom: 3px solid var(--hr-confidential);">
+        <div>
+          <h3 class="modal-title" style="color: #FFFFFF;">Initiate Offboarding &amp; Revoke Access</h3>
+          <p style="font-size: 11px; color: #FF8080; margin-top: 2px;">Locks SSO Credentials · Begins 10-Step Security Decommissioning</p>
+        </div>
+        <button class="modal-close-btn" style="color: #FFFFFF;" onclick="window.hrApp.closeModal('modal-initiate-offboarding')">&times;</button>
+      </div>
+      <div class="modal-body" style="padding: 1.5rem;">
+        <form id="form-initiate-offboarding" onsubmit="return window.hrApp.handleInitiateOffboarding(event, this);">
+          <div style="display: flex; flex-direction: column; gap: 1rem;">
+            <div>
+              <label class="form-label">Select Active Employee to Offboard <span style="color:var(--hr-confidential);">*</span></label>
+              <select name="emp_id" class="form-select" required>
+                <option value="">-- Choose active employee from MySQL --</option>
+                <?php foreach ($activeEmployees as $ae): ?>
+                  <option value="<?= htmlspecialchars($ae['emp_id']) ?>">
+                    <?= htmlspecialchars($ae['full_name']) ?> (<?= htmlspecialchars($ae['emp_id']) ?> · <?= htmlspecialchars($ae['job_title']) ?> · <?= htmlspecialchars($ae['dept_name']) ?>)
+                  </option>
+                <?php endforeach; ?>
+              </select>
+            </div>
+
+            <div>
+              <label class="form-label">Separation Reason <span style="color:var(--hr-confidential);">*</span></label>
+              <select name="reason" class="form-select" required>
+                <option value="Resignation">Voluntary Resignation</option>
+                <option value="Contract Expiration">Contract Term Expiration</option>
+                <option value="Security Revocation">Security Clearance Revocation / SecOps Action</option>
+                <option value="Retirement">Executive Retirement</option>
+                <option value="Administrative Separation">Administrative Separation / Termination</option>
+              </select>
+            </div>
+
+            <div style="padding: 0.75rem; background: rgba(178,58,50,0.08); border-left: 3px solid #B23A32; border-radius: 4px; font-size: 11.5px; color: #B23A32;">
+              <strong>Security Protocol Warning:</strong> Submitting will immediately switch the employee status to <code>Suspended</code>, lock login credentials in <code>employee_accounts</code>, and generate the 10-step audit revocation checklist in MySQL.
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 0.5rem;">
+              <button type="button" class="btn btn-outline" onclick="window.hrApp.closeModal('modal-initiate-offboarding')">Cancel</button>
+              <button type="submit" class="btn btn-plum" style="background: #B23A32; border-color: #B23A32; color: #FFF;">
+                <span>Confirm &amp; Suspend Access 🔒</span>
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <?php endif; ?>
 
   <div id="toast-container"></div>
   <script src="js/app.js"></script>

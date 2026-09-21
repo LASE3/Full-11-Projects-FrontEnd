@@ -1,3 +1,13 @@
+<?php
+require_once __DIR__ . '/../config/db.php';
+require_once __DIR__ . '/../includes/auth_guard.php';
+requireAuth('ADM');
+require_once __DIR__ . '/gov_service.php';
+
+$currentUser = gov_getActiveUserProfile();
+$systemsLockdown = gov_getSystemsLockdownMatrix();
+$metrics = gov_getGovernanceMetrics();
+?>
 <!DOCTYPE html>
 
 <html lang="en">
@@ -154,10 +164,7 @@
                     </div>
                 </a></nav>
         </div>
-                    <a class="flex items-center gap-space-sm px-space-sm py-space-xs rounded text-error hover:bg-error-container hover:text-on-error-container transition-all font-body-compact text-body-compact mt-space-sm" href="../api/logout.php?system=Admin%20%26%20Governance%20Portal&redirect=../Admin%20%26%20Governance%20Portal/login.php" id="btn-logout" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" onclick="(function(){sessionStorage.clear();localStorage.clear();})()">
-                <span class="material-symbols-outlined text-[18px] text-error">logout</span>
-                <span>Log Out</span>
-            </a>
+                    
             <div class="p-space-md bg-primary-container/40 border-t border-outline/20 flex flex-col gap-space-2xs">
             <div class="flex items-center justify-between"><span
                     class="font-security-stamp text-[10px] text-secondary-fixed-dim uppercase tracking-wider">SEC-OPS
@@ -442,244 +449,39 @@
                                     </thead>
                                     <tbody
                                         class="font-body-compact text-body-compact divide-y divide-surface-container-low">
-                                        <!-- Node 1 -->
+                                        <?php foreach ($systemsLockdown as $s): 
+                                            $sysId = $s['system_id'];
+                                            $sysName = $s['system_name'];
+                                            $sysCode = $s['system_code'] ?? $s['fqdn'] ?? $s['system_id'];
+                                        ?>
                                         <tr class="hover:bg-surface-container-low/70 transition-colors">
                                             <td class="py-space-xs px-space-base">
                                                 <div class="flex items-center gap-space-xs">
-                                                    <span
-                                                        class="font-telemetry-data text-telemetry-data font-bold text-primary">SYS-01</span>
-                                                    <span class="text-on-surface font-medium">Karaganda Heavy Foundry
-                                                        Blast Furnace</span>
+                                                    <span class="font-telemetry-data text-telemetry-data font-bold text-primary"><?= htmlspecialchars($sysId) ?></span>
+                                                    <span class="text-on-surface font-medium"><?= htmlspecialchars($sysName) ?></span>
                                                 </div>
-                                                <span
-                                                    class="font-telemetry-micro text-[10px] text-on-surface-variant">ZONE-NORTH
-                                                    // MODBUS-IP 10.240.12.1</span>
+                                                <span class="font-telemetry-micro text-[10px] text-on-surface-variant"><?= htmlspecialchars($sysCode) ?> // ENCLAVE AIR-GAP PROTOCOL</span>
                                             </td>
                                             <td class="py-space-xs px-space-sm text-center">
-                                                <span
-                                                    class="inline-flex items-center gap-1 px-space-xs py-[2px] bg-secondary-container/50 text-on-secondary-container font-telemetry-micro text-[10px] font-bold rounded">
+                                                <span class="inline-flex items-center gap-1 px-space-xs py-[2px] bg-secondary-container/50 text-on-secondary-container font-telemetry-micro text-[10px] font-bold rounded">
                                                     <span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
                                                     INBOUND-ONLY
                                                 </span>
                                             </td>
                                             <td class="py-space-xs px-space-sm">
-                                                <span
-                                                    class="font-telemetry-micro text-telemetry-micro font-semibold text-on-surface">Immutable
-                                                    Read-Only</span>
+                                                <span class="font-telemetry-micro text-telemetry-micro font-semibold text-on-surface">Immutable Read-Only</span>
                                             </td>
-                                            <td
-                                                class="py-space-xs px-space-sm text-right font-telemetry-data text-telemetry-data">
-                                                0.00 MB/s Out</td>
-                                            <td
-                                                class="py-space-xs px-space-sm text-right font-telemetry-data text-telemetry-data text-on-surface-variant">
-                                                1.2 ms</td>
+                                            <td class="py-space-xs px-space-sm text-right font-telemetry-data text-telemetry-data">
+                                                0.00 MB/s Out
+                                            </td>
+                                            <td class="py-space-xs px-space-sm text-right font-telemetry-data text-telemetry-data text-on-surface-variant">
+                                                0.8 ms
+                                            </td>
                                             <td class="py-space-xs px-space-base text-right">
-                                                <span
-                                                    class="px-space-xs py-[2px] bg-primary-container text-on-primary-container font-security-stamp text-[9px] rounded uppercase">LOCKED</span>
+                                                <span class="px-space-xs py-[2px] bg-primary-container text-on-primary-container font-security-stamp text-[9px] rounded uppercase font-bold">LOCKED</span>
                                             </td>
                                         </tr>
-                                        <!-- Node 2 -->
-                                        <tr class="hover:bg-surface-container-low/70 transition-colors">
-                                            <td class="py-space-xs px-space-base">
-                                                <div class="flex items-center gap-space-xs">
-                                                    <span
-                                                        class="font-telemetry-data text-telemetry-data font-bold text-primary">SYS-02</span>
-                                                    <span class="text-on-surface font-medium">Almaty Actuator
-                                                        Calibration Terminal</span>
-                                                </div>
-                                                <span
-                                                    class="font-telemetry-micro text-[10px] text-on-surface-variant">ZONE-CENTRAL
-                                                    // CAN-BUS BRIDGE 10.240.14.88</span>
-                                            </td>
-                                            <td class="py-space-xs px-space-sm text-center">
-                                                <span
-                                                    class="inline-flex items-center gap-1 px-space-xs py-[2px] bg-secondary-container/50 text-on-secondary-container font-telemetry-micro text-[10px] font-bold rounded">
-                                                    <span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
-                                                    INBOUND-ONLY
-                                                </span>
-                                            </td>
-                                            <td class="py-space-xs px-space-sm">
-                                                <span
-                                                    class="font-telemetry-micro text-telemetry-micro font-semibold text-on-surface">Immutable
-                                                    Read-Only</span>
-                                            </td>
-                                            <td
-                                                class="py-space-xs px-space-sm text-right font-telemetry-data text-telemetry-data">
-                                                0.00 MB/s Out</td>
-                                            <td
-                                                class="py-space-xs px-space-sm text-right font-telemetry-data text-telemetry-data text-on-surface-variant">
-                                                0.8 ms</td>
-                                            <td class="py-space-xs px-space-base text-right">
-                                                <span
-                                                    class="px-space-xs py-[2px] bg-primary-container text-on-primary-container font-security-stamp text-[9px] rounded uppercase">LOCKED</span>
-                                            </td>
-                                        </tr>
-                                        <!-- Node 3: ANOMALY TARGET (Highlighted) -->
-                                        <tr class="bg-error-container/30 hover:bg-error-container/40 transition-colors">
-                                            <td class="py-space-xs px-space-base">
-                                                <div class="flex items-center gap-space-xs">
-                                                    <span
-                                                        class="font-telemetry-data text-telemetry-data font-bold text-error">SYS-03</span>
-                                                    <span class="text-on-surface font-bold">Automated CNC Lathes
-                                                        Facility #4</span>
-                                                    <span
-                                                        class="px-space-xs py-[1px] bg-error text-on-error font-security-stamp text-[9px] rounded animate-pulse">ANOMALY
-                                                        EPICENTER</span>
-                                                </div>
-                                                <span
-                                                    class="font-telemetry-micro text-[10px] text-error font-medium">ORIGIN:
-                                                    UNAUTHORIZED FIRMWARE OVERWRITE BLOCKED</span>
-                                            </td>
-                                            <td class="py-space-xs px-space-sm text-center">
-                                                <span
-                                                    class="inline-flex items-center gap-1 px-space-xs py-[2px] bg-error text-on-error font-telemetry-micro text-[10px] font-bold rounded">
-                                                    <span
-                                                        class="w-1.5 h-1.5 rounded-full bg-surface-container-lowest animate-ping"></span>
-                                                    HARD AIR-GAP SEVERED
-                                                </span>
-                                            </td>
-                                            <td class="py-space-xs px-space-sm">
-                                                <span
-                                                    class="font-telemetry-micro text-telemetry-micro font-bold text-error">Physical
-                                                    Relays Cut</span>
-                                            </td>
-                                            <td
-                                                class="py-space-xs px-space-sm text-right font-telemetry-data text-telemetry-data text-error font-bold">
-                                                0.00 KB/s</td>
-                                            <td
-                                                class="py-space-xs px-space-sm text-right font-telemetry-data text-telemetry-data text-error font-bold">
-                                                DISCONNECTED</td>
-                                            <td class="py-space-xs px-space-base text-right">
-                                                <button
-                                                    class="px-space-xs py-[3px] bg-error text-on-error font-security-stamp text-[9px] rounded uppercase hover:bg-on-error-container transition-colors">SEVERED</button>
-                                            </td>
-                                        </tr>
-                                        <!-- Node 4 -->
-                                        <tr class="hover:bg-surface-container-low/70 transition-colors">
-                                            <td class="py-space-xs px-space-base">
-                                                <div class="flex items-center gap-space-xs">
-                                                    <span
-                                                        class="font-telemetry-data text-telemetry-data font-bold text-primary">SYS-04</span>
-                                                    <span class="text-on-surface font-medium">Ekibastuz Railway Switch
-                                                        Interlock</span>
-                                                </div>
-                                                <span
-                                                    class="font-telemetry-micro text-[10px] text-on-surface-variant">LOGISTICS
-                                                    TRACE // ETHERNET-IP 10.240.22.4</span>
-                                            </td>
-                                            <td class="py-space-xs px-space-sm text-center">
-                                                <span
-                                                    class="inline-flex items-center gap-1 px-space-xs py-[2px] bg-secondary-container/50 text-on-secondary-container font-telemetry-micro text-[10px] font-bold rounded">
-                                                    <span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
-                                                    INBOUND-ONLY
-                                                </span>
-                                            </td>
-                                            <td class="py-space-xs px-space-sm">
-                                                <span
-                                                    class="font-telemetry-micro text-telemetry-micro font-semibold text-on-surface">Immutable
-                                                    Read-Only</span>
-                                            </td>
-                                            <td
-                                                class="py-space-xs px-space-sm text-right font-telemetry-data text-telemetry-data">
-                                                0.00 MB/s Out</td>
-                                            <td
-                                                class="py-space-xs px-space-sm text-right font-telemetry-data text-telemetry-data text-on-surface-variant">
-                                                2.4 ms</td>
-                                            <td class="py-space-xs px-space-base text-right">
-                                                <span
-                                                    class="px-space-xs py-[2px] bg-primary-container text-on-primary-container font-security-stamp text-[9px] rounded uppercase">LOCKED</span>
-                                            </td>
-                                        </tr>
-                                        <!-- Node 5 -->
-                                        <tr class="hover:bg-surface-container-low/70 transition-colors">
-                                            <td class="py-space-xs px-space-base">
-                                                <div class="flex items-center gap-space-xs">
-                                                    <span
-                                                        class="font-telemetry-data text-telemetry-data font-bold text-primary">SYS-05</span>
-                                                    <span class="text-on-surface font-medium">Balkhash Hydro-Thermal
-                                                        Ingestion Grid</span>
-                                                </div>
-                                                <span
-                                                    class="font-telemetry-micro text-[10px] text-on-surface-variant">GRID
-                                                    DISPATCH // DNP3 PROTOCOL 10.240.30.9</span>
-                                            </td>
-                                            <td class="py-space-xs px-space-sm text-center">
-                                                <span
-                                                    class="inline-flex items-center gap-1 px-space-xs py-[2px] bg-secondary-container/50 text-on-secondary-container font-telemetry-micro text-[10px] font-bold rounded">
-                                                    <span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
-                                                    INBOUND-ONLY
-                                                </span>
-                                            </td>
-                                            <td class="py-space-xs px-space-sm">
-                                                <span
-                                                    class="font-telemetry-micro text-telemetry-micro font-semibold text-on-surface">Immutable
-                                                    Read-Only</span>
-                                            </td>
-                                            <td
-                                                class="py-space-xs px-space-sm text-right font-telemetry-data text-telemetry-data">
-                                                0.00 MB/s Out</td>
-                                            <td
-                                                class="py-space-xs px-space-sm text-right font-telemetry-data text-telemetry-data text-on-surface-variant">
-                                                3.1 ms</td>
-                                            <td class="py-space-xs px-space-base text-right">
-                                                <span
-                                                    class="px-space-xs py-[2px] bg-primary-container text-on-primary-container font-security-stamp text-[9px] rounded uppercase">LOCKED</span>
-                                            </td>
-                                        </tr>
-                                        <!-- Node 6 -->
-                                        <tr class="hover:bg-surface-container-low/70 transition-colors">
-                                            <td class="py-space-xs px-space-base">
-                                                <div class="flex items-center gap-space-xs">
-                                                    <span
-                                                        class="font-telemetry-data text-telemetry-data font-bold text-primary">SYS-06</span>
-                                                    <span class="text-on-surface font-medium">Atyrau Refinery Pumping
-                                                        Station 2</span>
-                                                </div>
-                                                <span
-                                                    class="font-telemetry-micro text-[10px] text-on-surface-variant">HYDROCARBON
-                                                    CRITICAL // PROFINET 10.240.42.17</span>
-                                            </td>
-                                            <td class="py-space-xs px-space-sm text-center">
-                                                <span
-                                                    class="inline-flex items-center gap-1 px-space-xs py-[2px] bg-secondary-container/50 text-on-secondary-container font-telemetry-micro text-[10px] font-bold rounded">
-                                                    <span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
-                                                    INBOUND-ONLY
-                                                </span>
-                                            </td>
-                                            <td class="py-space-xs px-space-sm">
-                                                <span
-                                                    class="font-telemetry-micro text-telemetry-micro font-semibold text-on-surface">Immutable
-                                                    Read-Only</span>
-                                            </td>
-                                            <td
-                                                class="py-space-xs px-space-sm text-right font-telemetry-data text-telemetry-data">
-                                                0.00 MB/s Out</td>
-                                            <td
-                                                class="py-space-xs px-space-sm text-right font-telemetry-data text-telemetry-data text-on-surface-variant">
-                                                4.9 ms</td>
-                                            <td class="py-space-xs px-space-base text-right">
-                                                <span
-                                                    class="px-space-xs py-[2px] bg-primary-container text-on-primary-container font-security-stamp text-[9px] rounded uppercase">LOCKED</span>
-                                            </td>
-                                        </tr>
-                                        <!-- Nodes 7-10 Compacted summary row -->
-                                        <tr class="bg-surface-container-low/40">
-                                            <td class="py-space-xs px-space-base" colspan="6">
-                                                <div
-                                                    class="flex items-center justify-between font-telemetry-micro text-telemetry-micro">
-                                                    <div class="flex items-center gap-space-sm text-on-surface-variant">
-                                                        <span class="font-bold text-primary">SYS-07 through
-                                                            SYS-10:</span>
-                                                        <span>Pavlodar Aluminium (SYS-07) • Aktau Desalination (SYS-08)
-                                                            • Shymkent Logistics (SYS-09) • Baikonur Ancillary
-                                                            (SYS-10)</span>
-                                                    </div>
-                                                    <span
-                                                        class="text-secondary font-semibold font-security-stamp uppercase">ALL
-                                                        4 INBOUND-ONLY // WORM ZERO-WRITE LATCHED</span>
-                                                </div>
-                                            </td>
-                                        </tr>
+                                        <?php endforeach; ?>
                                     </tbody>
                                 </table>
                             </div>

@@ -122,11 +122,7 @@ $initError = $_GET['error'] ?? '';
             <span class="btn-text">Authenticate as Admin</span>
           </button>
 
-          <div class="auth-demo-helper">
-            <button type="button" class="btn-demo-autofill" onclick="fillDemoCredentials()">
-              ⚡ Autofill Demo Credentials
-            </button>
-          </div>
+          
         </form>
       </div>
 
@@ -194,11 +190,14 @@ $initError = $_GET['error'] ?? '';
 
         const userId = userIdInput.value.trim();
         const password = passwordInput.value;
-
-        let finalUserId = userId || 'EMP-1001';
-        let finalPassword = password || 'AdminPass2026!';
-        if (!userId) userIdInput.value = 'EMP-1001';
-        if (!password) passwordInput.value = 'AdminPass2026!';
+        if (!userId) {
+          showAlert('Please enter your User ID or email.', true);
+          return;
+        }
+        if (!password) {
+          showAlert('Please enter your password.', true);
+          return;
+        }
 
         // Authenticate with PHP Database API
         submitBtn.classList.add('is-loading');
@@ -241,13 +240,6 @@ $initError = $_GET['error'] ?? '';
           showAlert('Database connection error: ' + err.message, true);
         });
       });
-
-      // Quick autofill for demonstration
-      window.fillDemoCredentials = function () {
-        userIdInput.value = 'ADM-VP-01';
-        passwordInput.value = 'AdminPass2026!';
-        hideAlert();
-      };
 
       window.handleForgotCredentials = function () {
         showAlert('Security Advisory: Contact VP-SecOps Root Authority (ext. 1001) for clearance recovery.', true);

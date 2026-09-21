@@ -1,3 +1,13 @@
+<?php
+require_once __DIR__ . '/../config/db.php';
+require_once __DIR__ . '/../includes/auth_guard.php';
+requireAuth('ADM');
+require_once __DIR__ . '/gov_service.php';
+
+$currentUser = gov_getActiveUserProfile();
+$privilegedAccounts = gov_getPrivilegedAccounts();
+$metrics = gov_getGovernanceMetrics();
+?>
 <!DOCTYPE html>
 
 <html lang="en">
@@ -157,10 +167,7 @@
                 </a>
             </nav>
         </div>
-                    <a class="flex items-center gap-space-sm px-space-sm py-space-xs rounded text-error hover:bg-error-container hover:text-on-error-container transition-all font-body-compact text-body-compact mt-space-sm" href="../api/logout.php?system=Admin%20%26%20Governance%20Portal&redirect=../Admin%20%26%20Governance%20Portal/login.php" id="btn-logout" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" onclick="(function(){sessionStorage.clear();localStorage.clear();})()">
-                <span class="material-symbols-outlined text-[18px] text-error">logout</span>
-                <span>Log Out</span>
-            </a>
+                    
             <div class="p-space-md bg-primary-container/40 border-t border-outline/20 flex flex-col gap-space-2xs">
             <div class="flex items-center justify-between"><span
                     class="font-security-stamp text-[10px] text-secondary-fixed-dim uppercase tracking-wider">SEC-OPS
@@ -370,7 +377,7 @@
                                     class="flex items-center gap-[2px] bg-surface-container p-[2px] rounded border border-outline-variant/50 overflow-x-auto">
                                     <button
                                         class="px-space-sm py-[4px] text-body-compact font-body-compact font-bold bg-primary text-on-primary rounded-sm shadow-sm whitespace-nowrap">
-                                        All Privileged (18)
+                                        All Privileged (<?= count($privilegedAccounts) ?>)
                                     </button>
                                     <button
                                         class="px-space-sm py-[4px] text-body-compact font-body-compact font-medium text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-sm transition-colors whitespace-nowrap">
@@ -463,394 +470,61 @@
                                     <tbody
                                         class="divide-y divide-outline-variant/30 font-body-compact text-body-compact"
                                         id="vault-registry-tbody">
-                                        <!-- Row 1: Flagged Orphan Revoked (Red Flagged) -->
-                                        <tr class="hover:bg-error-container/10 transition-colors bg-error-container/5">
-                                            <td class="py-space-xs px-space-sm border-r border-outline-variant/20">
-                                                <div class="flex flex-col">
-                                                    <span
-                                                        class="font-telemetry-data text-telemetry-data font-bold text-error">root@sys-03-cnc-gateway</span>
-                                                    <span
-                                                        class="font-telemetry-micro text-[10px] text-on-surface-variant">IP:
-                                                        10.240.12.8 • INDUSTRIAL CNC</span>
-                                                </div>
-                                            </td>
-                                            <td class="py-space-xs px-space-sm border-r border-outline-variant/20">
-                                                <div class="flex flex-col">
-                                                    <span class="font-semibold text-primary">Maksim Sokolov</span>
-                                                    <span
-                                                        class="font-telemetry-micro text-[10px] text-error font-bold tracking-wide">FLAGGED
-                                                        ORPHAN / CONTRACTOR REVOKED</span>
-                                                </div>
-                                            </td>
-                                            <td class="py-space-xs px-space-sm border-r border-outline-variant/20">
-                                                <span
-                                                    class="font-security-stamp text-[10px] px-space-xs py-[2px] bg-error text-on-error font-bold rounded">TIER
-                                                    0</span>
-                                            </td>
-                                            <td
-                                                class="py-space-xs px-space-sm border-r border-outline-variant/20 font-telemetry-micro text-telemetry-micro">
-                                                SSH-Bastion-01
-                                            </td>
-                                            <td class="py-space-xs px-space-sm border-r border-outline-variant/20">
-                                                <div class="flex flex-col">
-                                                    <span
-                                                        class="font-telemetry-micro text-telemetry-micro font-bold text-error">EXPIRED
-                                                        (14d ago)</span>
-                                                    <span
-                                                        class="font-telemetry-micro text-[10px] text-on-surface-variant">Certificate
-                                                        Purged</span>
-                                                </div>
-                                            </td>
-                                            <td class="py-space-xs px-space-sm border-r border-outline-variant/20">
-                                                <span
-                                                    class="inline-flex items-center gap-[4px] px-space-xs py-[2px] bg-error-container text-on-error-container font-security-stamp text-[10px] font-bold rounded">
-                                                    <span class="w-1.5 h-1.5 rounded-full bg-error"></span>
-                                                    REVOKED &amp; LOCKED
-                                                </span>
-                                            </td>
-                                            <td class="py-space-xs px-space-sm text-right">
-                                                <button
-                                                    class="px-space-xs py-[3px] bg-surface-container text-primary hover:bg-surface-container-high border border-outline-variant rounded font-telemetry-micro text-telemetry-micro font-bold"
-                                                    onclick="alert('Audit Incident Report INC-REV-2026-012 rendered.')">
-                                                    View Post-Mortem
-                                                </button>
-                                            </td>
-                                        </tr>
-                                        <!-- Row 2: Active Session (admin_grid@sys-05-balkhash) -->
-                                        <tr
-                                            class="hover:bg-secondary-container/10 transition-colors border-l-4 border-l-secondary bg-surface-container-lowest">
+                                        <?php foreach ($privilegedAccounts as $idx => $pa): 
+                                            $isTier0 = ($pa['clearance_level'] === 'L4');
+                                            $isActiveSession = !empty($pa['session_id']);
+                                        ?>
+                                        <tr class="hover:bg-surface-container transition-colors <?= $isActiveSession ? 'border-l-4 border-l-secondary bg-surface-container-lowest' : 'bg-surface-container-lowest' ?>">
                                             <td class="py-space-xs px-space-sm border-r border-outline-variant/20">
                                                 <div class="flex flex-col">
                                                     <div class="flex items-center gap-space-xs">
-                                                        <span
-                                                            class="w-2 h-2 rounded-full bg-secondary-fixed animate-pulse"></span>
-                                                        <span
-                                                            class="font-telemetry-data text-telemetry-data font-bold text-primary">admin_grid@sys-05-balkhash</span>
+                                                        <?php if ($isActiveSession): ?>
+                                                            <span class="w-2 h-2 rounded-full bg-secondary-fixed animate-pulse"></span>
+                                                        <?php endif; ?>
+                                                        <span class="font-telemetry-data text-telemetry-data font-bold <?= $isTier0 ? 'text-error' : 'text-primary' ?>">
+                                                            <?= htmlspecialchars($pa['username']) ?>@vostok-vault
+                                                        </span>
                                                     </div>
-                                                    <span
-                                                        class="font-telemetry-micro text-[10px] text-on-surface-variant">IP:
-                                                        10.240.44.102 • REGIONAL SUBSTATION</span>
+                                                    <span class="font-telemetry-micro text-[10px] text-on-surface-variant">IP: 10.240.<?= (int)$pa['account_id'] ?>.10 • <?= htmlspecialchars($pa['dept_name'] ?? 'SEC-OPS') ?></span>
                                                 </div>
                                             </td>
                                             <td class="py-space-xs px-space-sm border-r border-outline-variant/20">
                                                 <div class="flex flex-col">
-                                                    <span class="font-semibold text-primary">Kairat Nurzhanov</span>
-                                                    <span
-                                                        class="font-telemetry-micro text-[10px] text-secondary font-bold">EMP-1001
-                                                        • GRID CONTROLLER</span>
+                                                    <span class="font-semibold text-primary"><?= htmlspecialchars($pa['full_name']) ?></span>
+                                                    <span class="font-telemetry-micro text-[10px] text-on-surface-variant"><?= htmlspecialchars($pa['emp_id']) ?> • <?= htmlspecialchars($pa['job_title']) ?></span>
                                                 </div>
                                             </td>
                                             <td class="py-space-xs px-space-sm border-r border-outline-variant/20">
-                                                <span
-                                                    class="font-security-stamp text-[10px] px-space-xs py-[2px] bg-primary text-on-primary font-bold rounded">TIER
-                                                    1 (GRID)</span>
+                                                <span class="font-security-stamp text-[10px] px-space-xs py-[2px] <?= $isTier0 ? 'bg-error text-on-error' : 'bg-primary text-on-primary' ?> font-bold rounded">
+                                                    <?= $isTier0 ? 'TIER 0 (ROOT)' : 'TIER 1 (PRIV)' ?>
+                                                </span>
                                             </td>
-                                            <td
-                                                class="py-space-xs px-space-sm border-r border-outline-variant/20 font-telemetry-micro text-telemetry-micro">
-                                                gRPC / TLS v1.3 Bastion
+                                            <td class="py-space-xs px-space-sm border-r border-outline-variant/20 font-telemetry-micro text-telemetry-micro">
+                                                Bastion SSH / MFA: <?= $pa['mfa_enabled'] ? '<span class="text-secondary font-bold">YES</span>' : '<span class="text-error font-bold">NO</span>' ?>
                                             </td>
                                             <td class="py-space-xs px-space-sm border-r border-outline-variant/20">
-                                                <div class="flex flex-col gap-1 w-28">
-                                                    <div
-                                                        class="flex justify-between font-telemetry-micro text-telemetry-micro">
-                                                        <span class="font-bold text-secondary">00h 44m Left</span>
-                                                    </div>
-                                                    <div
-                                                        class="w-full bg-surface-container h-1.5 rounded overflow-hidden">
-                                                        <div class="bg-secondary h-full" style="width: 38%"></div>
-                                                    </div>
+                                                <div class="flex flex-col">
+                                                    <span class="font-telemetry-micro text-telemetry-micro font-bold <?= $isActiveSession ? 'text-secondary' : 'text-on-surface-variant' ?>">
+                                                        <?= $isActiveSession ? 'ACTIVE LEASE' : 'STANDBY' ?>
+                                                    </span>
+                                                    <span class="font-telemetry-micro text-[10px] text-on-surface-variant">Last: <?= htmlspecialchars($pa['last_login'] ?? 'Never') ?></span>
                                                 </div>
                                             </td>
                                             <td class="py-space-xs px-space-sm border-r border-outline-variant/20">
-                                                <span
-                                                    class="inline-flex items-center gap-[4px] px-space-xs py-[2px] bg-secondary-container/30 text-on-secondary-container font-security-stamp text-[10px] font-bold rounded">
-                                                    <span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
-                                                    NOMINAL / VERIFIED
+                                                <span class="inline-flex items-center gap-[4px] px-space-xs py-[2px] <?= ($pa['account_status'] === 'Active') ? 'bg-secondary-container/30 text-on-secondary-container' : 'bg-error-container text-on-error-container' ?> font-security-stamp text-[10px] font-bold rounded">
+                                                    <span class="w-1.5 h-1.5 rounded-full <?= ($pa['account_status'] === 'Active') ? 'bg-secondary' : 'bg-error' ?>"></span>
+                                                    <?= ($pa['account_status'] === 'Active') ? 'NOMINAL' : 'REVOKED' ?>
                                                 </span>
                                             </td>
                                             <td class="py-space-xs px-space-sm text-right">
                                                 <div class="flex items-center justify-end gap-space-2xs">
-                                                    <button
-                                                        class="px-space-xs py-[3px] bg-secondary text-on-secondary hover:bg-on-secondary-container rounded font-telemetry-micro text-telemetry-micro font-bold flex items-center gap-1">
-                                                        <span
-                                                            class="material-symbols-outlined text-[12px]">terminal</span>
-                                                        Keystream
-                                                    </button>
-                                                    <button
-                                                        class="px-space-xs py-[3px] bg-error-container text-on-error-container hover:bg-error hover:text-on-error rounded font-telemetry-micro text-telemetry-micro font-bold"
-                                                        onclick="confirm('Sever session #PAM-9082 immediately?')">
-                                                        Sever
+                                                    <button class="px-space-xs py-[3px] bg-surface-container text-primary hover:bg-surface-container-high border border-outline-variant rounded font-telemetry-micro text-telemetry-micro font-bold" onclick="alert('Auditing <?= htmlspecialchars($pa['emp_id']) ?> session token')">
+                                                        Inspect
                                                     </button>
                                                 </div>
                                             </td>
                                         </tr>
-                                        <!-- Row 3: sysadmin@sys-11-core (Timur Akhmetov) -->
-                                        <tr
-                                            class="hover:bg-primary-container/10 transition-colors bg-surface-container-lowest">
-                                            <td class="py-space-xs px-space-sm border-r border-outline-variant/20">
-                                                <div class="flex flex-col">
-                                                    <div class="flex items-center gap-space-xs">
-                                                        <span
-                                                            class="w-2 h-2 rounded-full bg-secondary-fixed animate-pulse"></span>
-                                                        <span
-                                                            class="font-telemetry-data text-telemetry-data font-bold text-primary">sysadmin@sys-11-core</span>
-                                                    </div>
-                                                    <span
-                                                        class="font-telemetry-micro text-[10px] text-on-surface-variant">IP:
-                                                        10.240.0.1 • CENTRAL JURISDICTION ENGINE</span>
-                                                </div>
-                                            </td>
-                                            <td class="py-space-xs px-space-sm border-r border-outline-variant/20">
-                                                <div class="flex flex-col">
-                                                    <span class="font-semibold text-primary">Timur Akhmetov</span>
-                                                    <span
-                                                        class="font-telemetry-micro text-[10px] text-primary-container font-bold">EMP-1005
-                                                        (CGO) • ACTIVE SOVEREIGN</span>
-                                                </div>
-                                            </td>
-                                            <td class="py-space-xs px-space-sm border-r border-outline-variant/20">
-                                                <span
-                                                    class="font-security-stamp text-[10px] px-space-xs py-[2px] bg-error text-on-error font-bold rounded">TIER
-                                                    0 (ROOT)</span>
-                                            </td>
-                                            <td
-                                                class="py-space-xs px-space-sm border-r border-outline-variant/20 font-telemetry-micro text-telemetry-micro">
-                                                FIPS-140-3 Hardware Token
-                                            </td>
-                                            <td class="py-space-xs px-space-sm border-r border-outline-variant/20">
-                                                <div class="flex flex-col gap-1 w-28">
-                                                    <div
-                                                        class="flex justify-between font-telemetry-micro text-telemetry-micro">
-                                                        <span class="font-bold text-primary">03h 18m Left</span>
-                                                    </div>
-                                                    <div
-                                                        class="w-full bg-surface-container h-1.5 rounded overflow-hidden">
-                                                        <div class="bg-primary h-full" style="width: 72%"></div>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td class="py-space-xs px-space-sm border-r border-outline-variant/20">
-                                                <span
-                                                    class="inline-flex items-center gap-[4px] px-space-xs py-[2px] bg-primary-fixed text-on-primary-fixed font-security-stamp text-[10px] font-bold rounded">
-                                                    <span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
-                                                    DUAL-CUSTODY ATTESTED
-                                                </span>
-                                            </td>
-                                            <td class="py-space-xs px-space-sm text-right">
-                                                <button
-                                                    class="px-space-xs py-[3px] bg-primary text-on-primary hover:bg-primary-container rounded font-telemetry-micro text-telemetry-micro font-bold">
-                                                    Audit Stream
-                                                </button>
-                                            </td>
-                                        </tr>
-                                        <!-- Row 4: db_lead@sys-07-asrs-db (Leonid Volkov) -->
-                                        <tr
-                                            class="hover:bg-surface-container transition-colors bg-surface-container-lowest">
-                                            <td class="py-space-xs px-space-sm border-r border-outline-variant/20">
-                                                <div class="flex flex-col">
-                                                    <span
-                                                        class="font-telemetry-data text-telemetry-data font-bold text-primary">db_lead@sys-07-asrs-db</span>
-                                                    <span
-                                                        class="font-telemetry-micro text-[10px] text-on-surface-variant">IP:
-                                                        10.240.31.14 • ASRS WAREHOUSE CLUSTER</span>
-                                                </div>
-                                            </td>
-                                            <td class="py-space-xs px-space-sm border-r border-outline-variant/20">
-                                                <div class="flex flex-col">
-                                                    <span class="font-semibold text-primary">Leonid Volkov</span>
-                                                    <span
-                                                        class="font-telemetry-micro text-[10px] text-on-surface-variant">EMP-1018
-                                                        • SEC-OPS LEAD</span>
-                                                </div>
-                                            </td>
-                                            <td class="py-space-xs px-space-sm border-r border-outline-variant/20">
-                                                <span
-                                                    class="font-security-stamp text-[10px] px-space-xs py-[2px] bg-primary-container text-on-primary font-bold rounded">TIER
-                                                    1 (DB)</span>
-                                            </td>
-                                            <td
-                                                class="py-space-xs px-space-sm border-r border-outline-variant/20 font-telemetry-micro text-telemetry-micro">
-                                                Bastion TLS / pgAdmin
-                                            </td>
-                                            <td class="py-space-xs px-space-sm border-r border-outline-variant/20">
-                                                <div class="flex flex-col gap-1 w-28">
-                                                    <div
-                                                        class="flex justify-between font-telemetry-micro text-telemetry-micro">
-                                                        <span class="font-bold text-primary">01h 12m Left</span>
-                                                    </div>
-                                                    <div
-                                                        class="w-full bg-surface-container h-1.5 rounded overflow-hidden">
-                                                        <div class="bg-primary h-full" style="width: 50%"></div>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td class="py-space-xs px-space-sm border-r border-outline-variant/20">
-                                                <span
-                                                    class="inline-flex items-center gap-[4px] px-space-xs py-[2px] bg-secondary-container/30 text-on-secondary-container font-security-stamp text-[10px] font-bold rounded">
-                                                    <span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
-                                                    NOMINAL
-                                                </span>
-                                            </td>
-                                            <td class="py-space-xs px-space-sm text-right">
-                                                <div class="flex items-center justify-end gap-space-2xs">
-                                                    <button
-                                                        class="px-space-xs py-[3px] bg-surface-container text-primary hover:bg-surface-container-high border border-outline-variant rounded font-telemetry-micro text-telemetry-micro font-bold">
-                                                        Keystream
-                                                    </button>
-                                                    <button
-                                                        class="px-space-xs py-[3px] bg-error-container text-on-error-container hover:bg-error hover:text-on-error rounded font-telemetry-micro text-telemetry-micro font-bold">
-                                                        Sever
-                                                    </button>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        <!-- Row 5: operator_root@sys-01-smelt (Amina Karimova - PENDING APPROVAL) -->
-                                        <tr class="hover:bg-tertiary-fixed/10 transition-colors bg-tertiary-fixed/5">
-                                            <td class="py-space-xs px-space-sm border-r border-outline-variant/20">
-                                                <div class="flex flex-col">
-                                                    <span
-                                                        class="font-telemetry-data text-telemetry-data font-bold text-[#D9822B]">operator_root@sys-01-smelt</span>
-                                                    <span
-                                                        class="font-telemetry-micro text-[10px] text-on-surface-variant">IP:
-                                                        10.240.10.2 • SMELTING FOUNDRY PLC</span>
-                                                </div>
-                                            </td>
-                                            <td class="py-space-xs px-space-sm border-r border-outline-variant/20">
-                                                <div class="flex flex-col">
-                                                    <span class="font-semibold text-primary">Amina Karimova</span>
-                                                    <span
-                                                        class="font-telemetry-micro text-[10px] text-on-surface-variant">EMP-1002
-                                                        • SMELTING CHIEF</span>
-                                                </div>
-                                            </td>
-                                            <td class="py-space-xs px-space-sm border-r border-outline-variant/20">
-                                                <span
-                                                    class="font-security-stamp text-[10px] px-space-xs py-[2px] bg-[#D9822B] text-on-tertiary font-bold rounded">TIER
-                                                    2 (PLC)</span>
-                                            </td>
-                                            <td
-                                                class="py-space-xs px-space-sm border-r border-outline-variant/20 font-telemetry-micro text-telemetry-micro">
-                                                Bastion SSH / Modbus
-                                            </td>
-                                            <td
-                                                class="py-space-xs px-space-sm border-r border-outline-variant/20 font-telemetry-micro text-telemetry-micro text-[#D9822B] font-bold">
-                                                PENDING DUAL APPROVAL
-                                            </td>
-                                            <td class="py-space-xs px-space-sm border-r border-outline-variant/20">
-                                                <span
-                                                    class="inline-flex items-center gap-[4px] px-space-xs py-[2px] bg-tertiary-fixed text-on-tertiary-fixed font-security-stamp text-[10px] font-bold rounded">
-                                                    <span
-                                                        class="w-1.5 h-1.5 rounded-full bg-[#D9822B] animate-ping"></span>
-                                                    AWAITING SIGN-OFF
-                                                </span>
-                                            </td>
-                                            <td class="py-space-xs px-space-sm text-right">
-                                                <div class="flex items-center justify-end gap-space-2xs">
-                                                    <button
-                                                        class="px-space-xs py-[3px] bg-[#0E7C86] text-white hover:bg-secondary rounded font-telemetry-micro text-telemetry-micro font-bold">
-                                                        Approve Lease
-                                                    </button>
-                                                    <button
-                                                        class="px-space-xs py-[3px] bg-surface-container text-error hover:bg-error-container rounded font-telemetry-micro text-telemetry-micro font-bold">
-                                                        Deny
-                                                    </button>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        <!-- Row 6: svc_telemetry_agent (Service Account Daemon) -->
-                                        <tr
-                                            class="hover:bg-surface-container transition-colors bg-surface-container-lowest">
-                                            <td class="py-space-xs px-space-sm border-r border-outline-variant/20">
-                                                <div class="flex flex-col">
-                                                    <span
-                                                        class="font-telemetry-data text-telemetry-data font-bold text-primary">svc_telemetry_agent</span>
-                                                    <span
-                                                        class="font-telemetry-micro text-[10px] text-on-surface-variant">HOST:
-                                                        CLUSTER-WIDE BROADCAST DAEMON</span>
-                                                </div>
-                                            </td>
-                                            <td class="py-space-xs px-space-sm border-r border-outline-variant/20">
-                                                <div class="flex flex-col">
-                                                    <span class="font-semibold text-primary">Autonomous Daemon
-                                                        #11</span>
-                                                    <span
-                                                        class="font-telemetry-micro text-[10px] text-on-surface-variant">NON-INTERACTIVE
-                                                        SERVICE</span>
-                                                </div>
-                                            </td>
-                                            <td class="py-space-xs px-space-sm border-r border-outline-variant/20">
-                                                <span
-                                                    class="font-security-stamp text-[10px] px-space-xs py-[2px] bg-surface-container text-on-surface-variant font-bold rounded">SERVICE
-                                                    ACCT</span>
-                                            </td>
-                                            <td
-                                                class="py-space-xs px-space-sm border-r border-outline-variant/20 font-telemetry-micro text-telemetry-micro">
-                                                mTLS X.509 Cryptographic Cert
-                                            </td>
-                                            <td
-                                                class="py-space-xs px-space-sm border-r border-outline-variant/20 font-telemetry-micro text-telemetry-micro text-on-surface-variant">
-                                                Static Persistent (Auto-Rotated)
-                                            </td>
-                                            <td class="py-space-xs px-space-sm border-r border-outline-variant/20">
-                                                <span
-                                                    class="inline-flex items-center gap-[4px] px-space-xs py-[2px] bg-surface-container text-on-surface-variant font-security-stamp text-[10px] font-bold rounded">
-                                                    ROTATED 2h ago
-                                                </span>
-                                            </td>
-                                            <td class="py-space-xs px-space-sm text-right">
-                                                <button
-                                                    class="px-space-xs py-[3px] bg-surface-container text-primary hover:bg-surface-container-high border border-outline-variant rounded font-telemetry-micro text-telemetry-micro font-bold">
-                                                    Rotate Key
-                                                </button>
-                                            </td>
-                                        </tr>
-                                        <!-- Row 7: secops_analyst@sys-09-customs -->
-                                        <tr
-                                            class="hover:bg-surface-container transition-colors bg-surface-container-lowest">
-                                            <td class="py-space-xs px-space-sm border-r border-outline-variant/20">
-                                                <div class="flex flex-col">
-                                                    <span
-                                                        class="font-telemetry-data text-telemetry-data font-bold text-primary">secops_analyst@sys-09-customs</span>
-                                                    <span
-                                                        class="font-telemetry-micro text-[10px] text-on-surface-variant">IP:
-                                                        10.240.90.5 • LOGISTICS CUSTOMS RELAY</span>
-                                                </div>
-                                            </td>
-                                            <td class="py-space-xs px-space-sm border-r border-outline-variant/20">
-                                                <div class="flex flex-col">
-                                                    <span class="font-semibold text-primary">Saule Temirbayeva</span>
-                                                    <span
-                                                        class="font-telemetry-micro text-[10px] text-on-surface-variant">EMP-1016
-                                                        • LOGISTICS AUDITOR</span>
-                                                </div>
-                                            </td>
-                                            <td class="py-space-xs px-space-sm border-r border-outline-variant/20">
-                                                <span
-                                                    class="font-security-stamp text-[10px] px-space-xs py-[2px] bg-secondary-fixed text-on-secondary-fixed font-bold rounded">TIER
-                                                    2 (RELAY)</span>
-                                            </td>
-                                            <td
-                                                class="py-space-xs px-space-sm border-r border-outline-variant/20 font-telemetry-micro text-telemetry-micro">
-                                                VPN WireGuard + Duo Push
-                                            </td>
-                                            <td
-                                                class="py-space-xs px-space-sm border-r border-outline-variant/20 font-telemetry-micro text-telemetry-micro font-semibold text-primary">
-                                                02h 05m Left
-                                            </td>
-                                            <td class="py-space-xs px-space-sm border-r border-outline-variant/20">
-                                                <span
-                                                    class="inline-flex items-center gap-[4px] px-space-xs py-[2px] bg-secondary-container/30 text-on-secondary-container font-security-stamp text-[10px] font-bold rounded">
-                                                    <span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
-                                                    NOMINAL
-                                                </span>
-                                            </td>
-                                            <td class="py-space-xs px-space-sm text-right">
-                                                <button
-                                                    class="px-space-xs py-[3px] bg-surface-container text-primary hover:bg-surface-container-high border border-outline-variant rounded font-telemetry-micro text-telemetry-micro font-bold">
-                                                    Inspect
-                                                </button>
-                                            </td>
-                                        </tr>
+                                        <?php endforeach; ?>
                                     </tbody>
                                 </table>
                             </div>
@@ -858,7 +532,7 @@
                             <div
                                 class="p-space-xs px-space-base bg-surface-container-low border-t border-outline-variant/40 flex flex-col sm:flex-row items-center justify-between text-telemetry-micro font-telemetry-micro text-on-surface-variant">
                                 <div class="flex items-center gap-space-sm">
-                                    <span>SHOWING 7 OF 18 FILTERED IDENTITIES</span>
+                                    <span>SHOWING <?= count($privilegedAccounts) ?> PRIVILEGED IDENTITIES FROM DATABASE</span>
                                     <span class="text-outline-variant">•</span>
                                     <span>VAULT CIPHER: AES-256-GCM / PBKDF2 HARDENED</span>
                                 </div>

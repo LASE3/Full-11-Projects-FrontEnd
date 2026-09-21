@@ -1,3 +1,8 @@
+<?php
+require_once __DIR__ . '/../config/db.php';
+require_once __DIR__ . '/../includes/auth_guard.php';
+requireAuth('IT');
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -169,18 +174,7 @@
             </a>
           </nav>
             <!-- Log Out -->
-            <a href="../api/logout.php?system=IT%20Helpdesk&redirect=../IT%20Helpdesk/login.php" class="sidebar-nav-item sidebar-nav-item--logout" id="btn-logout" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" onclick="(function(){sessionStorage.clear();localStorage.clear();})()">
-              <div class="sidebar-item-left">
-                <span class="sidebar-icon">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-                    <polyline points="16 17 21 12 16 7"/>
-                    <line x1="21" y1="12" x2="9" y2="12"/>
-                  </svg>
-                </span>
-                <span>Log Out</span>
-              </div>
-            </a>
+            
         <div class="sidebar-footer">
           <div class="security-widget-card">
             <div class="security-widget-header">

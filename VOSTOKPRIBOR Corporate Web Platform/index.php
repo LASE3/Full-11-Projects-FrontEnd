@@ -95,6 +95,7 @@
                 <a href="#leadership" class="nav-link">Leadership</a>
                 <a href="#network" class="nav-link">Global Hubs</a>
                 <a href="#contact-rfq" class="nav-link">Contact</a>
+                <a href="Integrations.php" class="nav-link" style="color: #00E5FF; font-weight: 600; border: 1px solid rgba(0,229,255,0.3); border-radius: 4px; padding: 0.25rem 0.5rem;">🔗 Integrations (SYS11)</a>
             </nav>
 
             <!-- Actions & Ecosystem Switcher -->

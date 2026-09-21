@@ -1,3 +1,19 @@
+<?php
+require_once __DIR__ . '/../config/db.php';
+require_once __DIR__ . '/../includes/auth_guard.php';
+requireAuth('ADM');
+require_once __DIR__ . '/gov_service.php';
+
+$currentUser = gov_getActiveUserProfile();
+$riskRegister = gov_getRiskRegister();
+$metrics = gov_getGovernanceMetrics();
+
+$totalRisks = count($riskRegister);
+$critRisks = count(array_filter($riskRegister, fn($r) => in_array($r['impact'], ['Critical', 'High'])));
+$mitigatedRisks = count(array_filter($riskRegister, fn($r) => in_array($r['status'], ['Mitigated', 'Accepted'])));
+$reviewRisks = count(array_filter($riskRegister, fn($r) => in_array($r['status'], ['UnderReview', 'ActionRequired', 'Pending'])));
+$topRisk = $riskRegister[0] ?? null;
+?>
 <!DOCTYPE html>
 
 <html lang="en">
@@ -153,10 +169,7 @@
                     </div>
                 </a></nav>
         </div>
-                    <a class="flex items-center gap-space-sm px-space-sm py-space-xs rounded text-error hover:bg-error-container hover:text-on-error-container transition-all font-body-compact text-body-compact mt-space-sm" href="../api/logout.php?system=Admin%20%26%20Governance%20Portal&redirect=../Admin%20%26%20Governance%20Portal/login.php" id="btn-logout" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" onclick="(function(){sessionStorage.clear();localStorage.clear();})()">
-                <span class="material-symbols-outlined text-[18px] text-error">logout</span>
-                <span>Log Out</span>
-            </a>
+                    
             <div class="p-space-md bg-primary-container/40 border-t border-outline/20 flex flex-col gap-space-2xs">
             <div class="flex items-center justify-between"><span
                     class="font-security-stamp text-[10px] text-secondary-fixed-dim uppercase tracking-wider">SEC-OPS
@@ -277,7 +290,7 @@
                         </div>
                         <div class="flex items-baseline justify-between mb-space-xs">
                             <div class="flex items-baseline gap-space-xs">
-                                <span class="font-display-lg text-display-lg font-bold text-error">03</span>
+                                <span class="font-display-lg text-display-lg font-bold text-error"><?= str_pad($critRisks, 2, "0", STR_PAD_LEFT) ?></span>
                                 <span
                                     class="font-telemetry-micro text-telemetry-micro text-on-surface-variant">Unresolved
                                     Filings</span>
@@ -304,7 +317,7 @@
                         </div>
                         <div class="flex items-baseline justify-between mb-space-xs">
                             <div class="flex items-baseline gap-space-xs">
-                                <span class="font-display-lg text-display-lg font-bold text-primary">14</span>
+                                <span class="font-display-lg text-display-lg font-bold text-primary"><?= $mitigatedRisks ?></span>
                                 <span
                                     class="font-telemetry-micro text-telemetry-micro text-on-surface-variant">Workstreams</span>
                             </div>
@@ -622,246 +635,64 @@
                                         </tr>
                                     </thead>
                                     <tbody class="divide-y-0 font-telemetry-micro text-telemetry-micro">
-                                        <!-- Row 1: Selected / Critical Item -->
-                                        <tr
-                                            class="bg-surface-container-low hover:bg-surface-container transition-colors">
-                                            <td class="py-space-xs px-space-sm border-l-4 border-error">
+                                        <?php foreach ($riskRegister as $r): 
+                                            $isCrit = in_array($r['impact'], ['Critical', 'High']);
+                                            $borderClass = $isCrit ? 'border-l-4 border-error' : 'border-l-4 border-secondary';
+                                            $badgeClass = $r['impact'] === 'Critical' ? 'bg-error-container text-on-error-container text-error' : ($r['impact'] === 'High' ? 'bg-[#D9822B]/20 text-[#D9822B]' : 'bg-secondary-container/30 text-secondary');
+                                            $scoreNum = $r['impact'] === 'Critical' ? '4.5' : ($r['impact'] === 'High' ? '3.8' : ($r['impact'] === 'Medium' ? '2.5' : '1.2'));
+                                            $statusBadge = ($r['status'] === 'ActionRequired' || $r['status'] === 'UnderReview') 
+                                                ? '<span class="px-space-xs py-[2px] bg-error text-on-error font-label-uppercase text-[9px] font-bold">REVIEW REQUIRED</span>'
+                                                : '<span class="px-space-xs py-[2px] bg-secondary-container text-on-secondary-container font-label-uppercase text-[9px] font-bold">VALIDATED</span>';
+                                        ?>
+                                        <tr class="bg-surface-container-low hover:bg-surface-container transition-colors border-b border-outline-variant/30">
+                                            <td class="py-space-xs px-space-sm <?= $borderClass ?>">
                                                 <div class="flex items-center gap-space-xs">
-                                                    <span class="font-bold text-error">RR-2026-041</span>
-                                                    <span
-                                                        class="px-1 bg-error-container text-on-error-container text-[10px] font-bold">P1-CRIT</span>
+                                                    <span class="font-bold <?= $isCrit ? 'text-error' : 'text-primary' ?>">RR-2026-<?= str_pad($r['risk_id'], 3, '0', STR_PAD_LEFT) ?></span>
+                                                    <span class="px-1 <?= $badgeClass ?> text-[10px] font-bold"><?= htmlspecialchars(strtoupper($r['impact'])) ?></span>
                                                 </div>
-                                                <div class="text-on-surface font-semibold truncate max-w-xs">
-                                                    Cross-Site SCADA Bridge Latency Spike
-                                                </div>
-                                            </td>
-                                            <td class="py-space-xs px-space-sm text-center">
-                                                <div
-                                                    class="font-telemetry-data text-telemetry-data font-bold text-error">
-                                                    4.2</div>
-                                                <div class="text-[10px] text-on-surface-variant">L5 Ã— S5</div>
-                                            </td>
-                                            <td class="py-space-xs px-space-sm">
-                                                <div class="font-bold text-primary">SYS-01 Almaty / SYS-05 Ust-Kam</div>
-                                                <div class="text-[10px] text-on-surface-variant">Fiber Ingestion Link #2
-                                                </div>
-                                            </td>
-                                            <td class="py-space-xs px-space-sm">
-                                                <div class="font-bold text-primary">Timur Akhmetov</div>
-                                                <div
-                                                    class="text-[10px] text-secondary-fixed-dim bg-primary px-1 inline-block">
-                                                    EMP-1005 (L5)</div>
-                                            </td>
-                                            <td class="py-space-xs px-space-sm">
-                                                <div class="text-error font-bold">2026-03-31 (18h)</div>
-                                                <div class="text-[10px] text-error uppercase">SLA Escalation Active
+                                                <div class="text-on-surface font-semibold truncate max-w-xs" title="<?= htmlspecialchars($r['description']) ?>">
+                                                    <?= htmlspecialchars($r['description']) ?>
                                                 </div>
                                             </td>
                                             <td class="py-space-xs px-space-sm text-center">
-                                                <span
-                                                    class="px-space-xs py-[2px] bg-error text-on-error font-label-uppercase text-[9px] font-bold">
-                                                    REVIEW REQUIRED
-                                                </span>
+                                                <div class="font-telemetry-data text-telemetry-data font-bold <?= $isCrit ? 'text-error' : 'text-primary' ?>">
+                                                    <?= $scoreNum ?>
+                                                </div>
+                                                <div class="text-[10px] text-on-surface-variant"><?= htmlspecialchars($r['likelihood']) ?> &times; <?= htmlspecialchars($r['impact']) ?></div>
+                                            </td>
+                                            <td class="py-space-xs px-space-sm">
+                                                <div class="font-bold text-primary">SYS-<?= str_pad(($r['risk_id'] % 11) + 1, 2, '0', STR_PAD_LEFT) ?> Production Enclave</div>
+                                                <div class="text-[10px] text-on-surface-variant">Core Industrial Databus</div>
+                                            </td>
+                                            <td class="py-space-xs px-space-sm">
+                                                <div class="font-bold text-primary"><?= htmlspecialchars($r['owner_name'] ?? 'Governance Custodian') ?></div>
+                                                <div class="text-[10px] text-secondary-fixed-dim bg-primary px-1 inline-block">
+                                                    <?= htmlspecialchars($r['owner_emp_id']) ?> <?= !empty($r['owner_title']) ? '('.htmlspecialchars($r['owner_title']).')' : '' ?>
+                                                </div>
+                                            </td>
+                                            <td class="py-space-xs px-space-sm">
+                                                <div class="<?= $isCrit ? 'text-error font-bold' : 'text-primary font-bold' ?>"><?= htmlspecialchars($r['review_date'] ?? '2026-10-31') ?></div>
+                                                <div class="text-[10px] <?= $isCrit ? 'text-error uppercase' : 'text-secondary font-medium' ?>">
+                                                    <?= $isCrit ? 'SLA Escalation Active' : 'On Schedule' ?>
+                                                </div>
+                                            </td>
+                                            <td class="py-space-xs px-space-sm text-center">
+                                                <?= $statusBadge ?>
                                             </td>
                                             <td class="py-space-xs px-space-sm text-right">
-                                                <button
-                                                    class="px-space-xs py-space-2xs bg-primary text-on-primary font-label-uppercase text-[10px] hover:bg-primary-container">
-                                                    INSPECT →
+                                                <button class="px-space-xs py-space-2xs bg-primary text-on-primary font-label-uppercase text-[10px] hover:bg-primary-container">
+                                                    INSPECT &rarr;
                                                 </button>
                                             </td>
                                         </tr>
-                                        <!-- Row 2: Critical Item -->
-                                        <tr
-                                            class="bg-surface-container-lowest hover:bg-surface-container-low transition-colors">
-                                            <td class="py-space-xs px-space-sm border-l-4 border-error">
-                                                <div class="flex items-center gap-space-xs">
-                                                    <span class="font-bold text-error">RR-2026-088</span>
-                                                    <span
-                                                        class="px-1 bg-error-container text-on-error-container text-[10px] font-bold">P1-CRIT</span>
-                                                </div>
-                                                <div class="text-on-surface font-semibold truncate max-w-xs">
-                                                    Orphaned Service Account in AS/RS
-                                                </div>
-                                            </td>
-                                            <td class="py-space-xs px-space-sm text-center">
-                                                <div
-                                                    class="font-telemetry-data text-telemetry-data font-bold text-error">
-                                                    3.8</div>
-                                                <div class="text-[10px] text-on-surface-variant">L5 Ã— S4</div>
-                                            </td>
-                                            <td class="py-space-xs px-space-sm">
-                                                <div class="font-bold text-primary">SYS-07 AS/RS Logistics</div>
-                                                <div class="text-[10px] text-on-surface-variant">Warehouse Robotic
-                                                    Stacker #4</div>
-                                            </td>
-                                            <td class="py-space-xs px-space-sm">
-                                                <div class="font-bold text-primary">Leonid Volkov</div>
-                                                <div class="text-[10px] text-on-surface-variant">EMP-1018 (L4)</div>
-                                            </td>
-                                            <td class="py-space-xs px-space-sm">
-                                                <div class="text-primary font-bold">2026-04-02</div>
-                                                <div class="text-[10px] text-secondary font-medium">On Schedule</div>
-                                            </td>
-                                            <td class="py-space-xs px-space-sm text-center">
-                                                <span
-                                                    class="px-space-xs py-[2px] bg-[#D9822B] text-white font-label-uppercase text-[9px] font-bold">
-                                                    REMEDIATION ACTIVE
-                                                </span>
-                                            </td>
-                                            <td class="py-space-xs px-space-sm text-right">
-                                                <button
-                                                    class="px-space-xs py-space-2xs bg-surface-container hover:bg-surface-container-high text-primary font-label-uppercase text-[10px]">
-                                                    INSPECT
-                                                </button>
-                                            </td>
-                                        </tr>
-                                        <!-- Row 3: High Item -->
-                                        <tr
-                                            class="bg-surface-container-lowest hover:bg-surface-container-low transition-colors">
-                                            <td class="py-space-xs px-space-sm border-l-4 border-error">
-                                                <div class="flex items-center gap-space-xs">
-                                                    <span class="font-bold text-error">RR-2026-104</span>
-                                                    <span
-                                                        class="px-1 bg-error-container text-on-error-container text-[10px] font-bold">P1-CRIT</span>
-                                                </div>
-                                                <div class="text-on-surface font-semibold truncate max-w-xs">
-                                                    HSM Firmware Key Attestation Drift
-                                                </div>
-                                            </td>
-                                            <td class="py-space-xs px-space-sm text-center">
-                                                <div
-                                                    class="font-telemetry-data text-telemetry-data font-bold text-error">
-                                                    3.6</div>
-                                                <div class="text-[10px] text-on-surface-variant">L4 Ã— S4</div>
-                                            </td>
-                                            <td class="py-space-xs px-space-sm">
-                                                <div class="font-bold text-primary">SYS-02 Cryptographic Key Vault</div>
-                                                <div class="text-[10px] text-on-surface-variant">FIPS-140-3 Hardware
-                                                    Module</div>
-                                            </td>
-                                            <td class="py-space-xs px-space-sm">
-                                                <div class="font-bold text-primary">Amina Karimova</div>
-                                                <div class="text-[10px] text-on-surface-variant">EMP-1002 (L5)</div>
-                                            </td>
-                                            <td class="py-space-xs px-space-sm">
-                                                <div class="text-primary font-bold">2026-04-05</div>
-                                                <div class="text-[10px] text-secondary font-medium">Pending Key
-                                                    Ceremonial</div>
-                                            </td>
-                                            <td class="py-space-xs px-space-sm text-center">
-                                                <span
-                                                    class="px-space-xs py-[2px] bg-[#3E7CB1] text-white font-label-uppercase text-[9px] font-bold">
-                                                    ATTESTATION PENDING
-                                                </span>
-                                            </td>
-                                            <td class="py-space-xs px-space-sm text-right">
-                                                <button
-                                                    class="px-space-xs py-space-2xs bg-surface-container hover:bg-surface-container-high text-primary font-label-uppercase text-[10px]">
-                                                    INSPECT
-                                                </button>
-                                            </td>
-                                        </tr>
-                                        <!-- Row 4: Moderate Item -->
-                                        <tr
-                                            class="bg-surface-container-lowest hover:bg-surface-container-low transition-colors">
-                                            <td class="py-space-xs px-space-sm border-l-4 border-[#3E7CB1]">
-                                                <div class="flex items-center gap-space-xs">
-                                                    <span class="font-bold text-primary">RR-2026-029</span>
-                                                    <span
-                                                        class="px-1 bg-surface-variant text-on-surface-variant text-[10px] font-bold">P2-MOD</span>
-                                                </div>
-                                                <div class="text-on-surface font-semibold truncate max-w-xs">
-                                                    Balkhash Power Grid Frequency Drift
-                                                </div>
-                                            </td>
-                                            <td class="py-space-xs px-space-sm text-center">
-                                                <div
-                                                    class="font-telemetry-data text-telemetry-data font-bold text-primary">
-                                                    2.4</div>
-                                                <div class="text-[10px] text-on-surface-variant">L5 Ã— S2</div>
-                                            </td>
-                                            <td class="py-space-xs px-space-sm">
-                                                <div class="font-bold text-primary">SYS-09 Balkhash Grid Interconnect
-                                                </div>
-                                                <div class="text-[10px] text-on-surface-variant">Substation Phase
-                                                    Synthesizer</div>
-                                            </td>
-                                            <td class="py-space-xs px-space-sm">
-                                                <div class="font-bold text-primary">Kairat Bekenov</div>
-                                                <div class="text-[10px] text-on-surface-variant">EMP-1044 (L3)</div>
-                                            </td>
-                                            <td class="py-space-xs px-space-sm">
-                                                <div class="text-primary font-bold">2026-04-12</div>
-                                                <div class="text-[10px] text-secondary font-medium">Auto-Tuning Enabled
-                                                </div>
-                                            </td>
-                                            <td class="py-space-xs px-space-sm text-center">
-                                                <span
-                                                    class="px-space-xs py-[2px] bg-secondary text-white font-label-uppercase text-[9px] font-bold">
-                                                    SIGNED OFF
-                                                </span>
-                                            </td>
-                                            <td class="py-space-xs px-space-sm text-right">
-                                                <button
-                                                    class="px-space-xs py-space-2xs bg-surface-container hover:bg-surface-container-high text-primary font-label-uppercase text-[10px]">
-                                                    INSPECT
-                                                </button>
-                                            </td>
-                                        </tr>
-                                        <!-- Row 5: Moderate Item -->
-                                        <tr
-                                            class="bg-surface-container-lowest hover:bg-surface-container-low transition-colors">
-                                            <td class="py-space-xs px-space-sm border-l-4 border-[#3E7CB1]">
-                                                <div class="flex items-center gap-space-xs">
-                                                    <span class="font-bold text-primary">RR-2026-018</span>
-                                                    <span
-                                                        class="px-1 bg-surface-variant text-on-surface-variant text-[10px] font-bold">P2-MOD</span>
-                                                </div>
-                                                <div class="text-on-surface font-semibold truncate max-w-xs">
-                                                    High-Pressure Smelting Valve Sensor Drift
-                                                </div>
-                                            </td>
-                                            <td class="py-space-xs px-space-sm text-center">
-                                                <div
-                                                    class="font-telemetry-data text-telemetry-data font-bold text-primary">
-                                                    2.1</div>
-                                                <div class="text-[10px] text-on-surface-variant">L5 Ã— S1</div>
-                                            </td>
-                                            <td class="py-space-xs px-space-sm">
-                                                <div class="font-bold text-primary">SYS-03 Foundry Blast Furnace #2
-                                                </div>
-                                                <div class="text-[10px] text-on-surface-variant">Pneumatic Servo
-                                                    Assembly</div>
-                                            </td>
-                                            <td class="py-space-xs px-space-sm">
-                                                <div class="font-bold text-primary">Oleg Danilov</div>
-                                                <div class="text-[10px] text-on-surface-variant">EMP-1029 (L4)</div>
-                                            </td>
-                                            <td class="py-space-xs px-space-sm">
-                                                <div class="text-primary font-bold">2026-04-18</div>
-                                                <div class="text-[10px] text-secondary font-medium">Recalibration
-                                                    In-Flight</div>
-                                            </td>
-                                            <td class="py-space-xs px-space-sm text-center">
-                                                <span
-                                                    class="px-space-xs py-[2px] bg-secondary text-white font-label-uppercase text-[9px] font-bold">
-                                                    SIGNED OFF
-                                                </span>
-                                            </td>
-                                            <td class="py-space-xs px-space-sm text-right">
-                                                <button
-                                                    class="px-space-xs py-space-2xs bg-surface-container hover:bg-surface-container-high text-primary font-label-uppercase text-[10px]">
-                                                    INSPECT
-                                                </button>
-                                            </td>
-                                        </tr>
+                                        <?php endforeach; ?>
                                     </tbody>
                                 </table>
                             </div>
                             <!-- Pagination & Summary Footer -->
                             <div
                                 class="p-space-xs px-space-sm bg-surface-container-low flex items-center justify-between font-telemetry-micro text-telemetry-micro text-on-surface-variant">
-                                <span>Displaying 5 of 24 Statutory Risk Records</span>
+                                <span>Displaying <?= count($riskRegister) ?> of <?= count($riskRegister) ?> Statutory Risk Records (Active Database Query)</span>
                                 <div class="flex items-center gap-space-xs">
                                     <span class="font-bold text-primary">Page 1 of 5</span>
                                     <button
@@ -874,7 +705,7 @@
                     </div>
                     <!-- RIGHT PANEL: FOCUSED DOSSIER & REMEDIATION WORKFLOW (xl:col-span-4) -->
                     <div class="xl:col-span-4 flex flex-col gap-space-md">
-                        <!-- FOCUSED DOSSIER CARD (RR-2026-041) -->
+                        <!-- FOCUSED DOSSIER CARD (RR-2026-<?= str_pad($topRisk['risk_id'] ?? 1, 3, '0', STR_PAD_LEFT) ?>) -->
                         <div
                             class="bg-surface-container-lowest p-space-md shadow-sm border-l-4 border-[#B23A32] flex flex-col">
                             <div
@@ -886,7 +717,7 @@
                                 </div>
                                 <span
                                     class="px-space-xs py-[1px] bg-error text-on-error font-security-stamp text-[10px] tracking-wider">
-                                    RR-2026-041
+                                    RR-2026-<?= str_pad($topRisk['risk_id'] ?? 1, 3, '0', STR_PAD_LEFT) ?>
                                 </span>
                             </div>
                             <div class="flex flex-col gap-space-sm">

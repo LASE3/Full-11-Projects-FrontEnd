@@ -1,11 +1,9 @@
 <?php
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-if (empty($_SESSION['vostok_authenticated']) || empty($_SESSION['vostok_system_FIN'])) {
-    header("Location: login.php");
-    exit;
-}
+require_once __DIR__ . '/../config/db.php';
+require_once __DIR__ . '/../includes/auth_guard.php';
+requireAuth('Finance');
+$pdo = getDbConnection();
+$currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clearance_level' => 'L2'];
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -154,6 +152,7 @@ if (empty($_SESSION['vostok_authenticated']) || empty($_SESSION['vostok_system_F
               </div>
               <span class="sidebar-badge">Q4</span>
             </a>
+<a href="Integrations.php" class="sidebar-nav-item"><div class="sidebar-item-left"><span class="sidebar-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00E5FF" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></span><span style="color: #00E5FF; font-weight: 600;">System Integrations</span></div><span class="sidebar-badge" style="background: rgba(0,229,255,0.15); color: #00E5FF;">SYS07</span></a>
           </nav>
         </div>
 
@@ -180,18 +179,7 @@ if (empty($_SESSION['vostok_authenticated']) || empty($_SESSION['vostok_system_F
             </a>
           </nav>
             <!-- Log Out -->
-            <a href="../api/logout.php?system=Finance%20%26%20Billing&redirect=../Finance%20%26%20Billing/login.php" class="sidebar-nav-item sidebar-nav-item--logout" id="btn-logout" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" onclick="(function(){sessionStorage.clear();localStorage.clear();})()">
-              <div class="sidebar-item-left">
-                <span class="sidebar-icon">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-                    <polyline points="16 17 21 12 16 7"/>
-                    <line x1="21" y1="12" x2="9" y2="12"/>
-                  </svg>
-                </span>
-                <span>Log Out</span>
-              </div>
-            </a>
+            
         <div class="sidebar-footer">
           <div class="security-widget-card">
             <div class="security-widget-header">

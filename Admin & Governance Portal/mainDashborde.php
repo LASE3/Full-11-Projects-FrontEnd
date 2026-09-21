@@ -1,3 +1,14 @@
+<?php
+require_once __DIR__ . '/../config/db.php';
+require_once __DIR__ . '/../includes/auth_guard.php';
+requireAuth('ADM');
+require_once __DIR__ . '/gov_service.php';
+
+$currentUser = gov_getActiveUserProfile();
+$metrics = gov_getGovernanceMetrics();
+$telemetryGrid = gov_getTelemetryGridData();
+$anomaly = gov_getCriticalAnomaly();
+?>
 <!DOCTYPE html>
 
 <html lang="en">
@@ -153,10 +164,7 @@
                     </div>
                 </a></nav>
         </div>
-                    <a class="flex items-center gap-space-sm px-space-sm py-space-xs rounded text-error hover:bg-error-container hover:text-on-error-container transition-all font-body-compact text-body-compact mt-space-sm" href="../api/logout.php?system=Admin%20%26%20Governance%20Portal&redirect=../Admin%20%26%20Governance%20Portal/login.php" id="btn-logout" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" onclick="(function(){sessionStorage.clear();localStorage.clear();})()">
-                <span class="material-symbols-outlined text-[18px] text-error">logout</span>
-                <span>Log Out</span>
-            </a>
+                    
             <div class="p-space-md bg-primary-container/40 border-t border-outline/20 flex flex-col gap-space-2xs">
             <div class="flex items-center justify-between"><span
                     class="font-security-stamp text-[10px] text-secondary-fixed-dim uppercase tracking-wider">SEC-OPS
@@ -221,9 +229,7 @@
                                 <span
                                     class="font-label-uppercase text-label-uppercase text-on-surface-variant">ATTESTATION
                                     CYCLE POSTURE</span>
-                                <span
-                                    class="font-headline-md text-headline-md font-bold text-on-surface mt-space-2xs transition-all duration-300"
-                                    id="attestationPercentage">85% COMPLETE</span>
+                                <span class="font-headline-md text-headline-md font-bold text-on-surface mt-space-2xs transition-all duration-300" id="attestationPercentage"><?= $metrics['percentage'] ?>% COMPLETE</span>
                             </div>
                             <div class="w-10 h-10 bg-tertiary-fixed/30 flex items-center justify-center text-on-tertiary-fixed-variant transition-all duration-300"
                                 id="attestationIconWrapper">
@@ -233,17 +239,13 @@
                         </div>
                         <div class="mt-space-md flex flex-col gap-space-xs">
                             <div class="w-full bg-surface-container-high h-2 flex overflow-hidden">
-                                <div class="bg-on-tertiary-container h-full transition-all duration-500"
-                                    id="attestationBarApproved" style="width: 85%;"></div>
-                                <div class="bg-error h-full transition-all duration-500" id="attestationBarPending"
-                                    style="width: 15%;"></div>
+                                <div class="bg-on-tertiary-container h-full transition-all duration-500" id="attestationBarApproved" style="width: <?= $metrics['percentage'] ?>%;"></div>
+                                <div class="bg-error h-full transition-all duration-500" id="attestationBarPending" style="width: <?= 100 - $metrics['percentage'] ?>%;"></div>
                             </div>
                             <div class="flex justify-between font-telemetry-micro text-telemetry-micro text-on-surface-variant"
                                 id="attestationTextRow">
-                                <span class="font-bold text-on-surface" id="attestationCountText">17 of 20
-                                    Attested</span>
-                                <span class="text-error font-bold" id="attestationActionText">3 Action Items
-                                    Required</span>
+                                <span class="font-bold text-on-surface" id="attestationCountText"><?= $metrics['attested_count'] ?> of <?= $metrics['total_employees'] ?> Attested</span>
+                                <span class="text-error font-bold" id="attestationActionText"><?= $metrics['pending_count'] ?> Action Items Required</span>
                             </div>
                         </div>
                     </div>
@@ -256,8 +258,7 @@
                                 <span
                                     class="font-label-uppercase text-label-uppercase text-on-surface-variant">ISOLATION
                                     TRIGGER</span>
-                                <span class="font-headline-md text-headline-md font-bold text-error mt-space-2xs">02
-                                    ORPHANED ACCOUNTS</span>
+                                <span class="font-headline-md text-headline-md font-bold text-error mt-space-2xs"><?= sprintf('%02d', $metrics['orphaned_count']) ?> ORPHANED ACCOUNTS</span>
                             </div>
                             <div
                                 class="w-10 h-10 bg-error-container/40 flex items-center justify-center text-error animate-pulse">
@@ -422,582 +423,48 @@
                                 <tbody
                                     class="font-body-compact text-body-compact divide-y divide-surface-container-high"
                                     id="matrixTableBody">
-                                    <!-- EMP-1001 -->
+                                    <?php foreach ($telemetryGrid as $emp): ?>
                                     <tr class="hover:bg-surface-container-low transition-colors cursor-pointer matrix-row"
-                                        data-cat="ELEVATED" data-emp="EMP-1001" data-name="Kairat Nurzhanov">
+                                        data-cat="<?= htmlspecialchars($emp['category']) ?>"
+                                        data-emp="<?= htmlspecialchars($emp['emp_id']) ?>"
+                                        data-name="<?= htmlspecialchars($emp['full_name']) ?>"
+                                        data-dept="<?= htmlspecialchars($emp['dept_name'] ?? $emp['department_code'] ?? '') ?>">
                                         <td class="py-space-xs px-space-sm pl-space-base">
-                                            <span
-                                                class="font-telemetry-data text-telemetry-data font-bold text-primary">EMP-1001</span>
+                                            <span class="font-telemetry-data text-telemetry-data font-bold text-primary"><?= htmlspecialchars($emp['emp_id']) ?></span>
                                         </td>
                                         <td class="py-space-xs px-space-sm">
-                                            <div class="font-bold text-on-surface">Kairat Nurzhanov</div>
-                                            <div
-                                                class="font-telemetry-micro text-telemetry-micro text-on-surface-variant">
-                                                VP Heavy Operations &amp; Grid</div>
+                                            <div class="font-bold text-on-surface"><?= htmlspecialchars($emp['full_name']) ?></div>
+                                            <div class="font-telemetry-micro text-telemetry-micro text-on-surface-variant"><?= htmlspecialchars($emp['job_title']) ?></div>
                                         </td>
-                                        <td
-                                            class="py-space-xs px-space-sm font-telemetry-micro text-telemetry-micro text-on-surface">
-                                            ALMATY-CENTRAL // SUB-STATION 04
+                                        <td class="py-space-xs px-space-sm font-telemetry-micro text-telemetry-micro text-on-surface">
+                                            <?= htmlspecialchars($emp['dept_name'] ?? $emp['department_code'] ?? 'GENERAL') ?>
                                         </td>
                                         <td class="py-space-xs px-space-sm text-center">
-                                            <span
-                                                class="font-security-stamp text-security-stamp px-space-xs py-[2px] bg-primary text-on-primary font-bold">L4</span>
+                                            <span class="font-security-stamp text-security-stamp px-space-xs py-[2px] <?= ($emp['clearance_level'] === 'L4' || $emp['clearance_level'] === 'L5') ? 'bg-primary text-on-primary' : 'bg-surface-container-high text-on-surface' ?> font-bold">
+                                                <?= htmlspecialchars($emp['clearance_level']) ?>
+                                            </span>
                                         </td>
                                         <td class="py-space-xs px-space-sm">
                                             <div class="flex items-center gap-[2px] font-telemetry-micro">
-                                                <span class="px-1 bg-primary text-on-primary font-bold">01</span>
-                                                <span class="px-1 bg-primary text-on-primary font-bold">02</span>
-                                                <span
-                                                    class="px-1 bg-surface-container-high text-on-surface-variant">--</span>
-                                                <span class="px-1 bg-primary text-on-primary font-bold">04</span>
-                                                <span
-                                                    class="px-1 bg-surface-container-high text-on-surface-variant">--</span>
-                                                <span
-                                                    class="px-1 bg-surface-container-high text-on-surface-variant">--</span>
-                                                <span
-                                                    class="px-1 bg-surface-container-high text-on-surface-variant">--</span>
-                                                <span
-                                                    class="px-1 bg-surface-container-high text-on-surface-variant">--</span>
-                                                <span
-                                                    class="px-1 bg-surface-container-high text-on-surface-variant">--</span>
-                                                <span
-                                                    class="px-1 bg-surface-container-high text-on-surface-variant">--</span>
+                                                <?php foreach ($emp['permits'] as $num => $hasPermit): ?>
+                                                    <?php if ($hasPermit): ?>
+                                                        <span class="px-1 bg-primary text-on-primary font-bold" title="SYS-<?= $num ?> Authorized"><?= $num ?></span>
+                                                    <?php else: ?>
+                                                        <span class="px-1 bg-surface-container-high text-on-surface-variant">--</span>
+                                                    <?php endif; ?>
+                                                <?php endforeach; ?>
                                             </div>
                                         </td>
                                         <td class="py-space-xs px-space-sm text-center">
-                                            <span
-                                                class="inline-flex items-center gap-space-2xs px-space-xs py-[1px] bg-secondary-container/20 text-on-secondary-container font-telemetry-micro font-bold">
-                                                <span class="w-1.5 h-1.5 bg-secondary"></span> APPROVED
+                                            <span class="status-badge inline-flex items-center gap-space-2xs px-space-xs py-[1px] font-telemetry-micro font-bold">
+                                                <?= $emp['role_status_html'] ?>
                                             </span>
                                         </td>
                                         <td class="py-space-xs px-space-sm text-right pr-space-base">
-                                            <button
-                                                class="px-space-xs py-[2px] bg-surface-container-high hover:bg-surface-variant text-on-surface font-telemetry-micro">Review</button>
+                                            <?= $emp['disposition_btn'] ?>
                                         </td>
                                     </tr>
-                                    <!-- EMP-1002 -->
-                                    <tr class="hover:bg-surface-container-low transition-colors cursor-pointer matrix-row"
-                                        data-cat="PENDING" data-emp="EMP-1002" data-name="Amina Karimova">
-                                        <td class="py-space-xs px-space-sm pl-space-base">
-                                            <span
-                                                class="font-telemetry-data text-telemetry-data font-bold text-primary">EMP-1002</span>
-                                        </td>
-                                        <td class="py-space-xs px-space-sm">
-                                            <div class="font-bold text-on-surface">Amina Karimova</div>
-                                            <div
-                                                class="font-telemetry-micro text-telemetry-micro text-on-surface-variant">
-                                                Chief Automation Engineer</div>
-                                        </td>
-                                        <td
-                                            class="py-space-xs px-space-sm font-telemetry-micro text-telemetry-micro text-on-surface">
-                                            UST-KAMENOGORSK AUTOMATION
-                                        </td>
-                                        <td class="py-space-xs px-space-sm text-center">
-                                            <span
-                                                class="font-security-stamp text-security-stamp px-space-xs py-[2px] bg-primary text-on-primary font-bold">L5</span>
-                                        </td>
-                                        <td class="py-space-xs px-space-sm">
-                                            <div class="flex items-center gap-[2px] font-telemetry-micro">
-                                                <span
-                                                    class="px-1 bg-surface-container-high text-on-surface-variant">--</span>
-                                                <span class="px-1 bg-primary text-on-primary font-bold">02</span>
-                                                <span class="px-1 bg-primary text-on-primary font-bold">03</span>
-                                                <span
-                                                    class="px-1 bg-surface-container-high text-on-surface-variant">--</span>
-                                                <span class="px-1 bg-primary text-on-primary font-bold">05</span>
-                                                <span
-                                                    class="px-1 bg-surface-container-high text-on-surface-variant">--</span>
-                                                <span
-                                                    class="px-1 bg-surface-container-high text-on-surface-variant">--</span>
-                                                <span
-                                                    class="px-1 bg-surface-container-high text-on-surface-variant">--</span>
-                                                <span
-                                                    class="px-1 bg-surface-container-high text-on-surface-variant">--</span>
-                                                <span
-                                                    class="px-1 bg-surface-container-high text-on-surface-variant">--</span>
-                                            </div>
-                                        </td>
-                                        <td class="py-space-xs px-space-sm text-center">
-                                            <span
-                                                class="role-status-badge inline-flex items-center gap-space-2xs px-space-xs py-[1px] bg-tertiary-fixed text-on-tertiary-fixed-variant font-telemetry-micro font-bold">
-                                                PENDING SIGN-OFF
-                                            </span>
-                                        </td>
-                                        <td class="py-space-xs px-space-sm text-right pr-space-base">
-                                            <button
-                                                class="px-space-xs py-[2px] bg-on-tertiary-container text-surface-container-lowest font-telemetry-micro font-bold">Attest</button>
-                                        </td>
-                                    </tr>
-                                    <!-- EMP-1005 (Current Operator Session) -->
-                                    <tr class="bg-primary/5 hover:bg-primary/10 transition-colors cursor-pointer matrix-row"
-                                        data-cat="ELEVATED" data-emp="EMP-1005" data-name="Timur Akhmetov">
-                                        <td class="py-space-xs px-space-sm pl-space-base">
-                                            <div class="flex items-center gap-space-xs">
-                                                <span
-                                                    class="font-telemetry-data text-telemetry-data font-bold text-secondary">EMP-1005</span>
-                                                <span
-                                                    class="material-symbols-outlined text-[14px] text-secondary">fingerprint</span>
-                                            </div>
-                                        </td>
-                                        <td class="py-space-xs px-space-sm">
-                                            <div class="font-bold text-primary flex items-center gap-space-xs">
-                                                <span>Timur Akhmetov</span>
-                                                <span
-                                                    class="px-space-xs py-[1px] bg-secondary text-on-secondary font-label-uppercase text-[9px]">SESSION
-                                                    LEAD</span>
-                                            </div>
-                                            <div
-                                                class="font-telemetry-micro text-telemetry-micro text-on-surface-variant">
-                                                Chief Governance Officer &amp; Root Trustee</div>
-                                        </td>
-                                        <td
-                                            class="py-space-xs px-space-sm font-telemetry-micro text-telemetry-micro text-on-surface">
-                                            ALMATY HIGH-COMMAND HUB
-                                        </td>
-                                        <td class="py-space-xs px-space-sm text-center">
-                                            <span
-                                                class="font-security-stamp text-security-stamp px-space-xs py-[2px] bg-primary-container text-on-primary font-bold">L5+</span>
-                                        </td>
-                                        <td class="py-space-xs px-space-sm">
-                                            <div class="flex items-center gap-[2px] font-telemetry-micro">
-                                                <span class="px-1 bg-secondary text-on-secondary font-bold">SYS-01
-                                                    THROUGH SYS-11 [ALL DOMAINS]</span>
-                                            </div>
-                                        </td>
-                                        <td class="py-space-xs px-space-sm text-center">
-                                            <span
-                                                class="inline-flex items-center gap-space-2xs px-space-xs py-[1px] bg-primary text-on-primary font-telemetry-micro font-bold">
-                                                MASTER SIGNER
-                                            </span>
-                                        </td>
-                                        <td class="py-space-xs px-space-sm text-right pr-space-base">
-                                            <span
-                                                class="font-telemetry-micro text-telemetry-micro text-on-surface-variant">Self-Audit
-                                                Interlock</span>
-                                        </td>
-                                    </tr>
-                                    <!-- EMP-1007 -->
-                                    <tr class="hover:bg-surface-container-low transition-colors cursor-pointer matrix-row"
-                                        data-cat="PENDING" data-emp="EMP-1007" data-name="Ruslan Bekmambetov">
-                                        <td class="py-space-xs px-space-sm pl-space-base">
-                                            <span
-                                                class="font-telemetry-data text-telemetry-data font-bold text-primary">EMP-1007</span>
-                                        </td>
-                                        <td class="py-space-xs px-space-sm">
-                                            <div class="font-bold text-on-surface">Ruslan Bekmambetov</div>
-                                            <div
-                                                class="font-telemetry-micro text-telemetry-micro text-on-surface-variant">
-                                                Warehouse Logistics Specialist</div>
-                                        </td>
-                                        <td
-                                            class="py-space-xs px-space-sm font-telemetry-micro text-telemetry-micro text-on-surface">
-                                            SHYMKENT LOGISTICS DEPOT
-                                        </td>
-                                        <td class="py-space-xs px-space-sm text-center">
-                                            <span
-                                                class="font-security-stamp text-security-stamp px-space-xs py-[2px] bg-surface-variant text-on-surface font-bold">L2</span>
-                                        </td>
-                                        <td class="py-space-xs px-space-sm">
-                                            <div class="flex items-center gap-[2px] font-telemetry-micro">
-                                                <span
-                                                    class="px-1 bg-surface-container-high text-on-surface-variant">--</span>
-                                                <span
-                                                    class="px-1 bg-surface-container-high text-on-surface-variant">--</span>
-                                                <span
-                                                    class="px-1 bg-surface-container-high text-on-surface-variant">--</span>
-                                                <span
-                                                    class="px-1 bg-surface-container-high text-on-surface-variant">--</span>
-                                                <span
-                                                    class="px-1 bg-surface-container-high text-on-surface-variant">--</span>
-                                                <span
-                                                    class="px-1 bg-surface-container-high text-on-surface-variant">--</span>
-                                                <span class="px-1 bg-primary text-on-primary font-bold">07</span>
-                                                <span class="px-1 bg-primary text-on-primary font-bold">08</span>
-                                                <span
-                                                    class="px-1 bg-surface-container-high text-on-surface-variant">--</span>
-                                                <span
-                                                    class="px-1 bg-surface-container-high text-on-surface-variant">--</span>
-                                            </div>
-                                        </td>
-                                        <td class="py-space-xs px-space-sm text-center">
-                                            <span
-                                                class="role-status-badge inline-flex items-center gap-space-2xs px-space-xs py-[1px] bg-tertiary-fixed text-on-tertiary-fixed-variant font-telemetry-micro font-bold">
-                                                PENDING SIGN-OFF
-                                            </span>
-                                        </td>
-                                        <td class="py-space-xs px-space-sm text-right pr-space-base">
-                                            <button
-                                                class="px-space-xs py-[2px] bg-on-tertiary-container text-surface-container-lowest font-telemetry-micro font-bold">Attest</button>
-                                        </td>
-                                    </tr>
-                                    <!-- EMP-1009 (CRITICAL ORPHANED - Selected by Default) -->
-                                    <tr class="bg-error-container/20 hover:bg-error-container/30 transition-colors cursor-pointer matrix-row selected-row"
-                                        data-cat="ORPHANED" data-emp="EMP-1009" data-name="Maksim Sokolov">
-                                        <td class="py-space-xs px-space-sm pl-space-base">
-                                            <div class="flex items-center gap-space-xs">
-                                                <span
-                                                    class="font-telemetry-data text-telemetry-data font-bold text-error">EMP-1009</span>
-                                                <span class="w-1.5 h-1.5 bg-error animate-ping"></span>
-                                            </div>
-                                        </td>
-                                        <td class="py-space-xs px-space-sm">
-                                            <div class="font-bold text-error flex items-center gap-space-xs">
-                                                <span>Maksim Sokolov</span>
-                                                <span
-                                                    class="font-label-uppercase text-[9px] bg-error text-on-error px-space-xs font-bold">ORPHANED</span>
-                                            </div>
-                                            <div
-                                                class="font-telemetry-micro text-telemetry-micro text-on-error-container">
-                                                Contractor Expired (SCADA Telemetry Unit)</div>
-                                        </td>
-                                        <td
-                                            class="py-space-xs px-space-sm font-telemetry-micro text-telemetry-micro text-error font-bold">
-                                            NO ACTIVE SPONSOR // FORMER CNC-03
-                                        </td>
-                                        <td class="py-space-xs px-space-sm text-center">
-                                            <span
-                                                class="font-security-stamp text-security-stamp px-space-xs py-[2px] bg-error-container text-on-error-container font-bold line-through">L3</span>
-                                        </td>
-                                        <td class="py-space-xs px-space-sm">
-                                            <div class="flex items-center gap-[2px] font-telemetry-micro">
-                                                <span
-                                                    class="px-1 bg-surface-container-high text-on-surface-variant">--</span>
-                                                <span
-                                                    class="px-1 bg-surface-container-high text-on-surface-variant">--</span>
-                                                <span class="px-1 bg-error text-on-error font-bold">03</span>
-                                                <span
-                                                    class="px-1 bg-surface-container-high text-on-surface-variant">--</span>
-                                                <span class="px-1 bg-error text-on-error font-bold">05</span>
-                                                <span
-                                                    class="px-1 bg-surface-container-high text-on-surface-variant">--</span>
-                                                <span
-                                                    class="px-1 bg-surface-container-high text-on-surface-variant">--</span>
-                                                <span
-                                                    class="px-1 bg-surface-container-high text-on-surface-variant">--</span>
-                                                <span
-                                                    class="px-1 bg-surface-container-high text-on-surface-variant">--</span>
-                                                <span
-                                                    class="px-1 bg-surface-container-high text-on-surface-variant">--</span>
-                                            </div>
-                                        </td>
-                                        <td class="py-space-xs px-space-sm text-center">
-                                            <span
-                                                class="inline-flex items-center gap-space-2xs px-space-xs py-[1px] bg-error text-on-error font-telemetry-micro font-bold">
-                                                FLAG: UNLAWFUL BIND
-                                            </span>
-                                        </td>
-                                        <td class="py-space-xs px-space-sm text-right pr-space-base">
-                                            <button
-                                                class="px-space-xs py-[2px] bg-error text-on-error font-telemetry-micro font-bold hover:bg-on-error-container">Purge
-                                                Token</button>
-                                        </td>
-                                    </tr>
-                                    <!-- EMP-1012 -->
-                                    <tr class="hover:bg-surface-container-low transition-colors cursor-pointer matrix-row"
-                                        data-cat="PENDING" data-emp="EMP-1012" data-name="Aigul Karimova">
-                                        <td class="py-space-xs px-space-sm pl-space-base">
-                                            <span
-                                                class="font-telemetry-data text-telemetry-data font-bold text-primary">EMP-1012</span>
-                                        </td>
-                                        <td class="py-space-xs px-space-sm">
-                                            <div class="font-bold text-on-surface">Aigul Karimova</div>
-                                            <div
-                                                class="font-telemetry-micro text-telemetry-micro text-on-surface-variant">
-                                                Quality Assurance Director</div>
-                                        </td>
-                                        <td
-                                            class="py-space-xs px-space-sm font-telemetry-micro text-telemetry-micro text-on-surface">
-                                            KARAGANDA METROLOGY DIVISION
-                                        </td>
-                                        <td class="py-space-xs px-space-sm text-center">
-                                            <span
-                                                class="font-security-stamp text-security-stamp px-space-xs py-[2px] bg-primary text-on-primary font-bold">L4</span>
-                                        </td>
-                                        <td class="py-space-xs px-space-sm">
-                                            <div class="flex items-center gap-[2px] font-telemetry-micro">
-                                                <span class="px-1 bg-primary text-on-primary font-bold">01</span>
-                                                <span
-                                                    class="px-1 bg-surface-container-high text-on-surface-variant">--</span>
-                                                <span
-                                                    class="px-1 bg-surface-container-high text-on-surface-variant">--</span>
-                                                <span class="px-1 bg-primary text-on-primary font-bold">04</span>
-                                                <span
-                                                    class="px-1 bg-surface-container-high text-on-surface-variant">--</span>
-                                                <span
-                                                    class="px-1 bg-surface-container-high text-on-surface-variant">--</span>
-                                                <span
-                                                    class="px-1 bg-surface-container-high text-on-surface-variant">--</span>
-                                                <span
-                                                    class="px-1 bg-surface-container-high text-on-surface-variant">--</span>
-                                                <span class="px-1 bg-primary text-on-primary font-bold">09</span>
-                                                <span
-                                                    class="px-1 bg-surface-container-high text-on-surface-variant">--</span>
-                                            </div>
-                                        </td>
-                                        <td class="py-space-xs px-space-sm text-center">
-                                            <span
-                                                class="role-status-badge inline-flex items-center gap-space-2xs px-space-xs py-[1px] bg-tertiary-fixed text-on-tertiary-fixed-variant font-telemetry-micro font-bold">
-                                                PENDING SIGN-OFF
-                                            </span>
-                                        </td>
-                                        <td class="py-space-xs px-space-sm text-right pr-space-base">
-                                            <button
-                                                class="px-space-xs py-[2px] bg-on-tertiary-container text-surface-container-lowest font-telemetry-micro font-bold">Attest</button>
-                                        </td>
-                                    </tr>
-                                    <!-- EMP-1014 (ORPHANED #2) -->
-                                    <tr class="bg-error-container/10 hover:bg-error-container/20 transition-colors cursor-pointer matrix-row"
-                                        data-cat="ORPHANED" data-emp="EMP-1014" data-name="Viktor Drobyshev">
-                                        <td class="py-space-xs px-space-sm pl-space-base">
-                                            <div class="flex items-center gap-space-xs">
-                                                <span
-                                                    class="font-telemetry-data text-telemetry-data font-bold text-error">EMP-1014</span>
-                                                <span class="w-1.5 h-1.5 bg-error"></span>
-                                            </div>
-                                        </td>
-                                        <td class="py-space-xs px-space-sm">
-                                            <div class="font-bold text-error flex items-center gap-space-xs">
-                                                <span>Viktor Drobyshev</span>
-                                                <span
-                                                    class="font-label-uppercase text-[9px] bg-error-container text-on-error-container px-space-xs">DECOMMISSIONED</span>
-                                            </div>
-                                            <div
-                                                class="font-telemetry-micro text-telemetry-micro text-on-surface-variant">
-                                                Decommissioned Logistics Lead</div>
-                                        </td>
-                                        <td
-                                            class="py-space-xs px-space-sm font-telemetry-micro text-telemetry-micro text-on-surface">
-                                            PAVLODAR TERMINAL [CLOSED]
-                                        </td>
-                                        <td class="py-space-xs px-space-sm text-center">
-                                            <span
-                                                class="font-security-stamp text-security-stamp px-space-xs py-[2px] bg-surface-variant text-on-surface-variant font-bold">NONE</span>
-                                        </td>
-                                        <td class="py-space-xs px-space-sm">
-                                            <div class="flex items-center gap-[2px] font-telemetry-micro">
-                                                <span
-                                                    class="px-1 bg-surface-container-high text-on-surface-variant">--</span>
-                                                <span
-                                                    class="px-1 bg-surface-container-high text-on-surface-variant">--</span>
-                                                <span
-                                                    class="px-1 bg-surface-container-high text-on-surface-variant">--</span>
-                                                <span
-                                                    class="px-1 bg-surface-container-high text-on-surface-variant">--</span>
-                                                <span
-                                                    class="px-1 bg-surface-container-high text-on-surface-variant">--</span>
-                                                <span
-                                                    class="px-1 bg-surface-container-high text-on-surface-variant">--</span>
-                                                <span
-                                                    class="px-1 bg-surface-container-high text-on-surface-variant">--</span>
-                                                <span class="px-1 bg-error text-on-error font-bold">08</span>
-                                                <span
-                                                    class="px-1 bg-surface-container-high text-on-surface-variant">--</span>
-                                                <span class="px-1 bg-error text-on-error font-bold">10</span>
-                                            </div>
-                                        </td>
-                                        <td class="py-space-xs px-space-sm text-center">
-                                            <span
-                                                class="inline-flex items-center gap-space-2xs px-space-xs py-[1px] bg-error-container text-on-error-container font-telemetry-micro font-bold">
-                                                ORPHAN PENDING
-                                            </span>
-                                        </td>
-                                        <td class="py-space-xs px-space-sm text-right pr-space-base">
-                                            <button
-                                                class="px-space-xs py-[2px] bg-error text-on-error font-telemetry-micro font-bold hover:bg-on-error-container">Revoke</button>
-                                        </td>
-                                    </tr>
-                                    <!-- EMP-1016 -->
-                                    <tr class="hover:bg-surface-container-low transition-colors cursor-pointer matrix-row"
-                                        data-cat="ELEVATED" data-emp="EMP-1016" data-name="Saule Temirbayeva">
-                                        <td class="py-space-xs px-space-sm pl-space-base">
-                                            <span
-                                                class="font-telemetry-data text-telemetry-data font-bold text-primary">EMP-1016</span>
-                                        </td>
-                                        <td class="py-space-xs px-space-sm">
-                                            <div class="font-bold text-on-surface">Saule Temirbayeva</div>
-                                            <div
-                                                class="font-telemetry-micro text-telemetry-micro text-on-surface-variant">
-                                                Network Security Analyst</div>
-                                        </td>
-                                        <td
-                                            class="py-space-xs px-space-sm font-telemetry-micro text-telemetry-micro text-on-surface">
-                                            ALMATY SOC // CYBER-RANGE
-                                        </td>
-                                        <td class="py-space-xs px-space-sm text-center">
-                                            <span
-                                                class="font-security-stamp text-security-stamp px-space-xs py-[2px] bg-primary text-on-primary font-bold">L4</span>
-                                        </td>
-                                        <td class="py-space-xs px-space-sm">
-                                            <div class="flex items-center gap-[2px] font-telemetry-micro">
-                                                <span
-                                                    class="px-1 bg-surface-container-high text-on-surface-variant">--</span>
-                                                <span
-                                                    class="px-1 bg-surface-container-high text-on-surface-variant">--</span>
-                                                <span
-                                                    class="px-1 bg-surface-container-high text-on-surface-variant">--</span>
-                                                <span
-                                                    class="px-1 bg-surface-container-high text-on-surface-variant">--</span>
-                                                <span class="px-1 bg-primary text-on-primary font-bold">05</span>
-                                                <span
-                                                    class="px-1 bg-surface-container-high text-on-surface-variant">--</span>
-                                                <span
-                                                    class="px-1 bg-surface-container-high text-on-surface-variant">--</span>
-                                                <span
-                                                    class="px-1 bg-surface-container-high text-on-surface-variant">--</span>
-                                                <span
-                                                    class="px-1 bg-surface-container-high text-on-surface-variant">--</span>
-                                                <span class="px-1 bg-primary text-on-primary font-bold">10</span>
-                                            </div>
-                                        </td>
-                                        <td class="py-space-xs px-space-sm text-center">
-                                            <span
-                                                class="inline-flex items-center gap-space-2xs px-space-xs py-[1px] bg-secondary-container/20 text-on-secondary-container font-telemetry-micro font-bold">
-                                                <span class="w-1.5 h-1.5 bg-secondary"></span> APPROVED
-                                            </span>
-                                        </td>
-                                        <td class="py-space-xs px-space-sm text-right pr-space-base">
-                                            <button
-                                                class="px-space-xs py-[2px] bg-surface-container-high hover:bg-surface-variant text-on-surface font-telemetry-micro">Review</button>
-                                        </td>
-                                    </tr>
-                                    <!-- EMP-1018 -->
-                                    <tr class="hover:bg-surface-container-low transition-colors cursor-pointer matrix-row"
-                                        data-cat="ELEVATED" data-emp="EMP-1018" data-name="Leonid Volkov">
-                                        <td class="py-space-xs px-space-sm pl-space-base">
-                                            <span
-                                                class="font-telemetry-data text-telemetry-data font-bold text-primary">EMP-1018</span>
-                                        </td>
-                                        <td class="py-space-xs px-space-sm">
-                                            <div class="font-bold text-on-surface">Leonid Volkov</div>
-                                            <div
-                                                class="font-telemetry-micro text-telemetry-micro text-on-surface-variant">
-                                                Lead SecOps Compliance Auditor</div>
-                                        </td>
-                                        <td
-                                            class="py-space-xs px-space-sm font-telemetry-micro text-telemetry-micro text-on-surface">
-                                            ALMATY COMPLIANCE HUB
-                                        </td>
-                                        <td class="py-space-xs px-space-sm text-center">
-                                            <span
-                                                class="font-security-stamp text-security-stamp px-space-xs py-[2px] bg-primary text-on-primary font-bold">L5</span>
-                                        </td>
-                                        <td class="py-space-xs px-space-sm">
-                                            <div class="flex items-center gap-[2px] font-telemetry-micro">
-                                                <span class="px-1 bg-secondary text-on-secondary font-bold">SYS-01
-                                                    THROUGH SYS-11 [AUDIT VIEW]</span>
-                                            </div>
-                                        </td>
-                                        <td class="py-space-xs px-space-sm text-center">
-                                            <span
-                                                class="inline-flex items-center gap-space-2xs px-space-xs py-[1px] bg-secondary-container/20 text-on-secondary-container font-telemetry-micro font-bold">
-                                                <span class="w-1.5 h-1.5 bg-secondary"></span> AUDITOR
-                                            </span>
-                                        </td>
-                                        <td class="py-space-xs px-space-sm text-right pr-space-base">
-                                            <button
-                                                class="px-space-xs py-[2px] bg-surface-container-high hover:bg-surface-variant text-on-surface font-telemetry-micro">Review</button>
-                                        </td>
-                                    </tr>
-                                    <!-- EMP-1019 -->
-                                    <tr class="hover:bg-surface-container-low transition-colors cursor-pointer matrix-row"
-                                        data-cat="REVOKED" data-emp="EMP-1019" data-name="Yerlan Tulebayev">
-                                        <td class="py-space-xs px-space-sm pl-space-base">
-                                            <span
-                                                class="font-telemetry-data text-telemetry-data font-bold text-on-surface-variant">EMP-1019</span>
-                                        </td>
-                                        <td class="py-space-xs px-space-sm">
-                                            <div class="font-bold text-on-surface-variant line-through">Yerlan Tulebayev
-                                            </div>
-                                            <div
-                                                class="font-telemetry-micro text-telemetry-micro text-on-surface-variant">
-                                                HV Substation Technician</div>
-                                        </td>
-                                        <td
-                                            class="py-space-xs px-space-sm font-telemetry-micro text-telemetry-micro text-on-surface-variant">
-                                            ATYRAU INDUSTRIAL CLUSTER
-                                        </td>
-                                        <td class="py-space-xs px-space-sm text-center">
-                                            <span
-                                                class="font-security-stamp text-security-stamp px-space-xs py-[2px] bg-surface-variant text-on-surface-variant font-bold">REVOKED</span>
-                                        </td>
-                                        <td class="py-space-xs px-space-sm">
-                                            <div
-                                                class="flex items-center gap-[2px] font-telemetry-micro text-on-surface-variant">
-                                                <span
-                                                    class="px-1 bg-surface-container-high text-on-surface-variant line-through">ALL
-                                                    ZEROED</span>
-                                            </div>
-                                        </td>
-                                        <td class="py-space-xs px-space-sm text-center">
-                                            <span
-                                                class="inline-flex items-center gap-space-2xs px-space-xs py-[1px] bg-surface-variant text-on-surface-variant font-telemetry-micro font-bold">
-                                                REVOKED
-                                            </span>
-                                        </td>
-                                        <td class="py-space-xs px-space-sm text-right pr-space-base">
-                                            <span
-                                                class="font-telemetry-micro text-telemetry-micro text-on-surface-variant">Archived
-                                                2026-02</span>
-                                        </td>
-                                    </tr>
-                                    <!-- EMP-1020 -->
-                                    <tr class="hover:bg-surface-container-low transition-colors cursor-pointer matrix-row"
-                                        data-cat="PENDING" data-emp="EMP-1020" data-name="Pavel Chen">
-                                        <td class="py-space-xs px-space-sm pl-space-base">
-                                            <div class="flex items-center gap-space-xs">
-                                                <span
-                                                    class="font-telemetry-data text-telemetry-data font-bold text-primary">EMP-1020</span>
-                                                <span class="w-1.5 h-1.5 bg-on-tertiary-container animate-pulse"></span>
-                                            </div>
-                                        </td>
-                                        <td class="py-space-xs px-space-sm">
-                                            <div class="font-bold text-on-surface">Pavel Chen</div>
-                                            <div
-                                                class="font-telemetry-micro text-telemetry-micro text-on-surface-variant">
-                                                Foreign Customs Clearance Liaison</div>
-                                        </td>
-                                        <td
-                                            class="py-space-xs px-space-sm font-telemetry-micro text-telemetry-micro text-on-surface">
-                                            KHORGOS DRY PORT GATEWAY
-                                        </td>
-                                        <td class="py-space-xs px-space-sm text-center">
-                                            <span
-                                                class="font-security-stamp text-security-stamp px-space-xs py-[2px] bg-primary text-on-primary font-bold">L3</span>
-                                        </td>
-                                        <td class="py-space-xs px-space-sm">
-                                            <div class="flex items-center gap-[2px] font-telemetry-micro">
-                                                <span
-                                                    class="px-1 bg-surface-container-high text-on-surface-variant">--</span>
-                                                <span
-                                                    class="px-1 bg-surface-container-high text-on-surface-variant">--</span>
-                                                <span
-                                                    class="px-1 bg-surface-container-high text-on-surface-variant">--</span>
-                                                <span
-                                                    class="px-1 bg-surface-container-high text-on-surface-variant">--</span>
-                                                <span
-                                                    class="px-1 bg-surface-container-high text-on-surface-variant">--</span>
-                                                <span
-                                                    class="px-1 bg-surface-container-high text-on-surface-variant">--</span>
-                                                <span
-                                                    class="px-1 bg-surface-container-high text-on-surface-variant">--</span>
-                                                <span
-                                                    class="px-1 bg-surface-container-high text-on-surface-variant">--</span>
-                                                <span class="px-1 bg-primary text-on-primary font-bold">09</span>
-                                                <span
-                                                    class="px-1 bg-surface-container-high text-on-surface-variant">--</span>
-                                            </div>
-                                        </td>
-                                        <td class="py-space-xs px-space-sm text-center">
-                                            <span
-                                                class="role-status-badge inline-flex items-center gap-space-2xs px-space-xs py-[1px] bg-tertiary-fixed text-on-tertiary-fixed-variant font-telemetry-micro font-bold">
-                                                CROSS-BORDER AUDIT
-                                            </span>
-                                        </td>
-                                        <td class="py-space-xs px-space-sm text-right pr-space-base">
-                                            <button
-                                                class="px-space-xs py-[2px] bg-surface-container-high hover:bg-surface-variant text-on-surface font-telemetry-micro font-bold">Escalate</button>
-                                        </td>
-                                    </tr>
+                                    <?php endforeach; ?>
                                 </tbody>
                             </table>
                         </div>
@@ -1005,7 +472,7 @@
                         <div
                             class="bg-surface-container-low p-space-sm pl-space-base flex flex-col sm:flex-row sm:items-center justify-between gap-space-xs font-telemetry-micro text-telemetry-micro text-on-surface-variant">
                             <div class="flex items-center gap-space-md">
-                                <span>SHOWING: 10 OF 20 REGISTERED IDENTITIES</span>
+                                <span>SHOWING: <?= count($telemetryGrid) ?> REGISTERED IDENTITIES</span>
                                 <span>LEDGER PAGINATION: 1/2</span>
                             </div>
                             <div class="flex items-center gap-space-sm">
@@ -1214,24 +681,20 @@
                             <!-- Identities List Table Strip -->
                             <div
                                 class="mt-1 border border-[#1E293B] divide-y divide-[#1E293B] bg-[#0A101D] font-telemetry-micro text-[11px]">
+                                <?php 
+                                $pendingList = array_filter($telemetryGrid, function($e) { return $e['category'] === 'PENDING' || $e['category'] === 'ELEVATED'; });
+                                if (empty($pendingList)) {
+                                    $pendingList = array_slice($telemetryGrid, 0, 3);
+                                }
+                                foreach (array_slice($pendingList, 0, 3) as $pe): 
+                                ?>
                                 <div class="p-1.5 flex items-center justify-between text-slate-300">
-                                    <span class="font-bold text-[#00F0FF]">EMP-1002</span>
-                                    <span>Amina Karimova (Chief Automation Eng.)</span>
-                                    <span class="text-slate-400 font-mono">SYS-02,03,05</span>
-                                    <span class="text-amber-400 font-bold">L5 PENDING</span>
+                                    <span class="font-bold text-[#00F0FF]"><?= htmlspecialchars($pe['emp_id']) ?></span>
+                                    <span><?= htmlspecialchars($pe['full_name']) ?> (<?= htmlspecialchars($pe['job_title']) ?>)</span>
+                                    <span class="text-slate-400 font-mono"><?= htmlspecialchars($pe['clearance_level']) ?></span>
+                                    <span class="text-amber-400 font-bold"><?= htmlspecialchars($pe['category']) ?></span>
                                 </div>
-                                <div class="p-1.5 flex items-center justify-between text-slate-300">
-                                    <span class="font-bold text-[#00F0FF]">EMP-1012</span>
-                                    <span>Aigul Karimova (QA Director)</span>
-                                    <span class="text-slate-400 font-mono">SYS-01,04,09</span>
-                                    <span class="text-amber-400 font-bold">L4 PENDING</span>
-                                </div>
-                                <div class="p-1.5 flex items-center justify-between text-slate-300">
-                                    <span class="font-bold text-[#00F0FF]">EMP-1020</span>
-                                    <span>Pavel Chen (Customs Liaison)</span>
-                                    <span class="text-slate-400 font-mono">SYS-09</span>
-                                    <span class="text-amber-400 font-bold">L3 PENDING</span>
-                                </div>
+                                <?php endforeach; ?>
                             </div>
                         </div>
                         <!-- Security PIN & Affirmation -->
