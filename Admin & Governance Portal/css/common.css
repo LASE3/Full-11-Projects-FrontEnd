@@ -226,3 +226,102 @@ aside nav a:hover .material-symbols-outlined {
     transform: scale(1.18);
     color: #FF7B72 !important;
 }
+
+
+/* ==========================================================================
+   Comprehensive Multi-Device Responsive Design System
+   ========================================================================== */
+
+/* Mobile Navigation Toggle Button */
+.mobile-nav-toggle {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+    color: #FFFFFF;
+    cursor: pointer;
+    margin-right: 10px;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.mobile-nav-toggle:hover {
+    background: rgba(255, 255, 255, 0.18);
+    border-color: #BA1A1A;
+}
+
+/* Sidebar Backdrop Overlay */
+.sidebar-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 14, 29, 0.65);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    z-index: 39;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.25s ease, visibility 0.25s ease;
+}
+
+body.sidebar-open .sidebar-backdrop {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Universal Table Responsive Wrapping */
+.table-responsive,
+div:has(> table) {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Tablet & Smaller Screens (<= 1024px) */
+@media (max-width: 1024px) {
+    .mobile-nav-toggle {
+        display: inline-flex !important;
+    }
+
+    div[class*="pl-[260px]"],
+    .pl-\[260px\] {
+        padding-left: 0 !important;
+    }
+
+    aside {
+        transform: translateX(-100%);
+        transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.28s ease;
+        z-index: 50 !important;
+        box-shadow: none;
+    }
+
+    body.sidebar-open aside {
+        transform: translateX(0) !important;
+        box-shadow: 10px 0 35px rgba(0, 0, 0, 0.6) !important;
+    }
+
+    main {
+        padding-left: 16px !important;
+        padding-right: 16px !important;
+    }
+}
+
+/* Mobile Screens (<= 768px) */
+@media (max-width: 768px) {
+    header .px-gutter-desktop,
+    header [class*="px-gutter"] {
+        padding-left: 12px !important;
+        padding-right: 12px !important;
+    }
+
+    .station-live-clock {
+        display: none;
+    }
+
+    table {
+        min-width: 600px;
+    }
+}

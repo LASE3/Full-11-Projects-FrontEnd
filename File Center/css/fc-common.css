@@ -592,3 +592,151 @@ body {
     from { opacity: 0; transform: translateX(20px); }
     to { opacity: 1; transform: translateX(0); }
 }
+
+
+/* ==========================================================================
+   Comprehensive Multi-Device Responsive Design System
+   ========================================================================== */
+
+/* Mobile Navigation Toggle Button */
+.mobile-nav-toggle {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: var(--radius-sm);
+    color: #FFFFFF;
+    cursor: pointer;
+    margin-right: 12px;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+    font-size: 18px;
+}
+
+.mobile-nav-toggle:hover {
+    background: rgba(255, 255, 255, 0.18);
+    border-color: var(--vk-sys-accent);
+}
+
+/* Sidebar Backdrop Overlay */
+.sidebar-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 14, 29, 0.65);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    z-index: 1040;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.25s ease, visibility 0.25s ease;
+}
+
+body.sidebar-open .sidebar-backdrop {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Universal Table Responsive Wrapping */
+.table-responsive,
+.vk-table-container,
+.vk-card:has(table) {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.vk-table {
+    min-width: 600px;
+    width: 100%;
+}
+
+/* Tablet & Smaller Screens (<= 1024px) */
+@media (max-width: 1024px) {
+    .mobile-nav-toggle {
+        display: inline-flex;
+    }
+
+    .vk-sidebar {
+        position: fixed;
+        top: var(--topbar-height, 60px);
+        left: 0;
+        bottom: 0;
+        width: 260px;
+        transform: translateX(-100%);
+        transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.28s ease;
+        z-index: 1050;
+        box-shadow: none;
+    }
+
+    body.sidebar-open .vk-sidebar {
+        transform: translateX(0);
+        box-shadow: 10px 0 35px rgba(0, 0, 0, 0.5);
+    }
+
+    .vk-main-layout {
+        margin-left: 0 !important;
+        width: 100% !important;
+        padding: 18px 16px 48px 16px !important;
+    }
+
+    .vk-grid-4col, .repo-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 16px;
+    }
+}
+
+/* Mobile Screens (<= 768px) */
+@media (max-width: 768px) {
+    .vk-top-navbar {
+        padding: 0 12px;
+    }
+
+    .vk-brand-section {
+        gap: 8px;
+    }
+
+    .vk-system-badge {
+        display: none;
+    }
+
+    .station-live-clock {
+        display: none;
+    }
+
+    .vk-card-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .vk-card-header > div:last-child {
+        width: 100%;
+        display: flex;
+        justify-content: flex-start;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .vk-grid-4col, .repo-grid {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+/* Extra Small Phones (<= 480px) */
+@media (max-width: 480px) {
+    .vk-brand-logo-badge {
+        width: 28px;
+        height: 28px;
+        font-size: 13px;
+    }
+
+    .vk-toast {
+        min-width: 280px;
+        max-width: calc(100vw - 32px);
+        right: 16px;
+        bottom: 16px;
+    }
+}

@@ -269,6 +269,75 @@
     }
 
     // ==========================================
+    
+    /**
+     * Responsive Multi-Device Navigation Controller
+     */
+    function initResponsiveLayout() {
+        const header = document.querySelector('header');
+        const headerLeft = header ? header.querySelector('.flex.items-center:first-child') : null;
+        let toggleBtn = document.getElementById('adm-sidebar-toggle');
+        if (!toggleBtn && headerLeft) {
+            toggleBtn = document.createElement('button');
+            toggleBtn.id = 'adm-sidebar-toggle';
+            toggleBtn.className = 'mobile-nav-toggle';
+            toggleBtn.setAttribute('aria-label', 'Toggle Navigation Menu');
+            toggleBtn.innerHTML = '<span class="material-symbols-outlined" style="font-size: 22px;">menu</span>';
+            headerLeft.insertBefore(toggleBtn, headerLeft.firstChild);
+        }
+
+        let backdrop = document.querySelector('.sidebar-backdrop');
+        if (!backdrop) {
+            backdrop = document.createElement('div');
+            backdrop.className = 'sidebar-backdrop';
+            document.body.appendChild(backdrop);
+        }
+
+        if (toggleBtn) {
+            toggleBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                document.body.classList.toggle('sidebar-open');
+                const icon = toggleBtn.querySelector('.material-symbols-outlined');
+                if (icon) {
+                    icon.textContent = document.body.classList.contains('sidebar-open') ? 'close' : 'menu';
+                }
+            });
+        }
+
+        backdrop.addEventListener('click', () => {
+            document.body.classList.remove('sidebar-open');
+            const icon = toggleBtn ? toggleBtn.querySelector('.material-symbols-outlined') : null;
+            if (icon) icon.textContent = 'menu';
+        });
+
+        document.querySelectorAll('aside nav a').forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth <= 1024) {
+                    document.body.classList.remove('sidebar-open');
+                    const icon = toggleBtn ? toggleBtn.querySelector('.material-symbols-outlined') : null;
+                    if (icon) icon.textContent = 'menu';
+                }
+            });
+        });
+
+        document.querySelectorAll('table').forEach(table => {
+            if (!table.parentElement.classList.contains('table-responsive')) {
+                const wrapper = document.createElement('div');
+                wrapper.className = 'table-responsive';
+                table.parentNode.insertBefore(wrapper, table);
+                wrapper.appendChild(table);
+            }
+        });
+
+        window.addEventListener('resize', () => {
+            if (window.innerWidth > 1024 && document.body.classList.contains('sidebar-open')) {
+                document.body.classList.remove('sidebar-open');
+                const icon = toggleBtn ? toggleBtn.querySelector('.material-symbols-outlined') : null;
+                if (icon) icon.textContent = 'menu';
+            }
+        });
+    }
+
     // INITIALIZATION ON DOM READY
     // ==========================================
     if (document.readyState === 'loading') {
@@ -276,10 +345,12 @@
             initNavigation();
             initStationClock();
             initSearchTriggers();
+            initResponsiveLayout();
         });
     } else {
         initNavigation();
         initStationClock();
         initSearchTriggers();
+            initResponsiveLayout();
     }
 })();

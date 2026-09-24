@@ -378,6 +378,17 @@
             }
             updateToggleIcon();
         });
+
+        // Ensure all tables are inside responsive scrolling wrappers
+        document.querySelectorAll('table').forEach(table => {
+            if (!table.parentElement.classList.contains('table-responsive')) {
+                const wrapper = document.createElement('div');
+                wrapper.className = 'table-responsive';
+                table.parentNode.insertBefore(wrapper, table);
+                wrapper.appendChild(table);
+            }
+        });
+
     }
 
     /**

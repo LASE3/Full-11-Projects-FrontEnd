@@ -12,6 +12,7 @@
         initCommandPalette();
         initToastSystem();
         initNavigationHighlight();
+        initResponsiveLayout();
     });
 
     /**
@@ -187,4 +188,77 @@
             }
         });
     }
+
+    /**
+     * Responsive Multi-Device Navigation Controller
+     */
+    function initResponsiveLayout() {
+        const topNav = document.querySelector('.vk-top-navbar');
+        const brand = document.querySelector('.vk-brand-section');
+        let toggleBtn = document.getElementById('fc-sidebar-toggle');
+        if (!toggleBtn && (brand || topNav)) {
+            toggleBtn = document.createElement('button');
+            toggleBtn.id = 'fc-sidebar-toggle';
+            toggleBtn.className = 'mobile-nav-toggle';
+            toggleBtn.setAttribute('aria-label', 'Toggle Navigation Menu');
+            toggleBtn.innerHTML = '<span class="material-symbols-outlined" style="font-size: 22px;">menu</span>';
+            if (brand && brand.parentElement) {
+                brand.parentElement.insertBefore(toggleBtn, brand);
+            } else if (topNav) {
+                topNav.insertBefore(toggleBtn, topNav.firstChild);
+            }
+        }
+
+        let backdrop = document.querySelector('.sidebar-backdrop');
+        if (!backdrop) {
+            backdrop = document.createElement('div');
+            backdrop.className = 'sidebar-backdrop';
+            document.body.appendChild(backdrop);
+        }
+
+        if (toggleBtn) {
+            toggleBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                document.body.classList.toggle('sidebar-open');
+                const icon = toggleBtn.querySelector('.material-symbols-outlined');
+                if (icon) {
+                    icon.textContent = document.body.classList.contains('sidebar-open') ? 'close' : 'menu';
+                }
+            });
+        }
+
+        backdrop.addEventListener('click', () => {
+            document.body.classList.remove('sidebar-open');
+            const icon = toggleBtn ? toggleBtn.querySelector('.material-symbols-outlined') : null;
+            if (icon) icon.textContent = 'menu';
+        });
+
+        document.querySelectorAll('.vk-nav-item, .vk-sidebar a').forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth <= 1024) {
+                    document.body.classList.remove('sidebar-open');
+                    const icon = toggleBtn ? toggleBtn.querySelector('.material-symbols-outlined') : null;
+                    if (icon) icon.textContent = 'menu';
+                }
+            });
+        });
+
+        document.querySelectorAll('table.vk-table, table').forEach(table => {
+            if (!table.parentElement.classList.contains('table-responsive') && !table.parentElement.classList.contains('vk-table-container')) {
+                const wrapper = document.createElement('div');
+                wrapper.className = 'table-responsive';
+                table.parentNode.insertBefore(wrapper, table);
+                wrapper.appendChild(table);
+            }
+        });
+
+        window.addEventListener('resize', () => {
+            if (window.innerWidth > 1024 && document.body.classList.contains('sidebar-open')) {
+                document.body.classList.remove('sidebar-open');
+                const icon = toggleBtn ? toggleBtn.querySelector('.material-symbols-outlined') : null;
+                if (icon) icon.textContent = 'menu';
+            }
+        });
+    }
+
 })();

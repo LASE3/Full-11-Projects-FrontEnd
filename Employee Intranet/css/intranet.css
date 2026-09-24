@@ -1075,3 +1075,66 @@ body.sidebar-collapsed .intranet-content-wrapper {
     from { opacity: 0; transform: translateX(30px); }
     to { opacity: 1; transform: translateX(0); }
 }
+
+
+/* ==========================================================================
+   Comprehensive Multi-Device Responsive Design System
+   ========================================================================== */
+
+.table-responsive,
+div:has(> table) {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+table {
+    min-width: 600px;
+}
+
+@media (max-width: 1023px) {
+    .intranet-content-wrapper {
+        margin-left: 0 !important;
+        padding: 1.25rem 1rem !important;
+    }
+
+    .intranet-sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.28s ease;
+        z-index: 50 !important;
+    }
+
+    body.sidebar-mobile-open .intranet-sidebar {
+        transform: translateX(0) !important;
+        box-shadow: 10px 0 35px rgba(0, 0, 0, 0.6) !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .header-search-bar {
+        display: none !important;
+    }
+
+    .header-station-clock {
+        display: none !important;
+    }
+
+    .intranet-modal-container {
+        width: calc(100% - 1.5rem) !important;
+        margin: 0.75rem !important;
+        max-height: 94vh;
+    }
+
+    .user-job-title {
+        display: none !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .intranet-toast {
+        min-width: 280px;
+        max-width: calc(100vw - 32px);
+        right: 16px;
+        bottom: 16px;
+    }
+}

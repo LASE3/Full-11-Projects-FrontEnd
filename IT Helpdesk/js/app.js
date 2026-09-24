@@ -259,6 +259,67 @@
       }
 
       this.startSLATimer();
+
+      // Initialize responsive multi-device layout controls
+      this.initResponsiveLayout();
+    },
+
+    initResponsiveLayout: function () {
+      const brandSection = document.querySelector('.brand-section') || document.querySelector('.top-nav__content');
+      let toggleBtn = document.getElementById('hd-sidebar-toggle');
+      if (!toggleBtn && brandSection) {
+        toggleBtn = document.createElement('button');
+        toggleBtn.id = 'hd-sidebar-toggle';
+        toggleBtn.className = 'mobile-nav-toggle';
+        toggleBtn.setAttribute('aria-label', 'Toggle Navigation Menu');
+        toggleBtn.innerHTML = '☰';
+        brandSection.insertBefore(toggleBtn, brandSection.firstChild);
+      }
+
+      let backdrop = document.querySelector('.sidebar-backdrop');
+      if (!backdrop) {
+        backdrop = document.createElement('div');
+        backdrop.className = 'sidebar-backdrop';
+        document.body.appendChild(backdrop);
+      }
+
+      if (toggleBtn) {
+        toggleBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          document.body.classList.toggle('sidebar-open');
+          toggleBtn.innerHTML = document.body.classList.contains('sidebar-open') ? '✕' : '☰';
+        });
+      }
+
+      backdrop.addEventListener('click', () => {
+        document.body.classList.remove('sidebar-open');
+        if (toggleBtn) toggleBtn.innerHTML = '☰';
+      });
+
+      document.querySelectorAll('.sidebar-nav-item, .sidebar a').forEach(link => {
+        link.addEventListener('click', () => {
+          if (window.innerWidth <= 1024) {
+            document.body.classList.remove('sidebar-open');
+            if (toggleBtn) toggleBtn.innerHTML = '☰';
+          }
+        });
+      });
+
+      document.querySelectorAll('table.hd-table, table.data-table, table').forEach(table => {
+        if (!table.parentElement.classList.contains('table-responsive') && !table.parentElement.classList.contains('hd-table-container')) {
+          const wrapper = document.createElement('div');
+          wrapper.className = 'table-responsive';
+          table.parentNode.insertBefore(wrapper, table);
+          wrapper.appendChild(table);
+        }
+      });
+
+      window.addEventListener('resize', () => {
+        if (window.innerWidth > 1024 && document.body.classList.contains('sidebar-open')) {
+          document.body.classList.remove('sidebar-open');
+          if (toggleBtn) toggleBtn.innerHTML = '☰';
+        }
+      });
     }
   };
 

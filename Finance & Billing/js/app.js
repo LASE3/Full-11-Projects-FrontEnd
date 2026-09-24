@@ -1,217 +1,45 @@
 /**
- * VOSTOKPRIBOR Finance & Billing Platform - Client State & Controllers (System 08)
- * Subdomain: finance.vostokpribor.local
+ * VOSTOKPRIBOR Finance & Billing Platform (SYS-04 / SYS-08)
+ * Real Database-driven Client Controller & API Integration
  */
 
 (function () {
   'use strict';
 
   const finApp = {
-    // Invoices Ledger
-    invoices: [
-      {
-        id: 'INV-2024-8841',
-        customer: 'Severstal Metallurgy PJSC',
-        project: 'Blast Furnace #5 Telemetry Retrofit',
-        projectId: 'PRJ-VP-7721',
-        total: 1850000.00,
-        status: 'Paid', // Paid | Pending | Overdue
-        issueDate: 'Oct 01, 2024',
-        dueDate: 'Oct 31, 2024',
-        paidDate: 'Oct 28, 2024',
-        items: [
-          { desc: 'High-Temp IR Optical Pyrometer Probe Array', part: 'OPT-PYRO-900X', qty: 12, unit: 45000.00, total: 540000.00 },
-          { desc: 'SCADA Industrial Telemetry Gateway Controller', part: 'SCADA-GT-400', qty: 4, unit: 85000.00, total: 340000.00 },
-          { desc: 'On-Site Blast Furnace Sensor Integration & FAT Testing', part: 'SRV-FAT-01', qty: 1, unit: 970000.00, total: 970000.00 }
-        ],
-        timeline: [
-          { milestone: 'Milestone 1: Advance Mobilization (30%)', amount: '$555,000.00', date: 'Oct 05, 2024', status: 'Settled ✓' },
-          { milestone: 'Milestone 2: Hardware Delivery & FAT Pass (40%)', amount: '$740,000.00', date: 'Oct 20, 2024', status: 'Settled ✓' },
-          { milestone: 'Milestone 3: Hot Testing & Final Commissioning (30%)', amount: '$555,000.00', date: 'Oct 28, 2024', status: 'Settled ✓' }
-        ]
-      },
-      {
-        id: 'INV-2024-8842',
-        customer: 'NLMK Group Lipetsk',
-        project: 'Coke Oven Battery Temperature Profiling',
-        projectId: 'PRJ-VP-7722',
-        total: 920000.00,
-        status: 'Pending',
-        issueDate: 'Oct 15, 2024',
-        dueDate: 'Nov 15, 2024',
-        paidDate: null,
-        items: [
-          { desc: 'Multi-Spectral Thermal Imaging Radiometer Matrix', part: 'RAD-MS-500', qty: 6, unit: 80000.00, total: 480000.00 },
-          { desc: 'Fiber-Optic Sensor Interface & Harsh Environment Enclosures', part: 'ENC-FO-88', qty: 6, unit: 25000.00, total: 150000.00 },
-          { desc: 'Engineering Commissioning & Calibration Certificate', part: 'SRV-CAL-OPT', qty: 1, unit: 290000.00, total: 290000.00 }
-        ],
-        timeline: [
-          { milestone: 'Milestone 1: Project Initiation Advance (30%)', amount: '$276,000.00', date: 'Oct 18, 2024', status: 'Settled ✓' },
-          { milestone: 'Milestone 2: Factory Acceptance Test Acceptance (40%)', amount: '$368,000.00', date: 'Nov 02, 2024', status: 'Awaiting Payment' },
-          { milestone: 'Milestone 3: Final Industrial Sign-off (30%)', amount: '$276,000.00', date: 'Nov 15, 2024', status: 'Scheduled' }
-        ]
-      },
-      {
-        id: 'INV-2024-8843',
-        customer: 'Norilsk Nickel Mining',
-        project: 'Talnakh Concentrator Flotation Telemetry Grid',
-        projectId: 'PRJ-VP-7723',
-        total: 2400000.00,
-        status: 'Paid',
-        issueDate: 'Sep 10, 2024',
-        dueDate: 'Oct 10, 2024',
-        paidDate: 'Oct 08, 2024',
-        items: [
-          { desc: 'Slurry Flotation Optical Turbidity Sensors', part: 'TURB-FLOT-200', qty: 24, unit: 40000.00, total: 960000.00 },
-          { desc: 'MODBUS TCP Telemetry Aggregator Nodes', part: 'AGGR-MOD-100', qty: 8, unit: 55000.00, total: 440000.00 },
-          { desc: 'Arctic Field Installation & Sub-Zero Commissioning', part: 'SRV-ARC-09', qty: 1, unit: 1000000.00, total: 1000000.00 }
-        ],
-        timeline: [
-          { milestone: 'Milestone 1: Mobilization & Procurement (40%)', amount: '$960,000.00', date: 'Sep 15, 2024', status: 'Settled ✓' },
-          { milestone: 'Milestone 2: Arctic Delivery & Installation (40%)', amount: '$960,000.00', date: 'Oct 01, 2024', status: 'Settled ✓' },
-          { milestone: 'Milestone 3: System Handover & Acceptance (20%)', amount: '$480,000.00', date: 'Oct 08, 2024', status: 'Settled ✓' }
-        ]
-      },
-      {
-        id: 'INV-2024-8844',
-        customer: 'EVRAZ Consolidated',
-        project: 'Rail Mill Laser Profiler & Flaw Detection',
-        projectId: 'PRJ-VP-7724',
-        total: 385000.00,
-        status: 'Overdue',
-        issueDate: 'Aug 20, 2024',
-        dueDate: 'Sep 20, 2024',
-        paidDate: null,
-        items: [
-          { desc: 'Triangulation Laser Dimension Gauges', part: 'LAS-TR-400X', qty: 4, unit: 65000.00, total: 260000.00 },
-          { desc: 'High-Speed Signal Processor Rack & Firmware', part: 'SIG-RACK-02', qty: 1, unit: 125000.00, total: 125000.00 }
-        ],
-        timeline: [
-          { milestone: 'Milestone 1: Advance Contract Deposit (50%)', amount: '$192,500.00', date: 'Aug 25, 2024', status: 'Settled ✓' },
-          { milestone: 'Milestone 2: Final Acceptance Delivery (50%)', amount: '$192,500.00', date: 'Sep 20, 2024', status: 'OVERDUE (52 Days)' }
-        ]
-      },
-      {
-        id: 'INV-2024-8845',
-        customer: 'PhosAgro Chemical',
-        project: 'High-Pressure Flowmeter Replacement Batch',
-        projectId: 'PRJ-VP-7725',
-        total: 418200.00,
-        status: 'Pending',
-        issueDate: 'Oct 25, 2024',
-        dueDate: 'Nov 25, 2024',
-        paidDate: null,
-        items: [
-          { desc: 'Acid-Resistant Magnetic Flowmeter HPF-900X', part: 'FLOW-HPF-900X', qty: 8, unit: 38000.00, total: 304000.00 },
-          { desc: 'Chemical Seal Diaphragms & Calibration Rig', part: 'SEAL-CHEM-04', qty: 8, unit: 14275.00, total: 114200.00 }
-        ],
-        timeline: [
-          { milestone: 'Milestone 1: Full Supply Order Billing (100%)', amount: '$418,200.00', date: 'Nov 25, 2024', status: 'Net-30 Invoice Issued' }
-        ]
-      },
-      {
-        id: 'INV-2024-8846',
-        customer: 'Gazprom Neft Omsk',
-        project: 'Refinery Catalytic Cracking Gas Analysis Skid',
-        projectId: 'PRJ-VP-7726',
-        total: 1240000.00,
-        status: 'Paid',
-        issueDate: 'Sep 01, 2024',
-        dueDate: 'Oct 01, 2024',
-        paidDate: 'Sep 29, 2024',
-        items: [
-          { desc: 'NDIR Hydrocarbon Gas Analyzer Skid Unit', part: 'GAS-NDIR-700', qty: 2, unit: 450000.00, total: 900000.00 },
-          { desc: 'Explosion-Proof ATEX Enclosures & Sample Line Heating', part: 'ATEX-ENC-01', qty: 2, unit: 170000.00, total: 340000.00 }
-        ],
-        timeline: [
-          { milestone: 'Milestone 1: Factory Acceptance (60%)', amount: '$744,000.00', date: 'Sep 10, 2024', status: 'Settled ✓' },
-          { milestone: 'Milestone 2: Site Integration & Sign-off (40%)', amount: '$496,000.00', date: 'Sep 29, 2024', status: 'Settled ✓' }
-        ]
-      }
-    ],
+    apiBase: 'api/finance_api.php',
 
-    // Active Project Billing Registry
-    projects: [
-      {
-        id: 'PRJ-VP-7721',
-        name: 'Blast Furnace #5 Automation & Gas Analysis',
-        customer: 'Severstal Metallurgy PJSC',
-        totalBudget: 2850000.00,
-        billedToDate: 1995000.00,
-        nextMilestone: 'Nov 30, 2024 · Milestone 4: Hot Commissioning & FAT Pass',
-        milestoneAmount: 855000.00
-      },
-      {
-        id: 'PRJ-VP-7722',
-        name: 'Coke Oven Battery Temperature Profiling',
-        customer: 'NLMK Group Lipetsk',
-        totalBudget: 1450000.00,
-        billedToDate: 920000.00,
-        nextMilestone: 'Dec 15, 2024 · Milestone 3: Final Acceptance Testing',
-        milestoneAmount: 530000.00
-      },
-      {
-        id: 'PRJ-VP-7723',
-        name: 'Talnakh Concentrator Flotation Telemetry Grid',
-        customer: 'Norilsk Nickel Mining',
-        totalBudget: 3600000.00,
-        billedToDate: 2400000.00,
-        nextMilestone: 'Jan 20, 2025 · Milestone 4: Arctic Winter Operational Certification',
-        milestoneAmount: 1200000.00
-      },
-      {
-        id: 'PRJ-VP-7724',
-        name: 'Rail Mill Laser Profiler & Flaw Detection Array',
-        customer: 'EVRAZ Consolidated',
-        totalBudget: 1650000.00,
-        billedToDate: 770000.00,
-        nextMilestone: 'Dec 05, 2024 · Milestone 3: High-Speed Profiling Handover',
-        milestoneAmount: 880000.00
-      },
-      {
-        id: 'PRJ-VP-7725',
-        name: 'High-Pressure Flowmeter HPF-900X Replacement Batch',
-        customer: 'PhosAgro Chemical',
-        totalBudget: 418200.00,
-        billedToDate: 418200.00,
-        nextMilestone: 'Completed · 100% Billed & Delivered',
-        milestoneAmount: 0.00
-      }
-    ],
-
-    // Unmatched Payments Queue
-    unmatchedPayments: [
-      { id: 'TX-SPFS-9101', customer: 'Severstal PJSC', amount: 420000.00, date: 'Nov 09, 2024', ref: 'Ref: PO-SEV-88219' },
-      { id: 'TX-SWIFT-9102', customer: 'NLMK Lipetsk', amount: 185000.00, date: 'Nov 08, 2024', ref: 'Ref: NLMK-FAT-INV-8842' },
-      { id: 'TX-SPFS-9103', customer: 'Norilsk Nickel Mining', amount: 337300.00, date: 'Nov 06, 2024', ref: 'Ref: NN-ARC-TEL-99' }
-    ],
-
-    formatUSD: function (val) {
-      return '$' + Number(val).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    formatCurrency: function (val, curr = 'EUR') {
+      const sym = (curr === 'USD') ? '$' : (curr === 'RUB' ? '₽' : '€');
+      return sym + Number(val || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     },
 
     showToast: function (title, message, type = 'green') {
-      const container = document.getElementById('toast-container');
-      if (!container) return;
+      let container = document.getElementById('toast-container');
+      if (!container) {
+        container = document.createElement('div');
+        container.id = 'toast-container';
+        document.body.appendChild(container);
+      }
 
       const toast = document.createElement('div');
       let icon = '💳';
       if (type === 'amber') icon = '⚡';
-      if (type === 'red' || type === 'alert') icon = '🔒';
+      if (type === 'red' || type === 'alert' || type === 'error') icon = '⚠️';
       if (type === 'success' || type === 'green') icon = '✓';
 
       toast.className = 'fin-toast';
-      if (type === 'amber') toast.style.borderLeftColor = 'var(--fin-amber)';
-      if (type === 'red' || type === 'alert') toast.style.borderLeftColor = 'var(--fin-confidential)';
-      if (type === 'success' || type === 'green') toast.style.borderLeftColor = 'var(--fin-green)';
+      if (type === 'amber') toast.style.borderLeftColor = 'var(--fin-amber, #E8A33D)';
+      if (type === 'red' || type === 'alert' || type === 'error') toast.style.borderLeftColor = 'var(--fin-confidential, #B23A32)';
+      if (type === 'success' || type === 'green') toast.style.borderLeftColor = 'var(--fin-green, #2E6E4E)';
 
       toast.innerHTML = `
         <div style="font-size: 16px;">${icon}</div>
         <div style="flex: 1;">
           <div style="font-weight: 700; font-size: 12.5px; color: #FFFFFF;">${title}</div>
-          <div style="font-size: 11px; color: rgba(255,255,255,0.8); margin-top: 2px;">${message}</div>
+          <div style="font-size: 11px; color: rgba(255,255,255,0.85); margin-top: 2px;">${message}</div>
         </div>
-        <button style="color: rgba(255,255,255,0.5); font-size: 14px;" onclick="this.parentElement.remove()">✕</button>
+        <button style="color: rgba(255,255,255,0.6); font-size: 14px; background: none; border: none; cursor: pointer;" onclick="this.parentElement.remove()">✕</button>
       `;
 
       container.appendChild(toast);
@@ -221,14 +49,14 @@
         toast.style.opacity = '0';
         toast.style.transform = 'translateY(10px)';
         setTimeout(() => toast.remove(), 300);
-      }, 4200);
+      }, 4500);
     },
 
     openModal: function (modalId) {
       const modal = document.getElementById(modalId);
       if (modal) {
         modal.classList.add('active');
-        const input = modal.querySelector('input, select');
+        const input = modal.querySelector('input:not([type="hidden"]), select, textarea');
         if (input) input.focus();
       }
     },
@@ -238,10 +66,9 @@
       if (modal) modal.classList.remove('active');
     },
 
-    // Inspect Invoice Details (Screen 2 Detail Drawer)
+    // Inspect Invoice Details - Loads LIVE from Database via API
     inspectInvoice: function (invId) {
-      const inv = this.invoices.find(i => i.id === invId);
-      if (!inv) return;
+      if (!invId) return;
 
       const idEl = document.getElementById('modal-inv-id');
       const custEl = document.getElementById('modal-inv-cust');
@@ -252,96 +79,336 @@
       const dueEl = document.getElementById('modal-inv-due');
       const itemsBody = document.getElementById('modal-inv-items-body');
       const timelineBody = document.getElementById('modal-inv-timeline-body');
-
-      if (idEl) idEl.textContent = inv.id;
-      if (custEl) custEl.textContent = inv.customer;
-      if (projEl) projEl.textContent = inv.project;
-      if (totalEl) totalEl.textContent = this.formatUSD(inv.total);
-      if (issueEl) issueEl.textContent = inv.issueDate;
-      if (dueEl) dueEl.textContent = inv.dueDate;
-
-      if (statusEl) {
-        if (inv.status === 'Paid') {
-          statusEl.className = 'status-badge-paid';
-          statusEl.innerHTML = '✓ Paid';
-        } else if (inv.status === 'Pending') {
-          statusEl.className = 'status-badge-pending';
-          statusEl.innerHTML = '⚡ Pending';
-        } else {
-          statusEl.className = 'status-badge-overdue';
-          statusEl.innerHTML = '⚠️ Overdue';
-        }
-      }
-
-      if (itemsBody) {
-        itemsBody.innerHTML = '';
-        inv.items.forEach(item => {
-          const row = document.createElement('tr');
-          row.innerHTML = `
-            <td>
-              <div style="font-weight: 600; color: var(--fin-navy);">${item.desc}</div>
-              <div style="font-family: var(--fin-font-mono); font-size: 10.5px; color: var(--fin-text-muted);">${item.part}</div>
-            </td>
-            <td style="text-align: center; font-family: var(--fin-font-mono); font-weight: 600;">${item.qty}</td>
-            <td style="text-align: right; font-family: var(--fin-font-mono);">${this.formatUSD(item.unit)}</td>
-            <td style="text-align: right; font-family: var(--fin-font-mono); font-weight: 700; color: var(--fin-navy);">${this.formatUSD(item.total)}</td>
-          `;
-          itemsBody.appendChild(row);
-        });
-      }
-
-      if (timelineBody) {
-        timelineBody.innerHTML = '';
-        inv.timeline.forEach(step => {
-          const stepDiv = document.createElement('div');
-          stepDiv.style.cssText = 'display: flex; align-items: center; justify-content: space-between; padding: 0.6rem 0.85rem; background: var(--fin-surface-dim); border-radius: var(--fin-radius-sm); border-left: 3px solid var(--fin-green);';
-          stepDiv.innerHTML = `
-            <div>
-              <div style="font-weight: 600; color: var(--fin-navy); font-size: 12px;">${step.milestone}</div>
-              <div style="font-size: 11px; color: var(--fin-text-muted);">${step.date}</div>
-            </div>
-            <div style="text-align: right;">
-              <div style="font-family: var(--fin-font-mono); font-weight: 700; color: var(--fin-navy);">${step.amount}</div>
-              <div style="font-size: 10.5px; font-weight: 600; color: var(--fin-green);">${step.status}</div>
-            </div>
-          `;
-          timelineBody.appendChild(stepDiv);
-        });
-      }
-
-      // Attach current ID to action buttons
       const btnMarkPaid = document.getElementById('btn-modal-mark-paid');
       const btnSendReminder = document.getElementById('btn-modal-send-reminder');
 
-      if (btnMarkPaid) {
-        btnMarkPaid.onclick = () => {
-          inv.status = 'Paid';
-          inv.paidDate = 'Nov 11, 2024';
-          this.showToast('Payment Ratified', `Invoice ${inv.id} marked as PAID. Ledger hash updated.`, 'green');
-          this.closeModal('modal-invoice-detail');
-          this.filterInvoices();
-        };
-      }
-
-      if (btnSendReminder) {
-        btnSendReminder.onclick = () => {
-          this.showToast('Payment Reminder Dispatched', `Automated SWIFT reminder sent to ${inv.customer} billing office.`, 'amber');
-          this.closeModal('modal-invoice-detail');
-        };
-      }
+      if (idEl) idEl.textContent = invId;
+      if (custEl) custEl.textContent = 'Loading from database...';
+      if (itemsBody) itemsBody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 1.5rem; color: var(--fin-text-muted);">Fetching ledger items from database...</td></tr>';
+      if (timelineBody) timelineBody.innerHTML = '<div style="color: var(--fin-text-muted); font-size: 12px;">Loading payment telemetry...</div>';
 
       this.openModal('modal-invoice-detail');
+
+      fetch(`${this.apiBase}?action=get_invoice_detail&inv_id=${encodeURIComponent(invId)}`)
+        .then(res => res.json())
+        .then(data => {
+          if (!data.success || !data.invoice) {
+            finApp.showToast('Ledger Error', data.error || 'Failed to retrieve invoice from DB.', 'error');
+            finApp.closeModal('modal-invoice-detail');
+            return;
+          }
+
+          const inv = data.invoice;
+          const curr = inv.currency || 'EUR';
+
+          if (idEl) idEl.textContent = inv.inv_id;
+          if (custEl) custEl.textContent = inv.company_name || 'Client Account ' + inv.cus_id;
+          if (projEl) projEl.textContent = inv.project_name ? `${inv.project_name} (${inv.prj_id})` : `Project #${inv.prj_id || 'GENERAL'}`;
+          if (totalEl) totalEl.textContent = finApp.formatCurrency(inv.total_value, curr);
+          if (issueEl) issueEl.textContent = inv.issued_at || 'N/A';
+          if (dueEl) dueEl.textContent = inv.due_date || 'Net-30';
+
+          if (statusEl) {
+            if (inv.payment_status === 'Paid') {
+              statusEl.className = 'status-badge-paid';
+              statusEl.innerHTML = '✓ Paid';
+            } else if (inv.payment_status === 'Pending') {
+              statusEl.className = 'status-badge-pending';
+              statusEl.innerHTML = '⚡ Pending';
+            } else {
+              statusEl.className = 'status-badge-overdue';
+              statusEl.innerHTML = '⚠️ Overdue';
+            }
+          }
+
+          // Populate Line Items from DB
+          if (itemsBody) {
+            itemsBody.innerHTML = '';
+            if (data.items && data.items.length > 0) {
+              data.items.forEach(item => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                  <td>
+                    <div style="font-weight: 600; color: var(--fin-navy);">${escapeHtml(item.description)}</div>
+                    <div style="font-family: var(--fin-font-mono); font-size: 10.5px; color: var(--fin-text-muted);">${escapeHtml(item.part_number || 'VP-PART-STD')}</div>
+                  </td>
+                  <td style="text-align: center; font-family: var(--fin-font-mono); font-weight: 600;">${item.qty}</td>
+                  <td style="text-align: right; font-family: var(--fin-font-mono);">${finApp.formatCurrency(item.unit_price, curr)}</td>
+                  <td style="text-align: right; font-family: var(--fin-font-mono); font-weight: 700; color: var(--fin-navy);">${finApp.formatCurrency(item.total_price, curr)}</td>
+                `;
+                itemsBody.appendChild(tr);
+              });
+            } else {
+              itemsBody.innerHTML = `
+                <tr>
+                  <td><div style="font-weight: 600; color: var(--fin-navy);">Standard Instrumentation Milestone Contract</div><div style="font-family: var(--fin-font-mono); font-size: 10.5px; color: var(--fin-text-muted);">VP-CONTRACT-LINE</div></td>
+                  <td style="text-align: center; font-family: var(--fin-font-mono);">1</td>
+                  <td style="text-align: right; font-family: var(--fin-font-mono);">${finApp.formatCurrency(inv.total_value, curr)}</td>
+                  <td style="text-align: right; font-family: var(--fin-font-mono); font-weight: 700;">${finApp.formatCurrency(inv.total_value, curr)}</td>
+                </tr>
+              `;
+            }
+          }
+
+          // Populate Payments & Reconciliation History from DB
+          if (timelineBody) {
+            timelineBody.innerHTML = '';
+            if (data.payments && data.payments.length > 0) {
+              data.payments.forEach(p => {
+                const step = document.createElement('div');
+                step.style.cssText = 'display: flex; align-items: center; justify-content: space-between; padding: 0.6rem 0.85rem; background: var(--fin-surface-dim); border-radius: var(--fin-radius-sm); border-left: 3px solid var(--fin-green); margin-bottom: 0.4rem;';
+                step.innerHTML = `
+                  <div>
+                    <div style="font-weight: 600; color: var(--fin-navy); font-size: 12px;">${escapeHtml(p.method || 'Direct Wire')} · <span style="font-family: var(--fin-font-mono);">${escapeHtml(p.tx_reference || 'REF-' + p.payment_id)}</span></div>
+                    <div style="font-size: 11px; color: var(--fin-text-muted);">${escapeHtml(p.payment_date || '')} ${p.remittance_memo ? '· ' + escapeHtml(p.remittance_memo) : ''}</div>
+                  </div>
+                  <div style="text-align: right;">
+                    <div style="font-family: var(--fin-font-mono); font-weight: 700; color: var(--fin-navy);">${finApp.formatCurrency(p.amount, curr)}</div>
+                    <div style="font-size: 10.5px; font-weight: 600; color: var(--fin-green);">${p.reconciled ? 'Reconciled ✓' : 'Pending Match ⚡'}</div>
+                  </div>
+                `;
+                timelineBody.appendChild(step);
+              });
+            } else {
+              timelineBody.innerHTML = `
+                <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.6rem 0.85rem; background: var(--fin-surface-dim); border-radius: var(--fin-radius-sm); border-left: 3px solid ${inv.payment_status === 'Paid' ? 'var(--fin-green)' : 'var(--fin-amber)'};">
+                  <div>
+                    <div style="font-weight: 600; color: var(--fin-navy); font-size: 12px;">${inv.payment_status === 'Paid' ? 'Milestone Settlement Completed' : 'Awaiting Settlement Clearance'}</div>
+                    <div style="font-size: 11px; color: var(--fin-text-muted);">Due: ${inv.due_date || 'Net-30'} · Terms: ${escapeHtml(inv.payment_terms || 'Net-30')}</div>
+                  </div>
+                  <div style="text-align: right;">
+                    <div style="font-family: var(--fin-font-mono); font-weight: 700; color: var(--fin-navy);">${finApp.formatCurrency(inv.total_value, curr)}</div>
+                    <div style="font-size: 10.5px; font-weight: 600; color: ${inv.payment_status === 'Paid' ? 'var(--fin-green)' : 'var(--fin-amber)'};">${inv.payment_status}</div>
+                  </div>
+                </div>
+              `;
+            }
+          }
+
+          // Attach actions to buttons
+          if (btnMarkPaid) {
+            btnMarkPaid.style.display = (inv.payment_status === 'Paid') ? 'none' : 'inline-flex';
+            btnMarkPaid.onclick = () => finApp.markInvoicePaid(inv.inv_id);
+          }
+          if (btnSendReminder) {
+            btnSendReminder.style.display = (inv.payment_status === 'Paid') ? 'none' : 'inline-flex';
+            btnSendReminder.onclick = () => finApp.sendPaymentReminder(inv.inv_id);
+          }
+        })
+        .catch(err => {
+          finApp.showToast('Network / DB Error', err.message || 'Error communicating with database.', 'error');
+        });
     },
 
-    // Search and Filter Invoices Table
+    // Mark Invoice as Paid in DB
+    markInvoicePaid: function (invId) {
+      if (!confirm(`Confirm mark invoice ${invId} as PAID in the General Ledger?`)) return;
+
+      const fd = new FormData();
+      fd.append('action', 'mark_paid');
+      fd.append('inv_id', invId);
+
+      fetch(this.apiBase, { method: 'POST', body: fd })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            finApp.showToast('Ledger Updated', data.message || `Invoice ${invId} marked as PAID.`, 'green');
+            finApp.closeModal('modal-invoice-detail');
+            setTimeout(() => window.location.reload(), 800);
+          } else {
+            finApp.showToast('Error', data.error || 'Failed to update invoice.', 'error');
+          }
+        })
+        .catch(err => finApp.showToast('Error', err.message, 'error'));
+    },
+
+    // Send Payment Reminder via DB Notification
+    sendPaymentReminder: function (invId) {
+      const fd = new FormData();
+      fd.append('action', 'send_reminder');
+      fd.append('inv_id', invId);
+
+      fetch(this.apiBase, { method: 'POST', body: fd })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            finApp.showToast('Notice Dispatched', data.message, 'amber');
+            finApp.closeModal('modal-invoice-detail');
+          } else {
+            finApp.showToast('Error', data.error || 'Failed to dispatch reminder.', 'error');
+          }
+        })
+        .catch(err => finApp.showToast('Error', err.message, 'error'));
+    },
+
+    // Reconcile Individual Payment to DB
+    reconcilePayment: function (paymentId, invId = null) {
+      const fd = new FormData();
+      fd.append('action', 'reconcile_payment');
+      fd.append('payment_id', paymentId);
+      if (invId) fd.append('inv_id', invId);
+
+      fetch(this.apiBase, { method: 'POST', body: fd })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            finApp.showToast('Reconciliation Executed', data.message || `Payment #${paymentId} matched to ledger.`, 'green');
+            const row = document.getElementById(`tx-row-${paymentId}`) || document.getElementById(`tx-row-TX-SPFS-${paymentId}`) || document.querySelector(`[data-payment-id="${paymentId}"]`);
+            if (row) {
+              row.style.transition = 'all 0.3s ease';
+              row.style.opacity = '0';
+              setTimeout(() => {
+                row.remove();
+                // If table is empty, reload
+                const tbody = document.querySelector('#unmatched-desk-body, .fin-table tbody');
+                if (tbody && tbody.children.length === 0) {
+                  window.location.reload();
+                }
+              }, 300);
+            } else {
+              setTimeout(() => window.location.reload(), 800);
+            }
+          } else {
+            finApp.showToast('Reconciliation Error', data.error || 'Failed to reconcile payment.', 'error');
+          }
+        })
+        .catch(err => finApp.showToast('Error', err.message, 'error'));
+    },
+
+    // Run Auto-Match Engine across DB
+    runAutoMatch: function () {
+      finApp.showToast('Auto-Match Running', 'Scanning incoming bank telemetry wires against pending customer receivables...', 'amber');
+
+      const fd = new FormData();
+      fd.append('action', 'auto_reconcile');
+
+      fetch(this.apiBase, { method: 'POST', body: fd })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            finApp.showToast('Auto-Reconciliation Complete', data.message, 'green');
+            setTimeout(() => window.location.reload(), 1000);
+          } else {
+            finApp.showToast('Auto-Match Failed', data.error || 'Failed auto-reconciliation.', 'error');
+          }
+        })
+        .catch(err => finApp.showToast('Error', err.message, 'error'));
+    },
+
+    // Sync Bank Feeds (Pull incoming wire into DB)
+    syncBankFeeds: function () {
+      finApp.showToast('Gateway Connection', 'Connecting to Sberbank & SPFS electronic settlement nodes...', 'amber');
+
+      const fd = new FormData();
+      fd.append('action', 'sync_bank_feeds');
+
+      fetch(this.apiBase, { method: 'POST', body: fd })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            finApp.showToast('Telemetry Ingested', data.message, 'green');
+            setTimeout(() => window.location.reload(), 1000);
+          } else {
+            finApp.showToast('Sync Error', data.error || 'Failed to refresh feeds.', 'error');
+          }
+        })
+        .catch(err => finApp.showToast('Error', err.message, 'error'));
+    },
+
+    // Bill Milestone (Generate Invoice from Cycle in DB)
+    billMilestone: function (cycleId) {
+      if (!cycleId) {
+        finApp.showToast('Select Milestone', 'Please select an unbilled project milestone to bill.', 'amber');
+        return;
+      }
+
+      if (!confirm('Ratify milestone completion and generate commercial invoice in database?')) return;
+
+      const fd = new FormData();
+      fd.append('action', 'bill_milestone');
+      fd.append('cycle_id', cycleId);
+
+      fetch(this.apiBase, { method: 'POST', body: fd })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            finApp.showToast('Milestone Billed', `${data.message} Saved to database.`, 'green');
+            setTimeout(() => {
+              window.location.href = 'Invoices.php';
+            }, 1000);
+          } else {
+            finApp.showToast('Billing Failed', data.error || 'Could not bill milestone.', 'error');
+          }
+        })
+        .catch(err => finApp.showToast('Error', err.message, 'error'));
+    },
+
+    // Handle Create Invoice Form Submission to DB
+    handleCreateInvoiceSubmit: function (form) {
+      const fd = new FormData(form);
+      fd.append('action', 'create_invoice');
+
+      const submitBtn = form.querySelector('button[type="submit"]');
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Recording in DB...';
+      }
+
+      fetch(this.apiBase, { method: 'POST', body: fd })
+        .then(res => res.json())
+        .then(data => {
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Ratify & Issue Invoice';
+          }
+
+          if (data.success) {
+            finApp.showToast('Invoice Issued', `Invoice ${data.inv_id} created and committed to database!`, 'green');
+            finApp.closeModal('modal-create-invoice');
+            setTimeout(() => window.location.reload(), 800);
+          } else {
+            finApp.showToast('Error Creating Invoice', data.error || 'Failed to create invoice.', 'error');
+          }
+        })
+        .catch(err => {
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Ratify & Issue Invoice';
+          }
+          finApp.showToast('Database Error', err.message, 'error');
+        });
+    },
+
+    // Handle Update Budget Form Submission to DB
+    handleUpdateBudgetSubmit: function (form) {
+      const fd = new FormData(form);
+      fd.append('action', 'update_budget');
+
+      fetch(this.apiBase, { method: 'POST', body: fd })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            finApp.showToast('Budget Updated', data.message, 'green');
+            finApp.closeModal('modal-update-budget');
+            setTimeout(() => window.location.reload(), 800);
+          } else {
+            finApp.showToast('Budget Error', data.error || 'Failed to update budget.', 'error');
+          }
+        })
+        .catch(err => finApp.showToast('Database Error', err.message, 'error'));
+    },
+
+    // Filter Invoices Table dynamically
     filterInvoices: function () {
       const searchInput = document.getElementById('invoice-search');
       const statusFilter = document.getElementById('invoice-status-filter');
 
-      const query = (searchInput ? searchInput.value : '').toLowerCase();
+      const query = (searchInput ? searchInput.value : '').toLowerCase().trim();
       const selectedStatus = statusFilter ? statusFilter.value : 'all';
 
-      const rows = document.querySelectorAll('.invoice-table-body tr');
+      const rows = document.querySelectorAll('.invoice-table-body tr.fin-table-row');
+      let visibleCount = 0;
+
       rows.forEach(row => {
         const id = (row.getAttribute('data-id') || '').toLowerCase();
         const customer = (row.getAttribute('data-customer') || '').toLowerCase();
@@ -349,31 +416,23 @@
         const status = row.getAttribute('data-status') || '';
 
         const matchQuery = !query || id.includes(query) || customer.includes(query) || project.includes(query);
-        const matchStatus = selectedStatus === 'all' || status === selectedStatus;
+        const matchStatus = selectedStatus === 'all' || status.toLowerCase() === selectedStatus.toLowerCase();
 
         if (matchQuery && matchStatus) {
           row.style.display = '';
+          visibleCount++;
         } else {
           row.style.display = 'none';
         }
       });
-    },
 
-    // Reconcile Payment Action
-    reconcilePayment: function (txId) {
-      const item = this.unmatchedPayments.find(p => p.id === txId);
-      if (item) {
-        this.showToast('Reconciliation Executed', `Matched ${this.formatUSD(item.amount)} from ${item.customer} to ledger.`, 'green');
-        const row = document.getElementById(`tx-row-${txId}`);
-        if (row) {
-          row.style.transition = 'all 0.3s ease';
-          row.style.opacity = '0';
-          setTimeout(() => row.remove(), 300);
-        }
+      const countEl = document.getElementById('invoice-visible-count');
+      if (countEl) {
+        countEl.textContent = visibleCount;
       }
     },
 
-    // Initialize Navigation & Omni Search
+    // Initialize App & Keyboard Shortcuts
     init: function () {
       const currentPath = window.location.pathname.toLowerCase();
       const sidebarLinks = document.querySelectorAll('.sidebar-nav-item');
@@ -393,16 +452,12 @@
           if (e.key === 'Enter') {
             const val = omniSearch.value.trim();
             if (val) {
-              finApp.showToast('Finance Ledger Query', `Locating transactions and invoices for "${val}"...`);
-              setTimeout(() => {
-                window.location.href = 'Invoices.php';
-              }, 600);
+              window.location.href = `Invoices.php?search=${encodeURIComponent(val)}`;
             }
           }
         });
       }
 
-      // Keyboard Shortcut Ctrl+K
       document.addEventListener('keydown', (e) => {
         if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
           e.preventDefault();
@@ -411,9 +466,94 @@
             omniSearch.select();
           }
         }
+        if (e.key === 'Escape') {
+          document.querySelectorAll('.modal-backdrop.active').forEach(m => m.classList.remove('active'));
+        }
+      });
+
+      // Check URL search parameter if on Invoices page
+      const urlParams = new URLSearchParams(window.location.search);
+      const searchParam = urlParams.get('search');
+      if (searchParam) {
+        const searchInput = document.getElementById('invoice-search');
+        if (searchInput) {
+          searchInput.value = searchParam;
+          this.filterInvoices();
+        }
+      }
+
+      // Initialize responsive multi-device layout controls
+      this.initResponsiveLayout();
+    },
+
+    initResponsiveLayout: function () {
+      const brandSection = document.querySelector('.brand-section') || document.querySelector('.top-nav__content');
+      let toggleBtn = document.getElementById('fin-sidebar-toggle');
+      if (!toggleBtn && brandSection) {
+        toggleBtn = document.createElement('button');
+        toggleBtn.id = 'fin-sidebar-toggle';
+        toggleBtn.className = 'mobile-nav-toggle';
+        toggleBtn.setAttribute('aria-label', 'Toggle Navigation Menu');
+        toggleBtn.innerHTML = '☰';
+        brandSection.insertBefore(toggleBtn, brandSection.firstChild);
+      }
+
+      let backdrop = document.querySelector('.sidebar-backdrop');
+      if (!backdrop) {
+        backdrop = document.createElement('div');
+        backdrop.className = 'sidebar-backdrop';
+        document.body.appendChild(backdrop);
+      }
+
+      if (toggleBtn) {
+        toggleBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          document.body.classList.toggle('sidebar-open');
+          toggleBtn.innerHTML = document.body.classList.contains('sidebar-open') ? '✕' : '☰';
+        });
+      }
+
+      backdrop.addEventListener('click', () => {
+        document.body.classList.remove('sidebar-open');
+        if (toggleBtn) toggleBtn.innerHTML = '☰';
+      });
+
+      document.querySelectorAll('.sidebar-nav-item, .sidebar a').forEach(link => {
+        link.addEventListener('click', () => {
+          if (window.innerWidth <= 1024) {
+            document.body.classList.remove('sidebar-open');
+            if (toggleBtn) toggleBtn.innerHTML = '☰';
+          }
+        });
+      });
+
+      document.querySelectorAll('table.fin-table').forEach(table => {
+        if (!table.parentElement.classList.contains('table-responsive') && !table.parentElement.classList.contains('fin-table-container')) {
+          const wrapper = document.createElement('div');
+          wrapper.className = 'table-responsive';
+          table.parentNode.insertBefore(wrapper, table);
+          wrapper.appendChild(table);
+        }
+      });
+
+      window.addEventListener('resize', () => {
+        if (window.innerWidth > 1024 && document.body.classList.contains('sidebar-open')) {
+          document.body.classList.remove('sidebar-open');
+          if (toggleBtn) toggleBtn.innerHTML = '☰';
+        }
       });
     }
   };
+
+  function escapeHtml(str) {
+    if (!str) return '';
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
 
   window.finApp = finApp;
 
