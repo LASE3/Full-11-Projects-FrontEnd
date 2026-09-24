@@ -142,6 +142,9 @@ button, input, select, textarea {
   align-items: center;
   gap: 12px;
   cursor: pointer;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
   user-select: none;
 }
 
@@ -646,6 +649,9 @@ button, input, select, textarea {
   color: var(--text-secondary);
   cursor: pointer;
   transition: color var(--transition-fast);
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
   user-select: none;
 }
 
@@ -953,6 +959,7 @@ input[type="checkbox"]:checked + .custom-checkbox::after {
   padding: 2px 7px;
   border-radius: var(--radius-sm);
   letter-spacing: 0.5px;
+  -webkit-backdrop-filter: blur(4px);
   backdrop-filter: blur(4px);
   border: 1px solid rgba(255, 255, 255, 0.15);
 }
@@ -1257,6 +1264,7 @@ input[type="checkbox"]:checked + .custom-checkbox::after {
   font-size: 10px;
   padding: 3px 8px;
   border-radius: var(--radius-sm);
+  -webkit-backdrop-filter: blur(4px);
   backdrop-filter: blur(4px);
 }
 
@@ -2184,6 +2192,7 @@ input[type="checkbox"]:checked + .custom-checkbox::after {
   right: 0;
   bottom: 0;
   background: rgba(15, 36, 56, 0.65);
+  -webkit-backdrop-filter: blur(3px);
   backdrop-filter: blur(3px);
   z-index: 2000;
   display: none;
@@ -2512,6 +2521,12 @@ input[type="checkbox"]:checked + .custom-checkbox::after {
 }
 
 @media (max-width: 540px) {
+  .brand-subline {
+    display: none !important;
+  }
+  .brand-divider {
+    display: none !important;
+  }
   .volume-tiers-row {
     grid-template-columns: 1fr;
   }
@@ -2528,3 +2543,4 @@ input[type="checkbox"]:checked + .custom-checkbox::after {
     display: none;
   }
 }
+

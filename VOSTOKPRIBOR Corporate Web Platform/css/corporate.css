@@ -421,3 +421,26 @@
         transform: translateX(0);
     }
 }
+
+/* ==========================================================================
+   Multi-Device Responsive Polish
+   ========================================================================== */
+.ecosystem-dropdown {
+    max-width: calc(100vw - 2rem);
+}
+
+.table-responsive,
+div:has(> table) {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+@media (max-width: 480px) {
+    .corporate-toast {
+        min-width: 280px;
+        max-width: calc(100vw - 32px);
+        right: 16px;
+        bottom: 16px;
+    }
+}

@@ -396,3 +396,35 @@ header.fixed::before {
     transform: scale(1.18);
     color: #FFD599 !important;
 }
+
+
+/* ==========================================================================
+   Universal Multi-Device Responsive Design System
+   ========================================================================== */
+
+.table-responsive,
+div:has(> table) {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+table {
+    min-width: 600px;
+}
+
+@media (max-width: 768px) {
+    header .header-search-bar {
+        display: none !important;
+    }
+    
+    header .font-technical-tag {
+        display: none !important;
+    }
+
+    #portal-dynamic-modal .modal-content {
+        width: calc(100% - 1.5rem) !important;
+        margin: 0.75rem !important;
+        max-height: 94vh;
+    }
+}
