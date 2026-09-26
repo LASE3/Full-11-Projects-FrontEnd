@@ -76,10 +76,10 @@ $metrics = gov_getGovernanceMetrics();
                             class="material-symbols-outlined text-on-primary text-[18px]">person</span></div>
                 </div>
             </div>
-        
-<!-- Top Bar Sign Out -->
-<a href="../api/logout.php?system=Admin%20%26%20Governance%20Portal&redirect=../Admin%20%26%20Governance%20Portal/login.php" class="top-signout-btn" title="Sign Out of Admin &amp; Governance Portal" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" style="display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:4px;background:rgba(178,58,50,0.2);border:1px solid rgba(178,58,50,0.5);color:#FF8080;font-size:12px;font-weight:600;text-decoration:none;cursor:pointer;margin-left:8px;vertical-align:middle;transition:all 0.2s;" onmouseover="this.style.background='rgba(178,58,50,0.4)';this.style.color='#FFFFFF'" onmouseout="this.style.background='rgba(178,58,50,0.2)';this.style.color='#FF8080'"><span class="material-symbols-outlined" style="font-size:15px;line-height:1;">logout</span><span>Sign Out</span></a>
-</div>
+
+            <!-- Top Bar Sign Out -->
+            <a href="../api/logout.php?system=Admin%20%26%20Governance%20Portal&redirect=../Admin%20%26%20Governance%20Portal/login.php" class="top-signout-btn" title="Sign Out of Admin &amp; Governance Portal" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" ><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
+        </div>
     </header>
     <aside
         class="fixed left-0 top-[60px] h-[calc(100vh-60px)] w-[260px] bg-primary z-40 flex flex-col justify-between border-r border-outline/30 select-none overflow-y-auto">
@@ -139,7 +139,9 @@ $metrics = gov_getGovernanceMetrics();
                             class="font-bold uppercase text-error">Break-Glass Access</span></div><span
                         class="material-symbols-outlined text-[16px] text-error">lock_open</span>
                 </a>
-                <a class="flex items-center justify-between px-space-sm py-space-xs rounded text-error hover:bg-error-container hover:text-on-error-container transition-all font-body-compact text-body-compact" data-path="emergency-lockdown" href="EmergencyLockdown.php"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[18px] text-error">lock</span><span class="font-bold uppercase">Emergency Lockdown</span></div><span class="font-telemetry-micro text-[10px] px-space-2xs bg-error text-on-error font-bold rounded">DEFCON-1</span></a>
+                <a class="flex items-center justify-between px-space-sm py-space-xs rounded text-error hover:bg-error-container hover:text-on-error-container transition-all font-body-compact text-body-compact" data-path="emergency-lockdown" href="EmergencyLockdown.php">
+                    <div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[18px] text-error">lock</span><span class="font-bold uppercase">Emergency Lockdown</span></div><span class="font-telemetry-micro text-[10px] px-space-2xs bg-error text-on-error font-bold rounded">DEFCON-1</span>
+                </a>
             </nav>
             <div class="px-space-md mb-space-xs"><span
                     class="font-label-uppercase text-label-uppercase text-on-primary-container tracking-wider">REGULATORY
@@ -167,8 +169,8 @@ $metrics = gov_getGovernanceMetrics();
                 </a>
             </nav>
         </div>
-                    
-            <div class="p-space-md bg-primary-container/40 border-t border-outline/20 flex flex-col gap-space-2xs">
+
+        <div class="p-space-md bg-primary-container/40 border-t border-outline/20 flex flex-col gap-space-2xs">
             <div class="flex items-center justify-between"><span
                     class="font-security-stamp text-[10px] text-secondary-fixed-dim uppercase tracking-wider">SEC-OPS
                     FACILITY</span>
@@ -178,7 +180,8 @@ $metrics = gov_getGovernanceMetrics();
             </div>
             <div
                 class="font-telemetry-data text-telemetry-data text-on-primary font-semibold tracking-wider pt-space-2xs">
-                <span class="station-live-clock">UTC+6 (ALMATY TIME)</span></div>
+                <span class="station-live-clock">UTC+6 (ALMATY TIME)</span>
+            </div>
         </div>
     </aside>
     <div class="pl-[260px]">
@@ -470,60 +473,60 @@ $metrics = gov_getGovernanceMetrics();
                                     <tbody
                                         class="divide-y divide-outline-variant/30 font-body-compact text-body-compact"
                                         id="vault-registry-tbody">
-                                        <?php foreach ($privilegedAccounts as $idx => $pa): 
+                                        <?php foreach ($privilegedAccounts as $idx => $pa):
                                             $isTier0 = ($pa['clearance_level'] === 'L4');
                                             $isActiveSession = !empty($pa['session_id']);
                                         ?>
-                                        <tr class="hover:bg-surface-container transition-colors <?= $isActiveSession ? 'border-l-4 border-l-secondary bg-surface-container-lowest' : 'bg-surface-container-lowest' ?>">
-                                            <td class="py-space-xs px-space-sm border-r border-outline-variant/20">
-                                                <div class="flex flex-col">
-                                                    <div class="flex items-center gap-space-xs">
-                                                        <?php if ($isActiveSession): ?>
-                                                            <span class="w-2 h-2 rounded-full bg-secondary-fixed animate-pulse"></span>
-                                                        <?php endif; ?>
-                                                        <span class="font-telemetry-data text-telemetry-data font-bold <?= $isTier0 ? 'text-error' : 'text-primary' ?>">
-                                                            <?= htmlspecialchars($pa['username']) ?>@vostok-vault
-                                                        </span>
+                                            <tr class="hover:bg-surface-container transition-colors <?= $isActiveSession ? 'border-l-4 border-l-secondary bg-surface-container-lowest' : 'bg-surface-container-lowest' ?>">
+                                                <td class="py-space-xs px-space-sm border-r border-outline-variant/20">
+                                                    <div class="flex flex-col">
+                                                        <div class="flex items-center gap-space-xs">
+                                                            <?php if ($isActiveSession): ?>
+                                                                <span class="w-2 h-2 rounded-full bg-secondary-fixed animate-pulse"></span>
+                                                            <?php endif; ?>
+                                                            <span class="font-telemetry-data text-telemetry-data font-bold <?= $isTier0 ? 'text-error' : 'text-primary' ?>">
+                                                                <?= htmlspecialchars($pa['username']) ?>@vostok-vault
+                                                            </span>
+                                                        </div>
+                                                        <span class="font-telemetry-micro text-[10px] text-on-surface-variant">IP: 10.240.<?= (int)$pa['account_id'] ?>.10 • <?= htmlspecialchars($pa['dept_name'] ?? 'SEC-OPS') ?></span>
                                                     </div>
-                                                    <span class="font-telemetry-micro text-[10px] text-on-surface-variant">IP: 10.240.<?= (int)$pa['account_id'] ?>.10 • <?= htmlspecialchars($pa['dept_name'] ?? 'SEC-OPS') ?></span>
-                                                </div>
-                                            </td>
-                                            <td class="py-space-xs px-space-sm border-r border-outline-variant/20">
-                                                <div class="flex flex-col">
-                                                    <span class="font-semibold text-primary"><?= htmlspecialchars($pa['full_name']) ?></span>
-                                                    <span class="font-telemetry-micro text-[10px] text-on-surface-variant"><?= htmlspecialchars($pa['emp_id']) ?> • <?= htmlspecialchars($pa['job_title']) ?></span>
-                                                </div>
-                                            </td>
-                                            <td class="py-space-xs px-space-sm border-r border-outline-variant/20">
-                                                <span class="font-security-stamp text-[10px] px-space-xs py-[2px] <?= $isTier0 ? 'bg-error text-on-error' : 'bg-primary text-on-primary' ?> font-bold rounded">
-                                                    <?= $isTier0 ? 'TIER 0 (ROOT)' : 'TIER 1 (PRIV)' ?>
-                                                </span>
-                                            </td>
-                                            <td class="py-space-xs px-space-sm border-r border-outline-variant/20 font-telemetry-micro text-telemetry-micro">
-                                                Bastion SSH / MFA: <?= $pa['mfa_enabled'] ? '<span class="text-secondary font-bold">YES</span>' : '<span class="text-error font-bold">NO</span>' ?>
-                                            </td>
-                                            <td class="py-space-xs px-space-sm border-r border-outline-variant/20">
-                                                <div class="flex flex-col">
-                                                    <span class="font-telemetry-micro text-telemetry-micro font-bold <?= $isActiveSession ? 'text-secondary' : 'text-on-surface-variant' ?>">
-                                                        <?= $isActiveSession ? 'ACTIVE LEASE' : 'STANDBY' ?>
+                                                </td>
+                                                <td class="py-space-xs px-space-sm border-r border-outline-variant/20">
+                                                    <div class="flex flex-col">
+                                                        <span class="font-semibold text-primary"><?= htmlspecialchars($pa['full_name']) ?></span>
+                                                        <span class="font-telemetry-micro text-[10px] text-on-surface-variant"><?= htmlspecialchars($pa['emp_id']) ?> • <?= htmlspecialchars($pa['job_title']) ?></span>
+                                                    </div>
+                                                </td>
+                                                <td class="py-space-xs px-space-sm border-r border-outline-variant/20">
+                                                    <span class="font-security-stamp text-[10px] px-space-xs py-[2px] <?= $isTier0 ? 'bg-error text-on-error' : 'bg-primary text-on-primary' ?> font-bold rounded">
+                                                        <?= $isTier0 ? 'TIER 0 (ROOT)' : 'TIER 1 (PRIV)' ?>
                                                     </span>
-                                                    <span class="font-telemetry-micro text-[10px] text-on-surface-variant">Last: <?= htmlspecialchars($pa['last_login'] ?? 'Never') ?></span>
-                                                </div>
-                                            </td>
-                                            <td class="py-space-xs px-space-sm border-r border-outline-variant/20">
-                                                <span class="inline-flex items-center gap-[4px] px-space-xs py-[2px] <?= ($pa['account_status'] === 'Active') ? 'bg-secondary-container/30 text-on-secondary-container' : 'bg-error-container text-on-error-container' ?> font-security-stamp text-[10px] font-bold rounded">
-                                                    <span class="w-1.5 h-1.5 rounded-full <?= ($pa['account_status'] === 'Active') ? 'bg-secondary' : 'bg-error' ?>"></span>
-                                                    <?= ($pa['account_status'] === 'Active') ? 'NOMINAL' : 'REVOKED' ?>
-                                                </span>
-                                            </td>
-                                            <td class="py-space-xs px-space-sm text-right">
-                                                <div class="flex items-center justify-end gap-space-2xs">
-                                                    <button class="px-space-xs py-[3px] bg-surface-container text-primary hover:bg-surface-container-high border border-outline-variant rounded font-telemetry-micro text-telemetry-micro font-bold" onclick="alert('Auditing <?= htmlspecialchars($pa['emp_id']) ?> session token')">
-                                                        Inspect
-                                                    </button>
-                                                </div>
-                                            </td>
-                                        </tr>
+                                                </td>
+                                                <td class="py-space-xs px-space-sm border-r border-outline-variant/20 font-telemetry-micro text-telemetry-micro">
+                                                    Bastion SSH / MFA: <?= $pa['mfa_enabled'] ? '<span class="text-secondary font-bold">YES</span>' : '<span class="text-error font-bold">NO</span>' ?>
+                                                </td>
+                                                <td class="py-space-xs px-space-sm border-r border-outline-variant/20">
+                                                    <div class="flex flex-col">
+                                                        <span class="font-telemetry-micro text-telemetry-micro font-bold <?= $isActiveSession ? 'text-secondary' : 'text-on-surface-variant' ?>">
+                                                            <?= $isActiveSession ? 'ACTIVE LEASE' : 'STANDBY' ?>
+                                                        </span>
+                                                        <span class="font-telemetry-micro text-[10px] text-on-surface-variant">Last: <?= htmlspecialchars($pa['last_login'] ?? 'Never') ?></span>
+                                                    </div>
+                                                </td>
+                                                <td class="py-space-xs px-space-sm border-r border-outline-variant/20">
+                                                    <span class="inline-flex items-center gap-[4px] px-space-xs py-[2px] <?= ($pa['account_status'] === 'Active') ? 'bg-secondary-container/30 text-on-secondary-container' : 'bg-error-container text-on-error-container' ?> font-security-stamp text-[10px] font-bold rounded">
+                                                        <span class="w-1.5 h-1.5 rounded-full <?= ($pa['account_status'] === 'Active') ? 'bg-secondary' : 'bg-error' ?>"></span>
+                                                        <?= ($pa['account_status'] === 'Active') ? 'NOMINAL' : 'REVOKED' ?>
+                                                    </span>
+                                                </td>
+                                                <td class="py-space-xs px-space-sm text-right">
+                                                    <div class="flex items-center justify-end gap-space-2xs">
+                                                        <button class="px-space-xs py-[3px] bg-surface-container text-primary hover:bg-surface-container-high border border-outline-variant rounded font-telemetry-micro text-telemetry-micro font-bold" onclick="alert('Auditing <?= htmlspecialchars($pa['emp_id']) ?> session token')">
+                                                            Inspect
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
                                         <?php endforeach; ?>
                                     </tbody>
                                 </table>
@@ -600,8 +603,7 @@ $metrics = gov_getGovernanceMetrics();
                         <!-- Panel 1: Live Bastion Keystream Inspector (Red Left Border) -->
                         <div
                             class="bg-surface-container-lowest rounded border-t border-r border-b border-outline-variant/40 border-l-4 border-l-[#B23A32] shadow-sm overflow-hidden">
-                            <!-- Header -->
-                            <div
+                                                        <div
                                 class="h-[36px] px-space-md bg-surface-container-low border-b border-outline-variant/30 flex items-center justify-between">
                                 <div class="flex items-center gap-space-xs">
                                     <span class="w-2 h-2 rounded-full bg-error animate-ping"></span>
@@ -688,8 +690,7 @@ $metrics = gov_getGovernanceMetrics();
                         <!-- Panel 2: Rapid Dual-Custody Approval Desk (Amber Left Border) -->
                         <div
                             class="bg-surface-container-lowest rounded border-t border-r border-b border-outline-variant/40 border-l-4 border-l-[#D9822B] shadow-sm overflow-hidden">
-                            <!-- Header -->
-                            <div
+                                                        <div
                                 class="h-[36px] px-space-md bg-surface-container-low border-b border-outline-variant/30 flex items-center justify-between">
                                 <div class="flex items-center gap-space-xs">
                                     <span class="material-symbols-outlined text-[16px] text-[#D9822B]">fact_check</span>
@@ -968,7 +969,7 @@ $metrics = gov_getGovernanceMetrics();
                     class="material-symbols-outlined text-[16px]">close</span></button>
         </div>
     </div>
-    
+
     <script src="js/common.js"></script>
     <script src="js/privilegedAccounts.js"></script>
 </body>

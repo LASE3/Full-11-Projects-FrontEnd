@@ -1,4 +1,5 @@
 <?php
+
 /**
  * VOSTOKPRIBOR Centralized Authentication & Authorization API
  * Handles database authentication, credential verification, system clearance checks,
@@ -34,7 +35,8 @@ $systemId = canonicalSystemCode($rawSystemId);
 $redirect = trim($jsonData['redirect'] ?? $_POST['redirect'] ?? 'mainDashboard.php');
 
 // Helper for error responses
-function respondAuthError($message, $code = 401, $isJson = true, $systemId = '') {
+function respondAuthError($message, $code = 401, $isJson = true, $systemId = '')
+{
     if ($isJson) {
         http_response_code($code);
         echo json_encode([
@@ -44,7 +46,23 @@ function respondAuthError($message, $code = 401, $isJson = true, $systemId = '')
         ]);
         exit;
     } else {
-        $referer = $_SERVER['HTTP_REFERER'] ?? 'login.php';
+        $referer = $_SERVER['HTTP_REFERER'] ?? '';
+        if (empty($referer)) {
+            $sysLoginMap = [
+                'ADM' => '../Admin & Governance Portal/login.php',
+                'CRM' => '../CRM/login.php',
+                'CUS' => '../Customer Portal/login.php',
+                'DEV' => '../Developer/login.php',
+                'EMP' => '../Employee Intranet/login.php',
+                'DOC' => '../File Center/login.php',
+                'FIN' => '../Finance & Billing/login.php',
+                'HR'  => '../HR System/login.php',
+                'IT'  => '../IT Helpdesk/login.php',
+                'SHP' => '../Online Shop B2B/login.php',
+                'WEB' => '../VOSTOKPRIBOR Corporate Web Platform/index.php'
+            ];
+            $referer = $sysLoginMap[$systemId] ?? '../index.php';
+        }
         $delimiter = strpos($referer, '?') !== false ? '&' : '?';
         header("Location: " . $referer . $delimiter . "error=" . urlencode($message));
         exit;
@@ -139,6 +157,22 @@ if ($isJsonRequest) {
     ]);
     exit;
 } else {
-    header("Location: " . $redirect);
+    $sysDirMap = [
+        'ADM' => '../Admin & Governance Portal/',
+        'CRM' => '../CRM/',
+        'CUS' => '../Customer Portal/',
+        'DEV' => '../Developer/',
+        'EMP' => '../Employee Intranet/',
+        'DOC' => '../File Center/',
+        'FIN' => '../Finance & Billing/',
+        'HR'  => '../HR System/',
+        'IT'  => '../IT Helpdesk/',
+        'SHP' => '../Online Shop B2B/',
+        'WEB' => '../VOSTOKPRIBOR Corporate Web Platform/'
+    ];
+    $targetUrl = (str_starts_with($redirect, 'http://') || str_starts_with($redirect, 'https://') || str_starts_with($redirect, '/'))
+        ? $redirect
+        : (($sysDirMap[$systemId] ?? '../') . $redirect);
+    header("Location: " . $targetUrl);
     exit;
 }

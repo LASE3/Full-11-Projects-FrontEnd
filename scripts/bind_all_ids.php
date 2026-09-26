@@ -18,7 +18,7 @@ if (file_exists($leadsFile)) {
 $cpDash = __DIR__ . '/../Customer Portal/Dashboard.php';
 if (file_exists($cpDash)) {
     $c = file_get_contents($cpDash);
-    
+
     // Active Projects KPI
     if (!str_contains($c, 'id="kpi-active-projects"')) {
         $pattern = '/(Active\s*Projects<\/span>\s*<span\s+class="[^"]*")/is';
@@ -27,7 +27,7 @@ if (file_exists($cpDash)) {
             echo "Customer Portal Dashboard.php -> OK (kpi-active-projects)\n";
         }
     }
-    
+
     // Pending Invoices KPI
     if (!str_contains($c, 'id="kpi-open-invoices"')) {
         $pattern = '/(Pending\s*Invoices<\/span>\s*<span\s+class="[^"]*")/is';

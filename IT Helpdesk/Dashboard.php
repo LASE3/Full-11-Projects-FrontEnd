@@ -7,12 +7,14 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>VOSTOKPRIBOR IT Helpdesk · Operational Support Desk</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
+
 <body>
 
   <div class="app-container">
@@ -36,7 +38,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
               <div class="brand-subline">
                 <span class="status-dot-pulse"></span>
                 <span>helpdesk.vostokpribor.local</span>
-                <span style="opacity: 0.5;">|</span>
+                <span class="hd-opacity-50" >|</span>
                 <span>SUPPORT OPERATIONS</span>
               </div>
             </div>
@@ -54,13 +56,16 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
 
         <!-- Right System Metrics & Profile -->
         <div class="top-nav__actions">
-          <div class="pipeline-sync-badge" style="display: flex; align-items: center; gap: 0.35rem; font-family: var(--hd-font-mono); font-size: 10px; color: var(--hd-text-inverse-muted); background: rgba(255,255,255,0.06); padding: 3px 8px; border-radius: var(--hd-radius-sm); border: 1px solid rgba(255,255,255,0.08);">
-            <span style="color: #2ECC71;">●</span>
+          <div class="pipeline-sync-badge hd-badge-telemetry" >
+            <span class="hd-status-success" >●</span>
             <span>SLA: <strong>98.4% Compliant</strong></span>
           </div>
 
           <button class="icon-button" title="Incident Telemetry Notifications" onclick="window.hdApp.showToast('Critical Alert', 'SCADA Gateway Node #3 packet loss detected in Lipetsk Bay.', 'critical')">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+              <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+            </svg>
             <span class="badge-dot"></span>
           </button>
 
@@ -72,10 +77,10 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
             </div>
           </div>
         </div>
-      
-<!-- Top Bar Sign Out -->
-<a href="../api/logout.php?system=IT%20Helpdesk&redirect=../IT%20Helpdesk/login.php" class="top-signout-btn" title="Sign Out of IT Helpdesk" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" style="display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:4px;background:rgba(178,58,50,0.2);border:1px solid rgba(178,58,50,0.5);color:#FF8080;font-size:12px;font-weight:600;text-decoration:none;cursor:pointer;margin-left:8px;vertical-align:middle;transition:all 0.2s;" onmouseover="this.style.background='rgba(178,58,50,0.4)';this.style.color='#FFFFFF'" onmouseout="this.style.background='rgba(178,58,50,0.2)';this.style.color='#FF8080'"><span class="material-symbols-outlined" style="font-size:15px;line-height:1;">logout</span><span>Sign Out</span></a>
-</div>
+
+        <!-- Top Bar Sign Out -->
+        <a href="../api/logout.php?system=IT%20Helpdesk&redirect=../IT%20Helpdesk/login.php" class="top-signout-btn" title="Sign Out of IT Helpdesk" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" ><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
+      </div>
     </header>
 
     <div class="main-layout">
@@ -90,7 +95,12 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
             <a href="Dashboard.php" class="sidebar-nav-item active">
               <div class="sidebar-item-left">
                 <span class="sidebar-icon">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="7" height="7" />
+                    <rect x="14" y="3" width="7" height="7" />
+                    <rect x="14" y="14" width="7" height="7" />
+                    <rect x="3" y="14" width="7" height="7" />
+                  </svg>
                 </span>
                 <span>Dashboard</span>
               </div>
@@ -100,7 +110,12 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
             <a href="TicketQueue.php" class="sidebar-nav-item">
               <div class="sidebar-item-left">
                 <span class="sidebar-icon">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                    <polyline points="14 2 14 8 20 8" />
+                    <line x1="16" y1="13" x2="8" y2="13" />
+                    <line x1="16" y1="17" x2="8" y2="17" />
+                  </svg>
                 </span>
                 <span>Ticket Queue</span>
               </div>
@@ -111,7 +126,10 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
             <a href="MyTickets.php" class="sidebar-nav-item">
               <div class="sidebar-item-left">
                 <span class="sidebar-icon">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                    <circle cx="12" cy="7" r="4" />
+                  </svg>
                 </span>
                 <span>My Tickets</span>
               </div>
@@ -122,7 +140,10 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
             <a href="KnowledgeBase.php" class="sidebar-nav-item">
               <div class="sidebar-item-left">
                 <span class="sidebar-icon">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+                  </svg>
                 </span>
                 <span>Knowledge Base</span>
               </div>
@@ -133,7 +154,12 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
             <a href="AssetManagement.php" class="sidebar-nav-item">
               <div class="sidebar-item-left">
                 <span class="sidebar-icon">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"/><rect x="2" y="14" width="20" height="8" rx="2" ry="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="2" y="2" width="20" height="8" rx="2" ry="2" />
+                    <rect x="2" y="14" width="20" height="8" rx="2" ry="2" />
+                    <line x1="6" y1="6" x2="6.01" y2="6" />
+                    <line x1="6" y1="18" x2="6.01" y2="18" />
+                  </svg>
                 </span>
                 <span>Asset Management</span>
               </div>
@@ -144,47 +170,64 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
             <a href="SLAReports.php" class="sidebar-nav-item">
               <div class="sidebar-item-left">
                 <span class="sidebar-icon">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10" />
+                    <polyline points="12 6 12 12 16 14" />
+                  </svg>
                 </span>
                 <span>SLA Reports</span>
               </div>
               <span class="sidebar-badge badge-green">98.4%</span>
             </a>
-<a href="Integrations.php" class="sidebar-nav-item"><div class="sidebar-item-left"><span class="sidebar-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00E5FF" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></span><span style="color: #00E5FF; font-weight: 600;">System Integrations</span></div><span class="sidebar-badge" style="background: rgba(0,229,255,0.15); color: #00E5FF;">SYS09</span></a>
+            <a href="Integrations.php" class="sidebar-nav-item">
+              <div class="sidebar-item-left"><span class="sidebar-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00E5FF" stroke-width="2">
+                    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+                    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+                  </svg></span><span class="hd-nav-integrations" >System Integrations</span></div><span class="sidebar-badge hd-badge-integrations" >SYS09</span>
+            </a>
           </nav>
         </div>
 
-        
-                      <div class="sidebar-section-title" style="margin-top: 1rem;">Unified Ecosystem</div>
-          <nav class="sidebar-nav" style="margin-bottom: 0.5rem;">
-            <a href="../VOSTOKPRIBOR Corporate Web Platform/index.php" class="sidebar-nav-item">
-              <div class="sidebar-item-left">
-                <span class="sidebar-icon">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-                </span>
-                <span>Corporate Platform</span>
-              </div>
-              <span class="sidebar-badge" style="font-size: 10px;">SYS 01</span>
-            </a>
-            <a href="../Employee Intranet/index.php" class="sidebar-nav-item">
-              <div class="sidebar-item-left">
-                <span class="sidebar-icon">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-                </span>
-                <span>Employee Intranet</span>
-              </div>
-              <span class="sidebar-badge" style="font-size: 10px;">SYS 04</span>
-            </a>
-          </nav>
-            <!-- Log Out -->
-            
+
+        <div class="sidebar-section-title hd-mt-4" >Unified Ecosystem</div>
+        <nav class="sidebar-nav hd-mb-2" >
+          <a href="../VOSTOKPRIBOR Corporate Web Platform/index.php" class="sidebar-nav-item">
+            <div class="sidebar-item-left">
+              <span class="sidebar-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10" />
+                  <line x1="2" y1="12" x2="22" y2="12" />
+                  <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+                </svg>
+              </span>
+              <span>Corporate Platform</span>
+            </div>
+            <span class="sidebar-badge hd-text-xs" >SYS 01</span>
+          </a>
+          <a href="../Employee Intranet/index.php" class="sidebar-nav-item">
+            <div class="sidebar-item-left">
+              <span class="sidebar-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="3" width="7" height="7" />
+                  <rect x="14" y="3" width="7" height="7" />
+                  <rect x="14" y="14" width="7" height="7" />
+                  <rect x="3" y="14" width="7" height="7" />
+                </svg>
+              </span>
+              <span>Employee Intranet</span>
+            </div>
+            <span class="sidebar-badge hd-text-xs" >SYS 04</span>
+          </a>
+        </nav>
+        <!-- Log Out -->
+
         <div class="sidebar-footer">
           <div class="security-widget-card">
             <div class="security-widget-header">
               <span>Incident Response Gateway</span>
               <span class="security-badge-status">● LIVE</span>
             </div>
-            <div style="font-size: 11px; color: var(--hd-text-inverse-muted); margin-top: 2px;">
+            <div class="hd-text-inverse-muted-sm" >
               Active Escalations: <strong>3 P1 Incidents</strong>
             </div>
           </div>
@@ -229,7 +272,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
               </div>
               <div class="kpi-value-row">
                 <span class="kpi-value">34</span>
-                <span style="font-size: 12.5px; color: var(--hd-text-muted);">Active</span>
+                <span class="hd-text-muted-125" >Active</span>
               </div>
               <div class="kpi-footer">
                 <span>12 Unassigned in Queue</span>
@@ -244,8 +287,8 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
                 <div class="kpi-icon-pill red">🚨</div>
               </div>
               <div class="kpi-value-row">
-                <span class="kpi-value" style="color: var(--hd-priority-critical);">3</span>
-                <span style="font-size: 12.5px; color: var(--hd-priority-critical); font-weight: 600;">Tier 1</span>
+                <span class="kpi-value hd-text-critical" >3</span>
+                <span class="hd-text-crit-semibold" >Tier 1</span>
               </div>
               <div class="kpi-footer">
                 <span>2 SCADA, 1 Cleanroom</span>
@@ -275,7 +318,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
                 <div class="kpi-icon-pill green">✓</div>
               </div>
               <div class="kpi-value-row">
-                <span class="kpi-value" style="color: var(--hd-success);">98.4%</span>
+                <span class="kpi-value hd-text-success" >98.4%</span>
               </div>
               <div class="kpi-footer">
                 <span>282 / 286 Met Target</span>
@@ -285,31 +328,31 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
           </div>
 
           <!-- Stacked Bar Chart: Ticket Volume by Day Colored by Priority Tier -->
-          <div class="hd-card" style="margin-bottom: 1.5rem;">
+          <div class="hd-card hd-mb-6" >
             <div class="card-header-row">
               <div>
                 <h3 class="card-title">Daily Ticket Volume by Heat-Scale Priority Tier</h3>
-                <p style="font-size: 11.5px; color: var(--hd-text-secondary); margin-top: 2px;">
+                <p class="hd-meta-subtext" >
                   Weekly incident distribution classified by operational severity tiers
                 </p>
               </div>
               <!-- Legend -->
-              <div style="display: flex; align-items: center; gap: 1rem; font-size: 11px;">
-                <div style="display: flex; align-items: center; gap: 0.35rem;">
-                  <span style="width: 10px; height: 10px; background: #B23A32; border-radius: 2px;"></span>
-                  <span style="font-weight: 600; color: var(--hd-navy);">Critical</span>
+              <div class="hd-legend-row" >
+                <div class="hd-flex-gap-xs" >
+                  <span class="hd-legend-dot-crit" ></span>
+                  <span class="hd-font-semibold-navy" >Critical</span>
                 </div>
-                <div style="display: flex; align-items: center; gap: 0.35rem;">
-                  <span style="width: 10px; height: 10px; background: #C97A3D; border-radius: 2px;"></span>
-                  <span style="font-weight: 600; color: var(--hd-navy);">High</span>
+                <div class="hd-flex-gap-xs" >
+                  <span class="hd-legend-dot-high" ></span>
+                  <span class="hd-font-semibold-navy" >High</span>
                 </div>
-                <div style="display: flex; align-items: center; gap: 0.35rem;">
-                  <span style="width: 10px; height: 10px; background: #E8A33D; border-radius: 2px;"></span>
-                  <span style="font-weight: 600; color: var(--hd-navy);">Medium</span>
+                <div class="hd-flex-gap-xs" >
+                  <span class="hd-legend-dot-med" ></span>
+                  <span class="hd-font-semibold-navy" >Medium</span>
                 </div>
-                <div style="display: flex; align-items: center; gap: 0.35rem;">
-                  <span style="width: 10px; height: 10px; background: #8A94A0; border-radius: 2px;"></span>
-                  <span style="font-weight: 600; color: var(--hd-navy);">Low</span>
+                <div class="hd-flex-gap-xs" >
+                  <span class="hd-legend-dot-low" ></span>
+                  <span class="hd-font-semibold-navy" >Low</span>
                 </div>
               </div>
             </div>
@@ -320,11 +363,11 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
                 <!-- Monday (42 tickets) -->
                 <div class="stacked-col">
                   <div class="stacked-day-total">42</div>
-                  <div class="stacked-bar-pillar" style="height: 140px;">
-                    <div class="seg-low" style="height: 40px;" title="Low: 12"></div>
-                    <div class="seg-med" style="height: 55px;" title="Medium: 18"></div>
-                    <div class="seg-high" style="height: 30px;" title="High: 9"></div>
-                    <div class="seg-crit" style="height: 15px;" title="Critical: 3"></div>
+                  <div class="stacked-bar-pillar hd-bar-h-140" >
+                    <div class="seg-low hd-bar-h-40"  title="Low: 12"></div>
+                    <div class="seg-med hd-bar-h-55"  title="Medium: 18"></div>
+                    <div class="seg-high hd-bar-h-30"  title="High: 9"></div>
+                    <div class="seg-crit hd-bar-h-15"  title="Critical: 3"></div>
                   </div>
                   <span class="stacked-day-label">Mon</span>
                 </div>
@@ -332,11 +375,11 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
                 <!-- Tuesday (48 tickets) -->
                 <div class="stacked-col">
                   <div class="stacked-day-total">48</div>
-                  <div class="stacked-bar-pillar" style="height: 160px;">
-                    <div class="seg-low" style="height: 45px;" title="Low: 14"></div>
-                    <div class="seg-med" style="height: 65px;" title="Medium: 21"></div>
-                    <div class="seg-high" style="height: 35px;" title="High: 10"></div>
-                    <div class="seg-crit" style="height: 15px;" title="Critical: 3"></div>
+                  <div class="stacked-bar-pillar hd-bar-h-160" >
+                    <div class="seg-low hd-bar-h-45"  title="Low: 14"></div>
+                    <div class="seg-med hd-bar-h-65"  title="Medium: 21"></div>
+                    <div class="seg-high hd-bar-h-35"  title="High: 10"></div>
+                    <div class="seg-crit hd-bar-h-15"  title="Critical: 3"></div>
                   </div>
                   <span class="stacked-day-label">Tue</span>
                 </div>
@@ -344,11 +387,11 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
                 <!-- Wednesday (56 tickets) -->
                 <div class="stacked-col">
                   <div class="stacked-day-total">56</div>
-                  <div class="stacked-bar-pillar" style="height: 185px;">
-                    <div class="seg-low" style="height: 50px;" title="Low: 16"></div>
-                    <div class="seg-med" style="height: 75px;" title="Medium: 24"></div>
-                    <div class="seg-high" style="height: 40px;" title="High: 12"></div>
-                    <div class="seg-crit" style="height: 20px;" title="Critical: 4"></div>
+                  <div class="stacked-bar-pillar hd-bar-h-185" >
+                    <div class="seg-low hd-bar-h-50"  title="Low: 16"></div>
+                    <div class="seg-med hd-bar-h-75"  title="Medium: 24"></div>
+                    <div class="seg-high hd-bar-h-40"  title="High: 12"></div>
+                    <div class="seg-crit hd-bar-h-20"  title="Critical: 4"></div>
                   </div>
                   <span class="stacked-day-label">Wed</span>
                 </div>
@@ -356,34 +399,34 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
                 <!-- Thursday (52 tickets) -->
                 <div class="stacked-col">
                   <div class="stacked-day-total">52</div>
-                  <div class="stacked-bar-pillar" style="height: 172px;">
-                    <div class="seg-low" style="height: 48px;" title="Low: 15"></div>
-                    <div class="seg-med" style="height: 70px;" title="Medium: 23"></div>
-                    <div class="seg-high" style="height: 38px;" title="High: 11"></div>
-                    <div class="seg-crit" style="height: 16px;" title="Critical: 3"></div>
+                  <div class="stacked-bar-pillar hd-bar-h-172" >
+                    <div class="seg-low hd-bar-h-48"  title="Low: 15"></div>
+                    <div class="seg-med hd-bar-h-70"  title="Medium: 23"></div>
+                    <div class="seg-high hd-bar-h-38"  title="High: 11"></div>
+                    <div class="seg-crit hd-bar-h-16"  title="Critical: 3"></div>
                   </div>
                   <span class="stacked-day-label">Thu</span>
                 </div>
 
                 <!-- Friday (64 tickets - peak) -->
                 <div class="stacked-col">
-                  <div class="stacked-day-total" style="color: var(--hd-priority-critical);">64</div>
-                  <div class="stacked-bar-pillar" style="height: 200px;">
-                    <div class="seg-low" style="height: 55px;" title="Low: 18"></div>
-                    <div class="seg-med" style="height: 80px;" title="Medium: 26"></div>
-                    <div class="seg-high" style="height: 45px;" title="High: 15"></div>
-                    <div class="seg-crit" style="height: 20px;" title="Critical: 5"></div>
+                  <div class="stacked-day-total hd-text-critical" >64</div>
+                  <div class="stacked-bar-pillar hd-bar-h-200" >
+                    <div class="seg-low hd-bar-h-55"  title="Low: 18"></div>
+                    <div class="seg-med hd-bar-h-80"  title="Medium: 26"></div>
+                    <div class="seg-high hd-bar-h-45"  title="High: 15"></div>
+                    <div class="seg-crit hd-bar-h-20"  title="Critical: 5"></div>
                   </div>
-                  <span class="stacked-day-label" style="font-weight: 700; color: var(--hd-navy);">Fri</span>
+                  <span class="stacked-day-label hd-bold-navy" >Fri</span>
                 </div>
 
                 <!-- Saturday (16 tickets) -->
                 <div class="stacked-col">
                   <div class="stacked-day-total">16</div>
-                  <div class="stacked-bar-pillar" style="height: 55px;">
-                    <div class="seg-low" style="height: 20px;" title="Low: 6"></div>
-                    <div class="seg-med" style="height: 25px;" title="Medium: 8"></div>
-                    <div class="seg-high" style="height: 10px;" title="High: 2"></div>
+                  <div class="stacked-bar-pillar hd-bar-h-55" >
+                    <div class="seg-low hd-bar-h-20"  title="Low: 6"></div>
+                    <div class="seg-med hd-bar-h-25"  title="Medium: 8"></div>
+                    <div class="seg-high hd-bar-h-10"  title="High: 2"></div>
                   </div>
                   <span class="stacked-day-label">Sat</span>
                 </div>
@@ -391,9 +434,9 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
                 <!-- Sunday (8 tickets) -->
                 <div class="stacked-col">
                   <div class="stacked-day-total">8</div>
-                  <div class="stacked-bar-pillar" style="height: 30px;">
-                    <div class="seg-low" style="height: 15px;" title="Low: 4"></div>
-                    <div class="seg-med" style="height: 15px;" title="Medium: 4"></div>
+                  <div class="stacked-bar-pillar hd-bar-h-30" >
+                    <div class="seg-low hd-bar-h-15"  title="Low: 4"></div>
+                    <div class="seg-med hd-bar-h-15"  title="Medium: 4"></div>
                   </div>
                   <span class="stacked-day-label">Sun</span>
                 </div>
@@ -406,7 +449,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
             <div class="card-header-row">
               <div>
                 <h3 class="card-title">Immediate Attention Required · Nearing SLA Breach Horizon</h3>
-                <p style="font-size: 11.5px; color: var(--hd-text-secondary); margin-top: 2px;">
+                <p class="hd-meta-subtext" >
                   High-priority telemetry faults and access gating blockers highlighted in red/orange
                 </p>
               </div>
@@ -418,27 +461,27 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
             <div class="needs-attention-list">
               <!-- Item 1: Critical SCADA Node (Red) -->
               <div class="attention-item">
-                <div style="display: flex; align-items: center; gap: 1rem;">
-                  <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-width: 80px;">
+                <div class="hd-flex-gap-1" >
+                  <div class="hd-stat-column-box" >
                     <span class="priority-badge priority-critical">CRITICAL</span>
-                    <span style="font-family: var(--hd-font-mono); font-size: 10.5px; color: var(--hd-priority-critical); font-weight: 700; margin-top: 3px;">01:42:15 Left</span>
+                    <span class="hd-mono-critical-sm" >01:42:15 Left</span>
                   </div>
                   <div>
-                    <div style="display: flex; align-items: center; gap: 0.5rem;">
-                      <a href="TicketDetail.php" style="font-size: 13.5px; font-weight: 700; color: var(--hd-navy); text-decoration: none;">
+                    <div class="hd-flex-gap-sm" >
+                      <a class="hd-title-link" href="TicketDetail.php" >
                         TICK-8819 · SCADA Modbus Gateway #3 Packet Drop
                       </a>
                       <span class="status-pill status-in-progress">In Progress</span>
                     </div>
-                    <div style="font-size: 11.5px; color: var(--hd-text-secondary); margin-top: 2px;">
+                    <div class="hd-meta-subtext" >
                       Requester: <strong>Dr. Elena Rostova</strong> (Optical Calibration) · System: <strong>Lipetsk Hot Blast Furnace #5 Gateway</strong>
                     </div>
                   </div>
                 </div>
-                <div style="display: flex; align-items: center; gap: 0.75rem;">
-                  <div style="text-align: right; font-size: 11px;">
-                    <div style="color: var(--hd-text-muted);">Assigned Tech</div>
-                    <div style="font-weight: 700; color: var(--hd-navy);">Alexey Ivanov</div>
+                <div class="hd-flex-gap-md" >
+                  <div class="hd-text-right-11" >
+                    <div class="hd-text-muted" >Assigned Tech</div>
+                    <div class="hd-bold-navy" >Alexey Ivanov</div>
                   </div>
                   <a href="TicketDetail.php" class="btn btn-primary-amber btn-sm">Triage →</a>
                 </div>
@@ -446,27 +489,27 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
 
               <!-- Item 2: Cleanroom Biometric Scanner (Red) -->
               <div class="attention-item">
-                <div style="display: flex; align-items: center; gap: 1rem;">
-                  <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-width: 80px;">
+                <div class="hd-flex-gap-1" >
+                  <div class="hd-stat-column-box" >
                     <span class="priority-badge priority-critical">CRITICAL</span>
-                    <span style="font-family: var(--hd-font-mono); font-size: 10.5px; color: var(--hd-priority-critical); font-weight: 700; margin-top: 3px;">00:48:30 Left</span>
+                    <span class="hd-mono-critical-sm" >00:48:30 Left</span>
                   </div>
                   <div>
-                    <div style="display: flex; align-items: center; gap: 0.5rem;">
-                      <a href="TicketDetail.php" style="font-size: 13.5px; font-weight: 700; color: var(--hd-navy); text-decoration: none;">
+                    <div class="hd-flex-gap-sm" >
+                      <a class="hd-title-link" href="TicketDetail.php" >
                         TICK-8820 · Cleanroom Airlock RFID Interlock Rejecting Level 3 Badges
                       </a>
                       <span class="status-pill status-in-progress">In Progress</span>
                     </div>
-                    <div style="font-size: 11.5px; color: var(--hd-text-secondary); margin-top: 2px;">
+                    <div class="hd-meta-subtext" >
                       Requester: <strong>Dr. Mikhail Abramov</strong> (R&amp;D Sensor Fab) · System: <strong>Nanofabrication Facility Bay B</strong>
                     </div>
                   </div>
                 </div>
-                <div style="display: flex; align-items: center; gap: 0.75rem;">
-                  <div style="text-align: right; font-size: 11px;">
-                    <div style="color: var(--hd-text-muted);">Assigned Tech</div>
-                    <div style="font-weight: 700; color: var(--hd-navy);">Alexey Ivanov</div>
+                <div class="hd-flex-gap-md" >
+                  <div class="hd-text-right-11" >
+                    <div class="hd-text-muted" >Assigned Tech</div>
+                    <div class="hd-bold-navy" >Alexey Ivanov</div>
                   </div>
                   <a href="TicketDetail.php" class="btn btn-primary-amber btn-sm">Triage →</a>
                 </div>
@@ -474,27 +517,27 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
 
               <!-- Item 3: FAT Calibration Server (Orange) -->
               <div class="attention-item warning-tier">
-                <div style="display: flex; align-items: center; gap: 1rem;">
-                  <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-width: 80px;">
+                <div class="hd-flex-gap-1" >
+                  <div class="hd-stat-column-box" >
                     <span class="priority-badge priority-high">HIGH</span>
-                    <span style="font-family: var(--hd-font-mono); font-size: 10.5px; color: var(--hd-orange); font-weight: 700; margin-top: 3px;">02:15:00 Left</span>
+                    <span class="hd-mono-orange-sm" >02:15:00 Left</span>
                   </div>
                   <div>
-                    <div style="display: flex; align-items: center; gap: 0.5rem;">
-                      <a href="TicketDetail.php" style="font-size: 13.5px; font-weight: 700; color: var(--hd-navy); text-decoration: none;">
+                    <div class="hd-flex-gap-sm" >
+                      <a class="hd-title-link" href="TicketDetail.php" >
                         TICK-8821 · Laser Triangulation Calibration Server Matrix Overflow
                       </a>
                       <span class="status-pill status-open">Open</span>
                     </div>
-                    <div style="font-size: 11.5px; color: var(--hd-text-secondary); margin-top: 2px;">
+                    <div class="hd-meta-subtext" >
                       Requester: <strong>Viktor Morozov</strong> (SCADA Specialist) · System: <strong>FAT Acceptance Testing Bay #2</strong>
                     </div>
                   </div>
                 </div>
-                <div style="display: flex; align-items: center; gap: 0.75rem;">
-                  <div style="text-align: right; font-size: 11px;">
-                    <div style="color: var(--hd-text-muted);">Assigned Tech</div>
-                    <div style="font-weight: 700; color: var(--hd-navy);">Dmitry Popov</div>
+                <div class="hd-flex-gap-md" >
+                  <div class="hd-text-right-11" >
+                    <div class="hd-text-muted" >Assigned Tech</div>
+                    <div class="hd-bold-navy" >Dmitry Popov</div>
                   </div>
                   <a href="TicketDetail.php" class="btn btn-outline btn-sm">Review →</a>
                 </div>
@@ -509,4 +552,5 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
   <div id="toast-container"></div>
   <script src="js/app.js"></script>
 </body>
+
 </html>

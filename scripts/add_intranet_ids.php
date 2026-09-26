@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Adds data-binding wrapper IDs for the Intranet pages.
  * Run once: php scripts/add_intranet_ids.php

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * VOSTOKPRIBOR Centralized Auth Guard & SSO Rehydration Engine
  * Enforces database authentication, restores sessions via persistent SSO cookies,
@@ -25,9 +26,9 @@ if (empty($_SESSION['vostok_authenticated']) || empty($_SESSION['vostok_user']))
     if ($cookieUser) {
         $_SESSION['vostok_authenticated'] = true;
         $_SESSION['vostok_user'] = [
-            'account_id'        => $cookieUser['account_id'],
-            'user_id'           => $cookieUser['user_id'],
-            'username'          => $cookieUser['username'],
+            'account_id'        => $cookieUser['account_id'] ?? null,
+            'user_id'           => $cookieUser['user_id'] ?? $cookieUser['emp_id'] ?? $cookieUser['cus_id'] ?? '',
+            'username'          => $cookieUser['username'] ?? '',
             'full_name'         => $cookieUser['full_name'],
             'email'             => $cookieUser['email'],
             'role_name'         => $cookieUser['role_name'],
@@ -48,20 +49,82 @@ $currentUser     = $isAuthenticated ? $_SESSION['vostok_user'] : null;
 /**
  * Canonicalize system identifier across various formats
  */
-function canonicalSystemCode($sys) {
+function canonicalSystemCode($sys)
+{
     $code = strtoupper(trim((string)$sys));
     $map = [
-        'ADM' => 'ADM', 'ADMIN' => 'ADM', 'SYS11' => 'ADM', 'SYS-11' => 'ADM', 'SYSTEM11' => 'ADM', 'GOV' => 'ADM', 'ADMIN & GOVERNANCE PORTAL' => 'ADM',
-        'CRM' => 'CRM', 'SYS05' => 'CRM', 'SYS-05' => 'CRM', 'SYSTEM05' => 'CRM', 'CRM SYSTEM' => 'CRM',
-        'CUS' => 'CUS', 'CUSTOMER' => 'CUS', 'PORTAL' => 'CUS', 'SYS03' => 'CUS', 'SYS-03' => 'CUS', 'SYSTEM03' => 'CUS', 'CUSTOMER PORTAL' => 'CUS',
-        'DEV' => 'DEV', 'DEVELOPER' => 'DEV', 'SYS10' => 'DEV', 'SYS-10' => 'DEV', 'SYSTEM10' => 'DEV', 'DEVELOPER PORTAL' => 'DEV',
-        'EMP' => 'EMP', 'EMPLOYEE' => 'EMP', 'INTRANET' => 'EMP', 'SYS04' => 'EMP', 'SYS-04' => 'EMP', 'SYSTEM04' => 'EMP', 'EMPLOYEE INTRANET' => 'EMP',
-        'DOC' => 'DOC', 'FILE' => 'DOC', 'FILES' => 'DOC', 'FILE CENTER' => 'DOC', 'SYS09' => 'DOC', 'SYS-09' => 'DOC', 'SYSTEM09' => 'DOC',
-        'FIN' => 'FIN', 'FINANCE' => 'FIN', 'BILLING' => 'FIN', 'SYS07' => 'FIN', 'SYS-07' => 'FIN', 'SYSTEM07' => 'FIN', 'FINANCE & BILLING' => 'FIN',
-        'HR'  => 'HR',  'HR SYSTEM' => 'HR', 'SYS06' => 'HR', 'SYS-06' => 'HR', 'SYSTEM06' => 'HR',
-        'IT'  => 'IT',  'HELPDESK' => 'IT', 'IT HELPDESK' => 'IT', 'SYS08' => 'IT', 'SYS-08' => 'IT', 'SYSTEM08' => 'IT',
-        'SHP' => 'SHP', 'SHOP' => 'SHP', 'STORE' => 'SHP', 'B2B' => 'SHP', 'SYS02' => 'SHP', 'SYS-02' => 'SHP', 'SYSTEM02' => 'SHP', 'ONLINE SHOP B2B' => 'SHP',
-        'WEB' => 'WEB', 'CORP' => 'WEB', 'PLATFORM' => 'WEB', 'SYS01' => 'WEB', 'SYS-01' => 'WEB', 'SYSTEM01' => 'WEB', 'CORPORATE WEB PLATFORM' => 'WEB'
+        'ADM' => 'ADM',
+        'ADMIN' => 'ADM',
+        'SYS11' => 'ADM',
+        'SYS-11' => 'ADM',
+        'SYSTEM11' => 'ADM',
+        'GOV' => 'ADM',
+        'ADMIN & GOVERNANCE PORTAL' => 'ADM',
+        'CRM' => 'CRM',
+        'SYS05' => 'CRM',
+        'SYS-05' => 'CRM',
+        'SYSTEM05' => 'CRM',
+        'CRM SYSTEM' => 'CRM',
+        'CUS' => 'CUS',
+        'CUSTOMER' => 'CUS',
+        'PORTAL' => 'CUS',
+        'SYS03' => 'CUS',
+        'SYS-03' => 'CUS',
+        'SYSTEM03' => 'CUS',
+        'CUSTOMER PORTAL' => 'CUS',
+        'DEV' => 'DEV',
+        'DEVELOPER' => 'DEV',
+        'SYS10' => 'DEV',
+        'SYS-10' => 'DEV',
+        'SYSTEM10' => 'DEV',
+        'DEVELOPER PORTAL' => 'DEV',
+        'EMP' => 'EMP',
+        'EMPLOYEE' => 'EMP',
+        'INTRANET' => 'EMP',
+        'SYS04' => 'EMP',
+        'SYS-04' => 'EMP',
+        'SYSTEM04' => 'EMP',
+        'EMPLOYEE INTRANET' => 'EMP',
+        'DOC' => 'DOC',
+        'FILE' => 'DOC',
+        'FILES' => 'DOC',
+        'FILE CENTER' => 'DOC',
+        'SYS09' => 'DOC',
+        'SYS-09' => 'DOC',
+        'SYSTEM09' => 'DOC',
+        'FIN' => 'FIN',
+        'FINANCE' => 'FIN',
+        'BILLING' => 'FIN',
+        'SYS07' => 'FIN',
+        'SYS-07' => 'FIN',
+        'SYSTEM07' => 'FIN',
+        'FINANCE & BILLING' => 'FIN',
+        'HR'  => 'HR',
+        'HR SYSTEM' => 'HR',
+        'SYS06' => 'HR',
+        'SYS-06' => 'HR',
+        'SYSTEM06' => 'HR',
+        'IT'  => 'IT',
+        'HELPDESK' => 'IT',
+        'IT HELPDESK' => 'IT',
+        'SYS08' => 'IT',
+        'SYS-08' => 'IT',
+        'SYSTEM08' => 'IT',
+        'SHP' => 'SHP',
+        'SHOP' => 'SHP',
+        'STORE' => 'SHP',
+        'B2B' => 'SHP',
+        'SYS02' => 'SHP',
+        'SYS-02' => 'SHP',
+        'SYSTEM02' => 'SHP',
+        'ONLINE SHOP B2B' => 'SHP',
+        'WEB' => 'WEB',
+        'CORP' => 'WEB',
+        'PLATFORM' => 'WEB',
+        'SYS01' => 'WEB',
+        'SYS-01' => 'WEB',
+        'SYSTEM01' => 'WEB',
+        'CORPORATE WEB PLATFORM' => 'WEB'
     ];
     return $map[$code] ?? $code;
 }
@@ -73,20 +136,26 @@ function canonicalSystemCode($sys) {
  * @param string $systemId System code to verify authorization and active login for
  * @param string $loginPath Relative path to login.php
  */
-function requireAuth($systemId = '', $loginPath = 'login.php') {
+function requireAuth($systemId = '', $loginPath = 'login.php')
+{
     global $isAuthenticated, $currentUser;
-    
-    // Check if session or SSO rehydration exists
-    if (!$isAuthenticated || empty($currentUser)) {
-        header("Location: " . $loginPath);
-        exit;
-    }
 
     if (empty($systemId)) {
         return;
     }
 
     $canonicalSys = canonicalSystemCode($systemId);
+
+    // Corporate Web Platform (WEB) is public company presentation and requires no login
+    if ($canonicalSys === 'WEB') {
+        return;
+    }
+
+    // Check if session or SSO rehydration exists
+    if (!$isAuthenticated || empty($currentUser)) {
+        header("Location: " . $loginPath);
+        exit;
+    }
 
     // Strictly enforce system-specific login session flag.
     // Even SuperAdmin (L4) must log in explicitly on each system's login page.

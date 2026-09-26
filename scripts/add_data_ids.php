@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Adds data-binding IDs to HTML elements across all four systems.
  * Handles both plain <tbody> and <tbody class="..."> variants.
@@ -7,35 +8,49 @@
 
 $replacements = [
     // ─── CRM ──────────────────────────────────────
-    ['file' => __DIR__ . '/../CRM/Customers.php',
-     'search' => ['<tbody>'],
-     'id' => 'customers-tbody'],
+    [
+        'file' => __DIR__ . '/../CRM/Customers.php',
+        'search' => ['<tbody>'],
+        'id' => 'customers-tbody'
+    ],
 
-    ['file' => __DIR__ . '/../CRM/SalesForecast.php',
-     'search' => ['<tbody>'],
-     'id' => 'forecast-tbody'],
+    [
+        'file' => __DIR__ . '/../CRM/SalesForecast.php',
+        'search' => ['<tbody>'],
+        'id' => 'forecast-tbody'
+    ],
 
     // ─── Customer Portal ──────────────────────────
-    ['file' => __DIR__ . '/../Customer Portal/ProjectListAndDetail.php',
-     'search' => ['<tbody class=', '<tbody>'],
-     'id' => 'projects-tbody'],
+    [
+        'file' => __DIR__ . '/../Customer Portal/ProjectListAndDetail.php',
+        'search' => ['<tbody class=', '<tbody>'],
+        'id' => 'projects-tbody'
+    ],
 
-    ['file' => __DIR__ . '/../Customer Portal/Invoices.php',
-     'search' => ['<tbody class=', '<tbody>'],
-     'id' => 'invoices-tbody'],
+    [
+        'file' => __DIR__ . '/../Customer Portal/Invoices.php',
+        'search' => ['<tbody class=', '<tbody>'],
+        'id' => 'invoices-tbody'
+    ],
 
-    ['file' => __DIR__ . '/../Customer Portal/SupportTicketView.php',
-     'search' => ['<tbody class=', '<tbody>'],
-     'id' => 'tickets-list'],
+    [
+        'file' => __DIR__ . '/../Customer Portal/SupportTicketView.php',
+        'search' => ['<tbody class=', '<tbody>'],
+        'id' => 'tickets-list'
+    ],
 
     // ─── Employee Intranet ────────────────────────
-    ['file' => __DIR__ . '/../Employee Intranet/EmployeeDirectory.php',
-     'search' => ['<tbody class=', '<tbody>'],
-     'id' => 'directory-tbody'],
+    [
+        'file' => __DIR__ . '/../Employee Intranet/EmployeeDirectory.php',
+        'search' => ['<tbody class=', '<tbody>'],
+        'id' => 'directory-tbody'
+    ],
 
-    ['file' => __DIR__ . '/../Employee Intranet/PoliciesAndForms.php',
-     'search' => ['<tbody class=', '<tbody>'],
-     'id' => 'leaves-tbody'],
+    [
+        'file' => __DIR__ . '/../Employee Intranet/PoliciesAndForms.php',
+        'search' => ['<tbody class=', '<tbody>'],
+        'id' => 'leaves-tbody'
+    ],
 ];
 
 foreach ($replacements as $r) {

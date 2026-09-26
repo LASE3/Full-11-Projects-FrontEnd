@@ -5,10 +5,10 @@ requireAuth('Finance');
 
 $pdo = getDbConnection();
 $currUser = $_SESSION['vostok_user'] ?? [
-    'full_name' => 'Mikhail Sorokin',
-    'job_title' => 'Chief Financial Controller',
-    'clearance_level' => 'L4',
-    'emp_id' => 'EMP-FIN-001'
+  'full_name' => 'Mikhail Sorokin',
+  'job_title' => 'Chief Financial Controller',
+  'clearance_level' => 'L4',
+  'emp_id' => 'EMP-FIN-001'
 ];
 
 $userFullName = htmlspecialchars($currUser['full_name'] ?? 'Mikhail Sorokin');
@@ -72,22 +72,24 @@ $pendingWires = $pendingWiresStmt->fetchAll();
 
 // Monthly Trend Data dynamically computed from database invoices & payments
 $monthlyData = [
-    ['month' => 'May', 'collected' => round($revenueCollected * 0.12), 'billed' => round($totalOutstanding * 0.15)],
-    ['month' => 'Jun', 'collected' => round($revenueCollected * 0.18), 'billed' => round($totalOutstanding * 0.20)],
-    ['month' => 'Jul', 'collected' => round($revenueCollected * 0.22), 'billed' => round($totalOutstanding * 0.25)],
-    ['month' => 'Aug', 'collected' => round($revenueCollected * 0.28), 'billed' => round($totalOutstanding * 0.30)],
-    ['month' => 'Sep', 'collected' => round($revenueCollected * 0.35), 'billed' => round($totalOutstanding * 0.38)],
-    ['month' => 'Oct (Current)', 'collected' => round($revenueCollected), 'billed' => round($totalOutstanding)],
+  ['month' => 'May', 'collected' => round($revenueCollected * 0.12), 'billed' => round($totalOutstanding * 0.15)],
+  ['month' => 'Jun', 'collected' => round($revenueCollected * 0.18), 'billed' => round($totalOutstanding * 0.20)],
+  ['month' => 'Jul', 'collected' => round($revenueCollected * 0.22), 'billed' => round($totalOutstanding * 0.25)],
+  ['month' => 'Aug', 'collected' => round($revenueCollected * 0.28), 'billed' => round($totalOutstanding * 0.30)],
+  ['month' => 'Sep', 'collected' => round($revenueCollected * 0.35), 'billed' => round($totalOutstanding * 0.38)],
+  ['month' => 'Oct (Current)', 'collected' => round($revenueCollected), 'billed' => round($totalOutstanding)],
 ];
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>VOSTOKPRIBOR Finance · Executive Financial Operations (SYS-08)</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
+
 <body>
 
   <div class="app-container">
@@ -111,7 +113,7 @@ $monthlyData = [
               <div class="brand-subline">
                 <span class="status-dot-pulse"></span>
                 <span>finance.vostokpribor.local</span>
-                <span style="opacity: 0.5;">|</span>
+                <span class="fin-opacity-50" >|</span>
                 <span>FINANCIAL OPERATIONS (LIVE DB)</span>
               </div>
             </div>
@@ -135,7 +137,10 @@ $monthlyData = [
           </div>
 
           <button class="icon-button" title="Live Financial Alerts & Telemetry" onclick="window.finApp.showToast('Reconciliation Notice', 'Live DB: <?= $unmatchedCount ?> pending wire settlement(s) awaiting pairing in ledger.')">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+              <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+            </svg>
             <?php if ($unmatchedCount > 0): ?>
               <span class="badge-dot"></span>
             <?php endif; ?>
@@ -149,9 +154,9 @@ $monthlyData = [
             </div>
           </div>
         </div>
-      
+
         <!-- Top Bar Sign Out -->
-        <a href="../api/logout.php?system=Finance%20%26%20Billing&redirect=../Finance%20%26%20Billing/login.php" class="top-signout-btn" title="Sign Out of Finance &amp; Billing" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" style="display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:4px;background:rgba(178,58,50,0.2);border:1px solid rgba(178,58,50,0.5);color:#FF8080;font-size:12px;font-weight:600;text-decoration:none;cursor:pointer;margin-left:8px;vertical-align:middle;transition:all 0.2s;" onmouseover="this.style.background='rgba(178,58,50,0.4)';this.style.color='#FFFFFF'" onmouseout="this.style.background='rgba(178,58,50,0.2)';this.style.color='#FF8080'">
+        <a href="../api/logout.php?system=Finance%20%26%20Billing&redirect=../Finance%20%26%20Billing/login.php" class="top-signout-btn" title="Sign Out of Finance &amp; Billing" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" >
           <span>Sign Out</span>
         </a>
       </div>
@@ -168,7 +173,12 @@ $monthlyData = [
             <a href="Dashboard.php" class="sidebar-nav-item active">
               <div class="sidebar-item-left">
                 <span class="sidebar-icon">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="7" height="7" />
+                    <rect x="14" y="3" width="7" height="7" />
+                    <rect x="14" y="14" width="7" height="7" />
+                    <rect x="3" y="14" width="7" height="7" />
+                  </svg>
                 </span>
                 <span>Dashboard</span>
               </div>
@@ -177,7 +187,13 @@ $monthlyData = [
             <a href="Invoices.php" class="sidebar-nav-item">
               <div class="sidebar-item-left">
                 <span class="sidebar-icon">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                    <polyline points="14 2 14 8 20 8" />
+                    <line x1="16" y1="13" x2="8" y2="13" />
+                    <line x1="16" y1="17" x2="8" y2="17" />
+                    <polyline points="10 9 9 9 8 9" />
+                  </svg>
                 </span>
                 <span>Invoices</span>
               </div>
@@ -187,7 +203,10 @@ $monthlyData = [
             <a href="PaymentsReconciliation.php" class="sidebar-nav-item">
               <div class="sidebar-item-left">
                 <span class="sidebar-icon">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="1" y="4" width="22" height="16" rx="2" ry="2" />
+                    <line x1="1" y1="10" x2="23" y2="10" />
+                  </svg>
                 </span>
                 <span>Payments &amp; Reconciliation</span>
               </div>
@@ -197,7 +216,11 @@ $monthlyData = [
             <a href="ProjectBilling.php" class="sidebar-nav-item">
               <div class="sidebar-item-left">
                 <span class="sidebar-icon">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/><line x1="12" y1="11" x2="12" y2="17"/><line x1="9" y1="14" x2="15" y2="14"/></svg>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
+                    <line x1="12" y1="11" x2="12" y2="17" />
+                    <line x1="9" y1="14" x2="15" y2="14" />
+                  </svg>
                 </span>
                 <span>Project Billing</span>
               </div>
@@ -207,7 +230,10 @@ $monthlyData = [
             <a href="Budgets.php" class="sidebar-nav-item">
               <div class="sidebar-item-left">
                 <span class="sidebar-icon">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="12" y1="1" x2="12" y2="23" />
+                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+                  </svg>
                 </span>
                 <span>Budgets</span>
               </div>
@@ -217,7 +243,10 @@ $monthlyData = [
             <a href="FinancialReports.php" class="sidebar-nav-item">
               <div class="sidebar-item-left">
                 <span class="sidebar-icon">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21.21 15.89A10 10 0 1 1 8 2.83" />
+                    <path d="M22 12A10 10 0 0 0 12 2v10z" />
+                  </svg>
                 </span>
                 <span>Financial Reports</span>
               </div>
@@ -227,30 +256,42 @@ $monthlyData = [
             <a href="Integrations.php" class="sidebar-nav-item">
               <div class="sidebar-item-left">
                 <span class="sidebar-icon">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00E5FF" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00E5FF" stroke-width="2">
+                    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+                    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+                  </svg>
                 </span>
-                <span style="color: #00E5FF; font-weight: 600;">System Integrations</span>
+                <span class="fin-text-cyan" >System Integrations</span>
               </div>
-              <span class="sidebar-badge" style="background: rgba(0,229,255,0.15); color: #00E5FF;">SYS07</span>
+              <span class="sidebar-badge fin-badge-cyan" >SYS07</span>
             </a>
           </nav>
         </div>
 
-        <div class="sidebar-section-title" style="margin-top: 1rem;">Unified Ecosystem</div>
-        <nav class="sidebar-nav" style="margin-bottom: 0.5rem;">
+        <div class="sidebar-section-title fin-mt-4" >Unified Ecosystem</div>
+        <nav class="sidebar-nav fin-mb-2" >
           <a href="../VOSTOKPRIBOR Corporate Web Platform/index.php" class="sidebar-nav-item">
             <div class="sidebar-item-left">
-              <span class="sidebar-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></span>
+              <span class="sidebar-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10" />
+                  <line x1="2" y1="12" x2="22" y2="12" />
+                  <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+                </svg></span>
               <span>Corporate Platform</span>
             </div>
-            <span class="sidebar-badge" style="font-size: 10px;">SYS 01</span>
+            <span class="sidebar-badge fin-text-xs" >SYS 01</span>
           </a>
           <a href="../Employee Intranet/index.php" class="sidebar-nav-item">
             <div class="sidebar-item-left">
-              <span class="sidebar-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></span>
+              <span class="sidebar-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="3" width="7" height="7" />
+                  <rect x="14" y="3" width="7" height="7" />
+                  <rect x="14" y="14" width="7" height="7" />
+                  <rect x="3" y="14" width="7" height="7" />
+                </svg></span>
               <span>Employee Intranet</span>
             </div>
-            <span class="sidebar-badge" style="font-size: 10px;">SYS 04</span>
+            <span class="sidebar-badge fin-text-xs" >SYS 04</span>
           </a>
         </nav>
 
@@ -260,7 +301,7 @@ $monthlyData = [
               <span>Financial Ledger Security</span>
               <span class="security-badge-status">● VERIFIED</span>
             </div>
-            <div style="font-size: 11px; color: var(--fin-text-inverse-muted); margin-top: 2px;">
+            <div class="fin-text-inverse-muted-sm" >
               Database: <strong>vostokpribor · Live</strong>
             </div>
           </div>
@@ -334,7 +375,7 @@ $monthlyData = [
                 <div class="kpi-icon-pill red">⚠️</div>
               </div>
               <div class="kpi-value-row">
-                <span class="kpi-value" style="color: var(--fin-confidential);">€<?= number_format($overdueSum, 2) ?></span>
+                <span class="kpi-value fin-text-confidential" >€<?= number_format($overdueSum, 2) ?></span>
               </div>
               <div class="kpi-footer">
                 <span><?= $overdueCount ?> Account(s) Past Net-30</span>
@@ -359,33 +400,33 @@ $monthlyData = [
           </div>
 
           <!-- Revenue Trend Line Chart Spanning Several Months -->
-          <div class="fin-card" style="margin-bottom: 1.5rem;">
+          <div class="fin-card fin-mb-6" >
             <div class="card-header-row">
               <div>
                 <h3 class="card-title">Enterprise Revenue Trajectory &amp; Cash Collection Trend</h3>
-                <p style="font-size: 11.5px; color: var(--fin-text-secondary); margin-top: 2px;">
+                <p class="fin-meta-subtext" >
                   Monthly billed project receivables vs collected cash receipts (Calculated from MySQL database records)
                 </p>
               </div>
-              <div style="display: flex; align-items: center; gap: 1rem; font-size: 11.5px;">
-                <div style="display: flex; align-items: center; gap: 0.35rem;">
-                  <span style="width: 10px; height: 10px; background: #2E6E4E; border-radius: 2px;"></span>
-                  <span style="font-weight: 600; color: var(--fin-navy);">Cash Collected (€)</span>
+              <div class="fin-legend-row" >
+                <div class="fin-flex-gap-xs" >
+                  <span class="fin-dot-legend-paid" ></span>
+                  <span class="fin-semibold-navy" >Cash Collected (€)</span>
                 </div>
-                <div style="display: flex; align-items: center; gap: 0.35rem;">
-                  <span style="width: 10px; height: 10px; background: #E8A33D; border-radius: 2px;"></span>
-                  <span style="font-weight: 600; color: var(--fin-navy);">Billed Milestone Receivables (€)</span>
+                <div class="fin-flex-gap-xs" >
+                  <span class="fin-dot-legend-pending" ></span>
+                  <span class="fin-semibold-navy" >Billed Milestone Receivables (€)</span>
                 </div>
               </div>
             </div>
 
             <!-- Dynamic Multi-Month Interactive Chart -->
-            <div style="width: 100%; height: 260px; position: relative; margin-top: 1rem;">
-              <svg viewBox="0 0 900 240" style="width: 100%; height: 100%; overflow: visible;">
+            <div class="fin-chart-wrap" >
+              <svg class="fin-chart-svg" viewBox="0 0 900 240" >
                 <defs>
                   <linearGradient id="chartGreenGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stop-color="#2E6E4E" stop-opacity="0.35"/>
-                    <stop offset="100%" stop-color="#2E6E4E" stop-opacity="0.0"/>
+                    <stop offset="0%" stop-color="#2E6E4E" stop-opacity="0.35" />
+                    <stop offset="100%" stop-color="#2E6E4E" stop-opacity="0.0" />
                   </linearGradient>
                 </defs>
 
@@ -416,8 +457,8 @@ $monthlyData = [
                 $xCoords = [100, 240, 380, 520, 660, 800];
                 $yCollected = [160, 140, 120, 95, 75, 45];
                 foreach ($monthlyData as $idx => $m):
-                    $x = $xCoords[$idx] ?? 100;
-                    $y = $yCollected[$idx] ?? 160;
+                  $x = $xCoords[$idx] ?? 100;
+                  $y = $yCollected[$idx] ?? 160;
                 ?>
                   <circle cx="<?= $x ?>" cy="<?= $y ?>" r="5" fill="#2E6E4E" stroke="#FFFFFF" stroke-width="2" />
                   <text x="<?= $x ?>" y="230" font-size="11" font-weight="600" fill="#4A5568" text-anchor="middle"><?= $m['month'] ?></text>
@@ -428,15 +469,15 @@ $monthlyData = [
           </div>
 
           <!-- Pending Payment Matching List Widget -->
-          <div class="fin-card" style="padding: 0; overflow: hidden;">
-            <div style="padding: 1rem 1.25rem; background: #FFFFFF; border-bottom: 1px solid var(--fin-surface-border); display: flex; align-items: center; justify-content: space-between;">
+          <div class="fin-card fin-panel-flush" >
+            <div class="fin-table-header-bar" >
               <div>
                 <h3 class="card-title">Pending Payment Matching &amp; Bank Telemetry Ingestion (Live DB)</h3>
-                <p style="font-size: 11.5px; color: var(--fin-text-secondary); margin-top: 2px;">
+                <p class="fin-meta-subtext" >
                   Unmatched electronic bank wires in MySQL requiring controller ledger association
                 </p>
               </div>
-              <div style="display: flex; gap: 0.5rem;">
+              <div class="fin-flex-gap-sm" >
                 <button class="btn btn-outline btn-sm" onclick="window.finApp.syncBankFeeds()">
                   <span>🔄 Ingest Bank Telemetry</span>
                 </button>
@@ -454,13 +495,13 @@ $monthlyData = [
                   <th>Payment Method &amp; Reference</th>
                   <th>Settlement Amount</th>
                   <th>Date Ingested</th>
-                  <th style="text-align: right;">Action</th>
+                  <th class="fin-text-right" >Action</th>
                 </tr>
               </thead>
               <tbody id="unmatched-desk-body">
                 <?php if (empty($pendingWires)): ?>
                   <tr>
-                    <td colspan="6" style="text-align: center; padding: 2rem; color: var(--fin-text-muted);">
+                    <td class="fin-empty-state" colspan="6" >
                       ✓ All bank settlement wires are fully matched and reconciled in the database!
                     </td>
                   </tr>
@@ -468,31 +509,31 @@ $monthlyData = [
                   <?php foreach ($pendingWires as $wire): ?>
                     <tr id="tx-row-<?= $wire['payment_id'] ?>" class="fin-table-row" data-payment-id="<?= $wire['payment_id'] ?>">
                       <td>
-                        <span style="font-family: var(--fin-font-mono); font-weight: 700; color: var(--fin-green); font-size: 12px;">
+                        <span class="fin-mono-green-12" >
                           <?= htmlspecialchars($wire['tx_reference']) ?>
                         </span>
                       </td>
                       <td>
-                        <div style="font-weight: 700; color: var(--fin-navy);"><?= htmlspecialchars($wire['remitter']) ?></div>
-                        <div style="font-size: 11px; color: var(--fin-text-muted);"><?= htmlspecialchars($wire['bank_gateway']) ?></div>
+                        <div class="fin-bold-navy" ><?= htmlspecialchars($wire['remitter']) ?></div>
+                        <div class="fin-text-muted-11" ><?= htmlspecialchars($wire['bank_gateway']) ?></div>
                       </td>
                       <td>
-                        <div style="font-weight: 600; color: var(--fin-text-secondary);"><?= htmlspecialchars($wire['method']) ?></div>
-                        <div style="font-family: var(--fin-font-mono); font-size: 10.5px; color: var(--fin-text-muted);">
+                        <div class="fin-font-semibold-secondary" ><?= htmlspecialchars($wire['method']) ?></div>
+                        <div class="fin-mono-muted-105" >
                           <?= htmlspecialchars($wire['remittance_memo']) ?>
                         </div>
                       </td>
                       <td>
-                        <span style="font-family: var(--fin-font-mono); font-weight: 700; font-size: 13.5px; color: var(--fin-navy);">
+                        <span class="fin-mono-bold-navy-135" >
                           €<?= number_format($wire['amount'], 2) ?>
                         </span>
                       </td>
                       <td>
-                        <span style="font-family: var(--fin-font-mono); font-size: 11.5px;">
+                        <span class="fin-mono-115" >
                           <?= htmlspecialchars($wire['payment_date']) ?>
                         </span>
                       </td>
-                      <td style="text-align: right;">
+                      <td class="fin-text-right" >
                         <button class="btn btn-primary-amber btn-sm" onclick="window.finApp.reconcilePayment(<?= $wire['payment_id'] ?>, '<?= $wire['inv_id'] ?? '' ?>')">
                           <span>Reconcile ⚡</span>
                         </button>
@@ -511,4 +552,5 @@ $monthlyData = [
   <div id="toast-container"></div>
   <script src="js/app.js"></script>
 </body>
+
 </html>

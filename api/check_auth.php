@@ -1,4 +1,5 @@
 <?php
+
 /**
  * VOSTOKPRIBOR Session Verification API
  * Checks active session and confirms authorization state against the database.

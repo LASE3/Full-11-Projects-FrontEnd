@@ -4,32 +4,35 @@
    ========================================================================== */
 
 .bridge-card {
-    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
-    cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
+  cursor: pointer;
 }
 
 .bridge-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 20px -2px rgba(0, 36, 68, 0.1);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px -2px rgba(0, 36, 68, 0.1);
 }
 
 .bridge-card.active-bridge {
-    border: 2px solid #002444 !important;
-    background-color: #f1f4f9;
+  border: 2px solid #002444 !important;
+  background-color: #f1f4f9;
 }
 
 .throughput-bar {
-    transition: width 0.5s ease;
+  transition: width 0.5s ease;
 }
 
 .buffer-badge-optimal {
-    color: #006972;
+  color: #006972;
 }
 
 .buffer-badge-warn {
-    color: #d79530;
+  color: #d79530;
 }
 
 .buffer-badge-error {
-    color: #ba1a1a;
+  color: #ba1a1a;
 }

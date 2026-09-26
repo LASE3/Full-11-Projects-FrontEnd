@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Class 3: Customer Portal - Projects API (with Anti-IDOR Tenant Enforcement)
  * Location: api/v1/customer/projects.php

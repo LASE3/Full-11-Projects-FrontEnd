@@ -1,4 +1,5 @@
 <?php
+
 /**
  * HR System - Entry Point
  * Directs unauthenticated visitors to login.php first.

@@ -8,13 +8,16 @@
    ========================================================================== */
 
 .dashboard-kpi-card {
-    transition: transform var(--portal-transition-fast), box-shadow var(--portal-transition-fast), border-color var(--portal-transition-fast);
+  transition:
+    transform var(--portal-transition-fast),
+    box-shadow var(--portal-transition-fast),
+    border-color var(--portal-transition-fast);
 }
 
 .dashboard-kpi-card:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--portal-shadow-md);
-    border-color: rgba(67, 96, 132, 0.4);
+  transform: translateY(-2px);
+  box-shadow: var(--portal-shadow-md);
+  border-color: rgba(67, 96, 132, 0.4);
 }
 
 /* ==========================================================================
@@ -22,21 +25,21 @@
    ========================================================================== */
 
 .plant-status-dot {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .plant-status-dot::before {
-    content: '';
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    border-radius: 9999px;
-    background-color: var(--portal-success);
-    opacity: 0.75;
-    animation: portalBadgePulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 9999px;
+  background-color: var(--portal-success);
+  opacity: 0.75;
+  animation: portalBadgePulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
 /* ==========================================================================
@@ -44,28 +47,28 @@
    ========================================================================== */
 
 .activity-feed-timeline {
-    position: relative;
+  position: relative;
 }
 
 .activity-feed-timeline::before {
-    content: '';
-    position: absolute;
-    top: 1rem;
-    bottom: 1rem;
-    left: 1.25rem;
-    width: 2px;
-    background-color: var(--portal-surface-high);
-    z-index: 0;
+  content: "";
+  position: absolute;
+  top: 1rem;
+  bottom: 1rem;
+  left: 1.25rem;
+  width: 2px;
+  background-color: var(--portal-surface-high);
+  z-index: 0;
 }
 
 .activity-feed-item {
-    position: relative;
-    z-index: 1;
-    transition: background-color var(--portal-transition-fast);
+  position: relative;
+  z-index: 1;
+  transition: background-color var(--portal-transition-fast);
 }
 
 .activity-feed-item:hover {
-    background-color: var(--portal-surface-container);
+  background-color: var(--portal-surface-container);
 }
 
 /* ==========================================================================
@@ -73,14 +76,16 @@
    ========================================================================== */
 
 .dispatch-action-card {
-    border-left: 3px solid var(--portal-warning);
-    transition: transform var(--portal-transition-fast);
+  border-left: 3px solid var(--portal-warning);
+  transition: transform var(--portal-transition-fast);
 }
 
 .dispatch-action-card:hover {
-    transform: translateX(2px);
+  transform: translateX(2px);
 }
 
 .manager-avatar-badge {
-    box-shadow: 0 0 0 2px var(--portal-surface-lowest), 0 0 0 4px var(--portal-secondary);
+  box-shadow:
+    0 0 0 2px var(--portal-surface-lowest),
+    0 0 0 4px var(--portal-secondary);
 }

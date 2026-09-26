@@ -1,0 +1,504 @@
+@import url("https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200");
+
+.material-symbols-outlined {
+    font-family: 'Material Symbols Outlined';
+    font-weight: normal;
+    font-style: normal;
+    font-size: 24px;
+    line-height: 1;
+    letter-spacing: normal;
+    text-transform: none;
+    display: inline-block;
+    white-space: nowrap;
+    word-wrap: normal;
+    direction: ltr;
+    -webkit-font-feature-settings: 'liga';
+    font-feature-settings: 'liga';
+    -webkit-font-smoothing: antialiased;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body.vostok-integrations-page {
+    background-color: #08121e;
+    color: #E2E8F0;
+    font-family: 'IBM Plex Sans', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.vostok-top-bar {
+    height: 56px;
+    background: #0A1929;
+    border-bottom: 1px solid rgba(0, 229, 255, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 1.5rem;
+}
+
+.vostok-brand-link {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    text-decoration: none;
+    color: #FFFFFF;
+}
+
+.vostok-brand-link img {
+    height: 28px;
+    width: auto;
+}
+
+.vostok-brand-title {
+    display: flex;
+    flex-direction: column;
+}
+
+.vostok-brand-name {
+    font-weight: 700;
+    font-size: 0.9rem;
+    letter-spacing: 0.05em;
+    color: #FFFFFF;
+}
+
+.vostok-brand-system {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    color: #00E5FF;
+}
+
+.vostok-nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.vostok-btn-back {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #FFFFFF;
+    padding: 0.4rem 0.85rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    transition: all 0.2s;
+}
+
+.vostok-btn-back:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: #00E5FF;
+}
+
+.vostok-btn-signout {
+    color: #F87171;
+    border-color: rgba(239, 68, 68, 0.3);
+}
+
+.vostok-icon-sm {
+    font-size: 1rem;
+}
+
+.vostok-main-content {
+    flex: 1;
+    max-width: 88rem;
+    width: 100%;
+    margin: 0 auto;
+    padding: 1.5rem;
+}
+
+.vostok-integration-container {
+    font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    color: #E2E8F0;
+}
+
+.vostok-int-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+    padding: 1.25rem 1.5rem;
+    background: linear-gradient(135deg, #0b1929 0%, #0f2b48 100%);
+    border: 1px solid rgba(0, 229, 255, 0.2);
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.vostok-int-title-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.25rem;
+}
+
+.vostok-int-connected-label {
+    color: #64748B;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+}
+
+.vostok-int-heading {
+    margin: 0;
+    font-size: 1.35rem;
+    color: #FFFFFF;
+    font-weight: 700;
+}
+
+.vostok-int-subline {
+    font-size: 0.8rem;
+    color: #94A3B8;
+    margin-top: 0.25rem;
+}
+
+.vostok-int-status-group {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.vostok-int-clearance-box {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    color: #94A3B8;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 0.35rem 0.6rem;
+    border-radius: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.vostok-int-section-heading {
+    font-size: 1rem;
+    color: #FFFFFF;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.vostok-int-section-subheading {
+    font-size: 0.75rem;
+    font-family: 'JetBrains Mono', monospace;
+    color: #64748B;
+}
+
+.vostok-int-badge {
+    background: rgba(0, 229, 255, 0.15);
+    color: #00E5FF;
+    border: 1px solid rgba(0, 229, 255, 0.3);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 0.25rem 0.6rem;
+    border-radius: 4px;
+    letter-spacing: 0.05em;
+}
+
+.vostok-int-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+    gap: 1.25rem;
+    margin-bottom: 2rem;
+}
+
+.vostok-card {
+    background: #0d1e30;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    padding: 1.25rem;
+    transition: transform 0.2s, border-color 0.2s;
+    position: relative;
+    overflow: hidden;
+}
+
+.vostok-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(0, 229, 255, 0.4);
+}
+
+.vostok-card.outbound {
+    border-left: 4px solid #00E5FF;
+}
+
+.vostok-card.inbound {
+    border-left: 4px solid #38BDF8;
+}
+
+.vostok-card.broadcast {
+    border-left: 4px solid #F59E0B;
+}
+
+.vostok-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+}
+
+.vostok-card-link-code {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: #00E5FF;
+}
+
+.vostok-card-route {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #F1F5F9;
+    margin-top: 2px;
+}
+
+.vostok-card-direction-badge {
+    font-size: 0.65rem;
+    font-family: 'JetBrains Mono', monospace;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.06);
+    color: #94A3B8;
+}
+
+.vostok-meta-row {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.vostok-meta-label {
+    font-size: 0.7rem;
+    font-family: 'JetBrains Mono', monospace;
+    text-transform: uppercase;
+    color: #94A3B8;
+    letter-spacing: 0.06em;
+}
+
+.vostok-meta-value {
+    font-size: 0.85rem;
+    color: #F8FAFC;
+    font-weight: 500;
+    line-height: 1.4;
+}
+
+.vostok-sync-btn {
+    background: linear-gradient(135deg, #0284C7 0%, #0369A1 100%);
+    color: #FFFFFF;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 0.5rem 0.85rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    transition: all 0.2s;
+    margin-top: 0.5rem;
+    width: 100%;
+    justify-content: center;
+}
+
+.vostok-sync-btn:hover {
+    background: linear-gradient(135deg, #0369A1 0%, #0284C7 100%);
+    box-shadow: 0 0 12px rgba(2, 132, 199, 0.5);
+}
+
+.vostok-sync-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.vostok-logs-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.75rem;
+}
+
+.vostok-btn-refresh {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #94A3B8;
+    font-size: 0.75rem;
+    padding: 0.25rem 0.6rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.vostok-btn-refresh:hover {
+    border-color: #00E5FF;
+    color: #FFFFFF;
+}
+
+.vostok-logs-table-wrap {
+    background: #0d1e30;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.vostok-logs-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.8rem;
+    text-align: left;
+}
+
+.vostok-logs-table th {
+    background: rgba(0, 0, 0, 0.3);
+    color: #94A3B8;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.vostok-logs-table td {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    color: #CBD5E1;
+}
+
+.vostok-logs-table tr:hover td {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.vostok-status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 600;
+}
+
+.vostok-status-pill.success {
+    background: rgba(16, 185, 129, 0.15);
+    color: #34D399;
+    border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.vostok-status-pill.error {
+    background: rgba(239, 68, 68, 0.15);
+    color: #F87171;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.vostok-status-dot {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #34D399;
+}
+
+.text-cyan-400 { color: #00E5FF; }
+.text-sky-400 { color: #38BDF8; }
+.text-emerald-200 { color: #A7F3D0; }
+.text-emerald-400 { color: #34D399; }
+.text-amber-500 { color: #F59E0B; }
+.text-rose-400 { color: #F87171; }
+.text-slate-200 { color: #E2E8F0; }
+.text-slate-300 { color: #CBD5E1; }
+.text-slate-400 { color: #94A3B8; }
+.text-slate-500 { color: #64748B; }
+.font-mono { font-family: 'JetBrains Mono', monospace; }
+.font-semibold { font-weight: 600; }
+.font-bold { font-weight: 700; }
+.text-xs { font-size: 0.75rem; }
+.text-sm { font-size: 0.85rem; }
+.truncate { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.max-w-xs { max-width: 320px; }
+.flex { display: flex; }
+.items-center { align-items: center; }
+.justify-between { justify-content: space-between; }
+.text-center { text-align: center; }
+.p-8 { padding: 2rem; }
+
+.vostok-header-badge-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.25rem;
+}
+
+.vostok-int-title {
+    margin: 0;
+    font-size: 1.35rem;
+    color: #FFFFFF;
+    font-weight: 700;
+}
+
+.vostok-int-subtitle {
+    font-size: 0.8rem;
+    color: #94A3B8;
+    margin-top: 0.25rem;
+}
+
+.vostok-user-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    color: #94A3B8;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 0.35rem 0.6rem;
+    border-radius: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.vostok-empty-state {
+    grid-column: 1 / -1;
+    padding: 2rem;
+    text-align: center;
+    background: #0d1e30;
+    border-radius: 8px;
+}
+
+.vostok-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+}
+
+.vostok-dir-badge {
+    font-size: 0.65rem;
+    font-family: 'JetBrains Mono', monospace;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.06);
+    color: #94A3B8;
+}
+
+.w-18 { width: 70px; }
+.w-40 { width: 160px; }
+
+.vostok-section-title {
+    font-size: 1rem;
+    color: #FFFFFF;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.m-0 { margin: 0; }
+.overflow-x-auto { overflow-x: auto; }
+
+

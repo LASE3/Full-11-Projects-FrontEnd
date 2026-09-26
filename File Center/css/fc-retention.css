@@ -5,38 +5,38 @@
    ========================================================================== */
 
 .retention-meter-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 16px;
-    margin-bottom: 24px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
 }
 
 .retention-meter-card {
-    background: #ffffff;
-    border: 1px solid var(--vk-neutral-200);
-    border-radius: var(--radius-md);
-    padding: 16px 20px;
-    box-shadow: var(--shadow-sm);
+  background: #ffffff;
+  border: 1px solid var(--vk-neutral-200);
+  border-radius: var(--radius-md);
+  padding: 16px 20px;
+  box-shadow: var(--shadow-sm);
 }
 
 .retention-progress-bar {
-    height: 8px;
-    background: var(--vk-neutral-200);
-    border-radius: 4px;
-    overflow: hidden;
-    margin: 10px 0 6px 0;
+  height: 8px;
+  background: var(--vk-neutral-200);
+  border-radius: 4px;
+  overflow: hidden;
+  margin: 10px 0 6px 0;
 }
 
 .legal-hold-badge {
-    background-color: #FEE2E2;
-    color: #991B1B;
-    border: 1px solid var(--vk-alert);
-    font-family: var(--font-mono);
-    font-size: 10px;
-    font-weight: 700;
-    padding: 2px 6px;
-    border-radius: var(--radius-sm);
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
+  background-color: #fee2e2;
+  color: #991b1b;
+  border: 1px solid var(--vk-alert);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
 }

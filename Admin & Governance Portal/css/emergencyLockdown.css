@@ -4,28 +4,30 @@
    ========================================================================== */
 
 .defcon1-banner {
-    background: repeating-linear-gradient(
-        -45deg,
-        #ba1a1a,
-        #ba1a1a 20px,
-        #93000a 20px,
-        #93000a 40px
-    );
+  background: repeating-linear-gradient(
+    -45deg,
+    #ba1a1a,
+    #ba1a1a 20px,
+    #93000a 20px,
+    #93000a 40px
+  );
 }
 
 #syslogConsole {
-    background-color: #00172e;
-    color: #f7f9ff;
-    font-family: "JetBrains Mono", monospace;
-    scrollbar-width: thin;
-    scrollbar-color: #436084 #00172e;
+  background-color: #00172e;
+  color: #f7f9ff;
+  font-family: "JetBrains Mono", monospace;
+  /* Standard scrollbar (Chrome 121+, Firefox, Edge) — webkit rules below cover older browsers */
+  scrollbar-width: thin;
+  scrollbar-color: #436084 #00172e;
 }
 
+/* Webkit scrollbar styling — fallback for Safari, older Chrome & Samsung Internet */
 #syslogConsole::-webkit-scrollbar {
-    width: 6px;
+  width: 6px;
 }
 
 #syslogConsole::-webkit-scrollbar-thumb {
-    background: #436084;
-    border-radius: 3px;
+  background: #436084;
+  border-radius: 3px;
 }

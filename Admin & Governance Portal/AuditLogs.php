@@ -58,7 +58,8 @@ $metrics = gov_getGovernanceMetrics();
                 <div
                     class="hidden lg:flex items-center gap-space-xs px-space-sm py-space-2xs bg-surface-container-lowest/10 rounded font-telemetry-micro text-telemetry-micro text-on-primary">
                     <span class="material-symbols-outlined text-[14px] text-secondary-fixed">hub</span><span>10/10
-                        Ingestion Nodes Active</span></div><button
+                        Ingestion Nodes Active</span>
+                </div><button
                     class="relative p-space-xs text-on-primary hover:text-secondary-fixed transition-colors"><span
                         class="material-symbols-outlined text-[20px]">notifications</span><span
                         class="absolute top-0 right-0 w-4 h-4 bg-error text-on-error font-telemetry-micro text-[10px] leading-4 text-center font-bold rounded-full">3</span></button>
@@ -76,10 +77,10 @@ $metrics = gov_getGovernanceMetrics();
                             class="material-symbols-outlined text-on-primary text-[18px]">person</span></div>
                 </div>
             </div>
-        
-<!-- Top Bar Sign Out -->
-<a href="../api/logout.php?system=Admin%20%26%20Governance%20Portal&redirect=../Admin%20%26%20Governance%20Portal/login.php" class="top-signout-btn" title="Sign Out of Admin &amp; Governance Portal" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" style="display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:4px;background:rgba(178,58,50,0.2);border:1px solid rgba(178,58,50,0.5);color:#FF8080;font-size:12px;font-weight:600;text-decoration:none;cursor:pointer;margin-left:8px;vertical-align:middle;transition:all 0.2s;" onmouseover="this.style.background='rgba(178,58,50,0.4)';this.style.color='#FFFFFF'" onmouseout="this.style.background='rgba(178,58,50,0.2)';this.style.color='#FF8080'"><span class="material-symbols-outlined" style="font-size:15px;line-height:1;">logout</span><span>Sign Out</span></a>
-</div>
+
+            <!-- Top Bar Sign Out -->
+            <a href="../api/logout.php?system=Admin%20%26%20Governance%20Portal&redirect=../Admin%20%26%20Governance%20Portal/login.php" class="top-signout-btn" title="Sign Out of Admin &amp; Governance Portal" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" ><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
+        </div>
     </header>
     <aside
         class="fixed left-0 top-[60px] h-[calc(100vh-60px)] w-[260px] bg-primary z-40 flex flex-col justify-between border-r border-outline/30 select-none overflow-y-auto">
@@ -112,7 +113,8 @@ $metrics = gov_getGovernanceMetrics();
                             Accounts</span></div><span
                         class="font-telemetry-micro text-[10px] px-space-2xs bg-surface-variant/20 text-on-primary-container rounded">7
                         Active</span>
-                </a></nav>
+                </a>
+            </nav>
             <div class="px-space-md mb-space-xs"><span
                     class="font-label-uppercase text-label-uppercase text-on-primary-container tracking-wider">AUDIT
                     &amp; INTELLIGENCE</span></div>
@@ -139,7 +141,10 @@ $metrics = gov_getGovernanceMetrics();
                             class="font-bold uppercase">Break-Glass Access</span></div><span
                         class="material-symbols-outlined text-[16px] text-error">lock_open</span>
                 </a>
-                <a class="flex items-center justify-between px-space-sm py-space-xs rounded text-error hover:bg-error-container hover:text-on-error-container transition-all font-body-compact text-body-compact" data-path="emergency-lockdown" href="EmergencyLockdown.php"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[18px] text-error">lock</span><span class="font-bold uppercase">Emergency Lockdown</span></div><span class="font-telemetry-micro text-[10px] px-space-2xs bg-error text-on-error font-bold rounded">DEFCON-1</span></a></nav>
+                <a class="flex items-center justify-between px-space-sm py-space-xs rounded text-error hover:bg-error-container hover:text-on-error-container transition-all font-body-compact text-body-compact" data-path="emergency-lockdown" href="EmergencyLockdown.php">
+                    <div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[18px] text-error">lock</span><span class="font-bold uppercase">Emergency Lockdown</span></div><span class="font-telemetry-micro text-[10px] px-space-2xs bg-error text-on-error font-bold rounded">DEFCON-1</span>
+                </a>
+            </nav>
             <div class="px-space-md mb-space-xs"><span
                     class="font-label-uppercase text-label-uppercase text-on-primary-container tracking-wider">REGULATORY
                     &amp; RISK</span></div>
@@ -163,10 +168,11 @@ $metrics = gov_getGovernanceMetrics();
                     <div class="flex items-center gap-space-sm"><span
                             class="material-symbols-outlined text-[18px]">gavel</span><span>Compliance Oversight</span>
                     </div>
-                </a></nav>
+                </a>
+            </nav>
         </div>
-                    
-            <div class="p-space-md bg-primary-container/40 border-t border-outline/20 flex flex-col gap-space-2xs">
+
+        <div class="p-space-md bg-primary-container/40 border-t border-outline/20 flex flex-col gap-space-2xs">
             <div class="flex items-center justify-between"><span
                     class="font-security-stamp text-[10px] text-secondary-fixed-dim uppercase tracking-wider">SEC-OPS
                     FACILITY</span>
@@ -176,7 +182,8 @@ $metrics = gov_getGovernanceMetrics();
             </div>
             <div
                 class="font-telemetry-data text-telemetry-data text-on-primary font-semibold tracking-wider pt-space-2xs">
-                <span class="station-live-clock">UTC+6 (ALMATY TIME)</span></div>
+                <span class="station-live-clock">UTC+6 (ALMATY TIME)</span>
+            </div>
         </div>
     </aside>
     <div class="pl-[260px]">
@@ -361,32 +368,32 @@ $metrics = gov_getGovernanceMetrics();
                             <!-- Terminal Body / Monospaced Stream Entries -->
                             <div class="p-space-sm overflow-x-auto flex flex-col gap-[2px] max-h-[580px] overflow-y-auto"
                                 id="terminalStreamBox">
-                                <?php foreach ($auditLogs as $idx => $al): 
+                                <?php foreach ($auditLogs as $idx => $al):
                                     $isCrit = ($al['result'] === 'Failed' || strpos($al['action'], 'Override') !== false || strpos($al['action'], 'Breach') !== false || strpos($al['action'], 'Revocation') !== false);
                                     $isWarn = ($al['result'] === 'Warning');
                                     $sysLabel = !empty($al['system_id']) ? $al['system_id'] : (!empty($al['actor_system']) ? $al['actor_system'] : 'SYS-11');
                                 ?>
-                                <div class="flex items-start gap-space-xs font-telemetry-data text-telemetry-data py-space-2xs px-space-xs <?= $isCrit ? 'bg-error-container/20 rounded hover:bg-error-container/30' : 'hover:bg-surface-container-highest/10' ?> transition-colors">
-                                    <span class="text-on-primary-container select-none font-telemetry-micro w-8 text-right shrink-0"><?= sprintf('%04d', $al['audit_id']) ?></span>
-                                    <span class="text-secondary-fixed shrink-0 font-telemetry-micro"><?= htmlspecialchars($al['occurred_at']) ?></span>
-                                    <?php if ($isCrit): ?>
-                                        <span class="bg-error text-on-error px-space-2xs py-0 rounded font-security-stamp text-security-stamp shrink-0">CRITICAL</span>
-                                    <?php elseif ($isWarn): ?>
-                                        <span class="bg-tertiary-container text-tertiary-fixed px-space-2xs py-0 rounded font-security-stamp text-security-stamp shrink-0">WARN</span>
-                                    <?php else: ?>
-                                        <span class="bg-primary-container text-on-primary-container px-space-2xs py-0 rounded font-security-stamp text-security-stamp shrink-0">INFO</span>
-                                    <?php endif; ?>
-                                    <span class="text-secondary-fixed-dim font-bold shrink-0">[<?= htmlspecialchars($sysLabel) ?>]</span>
-                                    <span class="text-tertiary-fixed-dim shrink-0">[<?= htmlspecialchars($al['action']) ?>]</span>
-                                    <span class="text-on-primary">
-                                        <strong class="text-secondary-fixed underline"><?= htmlspecialchars($al['actor_emp_id'] ?? 'SYS-AUTO') ?></strong> 
-                                        (<?= htmlspecialchars($al['actor_name'] ?? 'System Service') ?>)
-                                        <?= htmlspecialchars($al['action']) ?> on <?= htmlspecialchars($al['target_entity_type'] ?? 'SYS') ?>:<?= htmlspecialchars($al['target_entity_id'] ?? 'CORE') ?> 
-                                        [Result: <span class="<?= ($al['result'] === 'Success') ? 'text-secondary-fixed font-bold' : 'text-error font-bold' ?>"><?= htmlspecialchars($al['result']) ?></span>, IP: <?= htmlspecialchars($al['source_ip'] ?? '10.240.0.1') ?>]
-                                    </span>
-                                </div>
+                                    <div class="flex items-start gap-space-xs font-telemetry-data text-telemetry-data py-space-2xs px-space-xs <?= $isCrit ? 'bg-error-container/20 rounded hover:bg-error-container/30' : 'hover:bg-surface-container-highest/10' ?> transition-colors">
+                                        <span class="text-on-primary-container select-none font-telemetry-micro w-8 text-right shrink-0"><?= sprintf('%04d', $al['audit_id']) ?></span>
+                                        <span class="text-secondary-fixed shrink-0 font-telemetry-micro"><?= htmlspecialchars($al['occurred_at']) ?></span>
+                                        <?php if ($isCrit): ?>
+                                            <span class="bg-error text-on-error px-space-2xs py-0 rounded font-security-stamp text-security-stamp shrink-0">CRITICAL</span>
+                                        <?php elseif ($isWarn): ?>
+                                            <span class="bg-tertiary-container text-tertiary-fixed px-space-2xs py-0 rounded font-security-stamp text-security-stamp shrink-0">WARN</span>
+                                        <?php else: ?>
+                                            <span class="bg-primary-container text-on-primary-container px-space-2xs py-0 rounded font-security-stamp text-security-stamp shrink-0">INFO</span>
+                                        <?php endif; ?>
+                                        <span class="text-secondary-fixed-dim font-bold shrink-0">[<?= htmlspecialchars($sysLabel) ?>]</span>
+                                        <span class="text-tertiary-fixed-dim shrink-0">[<?= htmlspecialchars($al['action']) ?>]</span>
+                                        <span class="text-on-primary">
+                                            <strong class="text-secondary-fixed underline"><?= htmlspecialchars($al['actor_emp_id'] ?? 'SYS-AUTO') ?></strong>
+                                            (<?= htmlspecialchars($al['actor_name'] ?? 'System Service') ?>)
+                                            <?= htmlspecialchars($al['action']) ?> on <?= htmlspecialchars($al['target_entity_type'] ?? 'SYS') ?>:<?= htmlspecialchars($al['target_entity_id'] ?? 'CORE') ?>
+                                            [Result: <span class="<?= ($al['result'] === 'Success') ? 'text-secondary-fixed font-bold' : 'text-error font-bold' ?>"><?= htmlspecialchars($al['result']) ?></span>, IP: <?= htmlspecialchars($al['source_ip'] ?? '10.240.0.1') ?>]
+                                        </span>
+                                    </div>
                                 <?php endforeach; ?>
-                            </div>\n                            <!-- Terminal Footer Status & Command Input Simulator -->
+                            </div>\n <!-- Terminal Footer Status & Command Input Simulator -->
                             <div
                                 class="h-[32px] bg-primary-container/80 px-space-md flex items-center justify-between font-telemetry-micro text-telemetry-micro text-on-primary-container">
                                 <div class="flex items-center gap-space-xs">
@@ -748,7 +755,7 @@ $metrics = gov_getGovernanceMetrics();
                     </div>
                 </div>
             </div>
-            
+
         </main>
     </div>
     <script src="js/common.js"></script>

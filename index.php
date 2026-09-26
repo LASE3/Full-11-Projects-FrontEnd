@@ -1,4 +1,5 @@
 <?php
+
 /**
  * VOSTOKPRIBOR Central Ecosystem Launchpad
  * Unified Command Gateway to all 11 enterprise front-end systems.
@@ -129,6 +130,7 @@ $systems = [
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -139,49 +141,11 @@ $systems = [
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        brand: {
-                            navy: '#0B1520',
-                            panel: '#111D2B',
-                            card: '#162536',
-                            border: '#24374E',
-                            accent: '#0E7C86',
-                            gold: '#E8A33D'
-                        }
-                    },
-                    fontFamily: {
-                        sans: ['IBM Plex Sans', 'sans-serif'],
-                        mono: ['JetBrains Mono', 'monospace']
-                    }
-                }
-            }
-        }
-    </script>
-    <style>
-        body {
-            background-color: #0B1520;
-            background-image: 
-                radial-gradient(circle at 10% 20%, rgba(14, 124, 134, 0.08) 0%, transparent 40%),
-                radial-gradient(circle at 90% 80%, rgba(178, 58, 50, 0.06) 0%, transparent 40%),
-                linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
-            background-size: 100% 100%, 100% 100%, 32px 32px, 32px 32px;
-        }
-        .system-card {
-            transition: all 0.25s ease;
-        }
-        .system-card:hover {
-            transform: translateY(-3px);
-            border-color: rgba(14, 124, 134, 0.6);
-            box-shadow: 0 12px 24px -10px rgba(0,0,0,0.5);
-        }
-    </style>
+    <script src="assets/js/launchpad-tailwind.js"></script>
+    <link rel="stylesheet" href="assets/css/launchpad.css">
 </head>
-<body class="text-slate-200 font-sans min-h-screen flex flex-col antialiased">
+
+<body class="vostok-launchpad text-slate-200 font-sans min-h-screen flex flex-col antialiased">
 
     <!-- Top Command Header -->
     <header class="border-b border-brand-border/60 bg-brand-panel/90 backdrop-blur-md sticky top-0 z-50">
@@ -223,69 +187,69 @@ $systems = [
         <!-- System Grid -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             <?php foreach ($systems as $sys): ?>
-            <div class="system-card bg-brand-card rounded-lg border border-brand-border flex flex-col justify-between overflow-hidden">
-                <!-- Card Header Accent -->
-                <div class="h-1 w-full" style="background-color: <?= $sys['accent'] ?>;"></div>
-                
-                <div class="p-5 flex-1 flex flex-col">
-                    <div class="flex items-start justify-between gap-3 mb-3">
-                        <div class="flex items-center gap-2.5">
-                            <div class="w-9 h-9 rounded flex items-center justify-center text-white shrink-0" style="background-color: <?= $sys['accent'] ?>20; border: 1px solid <?= $sys['accent'] ?>40;">
-                                <span class="material-symbols-outlined text-lg" style="color: <?= $sys['accent'] ?>;"><?= $sys['icon'] ?></span>
+                <div class="system-card bg-brand-card rounded-lg border border-brand-border flex flex-col justify-between overflow-hidden">
+                    <!-- Card Header Accent -->
+                    <div class="h-1 w-full" style="background-color: <?= $sys['accent'] ?>;"></div>
+
+                    <div class="p-5 flex-1 flex flex-col">
+                        <div class="flex items-start justify-between gap-3 mb-3">
+                            <div class="flex items-center gap-2.5">
+                                <div class="w-9 h-9 rounded flex items-center justify-center text-white shrink-0" style="background-color: <?= $sys['accent'] ?>20; border: 1px solid <?= $sys['accent'] ?>40;">
+                                    <span class="material-symbols-outlined text-lg" style="color: <?= $sys['accent'] ?>;"><?= $sys['icon'] ?></span>
+                                </div>
+                                <div>
+                                    <span class="text-[10px] font-mono text-slate-400 font-medium">SYSTEM <?= $sys['id'] ?> // <?= $sys['code'] ?></span>
+                                    <h3 class="font-bold text-white text-base leading-snug"><?= $sys['name'] ?></h3>
+                                </div>
                             </div>
-                            <div>
-                                <span class="text-[10px] font-mono text-slate-400 font-medium">SYSTEM <?= $sys['id'] ?> // <?= $sys['code'] ?></span>
-                                <h3 class="font-bold text-white text-base leading-snug"><?= $sys['name'] ?></h3>
-                            </div>
+                            <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-brand-panel border border-brand-border text-slate-300 shrink-0">
+                                <?= $sys['classification'] ?>
+                            </span>
                         </div>
-                        <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-brand-panel border border-brand-border text-slate-300 shrink-0">
-                            <?= $sys['classification'] ?>
-                        </span>
-                    </div>
 
-                    <p class="text-xs text-slate-400 leading-relaxed mb-4 flex-1">
-                        <?= $sys['desc'] ?>
-                    </p>
+                        <p class="text-xs text-slate-400 leading-relaxed mb-4 flex-1">
+                            <?= $sys['desc'] ?>
+                        </p>
 
-                    <div class="text-[11px] font-mono text-slate-400 bg-brand-panel/60 px-3 py-1.5 rounded border border-brand-border/40 mb-4 flex items-center justify-between">
-                        <span class="text-slate-400">Route:</span>
-                        <span class="text-slate-200 truncate ml-2"><?= htmlspecialchars($sys['dir']) ?>/</span>
-                    </div>
+                        <div class="text-[11px] font-mono text-slate-400 bg-brand-panel/60 px-3 py-1.5 rounded border border-brand-border/40 mb-4 flex items-center justify-between">
+                            <span class="text-slate-400">Route:</span>
+                            <span class="text-slate-200 truncate ml-2"><?= htmlspecialchars($sys['dir']) ?>/</span>
+                        </div>
 
-                    <!-- Action Buttons -->
-                    <div class="flex items-center gap-2 pt-2 border-t border-brand-border/40">
-                        <?php if ($sys['code'] === 'WEB'): ?>
-                        <a href="<?= rawurlencode($sys['dir']) ?>/index.php" 
-                           class="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded text-xs font-semibold text-white transition-colors"
-                           style="background-color: <?= $sys['accent'] ?>; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">
-                            <span class="material-symbols-outlined text-sm">public</span>
-                            <span>View Corporate Site</span>
-                        </a>
-                        <?php else: ?>
-                        <a href="<?= rawurlencode($sys['dir']) ?>/login.php" 
-                           class="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded text-xs font-semibold text-white transition-colors"
-                           style="background-color: <?= $sys['accent'] ?>; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">
-                            <span class="material-symbols-outlined text-sm">login</span>
-                            <span>Open Login</span>
-                        </a>
-                        <a href="<?= rawurlencode($sys['dir']) ?>/" 
-                           class="inline-flex items-center justify-center gap-1 px-3 py-2 rounded text-xs font-mono text-slate-300 bg-brand-panel hover:bg-brand-border border border-brand-border transition-colors"
-                           title="Launch system root entry (opens login first)">
-                            <span class="material-symbols-outlined text-sm">open_in_new</span>
-                            <span>Run</span>
-                        </a>
-                        <?php endif; ?>
+                        <!-- Action Buttons -->
+                        <div class="flex items-center gap-2 pt-2 border-t border-brand-border/40">
+                            <?php if ($sys['code'] === 'WEB'): ?>
+                                <a href="<?= rawurlencode($sys['dir']) ?>/index.php"
+                                    class="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded text-xs font-semibold text-white transition-colors"
+                                    style="background-color: <?= $sys['accent'] ?>; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">
+                                    <span class="material-symbols-outlined text-sm">public</span>
+                                    <span>View Corporate Site</span>
+                                </a>
+                            <?php else: ?>
+                                <a href="<?= rawurlencode($sys['dir']) ?>/login.php"
+                                    class="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded text-xs font-semibold text-white transition-colors"
+                                    style="background-color: <?= $sys['accent'] ?>; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">
+                                    <span class="material-symbols-outlined text-sm">login</span>
+                                    <span>Open Login</span>
+                                </a>
+                                <a href="<?= rawurlencode($sys['dir']) ?>/"
+                                    class="inline-flex items-center justify-center gap-1 px-3 py-2 rounded text-xs font-mono text-slate-300 bg-brand-panel hover:bg-brand-border border border-brand-border transition-colors"
+                                    title="Launch system root entry (opens login first)">
+                                    <span class="material-symbols-outlined text-sm">open_in_new</span>
+                                    <span>Run</span>
+                                </a>
+                            <?php endif; ?>
+                        </div>
                     </div>
                 </div>
-            </div>
             <?php endforeach; ?>
         </div>
     </main>
 
-    <!-- Footer -->
-    <footer class="border-t border-brand-border/40 bg-brand-panel py-6 text-center text-xs text-slate-400 font-mono">
+        <footer class="border-t border-brand-border/40 bg-brand-panel py-6 text-center text-xs text-slate-400 font-mono">
         <p>&copy; 2026 VOSTOKPRIBOR Industrial Group · All 11 Projects Unified Architecture</p>
     </footer>
 
 </body>
+
 </html>

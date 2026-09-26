@@ -1,4 +1,5 @@
 <?php
+
 /**
  * VOSTOKPRIBOR HR System - Action Dispatcher API
  * Handles asynchronous AJAX actions for HR management operations:

@@ -1,0 +1,42 @@
+/**
+ * VOSTOKPRIBOR Ecosystem Global Styles & Cross-System Utilities
+ */
+
+/* Unified Top Sign-Out Button */
+.top-signout-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 12px;
+  border-radius: 4px;
+  background: rgba(178, 58, 50, 0.2);
+  border: 1px solid rgba(178, 58, 50, 0.5);
+  color: #ff8080;
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  margin-left: 8px;
+  vertical-align: middle;
+  transition: all 0.2s ease;
+}
+
+.top-signout-btn:hover {
+  background: rgba(178, 58, 50, 0.4);
+  color: #ffffff;
+}
+
+.top-signout-btn .material-symbols-outlined {
+  font-size: 15px;
+  line-height: 1;
+}
+
+/* Universal Utilities */
+.hidden {
+  display: none !important;
+}
+
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+}

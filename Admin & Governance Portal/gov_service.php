@@ -1,4 +1,5 @@
 <?php
+
 /**
  * VOSTOKPRIBOR System 11 // GOV-CORE
  * Centralized Governance Data Service
@@ -11,7 +12,8 @@ require_once __DIR__ . '/../includes/auth_guard.php';
 /**
  * Get active user session details for header
  */
-function gov_getActiveUserProfile() {
+function gov_getActiveUserProfile()
+{
     if (!empty($_SESSION['vostok_user'])) {
         return $_SESSION['vostok_user'];
     }
@@ -26,9 +28,10 @@ function gov_getActiveUserProfile() {
 /**
  * Get Telemetry Grid (Employees, System Permits 01-11, Attestation, Status)
  */
-function gov_getTelemetryGridData($filter = 'ALL', $search = '') {
+function gov_getTelemetryGridData($filter = 'ALL', $search = '')
+{
     $pdo = getDbConnection();
-    
+
     // We join employees, departments, roles, employee_accounts, access_reviews
     // Hide EMP-0001 (internal master root admin account) from employee directory per user directive
     $sql = "
@@ -64,7 +67,7 @@ function gov_getTelemetryGridData($filter = 'ALL', $search = '') {
             END,
             e.emp_id ASC
     ";
-    
+
     $rows = $pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
 
     // Fetch role_system_access map
@@ -142,15 +145,16 @@ function gov_getTelemetryGridData($filter = 'ALL', $search = '') {
 /**
  * Get Attestation Summary Metrics
  */
-function gov_getGovernanceMetrics() {
+function gov_getGovernanceMetrics()
+{
     $pdo = getDbConnection();
-    
+
     $totalEmployees = $pdo->query("SELECT COUNT(*) FROM employees WHERE emp_id != 'EMP-0001'")->fetchColumn();
     $orphanedCount = $pdo->query("SELECT COUNT(*) FROM employees WHERE employment_status = 'Suspended' OR employment_status = 'Terminated'")->fetchColumn();
     $attestedCount = $pdo->query("SELECT COUNT(*) FROM access_reviews WHERE action_taken LIKE '%Attested%' OR action_taken LIKE '%Validated%'")->fetchColumn();
     $pendingCount = $pdo->query("SELECT COUNT(*) FROM access_reviews WHERE action_taken LIKE '%Pending%'")->fetchColumn();
     $elevatedCount = $pdo->query("SELECT COUNT(*) FROM employees WHERE clearance_level = 'L4' AND emp_id != 'EMP-0001'")->fetchColumn();
-    
+
     $percentage = ($totalEmployees > 0) ? round(($attestedCount / $totalEmployees) * 100) : 85;
 
     // Dual-custody audit signers from DB
@@ -175,9 +179,10 @@ function gov_getGovernanceMetrics() {
 /**
  * Get Critical Anomaly / Remediation Desk Record
  */
-function gov_getCriticalAnomaly() {
+function gov_getCriticalAnomaly()
+{
     $pdo = getDbConnection();
-    
+
     // Look for security event with Critical severity or orphaned account
     $event = $pdo->query("
         SELECT se.*, e.full_name, e.job_title, e.department_code, d.dept_name, ea.last_login
@@ -206,7 +211,8 @@ function gov_getCriticalAnomaly() {
 /**
  * Get Role Catalog & Matrix
  */
-function gov_getRolesCatalog() {
+function gov_getRolesCatalog()
+{
     $pdo = getDbConnection();
     $roles = $pdo->query("
         SELECT r.*, COUNT(er.emp_id) AS assignee_count
@@ -232,7 +238,8 @@ function gov_getRolesCatalog() {
 /**
  * Get Privileged Accounts (L3, L4, Root)
  */
-function gov_getPrivilegedAccounts() {
+function gov_getPrivilegedAccounts()
+{
     $pdo = getDbConnection();
     $sql = "
         SELECT 
@@ -260,7 +267,8 @@ function gov_getPrivilegedAccounts() {
 /**
  * Get Unified Audit Logs
  */
-function gov_getUnifiedAuditLogs($limit = 30) {
+function gov_getUnifiedAuditLogs($limit = 30)
+{
     $pdo = getDbConnection();
     $sql = "
         SELECT 
@@ -286,7 +294,8 @@ function gov_getUnifiedAuditLogs($limit = 30) {
 /**
  * Get Ingestion Bridges & Relays
  */
-function gov_getIngestionBridges() {
+function gov_getIngestionBridges()
+{
     $pdo = getDbConnection();
     return $pdo->query("
         SELECT si.*, 
@@ -300,7 +309,8 @@ function gov_getIngestionBridges() {
 /**
  * Get Enterprise Security Policies
  */
-function gov_getSecurityPolicies() {
+function gov_getSecurityPolicies()
+{
     $pdo = getDbConnection();
     return $pdo->query("SELECT * FROM security_policies ORDER BY policy_id ASC")->fetchAll(PDO::FETCH_ASSOC);
 }
@@ -308,7 +318,8 @@ function gov_getSecurityPolicies() {
 /**
  * Get Board Risk Register
  */
-function gov_getRiskRegister() {
+function gov_getRiskRegister()
+{
     $pdo = getDbConnection();
     return $pdo->query("
         SELECT rr.*, e.full_name AS owner_name, e.job_title AS owner_title
@@ -323,7 +334,8 @@ function gov_getRiskRegister() {
 /**
  * Get Systems Catalog for Emergency Lockdown Matrix
  */
-function gov_getSystemsLockdownMatrix() {
+function gov_getSystemsLockdownMatrix()
+{
     $pdo = getDbConnection();
     return $pdo->query("SELECT * FROM systems_catalog ORDER BY system_id ASC")->fetchAll(PDO::FETCH_ASSOC);
 }
@@ -331,7 +343,8 @@ function gov_getSystemsLockdownMatrix() {
 /**
  * Get Break-Glass Events
  */
-function gov_getBreakGlassEvents() {
+function gov_getBreakGlassEvents()
+{
     $pdo = getDbConnection();
     return $pdo->query("
         SELECT se.*, e.full_name AS actor_name 
@@ -344,7 +357,8 @@ function gov_getBreakGlassEvents() {
 /**
  * Get Compliance Oversight Data (Access Reviews & Incidents)
  */
-function gov_getComplianceOversight() {
+function gov_getComplianceOversight()
+{
     $pdo = getDbConnection();
     $reviews = $pdo->query("
         SELECT ar.*, e.full_name AS emp_name, e.job_title, e.department_code, rev.full_name AS reviewer_name
@@ -366,4 +380,3 @@ function gov_getComplianceOversight() {
         'incidents' => $incidents
     ];
 }
-

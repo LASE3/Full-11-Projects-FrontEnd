@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Class 4: Employee Intranet - Announcements API
  * Location: api/v1/intranet/announcements.php
@@ -79,9 +80,15 @@ if ($method === 'POST') {
         $newId = $pdo->lastInsertId();
 
         AuditLogger::logAction(
-            $authorEmp, null, 'Employee Intranet', 'EMP',
-            'PUBLISH_CORPORATE_ANNOUNCEMENT', 'announcements', (string)$newId,
-            ['title' => $title, 'audience_dept' => $targetDept], 'SUCCESS'
+            $authorEmp,
+            null,
+            'Employee Intranet',
+            'EMP',
+            'PUBLISH_CORPORATE_ANNOUNCEMENT',
+            'announcements',
+            (string)$newId,
+            ['title' => $title, 'audience_dept' => $targetDept],
+            'SUCCESS'
         );
 
         Response::success(['announcement_id' => (int)$newId], "Announcement published successfully", 201);

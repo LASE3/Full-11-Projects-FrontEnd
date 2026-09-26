@@ -242,7 +242,12 @@
         window.crmApp.renderKanban();
         return;
       }
-        byStage[o.stage].push(o);
+
+      const byStage = {};
+      opps.forEach(o => {
+        const stage = (o.stage || 'qualification').toLowerCase();
+        if (!byStage[stage]) byStage[stage] = [];
+        byStage[stage].push(o);
       });
 
       // Inject into each column that has data-stage attribute

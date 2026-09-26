@@ -29,43 +29,214 @@
  */
 
 (function () {
-
   // ──────────────────────────────────────────────────────────
   // 1. SYSTEM IDENTITY MAP  (tag text → official brand token)
   //    Matches the auth-system-tag span in every login.php
   // ──────────────────────────────────────────────────────────
   const SYSTEM_PRESETS = {
-    'CORP':     { accent: '#1B3A5C', hover: '#0F2438', glow: 'rgba(27,58,92,0.45)',   bg1: '#060D14', bg2: '#030810', label: '01 · CORPORATE' },
-    'SYS-00':   { accent: '#1B3A5C', hover: '#0F2438', glow: 'rgba(27,58,92,0.45)',   bg1: '#060D14', bg2: '#030810', label: '01 · CORPORATE' },
-    'SYS-01':   { accent: '#1B3A5C', hover: '#0F2438', glow: 'rgba(27,58,92,0.45)',   bg1: '#060D14', bg2: '#030810', label: '01 · CORPORATE' },
-    'SHOP':     { accent: '#0E7C86', hover: '#095d65', glow: 'rgba(14,124,134,0.45)', bg1: '#04101A', bg2: '#020B0C', label: '02 · B2B SHOP'   },
-    'SYS-02':   { accent: '#0E7C86', hover: '#095d65', glow: 'rgba(14,124,134,0.45)', bg1: '#04101A', bg2: '#020B0C', label: '02 · B2B SHOP'   },
-    'SYS-09':   { accent: '#E8A33D', hover: '#D4902B', glow: 'rgba(232,163,61,0.45)', bg1: '#191106', bg2: '#0E0903', label: '03 · CUSTOMER'   },
-    'SYS-03':   { accent: '#5C7290', hover: '#47596f', glow: 'rgba(92,114,144,0.45)', bg1: '#0B0F13', bg2: '#06090C', label: '04 · INTRANET'   },
-    'INTRANET': { accent: '#5C7290', hover: '#47596f', glow: 'rgba(92,114,144,0.45)', bg1: '#0B0F13', bg2: '#06090C', label: '04 · INTRANET'   },
-    'SYS-05':   { accent: '#3B4C8C', hover: '#2d3a6b', glow: 'rgba(59,76,140,0.45)', bg1: '#080C18', bg2: '#04060F', label: '05 · CRM'        },
-    'CRM':      { accent: '#3B4C8C', hover: '#2d3a6b', glow: 'rgba(59,76,140,0.45)', bg1: '#080C18', bg2: '#04060F', label: '05 · CRM'        },
-    'SYS-06':   { accent: '#6E4C7C', hover: '#553761', glow: 'rgba(110,76,124,0.45)',bg1: '#0D0910', bg2: '#07050B', label: '06 · HR'         },
-    'HR':       { accent: '#6E4C7C', hover: '#553761', glow: 'rgba(110,76,124,0.45)',bg1: '#0D0910', bg2: '#07050B', label: '06 · HR'         },
-    'SYS-04':   { accent: '#2E6E4E', hover: '#22533B', glow: 'rgba(46,110,78,0.45)', bg1: '#060F09', bg2: '#030805', label: '07 · FINANCE'    },
-    'FINANCE':  { accent: '#2E6E4E', hover: '#22533B', glow: 'rgba(46,110,78,0.45)', bg1: '#060F09', bg2: '#030805', label: '07 · FINANCE'    },
-    'SYS-08':   { accent: '#C97A3D', hover: '#A65E2A', glow: 'rgba(201,122,61,0.45)',bg1: '#160C05', bg2: '#0D0703', label: '08 · HELPDESK'   },
-    'HELPDESK': { accent: '#C97A3D', hover: '#A65E2A', glow: 'rgba(201,122,61,0.45)',bg1: '#160C05', bg2: '#0D0703', label: '08 · HELPDESK'   },
-    'SYS-07':   { accent: '#5A6470', hover: '#434D57', glow: 'rgba(90,100,112,0.45)',bg1: '#0A0C0E', bg2: '#050607', label: '09 · FILE CENTER' },
-    'FILE':     { accent: '#5A6470', hover: '#434D57', glow: 'rgba(90,100,112,0.45)',bg1: '#0A0C0E', bg2: '#050607', label: '09 · FILE CENTER' },
-    'SYS-10':   { accent: '#1E8FA6', hover: '#156B7D', glow: 'rgba(30,143,166,0.45)',bg1: '#041014', bg2: '#02080D', label: '10 · DEVELOPER'  },
-    'DEVELOPER':{ accent: '#1E8FA6', hover: '#156B7D', glow: 'rgba(30,143,166,0.45)',bg1: '#041014', bg2: '#02080D', label: '10 · DEVELOPER'  },
-    'SYS-11':   { accent: '#B23A32', hover: '#8F2C25', glow: 'rgba(178,58,50,0.5)',  bg1: '#150606', bg2: '#0D0303', label: '11 · ADMIN'      },
-    'ADMIN':    { accent: '#B23A32', hover: '#8F2C25', glow: 'rgba(178,58,50,0.5)',  bg1: '#150606', bg2: '#0D0303', label: '11 · ADMIN'      },
+    CORP: {
+      accent: "#1B3A5C",
+      hover: "#0F2438",
+      glow: "rgba(27,58,92,0.45)",
+      bg1: "#060D14",
+      bg2: "#030810",
+      label: "01 · CORPORATE",
+    },
+    "SYS-00": {
+      accent: "#1B3A5C",
+      hover: "#0F2438",
+      glow: "rgba(27,58,92,0.45)",
+      bg1: "#060D14",
+      bg2: "#030810",
+      label: "01 · CORPORATE",
+    },
+    "SYS-01": {
+      accent: "#1B3A5C",
+      hover: "#0F2438",
+      glow: "rgba(27,58,92,0.45)",
+      bg1: "#060D14",
+      bg2: "#030810",
+      label: "01 · CORPORATE",
+    },
+    SHOP: {
+      accent: "#0E7C86",
+      hover: "#095d65",
+      glow: "rgba(14,124,134,0.45)",
+      bg1: "#04101A",
+      bg2: "#020B0C",
+      label: "02 · B2B SHOP",
+    },
+    "SYS-02": {
+      accent: "#0E7C86",
+      hover: "#095d65",
+      glow: "rgba(14,124,134,0.45)",
+      bg1: "#04101A",
+      bg2: "#020B0C",
+      label: "02 · B2B SHOP",
+    },
+    "SYS-09": {
+      accent: "#E8A33D",
+      hover: "#D4902B",
+      glow: "rgba(232,163,61,0.45)",
+      bg1: "#191106",
+      bg2: "#0E0903",
+      label: "03 · CUSTOMER",
+    },
+    "SYS-03": {
+      accent: "#5C7290",
+      hover: "#47596f",
+      glow: "rgba(92,114,144,0.45)",
+      bg1: "#0B0F13",
+      bg2: "#06090C",
+      label: "04 · INTRANET",
+    },
+    INTRANET: {
+      accent: "#5C7290",
+      hover: "#47596f",
+      glow: "rgba(92,114,144,0.45)",
+      bg1: "#0B0F13",
+      bg2: "#06090C",
+      label: "04 · INTRANET",
+    },
+    "SYS-05": {
+      accent: "#3B4C8C",
+      hover: "#2d3a6b",
+      glow: "rgba(59,76,140,0.45)",
+      bg1: "#080C18",
+      bg2: "#04060F",
+      label: "05 · CRM",
+    },
+    CRM: {
+      accent: "#3B4C8C",
+      hover: "#2d3a6b",
+      glow: "rgba(59,76,140,0.45)",
+      bg1: "#080C18",
+      bg2: "#04060F",
+      label: "05 · CRM",
+    },
+    "SYS-06": {
+      accent: "#6E4C7C",
+      hover: "#553761",
+      glow: "rgba(110,76,124,0.45)",
+      bg1: "#0D0910",
+      bg2: "#07050B",
+      label: "06 · HR",
+    },
+    HR: {
+      accent: "#6E4C7C",
+      hover: "#553761",
+      glow: "rgba(110,76,124,0.45)",
+      bg1: "#0D0910",
+      bg2: "#07050B",
+      label: "06 · HR",
+    },
+    "SYS-04": {
+      accent: "#2E6E4E",
+      hover: "#22533B",
+      glow: "rgba(46,110,78,0.45)",
+      bg1: "#060F09",
+      bg2: "#030805",
+      label: "07 · FINANCE",
+    },
+    FINANCE: {
+      accent: "#2E6E4E",
+      hover: "#22533B",
+      glow: "rgba(46,110,78,0.45)",
+      bg1: "#060F09",
+      bg2: "#030805",
+      label: "07 · FINANCE",
+    },
+    "SYS-08": {
+      accent: "#C97A3D",
+      hover: "#A65E2A",
+      glow: "rgba(201,122,61,0.45)",
+      bg1: "#160C05",
+      bg2: "#0D0703",
+      label: "08 · HELPDESK",
+    },
+    HELPDESK: {
+      accent: "#C97A3D",
+      hover: "#A65E2A",
+      glow: "rgba(201,122,61,0.45)",
+      bg1: "#160C05",
+      bg2: "#0D0703",
+      label: "08 · HELPDESK",
+    },
+    "SYS-07": {
+      accent: "#5A6470",
+      hover: "#434D57",
+      glow: "rgba(90,100,112,0.45)",
+      bg1: "#0A0C0E",
+      bg2: "#050607",
+      label: "09 · FILE CENTER",
+    },
+    FILE: {
+      accent: "#5A6470",
+      hover: "#434D57",
+      glow: "rgba(90,100,112,0.45)",
+      bg1: "#0A0C0E",
+      bg2: "#050607",
+      label: "09 · FILE CENTER",
+    },
+    "SYS-10": {
+      accent: "#1E8FA6",
+      hover: "#156B7D",
+      glow: "rgba(30,143,166,0.45)",
+      bg1: "#041014",
+      bg2: "#02080D",
+      label: "10 · DEVELOPER",
+    },
+    DEVELOPER: {
+      accent: "#1E8FA6",
+      hover: "#156B7D",
+      glow: "rgba(30,143,166,0.45)",
+      bg1: "#041014",
+      bg2: "#02080D",
+      label: "10 · DEVELOPER",
+    },
+    "SYS-11": {
+      accent: "#B23A32",
+      hover: "#8F2C25",
+      glow: "rgba(178,58,50,0.5)",
+      bg1: "#150606",
+      bg2: "#0D0303",
+      label: "11 · ADMIN",
+    },
+    ADMIN: {
+      accent: "#B23A32",
+      hover: "#8F2C25",
+      glow: "rgba(178,58,50,0.5)",
+      bg1: "#150606",
+      bg2: "#0D0303",
+      label: "11 · ADMIN",
+    },
   };
 
   // ──────────────────────────────────────────────────────────
   // 2. SENTIMENT OVERRIDE THEMES (keyword-triggered)
   // ──────────────────────────────────────────────────────────
   const SENTIMENT = {
-    error:   { accent: '#B23A32', hover: '#8F2C25', glow: 'rgba(178,58,50,0.5)',  bg1: '#1C0808', bg2: '#0F0404' },
-    success: { accent: '#1E7E4E', hover: '#16623D', glow: 'rgba(30,126,78,0.45)', bg1: '#051209', bg2: '#030905' },
-    warning: { accent: '#E8A33D', hover: '#D9822B', glow: 'rgba(232,163,61,0.45)',bg1: '#1A1104', bg2: '#0D0A02' },
+    error: {
+      accent: "#B23A32",
+      hover: "#8F2C25",
+      glow: "rgba(178,58,50,0.5)",
+      bg1: "#1C0808",
+      bg2: "#0F0404",
+    },
+    success: {
+      accent: "#1E7E4E",
+      hover: "#16623D",
+      glow: "rgba(30,126,78,0.45)",
+      bg1: "#051209",
+      bg2: "#030905",
+    },
+    warning: {
+      accent: "#E8A33D",
+      hover: "#D9822B",
+      glow: "rgba(232,163,61,0.45)",
+      bg1: "#1A1104",
+      bg2: "#0D0A02",
+    },
   };
 
   // ──────────────────────────────────────────────────────────
@@ -79,23 +250,33 @@
   function applyTheme(preset) {
     const r = document.documentElement;
     // Standard CSS variables the user requested
-    r.style.setProperty('--bg-color',      preset.bg2);
-    r.style.setProperty('--button-color',  preset.accent);
-    r.style.setProperty('--text-color',    '#F8FAFC');
+    r.style.setProperty("--bg-color", preset.bg2);
+    r.style.setProperty("--button-color", preset.accent);
+    r.style.setProperty("--text-color", "#F8FAFC");
 
     // Full auth-accent suite
-    r.style.setProperty('--auth-accent',        preset.accent);
-    r.style.setProperty('--auth-accent-hover',  preset.hover);
-    r.style.setProperty('--auth-accent-glow',   preset.glow);
-    r.style.setProperty('--auth-accent-subtle', preset.glow.replace(/[\d.]+\)$/, '0.12)'));
-    r.style.setProperty('--auth-accent-border', preset.glow.replace(/[\d.]+\)$/, '0.35)'));
+    r.style.setProperty("--auth-accent", preset.accent);
+    r.style.setProperty("--auth-accent-hover", preset.hover);
+    r.style.setProperty("--auth-accent-glow", preset.glow);
+    r.style.setProperty(
+      "--auth-accent-subtle",
+      preset.glow.replace(/[\d.]+\)$/, "0.12)"),
+    );
+    r.style.setProperty(
+      "--auth-accent-border",
+      preset.glow.replace(/[\d.]+\)$/, "0.35)"),
+    );
 
     // Background gradient
     document.body.style.background = [
-      'radial-gradient(ellipse 60% 40% at 50% 0%, ' + preset.glow.replace(/[\d.]+\)$/, '0.18)') + ' 0%, transparent 70%)',
-      'radial-gradient(circle at 85% 85%, ' + preset.glow.replace(/[\d.]+\)$/, '0.06)') + ' 0%, transparent 40%)',
-      'linear-gradient(180deg, ' + preset.bg1 + ' 0%, ' + preset.bg2 + ' 100%)'
-    ].join(', ');
+      "radial-gradient(ellipse 60% 40% at 50% 0%, " +
+        preset.glow.replace(/[\d.]+\)$/, "0.18)") +
+        " 0%, transparent 70%)",
+      "radial-gradient(circle at 85% 85%, " +
+        preset.glow.replace(/[\d.]+\)$/, "0.06)") +
+        " 0%, transparent 40%)",
+      "linear-gradient(180deg, " + preset.bg1 + " 0%, " + preset.bg2 + " 100%)",
+    ].join(", ");
   }
 
   // ──────────────────────────────────────────────────────────
@@ -109,9 +290,13 @@
       applyTheme(SENTIMENT.error);
     } else if (/success|granted|approved|verified|authorized/.test(t)) {
       applyTheme(SENTIMENT.success);
-    } else if (/warning|security|advisory|mfa|2fa|challenge|otp|token/.test(t)) {
+    } else if (
+      /warning|security|advisory|mfa|2fa|challenge|otp|token/.test(t)
+    ) {
       applyTheme(SENTIMENT.warning);
-    } else if (/welcome|hello|sign in|portal|login|ready|authenticated/.test(t)) {
+    } else if (
+      /welcome|hello|sign in|portal|login|ready|authenticated/.test(t)
+    ) {
       if (_systemPreset) applyTheme(_systemPreset);
     }
     // If no keyword matches, keep current theme
@@ -121,48 +306,61 @@
   // 6. PRESET SIMULATOR  (simulation bar buttons)
   // ──────────────────────────────────────────────────────────
   function setLoginThemePreset(preset) {
-    const heading = document.getElementById('login-heading');
-    const alertEl = document.getElementById('alert-message');
-    const authAlert = document.getElementById('auth-alert');
-    const simStatus = document.getElementById('sim-status-text');
+    const heading = document.getElementById("login-heading");
+    const alertEl = document.getElementById("alert-message");
+    const authAlert = document.getElementById("auth-alert");
+    const simStatus = document.getElementById("sim-status-text");
 
     switch (preset) {
-      case 'system':
+      case "system":
         if (_systemPreset) {
           applyTheme(_systemPreset);
-          if (heading) heading.textContent = _originalHeading || 'Welcome Back';
-          if (alertEl) alertEl.textContent = 'System default theme restored.';
-          if (authAlert) authAlert.className = 'auth-alert';
-          if (simStatus) simStatus.textContent = _systemPreset.label || 'System';
+          if (heading) heading.textContent = _originalHeading || "Welcome Back";
+          if (alertEl) alertEl.textContent = "System default theme restored.";
+          if (authAlert) authAlert.className = "auth-alert";
+          if (simStatus)
+            simStatus.textContent = _systemPreset.label || "System";
         }
         break;
-      case 'blue':
-        applyTheme({ accent: '#1B3A5C', hover: '#0F2438', glow: 'rgba(27,58,92,0.45)', bg1: '#060D14', bg2: '#030810' });
-        if (heading) heading.textContent = 'Welcome Back';
-        if (alertEl) alertEl.textContent = 'Hello! System online. Enter credentials.';
-        if (authAlert) authAlert.className = 'auth-alert';
-        if (simStatus) simStatus.textContent = 'Blue (Welcome)';
+      case "blue":
+        applyTheme({
+          accent: "#1B3A5C",
+          hover: "#0F2438",
+          glow: "rgba(27,58,92,0.45)",
+          bg1: "#060D14",
+          bg2: "#030810",
+        });
+        if (heading) heading.textContent = "Welcome Back";
+        if (alertEl)
+          alertEl.textContent = "Hello! System online. Enter credentials.";
+        if (authAlert) authAlert.className = "auth-alert";
+        if (simStatus) simStatus.textContent = "Blue (Welcome)";
         break;
-      case 'red':
+      case "red":
         applyTheme(SENTIMENT.error);
-        if (heading) heading.textContent = 'Authentication Error';
-        if (alertEl) alertEl.textContent = 'Error: Failed — Invalid credentials detected.';
-        if (authAlert) authAlert.className = 'auth-alert active-error';
-        if (simStatus) simStatus.textContent = 'Red (Error/Failed)';
+        if (heading) heading.textContent = "Authentication Error";
+        if (alertEl)
+          alertEl.textContent = "Error: Failed — Invalid credentials detected.";
+        if (authAlert) authAlert.className = "auth-alert active-error";
+        if (simStatus) simStatus.textContent = "Red (Error/Failed)";
         break;
-      case 'green':
+      case "green":
         applyTheme(SENTIMENT.success);
-        if (heading) heading.textContent = 'Access Granted';
-        if (alertEl) alertEl.textContent = 'Success: Authentication verified. Loading portal...';
-        if (authAlert) authAlert.className = 'auth-alert active-success';
-        if (simStatus) simStatus.textContent = 'Green (Success)';
+        if (heading) heading.textContent = "Access Granted";
+        if (alertEl)
+          alertEl.textContent =
+            "Success: Authentication verified. Loading portal...";
+        if (authAlert) authAlert.className = "auth-alert active-success";
+        if (simStatus) simStatus.textContent = "Green (Success)";
         break;
-      case 'yellow':
+      case "yellow":
         applyTheme(SENTIMENT.warning);
-        if (heading) heading.textContent = 'Security Verification';
-        if (alertEl) alertEl.textContent = 'Warning: Security challenge required. Check your MFA token.';
-        if (authAlert) authAlert.className = 'auth-alert active-error';
-        if (simStatus) simStatus.textContent = 'Yellow (Security/Warning)';
+        if (heading) heading.textContent = "Security Verification";
+        if (alertEl)
+          alertEl.textContent =
+            "Warning: Security challenge required. Check your MFA token.";
+        if (authAlert) authAlert.className = "auth-alert active-error";
+        if (simStatus) simStatus.textContent = "Yellow (Security/Warning)";
         break;
     }
   }
@@ -170,11 +368,11 @@
   // ──────────────────────────────────────────────────────────
   // 7. SYSTEM AUTO-DETECTION ON LOAD
   // ──────────────────────────────────────────────────────────
-  let _originalHeading = 'Welcome Back';
+  let _originalHeading = "Welcome Back";
 
   function detectSystem() {
     // Read the system-tag span (e.g. "SYS-03 // INTRANET", "SHOP · SYS 02", etc.)
-    const tagEl = document.querySelector('.auth-system-tag');
+    const tagEl = document.querySelector(".auth-system-tag");
     if (!tagEl) return null;
     const tagText = tagEl.textContent.toUpperCase();
 
@@ -190,11 +388,11 @@
   // 8. INJECT SIMULATION BAR (if not already in HTML)
   // ──────────────────────────────────────────────────────────
   function injectSimBar() {
-    if (document.querySelector('.vp-sim-bar')) return;
-    const mainEl = document.querySelector('.auth-main') || document.body;
+    if (document.querySelector(".vp-sim-bar")) return;
+    const mainEl = document.querySelector(".auth-main") || document.body;
 
-    const bar = document.createElement('div');
-    bar.className = 'vp-sim-bar';
+    const bar = document.createElement("div");
+    bar.className = "vp-sim-bar";
     bar.innerHTML = [
       '<span class="vp-sim-label">Theme Preview:</span>',
       '<span class="vp-sim-status" id="sim-status-text">System Default</span>',
@@ -203,12 +401,12 @@
       '<button type="button" class="vp-sim-btn vp-red"   onclick="setLoginThemePreset(\'red\')">● Error</button>',
       '<button type="button" class="vp-sim-btn vp-green" onclick="setLoginThemePreset(\'green\')">● Success</button>',
       '<button type="button" class="vp-sim-btn vp-amber" onclick="setLoginThemePreset(\'yellow\')">● Security</button>',
-    ].join('');
+    ].join("");
 
     // Also inject styles if not present
-    if (!document.getElementById('vp-sim-styles')) {
-      const style = document.createElement('style');
-      style.id = 'vp-sim-styles';
+    if (!document.getElementById("vp-sim-styles")) {
+      const style = document.createElement("style");
+      style.id = "vp-sim-styles";
       style.textContent = `
         .vp-sim-bar {
           display: flex;
@@ -267,7 +465,8 @@
     }
 
     // Insert bar right after the auth-card/section, inside auth-main
-    const card = mainEl.querySelector('.auth-card') || mainEl.querySelector('section');
+    const card =
+      mainEl.querySelector(".auth-card") || mainEl.querySelector("section");
     if (card && card.parentNode) {
       card.parentNode.insertBefore(bar, card.nextSibling);
     } else {
@@ -279,21 +478,25 @@
   // 9. OBSERVE ALERT MESSAGE  (live keyword detection)
   // ──────────────────────────────────────────────────────────
   function watchAlerts() {
-    const alertEl = document.getElementById('alert-message');
+    const alertEl = document.getElementById("alert-message");
     if (!alertEl) return;
     const observer = new MutationObserver(() => {
-      const txt = alertEl.textContent || '';
+      const txt = alertEl.textContent || "";
       if (txt.trim().length > 0) updateLoginTheme(txt);
     });
-    observer.observe(alertEl, { childList: true, characterData: true, subtree: true });
+    observer.observe(alertEl, {
+      childList: true,
+      characterData: true,
+      subtree: true,
+    });
   }
 
   // ──────────────────────────────────────────────────────────
   // 10. CENTERING SAFETY NET  (ensures .auth-main is a centered flex container)
   // ──────────────────────────────────────────────────────────
   function enforceCardCentering() {
-    const style = document.createElement('style');
-    style.id = 'vp-centering';
+    const style = document.createElement("style");
+    style.id = "vp-centering";
     style.textContent = `
       html, body {
         height: 100%;
@@ -361,32 +564,32 @@
   // ──────────────────────────────────────────────────────────
   // 11. EXPOSE GLOBALS
   // ──────────────────────────────────────────────────────────
-  window.updateLoginTheme   = updateLoginTheme;
+  window.updateLoginTheme = updateLoginTheme;
   window.setLoginThemePreset = setLoginThemePreset;
 
   // ──────────────────────────────────────────────────────────
   // 12. BOOT ON DOM READY
   // ──────────────────────────────────────────────────────────
-  document.addEventListener('DOMContentLoaded', function () {
+  document.addEventListener("DOMContentLoaded", function () {
     enforceCardCentering();
 
     // Detect and store system preset
     _systemPreset = detectSystem();
     if (!_systemPreset) {
       // Fallback: Steel Blue Corporate
-      _systemPreset = SYSTEM_PRESETS['CORP'];
+      _systemPreset = SYSTEM_PRESETS["CORP"];
     }
 
     // Store original heading text
-    const h = document.getElementById('login-heading');
+    const h = document.getElementById("login-heading");
     if (h) _originalHeading = h.textContent;
 
     // Apply system preset immediately
     applyTheme(_systemPreset);
 
     // Update sim status label
-    const simStatus = document.getElementById('sim-status-text');
-    if (simStatus) simStatus.textContent = _systemPreset.label || 'System';
+    const simStatus = document.getElementById("sim-status-text");
+    if (simStatus) simStatus.textContent = _systemPreset.label || "System";
 
     // Inject simulation bar
     injectSimBar();
@@ -394,5 +597,4 @@
     // Start watching alert messages for keyword detection
     watchAlerts();
   });
-
 })();

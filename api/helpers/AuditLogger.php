@@ -1,12 +1,15 @@
 <?php
+
 /**
  * VOSTOKPRIBOR Audit & Security Logger
  * Location: api/helpers/AuditLogger.php
  */
 require_once __DIR__ . '/../../config/db.php';
 
-class AuditLogger {
-    public static function logAction($empId, $cusId, $systemName, $systemCode, $action, $entityType, $entityId, $newValues = null, $result = 'SUCCESS') {
+class AuditLogger
+{
+    public static function logAction($empId, $cusId, $systemName, $systemCode, $action, $entityType, $entityId, $newValues = null, $result = 'SUCCESS')
+    {
         try {
             $pdo = getDbConnection();
             $ip = $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
@@ -39,7 +42,8 @@ class AuditLogger {
         }
     }
 
-    public static function logSecurityEvent($eventType, $systemCode, $description, $severity = 'Medium', $actorEmp = null, $actorCus = null) {
+    public static function logSecurityEvent($eventType, $systemCode, $description, $severity = 'Medium', $actorEmp = null, $actorCus = null)
+    {
         try {
             $pdo = getDbConnection();
             $stmt = $pdo->prepare("

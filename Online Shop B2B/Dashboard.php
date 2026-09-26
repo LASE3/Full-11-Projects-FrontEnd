@@ -15,15 +15,6 @@ if (empty($_SESSION['vostok_authenticated']) || empty($_SESSION['vostok_system_S
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>VOSTOKPRIBOR | B2B Industrial E-Commerce Platform (shop.vostokpribor.local)</title>
 
-  <script>
-    (function() {
-      const isAuthenticated = localStorage.getItem('vostok_authenticated');
-
-      if (!isAuthenticated || isAuthenticated !== 'true') {
-        window.location.href = 'login.php';
-      }
-    })();
-  </script>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -59,7 +50,7 @@ if (empty($_SESSION['vostok_authenticated']) || empty($_SESSION['vostok_system_S
             <div class="brand-subline">
               <span class="status-dot-pulse"></span>
               <span>shop.vostokpribor.local</span>
-              <span style="opacity: 0.5;">|</span>
+              <span class="shop-divider-v">|</span>
               <span>ENTERPRISE B2B</span>
             </div>
           </div>
@@ -110,13 +101,13 @@ if (empty($_SESSION['vostok_authenticated']) || empty($_SESSION['vostok_system_S
           </svg>
           <span>Orders</span>
         </a>
-        <a class="nav-link" href="Integrations.php" style="color: #00E5FF; border: 1px solid rgba(0,229,255,0.3); border-radius: 4px; padding: 0.35rem 0.6rem; margin-left: 0.5rem;">
+        <a class="nav-link shop-nav-integrations" href="Integrations.php">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#00E5FF" stroke-width="2">
             <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
             <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
           </svg>
-          <span style="font-weight: 600;">Integrations</span>
-          <span class="nav-badge-count" style="background: rgba(0,229,255,0.2); color: #00E5FF;">SYS10</span>
+          <span class="shop-nav-integrations-label">Integrations</span>
+          <span class="nav-badge-count">SYS10</span>
         </a>
       </nav>
 
@@ -130,7 +121,7 @@ if (empty($_SESSION['vostok_authenticated']) || empty($_SESSION['vostok_system_S
             <span class="customer-name" id="header-customer-name">Tashkent Precision Controls</span>
           </div>
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-            style="color: var(--text-on-dark-muted);">
+            class="shop-text-muted-dark">
             <polyline points="6 9 12 15 18 9" />
           </svg>
 
@@ -141,65 +132,65 @@ if (empty($_SESSION['vostok_authenticated']) || empty($_SESSION['vostok_system_S
             <div class="customer-option-item selected" data-customer-id="CUS-1005"
               onclick="window.shopApp.selectCustomer('CUS-1005')">
               <div>
-                <strong style="font-size: 12px; color: var(--text-primary); display: block;">Tashkent Precision
+                <strong class="shop-customer-company">Tashkent Precision
                   Controls</strong>
-                <span style="font-family: var(--font-mono); font-size: 10.5px; color: var(--text-secondary);">CUS-1005 ·
+                <span class="shop-customer-id">CUS-1005 ·
                   Manufacturing</span>
               </div>
               <span
-                style="font-family: var(--font-mono); font-size: 10px; color: var(--accent-teal); font-weight: 600;">Tier
+                class="shop-customer-tier">Tier
                 A (-12%)</span>
             </div>
 
             <div class="customer-option-item" data-customer-id="CUS-1001"
               onclick="window.shopApp.selectCustomer('CUS-1001')">
               <div>
-                <strong style="font-size: 12px; color: var(--text-primary); display: block;">Aral Geomatics
+                <strong class="shop-customer-company">Aral Geomatics
                   Group</strong>
-                <span style="font-family: var(--font-mono); font-size: 10.5px; color: var(--text-secondary);">CUS-1001 ·
+                <span class="shop-customer-id">CUS-1001 ·
                   Geomatics & GIS</span>
               </div>
               <span
-                style="font-family: var(--font-mono); font-size: 10px; color: var(--accent-teal); font-weight: 600;">Tier
+                class="shop-customer-tier">Tier
                 A (-12%)</span>
             </div>
 
             <div class="customer-option-item" data-customer-id="CUS-1002"
               onclick="window.shopApp.selectCustomer('CUS-1002')">
               <div>
-                <strong style="font-size: 12px; color: var(--text-primary); display: block;">BaltNord Process
+                <strong class="shop-customer-company">BaltNord Process
                   Systems</strong>
-                <span style="font-family: var(--font-mono); font-size: 10.5px; color: var(--text-secondary);">CUS-1002 ·
+                <span class="shop-customer-id">CUS-1002 ·
                   Process Automation</span>
               </div>
               <span
-                style="font-family: var(--font-mono); font-size: 10px; color: var(--accent-teal); font-weight: 600;">Partner
+                class="shop-customer-tier">Partner
                 (-15%)</span>
             </div>
 
             <div class="customer-option-item" data-customer-id="CUS-1003"
               onclick="window.shopApp.selectCustomer('CUS-1003')">
               <div>
-                <strong style="font-size: 12px; color: var(--text-primary); display: block;">Steppe Mining
+                <strong class="shop-customer-company">Steppe Mining
                   Technologies</strong>
-                <span style="font-family: var(--font-mono); font-size: 10.5px; color: var(--text-secondary);">CUS-1003 ·
+                <span class="shop-customer-id">CUS-1003 ·
                   Mining</span>
               </div>
               <span
-                style="font-family: var(--font-mono); font-size: 10px; color: var(--accent-teal); font-weight: 600;">Tier
+                class="shop-customer-tier">Tier
                 B (-8%)</span>
             </div>
 
             <div class="customer-option-item" data-customer-id="CUS-1007"
               onclick="window.shopApp.selectCustomer('CUS-1007')">
               <div>
-                <strong style="font-size: 12px; color: var(--text-primary); display: block;">Caspian Industrial
+                <strong class="shop-customer-company">Caspian Industrial
                   Robotics</strong>
-                <span style="font-family: var(--font-mono); font-size: 10.5px; color: var(--text-secondary);">CUS-1007 ·
+                <span class="shop-customer-id">CUS-1007 ·
                   Robotics</span>
               </div>
               <span
-                style="font-family: var(--font-mono); font-size: 10px; color: var(--accent-teal); font-weight: 600;">Partner
+                class="shop-customer-tier">Partner
                 (-15%)</span>
             </div>
           </div>
@@ -225,7 +216,7 @@ if (empty($_SESSION['vostok_authenticated']) || empty($_SESSION['vostok_system_S
       </div>
 
       <!-- Top Bar Sign Out -->
-      <a href="../api/logout.php?system=Online%20Shop%20B2B&redirect=../Online%20Shop%20B2B/login.php" class="top-signout-btn" title="Sign Out of Online Shop B2B" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" style="display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:4px;background:rgba(178,58,50,0.2);border:1px solid rgba(178,58,50,0.5);color:#FF8080;font-size:12px;font-weight:600;text-decoration:none;cursor:pointer;margin-left:8px;vertical-align:middle;transition:all 0.2s;" onmouseover="this.style.background='rgba(178,58,50,0.4)';this.style.color='#FFFFFF'" onmouseout="this.style.background='rgba(178,58,50,0.2)';this.style.color='#FF8080'"><span class="material-symbols-outlined" style="font-size:15px;line-height:1;">Sign Out</span></a>
+      <a href="../api/logout.php?system=Online%20Shop%20B2B&redirect=../Online%20Shop%20B2B/login.php" class="top-signout-btn" title="Sign Out of Online Shop B2B" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" ><span class="material-symbols-outlined">Sign Out</span></a>
     </div>
   </header>
 
@@ -241,7 +232,7 @@ if (empty($_SESSION['vostok_authenticated']) || empty($_SESSION['vostok_system_S
       <div class="enterprise-quick-status">
         <div class="telemetry-tag">
           <span>Telemetry Node:</span>
-          <strong style="color: var(--status-green);">Active (99.98%)</strong>
+          <strong class="shop-status-nominal">Active (99.98%)</strong>
         </div>
         <div class="telemetry-tag">
           <span>Account Manager:</span>
@@ -249,7 +240,7 @@ if (empty($_SESSION['vostok_authenticated']) || empty($_SESSION['vostok_system_S
         </div>
         <div class="telemetry-tag">
           <span>Security Classification:</span>
-          <strong style="color: var(--confidential-tag);">L1 Public / L3 Pricing</strong>
+          <strong class="shop-confidential-label">L1 Public / L3 Pricing</strong>
         </div>
       </div>
     </div>
@@ -479,8 +470,7 @@ if (empty($_SESSION['vostok_authenticated']) || empty($_SESSION['vostok_system_S
           <!-- Toolbar (Search, Sort, Layout Switcher) -->
           <div class="catalog-toolbar">
             <div class="toolbar-search-box">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-                style="color: var(--text-tertiary);">
+              <svg class="shop-text-tertiary" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                 <circle cx="11" cy="11" r="8" />
                 <line x1="21" y1="21" x2="16.65" y2="16.65" />
               </svg>
@@ -630,7 +620,7 @@ if (empty($_SESSION['vostok_authenticated']) || empty($_SESSION['vostok_system_S
                   <th>Order Value (€)</th>
                   <th>Payment / Stage</th>
                   <th>Delivery ETA</th>
-                  <th style="text-align: right;">Action</th>
+                  <th class="shop-text-right">Action</th>
                 </tr>
               </thead>
               <tbody id="tracking-orders-table-body">
@@ -662,14 +652,14 @@ if (empty($_SESSION['vostok_authenticated']) || empty($_SESSION['vostok_system_S
 
     <div class="drawer-body">
       <div
-        style="background: var(--bg-surface-alt); padding: 12px; border-radius: var(--radius-sm); border: 1px solid var(--border-light); font-size: 11.5px;">
+        class="shop-modal-panel-inset">
         <div><strong>Corporate Account:</strong> <span id="rfq-client-name">Tashkent Precision Controls
             (CUS-1005)</span></div>
         <div><strong>Assigned Sales Mgr:</strong> EMP-1008 (Bekzod Rakhimov)</div>
       </div>
 
       <div
-        style="font-size: 12px; font-weight: 700; color: var(--secondary-brand); text-transform: uppercase; letter-spacing: 0.5px;">
+        class="shop-modal-section-title">
         Staged Equipment Packages
       </div>
 
@@ -677,32 +667,32 @@ if (empty($_SESSION['vostok_authenticated']) || empty($_SESSION['vostok_system_S
         <!-- Dynamically populated -->
       </div>
 
-      <div style="display: flex; flex-direction: column; gap: 8px;">
-        <label style="font-size: 12px; font-weight: 600; color: var(--text-primary);">Associate with Project
+      <div class="shop-form-group">
+        <label class="shop-form-label">Associate with Project
           (Optional):</label>
         <select
-          style="padding: 8px; border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); font-size: 12px; background: #FFFFFF;">
+          class="shop-form-select">
           <option value="PRJ-2026-005">PRJ-2026-005: Precision Automation Upgrade (€128,000)</option>
           <option value="PRJ-2026-013">PRJ-2026-013: Contract Review Staging (€112,000)</option>
           <option value="NEW">Create New Project Statement of Work</option>
         </select>
       </div>
 
-      <div style="display: flex; flex-direction: column; gap: 8px;">
-        <label style="font-size: 12px; font-weight: 600; color: var(--text-primary);">Target Delivery Deadline:</label>
+      <div class="shop-form-group">
+        <label class="shop-form-label">Target Delivery Deadline:</label>
         <input type="date" value="2026-10-15"
-          style="padding: 8px; border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); font-size: 12px;">
+          class="shop-form-input">
       </div>
     </div>
 
     <div class="drawer-footer">
-      <div style="display: flex; align-items: baseline; justify-content: space-between;">
-        <span style="font-size: 12px; color: var(--text-secondary); font-weight: 600;">Estimated Indicative
+      <div class="shop-summary-row">
+        <span class="shop-summary-label">Estimated Indicative
           Value:</span>
-        <span class="price-unit-large" id="rfq-estimated-total" style="font-size: 20px;">€53,000</span>
+        <span class="price-unit-large shop-price-rfq-total" id="rfq-estimated-total">€53,000</span>
       </div>
 
-      <button class="btn-primary-amber" style="width: 100%; height: 42px;" onclick="window.shopApp.submitOfficialRfq()">
+      <button class="btn-primary-amber shop-btn-modal-action" onclick="window.shopApp.submitOfficialRfq()">
         Transmit RFQ to Commercial Sales (SAL)
       </button>
     </div>
@@ -720,7 +710,7 @@ if (empty($_SESSION['vostok_authenticated']) || empty($_SESSION['vostok_system_S
 
     <div class="drawer-body">
       <div
-        style="font-size: 12px; font-weight: 700; color: var(--secondary-brand); text-transform: uppercase; letter-spacing: 0.5px;">
+        class="shop-modal-section-title">
         Procurement Line Items
       </div>
 
@@ -729,17 +719,17 @@ if (empty($_SESSION['vostok_authenticated']) || empty($_SESSION['vostok_system_S
       </div>
 
       <div
-        style="display: flex; flex-direction: column; gap: 8px; border-top: 1px solid var(--border-light); padding-top: 14px;">
-        <label style="font-size: 12px; font-weight: 600; color: var(--text-primary);">Corporate PO Number
+        class="shop-form-group-divided">
+        <label class="shop-form-label">Corporate PO Number
           (Required):</label>
         <input type="text" id="po-number-input" value="PO-TPC-2026-8801"
-          style="padding: 8px; border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); font-family: var(--font-mono); font-size: 12px;">
+          class="shop-form-input-mono">
       </div>
 
-      <div style="display: flex; flex-direction: column; gap: 8px;">
-        <label style="font-size: 12px; font-weight: 600; color: var(--text-primary);">Payment Terms:</label>
+      <div class="shop-form-group">
+        <label class="shop-form-label">Payment Terms:</label>
         <select
-          style="padding: 8px; border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); font-size: 12px; background: #FFFFFF;">
+          class="shop-form-select">
           <option value="net30">Net 30 Days (Pre-Approved Tier A Credit)</option>
           <option value="net60">Net 60 Days (Letter of Credit Required)</option>
           <option value="advance">100% Advance Wire (Immediate Dispatch Priority)</option>
@@ -748,18 +738,18 @@ if (empty($_SESSION['vostok_authenticated']) || empty($_SESSION['vostok_system_S
     </div>
 
     <div class="drawer-footer">
-      <div style="display: flex; align-items: baseline; justify-content: space-between;">
-        <span style="font-size: 12px; color: var(--text-secondary); font-weight: 600;">Net Subtotal (excl. VAT):</span>
-        <span class="price-value" id="cart-subtotal" style="font-size: 16px;">€19,300</span>
+      <div class="shop-summary-row">
+        <span class="shop-summary-label">Net Subtotal (excl. VAT):</span>
+        <span class="price-value shop-price-cart-subtotal" id="cart-subtotal">€19,300</span>
       </div>
 
       <div
-        style="display: flex; align-items: baseline; justify-content: space-between; border-top: 1px solid var(--border-light); padding-top: 8px;">
-        <span style="font-size: 13px; color: var(--text-primary); font-weight: 700;">Total Purchase Commitment:</span>
-        <span class="price-unit-large" id="cart-total" style="font-size: 22px;">€19,300</span>
+        class="shop-summary-row-total">
+        <span class="shop-summary-label-total">Total Purchase Commitment:</span>
+        <span class="price-unit-large shop-price-cart-total" id="cart-total">€19,300</span>
       </div>
 
-      <button class="btn-primary-amber" style="width: 100%; height: 42px;" onclick="window.shopApp.submitDirectPO()">
+      <button class="btn-primary-amber shop-btn-modal-action" onclick="window.shopApp.submitDirectPO()">
         Confirm Purchase Order (PO) & Generate Invoice
       </button>
     </div>
@@ -774,17 +764,17 @@ if (empty($_SESSION['vostok_authenticated']) || empty($_SESSION['vostok_system_S
   <footer class="app-footer">
     <div class="footer-content">
       <div class="footer-left">
-        <div style="display: flex; align-items: center; gap: 8px;">
-          <strong style="color: #FFFFFF;">VOSTOKPRIBOR JSC</strong>
+        <div class="shop-footer-brand">
+          <strong class="shop-footer-company">VOSTOKPRIBOR JSC</strong>
           <span>· System 02: B2B Industrial E-Commerce Platform</span>
         </div>
-        <span style="opacity: 0.4;">|</span>
+        <span class="shop-divider-v">|</span>
         <span>Almaty, Kazakhstan (Est. 1968)</span>
       </div>
 
       <div class="footer-links">
         <span>FQDN: <code>shop.vostokpribor.local</code></span>
-        <span style="opacity: 0.4;">·</span>
+        <span class="shop-divider-v">·</span>
         <a href="javascript:void(0)" onclick="window.shopApp.navigateTo('catalog')">Catalog</a>
         <a href="javascript:void(0)" onclick="window.shopApp.navigateTo('tracking')">Order Tracking</a>
         <a href="../VOSTOKPRIBOR Corporate Web Platform/index.php">Corporate (Sys 01)</a>

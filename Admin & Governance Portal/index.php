@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Admin & Governance Portal - Entry Point
  * Directs unauthenticated visitors to login.php first.

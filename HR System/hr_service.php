@@ -1,4 +1,5 @@
 <?php
+
 /**
  * VOSTOKPRIBOR HR System - Core Backend Data Service
  * Provides secure, database-driven operations for employee lifecycle management,
@@ -15,7 +16,8 @@ require_once __DIR__ . '/../includes/auth_guard.php';
 /**
  * Get active user from session or fallback
  */
-function hr_getCurrentUser() {
+function hr_getCurrentUser()
+{
     global $currentUser;
     if (!empty($_SESSION['vostok_user'])) {
         return $_SESSION['vostok_user'];
@@ -26,14 +28,15 @@ function hr_getCurrentUser() {
 /**
  * Check if the active user has management clearance in HR (L4 or HR department / Executive)
  */
-function hr_canManageHR() {
+function hr_canManageHR()
+{
     $u = hr_getCurrentUser();
     $clearance = $u['clearance_level'] ?? 'L1';
     $dept = $u['department_code'] ?? '';
-    
+
     // Level 4 (Executive) has full management rights
     if ($clearance === 'L4') return true;
-    
+
     // HR Department (HRA, HR) with Level 3 or higher
     if (in_array($dept, ['HRA', 'HR', 'EXE']) && in_array($clearance, ['L3', 'L4'])) {
         return true;
@@ -45,7 +48,8 @@ function hr_canManageHR() {
 /**
  * Retrieve high-level KPI metrics for the HR Dashboard
  */
-function hr_getDashboardMetrics() {
+function hr_getDashboardMetrics()
+{
     $pdo = getDbConnection();
 
     // 1. Total Active Headcount
@@ -126,9 +130,10 @@ function hr_getDashboardMetrics() {
 /**
  * Retrieve list of employees with optional filters
  */
-function hr_getEmployees($search = '', $dept = '', $clearance = '', $status = '') {
+function hr_getEmployees($search = '', $dept = '', $clearance = '', $status = '')
+{
     $pdo = getDbConnection();
-    
+
     $sql = "
         SELECT 
             e.emp_id,
@@ -188,7 +193,8 @@ function hr_getEmployees($search = '', $dept = '', $clearance = '', $status = ''
 /**
  * Get full dossier for a single employee
  */
-function hr_getEmployeeById($empId) {
+function hr_getEmployeeById($empId)
+{
     $pdo = getDbConnection();
     $stmt = $pdo->prepare("
         SELECT 
@@ -215,7 +221,8 @@ function hr_getEmployeeById($empId) {
 /**
  * Fetch all departments
  */
-function hr_getDepartments() {
+function hr_getDepartments()
+{
     $pdo = getDbConnection();
     return $pdo->query("SELECT * FROM departments ORDER BY dept_name ASC")->fetchAll();
 }
@@ -223,7 +230,8 @@ function hr_getDepartments() {
 /**
  * Create a new employee atomically across tables
  */
-function hr_createEmployee($data) {
+function hr_createEmployee($data)
+{
     $pdo = getDbConnection();
     $pdo->beginTransaction();
 
@@ -278,8 +286,14 @@ function hr_createEmployee($data) {
 
         // Assign role based on department
         $deptRoles = [
-            'EXE' => 1, 'GOV' => 2, 'SAL' => 3, 'ENG' => 4,
-            'ITD' => 5, 'FIN' => 6, 'HRA' => 7, 'OPS' => 8
+            'EXE' => 1,
+            'GOV' => 2,
+            'SAL' => 3,
+            'ENG' => 4,
+            'ITD' => 5,
+            'FIN' => 6,
+            'HRA' => 7,
+            'OPS' => 8
         ];
         $roleId = $deptRoles[$deptCode] ?? 7;
         $stmtRole = $pdo->prepare("INSERT INTO employee_roles (emp_id, role_id, granted_at) VALUES (?, ?, NOW())");
@@ -306,7 +320,6 @@ function hr_createEmployee($data) {
             'username' => $username,
             'message'  => "Employee {$fullName} ({$empId}) registered successfully."
         ];
-
     } catch (Exception $e) {
         $pdo->rollBack();
         error_log("hr_createEmployee failed: " . $e->getMessage());
@@ -317,7 +330,8 @@ function hr_createEmployee($data) {
 /**
  * Update employee metadata and clearance
  */
-function hr_updateEmployee($empId, $data) {
+function hr_updateEmployee($empId, $data)
+{
     $pdo = getDbConnection();
     try {
         $stmt = $pdo->prepare("
@@ -356,7 +370,8 @@ function hr_updateEmployee($empId, $data) {
 /**
  * Fetch candidates currently in the Onboarding Pipeline
  */
-function hr_getOnboardingCandidates() {
+function hr_getOnboardingCandidates()
+{
     $pdo = getDbConnection();
     $stmt = $pdo->query("
         SELECT 
@@ -402,7 +417,8 @@ function hr_getOnboardingCandidates() {
 /**
  * Advance an onboarding step status in MySQL
  */
-function hr_advanceOnboardingStep($empId, $step, $newStatus) {
+function hr_advanceOnboardingStep($empId, $step, $newStatus)
+{
     $pdo = getDbConnection();
     try {
         $stmt = $pdo->prepare("
@@ -420,7 +436,8 @@ function hr_advanceOnboardingStep($empId, $step, $newStatus) {
 /**
  * Fetch offboarding cases and steps
  */
-function hr_getOffboardingCases() {
+function hr_getOffboardingCases()
+{
     $pdo = getDbConnection();
     $stmt = $pdo->query("
         SELECT 
@@ -467,14 +484,15 @@ function hr_getOffboardingCases() {
 /**
  * Initiate offboarding for an employee
  */
-function hr_initiateOffboarding($empId, $reason = 'Resignation') {
+function hr_initiateOffboarding($empId, $reason = 'Resignation')
+{
     $pdo = getDbConnection();
     $pdo->beginTransaction();
 
     try {
         // 1. Set employment status to Suspended
         $pdo->prepare("UPDATE employees SET employment_status = 'Suspended' WHERE emp_id = ?")->execute([$empId]);
-        
+
         // 2. Lock employee account
         $pdo->prepare("UPDATE employee_accounts SET status = 'Suspended' WHERE emp_id = ?")->execute([$empId]);
 
@@ -502,7 +520,6 @@ function hr_initiateOffboarding($empId, $reason = 'Resignation') {
 
         $pdo->commit();
         return ['success' => true, 'message' => "Offboarding initiated for employee {$empId}. Access suspended."];
-
     } catch (Exception $e) {
         $pdo->rollBack();
         return ['success' => false, 'message' => $e->getMessage()];
@@ -512,7 +529,8 @@ function hr_initiateOffboarding($empId, $reason = 'Resignation') {
 /**
  * Advance offboarding step
  */
-function hr_advanceOffboardingStep($empId, $step, $newStatus) {
+function hr_advanceOffboardingStep($empId, $step, $newStatus)
+{
     $pdo = getDbConnection();
     try {
         $stmt = $pdo->prepare("
@@ -530,7 +548,8 @@ function hr_advanceOffboardingStep($empId, $step, $newStatus) {
 /**
  * Fetch Leave Requests
  */
-function hr_getLeaveRequests($status = '') {
+function hr_getLeaveRequests($status = '')
+{
     $pdo = getDbConnection();
     $sql = "
         SELECT 
@@ -569,7 +588,8 @@ function hr_getLeaveRequests($status = '') {
 /**
  * Process (Approve / Reject) Leave Request
  */
-function hr_processLeaveRequest($leaveId, $decision, $approverEmpId = null) {
+function hr_processLeaveRequest($leaveId, $decision, $approverEmpId = null)
+{
     $pdo = getDbConnection();
     try {
         if (!$approverEmpId) {
@@ -592,7 +612,8 @@ function hr_processLeaveRequest($leaveId, $decision, $approverEmpId = null) {
 /**
  * Create a new leave request
  */
-function hr_createLeaveRequest($empId, $leaveType, $startDate, $endDate) {
+function hr_createLeaveRequest($empId, $leaveType, $startDate, $endDate)
+{
     $pdo = getDbConnection();
     try {
         $stmt = $pdo->prepare("
@@ -609,7 +630,8 @@ function hr_createLeaveRequest($empId, $leaveType, $startDate, $endDate) {
 /**
  * Fetch Training Records
  */
-function hr_getTrainingRecords() {
+function hr_getTrainingRecords()
+{
     $pdo = getDbConnection();
     return $pdo->query("
         SELECT 
@@ -632,7 +654,8 @@ function hr_getTrainingRecords() {
 /**
  * Log new training record
  */
-function hr_createTrainingRecord($empId, $trainingName, $completedAt) {
+function hr_createTrainingRecord($empId, $trainingName, $completedAt)
+{
     $pdo = getDbConnection();
     try {
         $stmt = $pdo->prepare("
@@ -649,7 +672,8 @@ function hr_createTrainingRecord($empId, $trainingName, $completedAt) {
 /**
  * Get Organizational Hierarchy Tree
  */
-function hr_getOrgStructure() {
+function hr_getOrgStructure()
+{
     $pdo = getDbConnection();
     $employees = $pdo->query("
         SELECT 
@@ -674,7 +698,8 @@ function hr_getOrgStructure() {
 /**
  * Fetch Offboarding Statistics dynamically from database
  */
-function hr_getOffboardingStats() {
+function hr_getOffboardingStats()
+{
     $pdo = getDbConnection();
 
     $stmt1 = $pdo->query("
@@ -706,7 +731,7 @@ function hr_getOffboardingStats() {
         'active_cases'        => $activeCases,
         'completed_cases'     => $completedCases,
         'suspended_accounts'  => $suspendedAccounts,
-        'terminated_employees'=> $terminatedEmployees,
+        'terminated_employees' => $terminatedEmployees,
         'total_steps'         => $totalSteps
     ];
 }
@@ -714,7 +739,8 @@ function hr_getOffboardingStats() {
 /**
  * Fetch Onboarding Statistics dynamically from database
  */
-function hr_getOnboardingStats() {
+function hr_getOnboardingStats()
+{
     $pdo = getDbConnection();
 
     $stmt1 = $pdo->query("
@@ -744,14 +770,15 @@ function hr_getOnboardingStats() {
         'completed_count' => $completedCount,
         'total_steps'     => $totalSteps,
         'completed_steps' => $completedSteps,
-        'total_candidates'=> $activeCount + $completedCount
+        'total_candidates' => $activeCount + $completedCount
     ];
 }
 
 /**
  * Complete offboarding and finalize employee termination
  */
-function hr_completeOffboarding($empId) {
+function hr_completeOffboarding($empId)
+{
     $pdo = getDbConnection();
     $pdo->beginTransaction();
     try {
@@ -770,7 +797,8 @@ function hr_completeOffboarding($empId) {
 /**
  * Delete or permanently decommission employee record
  */
-function hr_deleteEmployee($empId) {
+function hr_deleteEmployee($empId)
+{
     $pdo = getDbConnection();
     try {
         $stmt = $pdo->prepare("SELECT full_name FROM employees WHERE emp_id = ?");
@@ -794,7 +822,6 @@ function hr_deleteEmployee($empId) {
 
         $pdo->commit();
         return ['success' => true, 'message' => "Employee {$emp['full_name']} ({$empId}) removed from database."];
-
     } catch (PDOException $e) {
         if ($pdo->inTransaction()) {
             $pdo->rollBack();
@@ -819,7 +846,8 @@ function hr_deleteEmployee($empId) {
 /**
  * Enroll existing active employee into onboarding pipeline
  */
-function hr_enrollOnboarding($empId) {
+function hr_enrollOnboarding($empId)
+{
     $pdo = getDbConnection();
     try {
         $check = $pdo->prepare("SELECT COUNT(*) FROM employee_onboarding WHERE emp_id = ?");
@@ -849,7 +877,8 @@ function hr_enrollOnboarding($empId) {
 /**
  * Fetch Terminated / Suspended employees for offboarding archive
  */
-function hr_getTerminatedEmployees() {
+function hr_getTerminatedEmployees()
+{
     $pdo = getDbConnection();
     $stmt = $pdo->query("
         SELECT 
@@ -875,7 +904,8 @@ function hr_getTerminatedEmployees() {
 /**
  * Fetch active employees who are not yet in onboarding pipeline
  */
-function hr_getUnonboardedEmployees() {
+function hr_getUnonboardedEmployees()
+{
     $pdo = getDbConnection();
     $stmt = $pdo->query("
         SELECT 
@@ -893,4 +923,3 @@ function hr_getUnonboardedEmployees() {
     ");
     return $stmt->fetchAll();
 }
-

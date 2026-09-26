@@ -33,115 +33,114 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
          TOP BAR: Deep Navy with 4px Slate Blue Accent Stripe
          ====================================================================== -->
     <header class="intranet-header" id="intranet-header">
-        <div
-            style="height: 100%; display: flex; align-items: center; justify-content: space-between; padding: 0 1.25rem;">
+        <div class="intra-height-100-display-flex-01f3"
+            >
 
             <!-- Left Brand & Sidebar Toggle -->
-            <div style="display: flex; align-items: center; gap: 1rem;">
-                <button type="button" id="sidebar-toggle-btn"
-                    style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); color: #FFFFFF; width: 36px; height: 36px; border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background 0.15s;"
+            <div class="intra-display-flex-align-items-ee8a" >
+                <button class="intra-background-rgba-255-255-928c" type="button" id="sidebar-toggle-btn"
+                    
                     title="Toggle Sidebar (Ctrl+B)">
-                    <span class="material-symbols-outlined" style="font-size: 1.25rem;">menu</span>
+                    <span class="material-symbols-outlined intra-text-xl">menu</span>
                 </button>
 
-                <a href="Dashboard.php"
-                    style="display: flex; align-items: center; gap: 0.75rem; text-decoration: none; cursor: pointer;">
-                    <img alt="VOSTOKPRIBOR Official Mark" style="height: 32px; width: auto; object-fit: contain;"
+                <a class="intra-display-flex-align-items-a3ac" href="Dashboard.php"
+                    >
+                    <img class="intra-height-32px-width-auto-7934" alt="VOSTOKPRIBOR Official Mark" 
                         src="assets/logo.svg" />
-                    <div style="height: 24px; width: 1px; background: rgba(255,255,255,0.2);"></div>
-                    <div style="display: flex; flex-direction: column;">
-                        <div style="display: flex; align-items: center; gap: 0.5rem;">
-                            <span
-                                style="color: #FFFFFF; font-weight: 700; font-size: 0.9375rem; letter-spacing: 0.04em;">VOSTOKPRIBOR</span>
-                            <span
-                                style="background-color: var(--system-accent); color: #FFFFFF; font-family: var(--font-mono); font-size: 0.625rem; font-weight: 600; padding: 0.15rem 0.4rem; border-radius: 2px; letter-spacing: 0.06em;">INTRANET</span>
+                    <div class="intra-height-24px-width-1px-c7a3" ></div>
+                    <div class="intra-flex-col" >
+                        <div class="intra-flex-center-gap-sm" >
+                            <span class="intra-color-ffffff-font-weight-5ca4"
+                                >VOSTOKPRIBOR</span>
+                            <span class="intra-background-color-var-system-2816"
+                                >INTRANET</span>
                         </div>
-                        <span
-                            style="font-family: var(--font-mono); font-size: 0.625rem; color: #8A94A0;">intranet.vostokpribor.local
+                        <span class="intra-font-family-var-font-efd2"
+                            >intranet.vostokpribor.local
                             • Est. 1968</span>
                     </div>
                 </a>
             </div>
 
             <!-- Center Search Bar (Command Palette Launcher Ctrl+K) -->
-            <div style="flex: 1; max-width: 32rem; margin: 0 1.5rem;">
-                <div class="header-search-bar"
-                    style="display: flex; align-items: center; padding: 0.375rem 0.75rem; gap: 0.5rem;">
-                    <span class="material-symbols-outlined" style="color: #939FA8; font-size: 1.15rem;">search</span>
-                    <input type="text" id="header-search-input"
+            <div class="intra-flex-1-max-width-5505" >
+                <div class="header-search-bar intra-display-flex-align-items-6d41">
+                    <span class="material-symbols-outlined intra-color-939fa8-font-size-e00b">search</span>
+                    <input class="intra-background-transparent-border-none-05e6" type="text" id="header-search-input"
                         placeholder="Search intranet, personnel, policies, or forms... (Ctrl+K)"
-                        style="background: transparent; border: none; outline: none; color: #FFFFFF; font-size: 0.8125rem; width: 100%; font-family: var(--font-sans);"
+                        
                         readonly>
-                    <span
-                        style="background: rgba(255,255,255,0.1); color: #BDC6CF; font-family: var(--font-mono); font-size: 0.6875rem; padding: 0.1rem 0.35rem; border-radius: 2px;">⌘K</span>
+                    <span class="intra-background-rgba-255-255-5858"
+                        >⌘K</span>
                 </div>
             </div>
 
             <!-- Right Actions & Profile -->
-            <div style="display: flex; align-items: center; gap: 0.75rem;">
+            <div class="intra-flex-center-gap-md" >
 
                 <!-- Quick Submit Action -->
                 <button type="button" class="btn btn-primary" onclick="window.openQuickRequestModal('leave')"
-                    style="display: none; padding: 0.4rem 0.75rem; font-size: 0.75rem;">
-                    <span class="material-symbols-outlined" style="font-size: 1rem; margin-right: 0.25rem;">add</span>
+                    >
+                    <span class="material-symbols-outlined intra-font-size-1rem-margin-6a85">add</span>
                     Request Leave
                 </button>
 
                 <!-- Notifications Bell -->
-                <div style="position: relative;">
-                    <button type="button" id="notifications-toggle-btn"
-                        style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); color: #FFFFFF; width: 36px; height: 36px; border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; cursor: pointer; position: relative;">
-                        <span class="material-symbols-outlined" style="font-size: 1.25rem;">notifications</span>
-                        <span id="notif-unread-count"
-                            style="position: absolute; top: -3px; right: -3px; width: 15px; height: 15px; background-color: var(--brand-accent); color: #0F2438; border-radius: 50%; font-size: 0.625rem; font-weight: 700; display: flex; align-items: center; justify-content: center;">3</span>
+                <div class="intra-pos-relative" >
+                    <button class="intra-background-rgba-255-255-87b8" type="button" id="notifications-toggle-btn"
+                        >
+                        <span class="material-symbols-outlined intra-text-xl">notifications</span>
+                        <span class="intra-position-absolute-top-3px-e466" id="notif-unread-count"
+                            >3</span>
                     </button>
 
                     <!-- Notifications Dropdown Popover -->
-                    <div class="notifications-popover" id="notifications-popover" style="width: 20rem; right: 0;">
-                        <div
-                            style="padding: 0.75rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: space-between;">
-                            <span style="font-size: 0.8125rem; font-weight: 600; color: #FFFFFF;">System
+                    <div class="notifications-popover" id="notifications-popover" >
+                        <div class="intra-padding-0-75rem-1rem-82b8"
+                            >
+                            <span class="intra-text-white-600-sm" >System
                                 Notifications</span>
-                            <button type="button" id="clear-notifications-btn"
-                                style="background: transparent; border: none; color: var(--system-accent); font-size: 0.75rem; cursor: pointer; text-decoration: underline;">Mark
+                            <button class="intra-background-transparent-border-none-4d5e" type="button" id="clear-notifications-btn"
+                                >Mark
                                 All Read</button>
                         </div>
-                        <div style="max-height: 18rem; overflow-y: auto;">
-                            <div
-                                style="padding: 0.75rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.06); display: flex; gap: 0.75rem;">
-                                <span class="dept-dot itd" style="margin-top: 5px;"></span>
+                        <div class="intra-max-height-18rem-overflow-db30" >
+                            <div class="intra-dropdown-item-border"
+                                >
+                                <span class="dept-dot itd intra-mt-5"></span>
                                 <div>
-                                    <div style="font-size: 0.8125rem; font-weight: 600; color: #FFFFFF;">MFA Hardware
+                                    <div class="intra-text-white-600-sm" >MFA Hardware
                                         Token Requisition</div>
-                                    <div style="font-size: 0.75rem; color: #939FA8; margin-top: 2px;">Deadline
+                                    <div class="intra-meta-subtitle" >Deadline
                                         approaching for L3/L4 staff.</div>
-                                    <div
-                                        style="font-size: 0.6875rem; color: #5C7290; margin-top: 4px; font-family: var(--font-mono);">
+                                    <div class="intra-mono-dept-meta"
+                                        >
                                         12m ago</div>
                                 </div>
                             </div>
-                            <div
-                                style="padding: 0.75rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.06); display: flex; gap: 0.75rem;">
-                                <span class="dept-dot hra" style="margin-top: 5px;"></span>
+                            <div class="intra-dropdown-item-border"
+                                >
+                                <span class="dept-dot hra intra-mt-5"></span>
                                 <div>
-                                    <div style="font-size: 0.8125rem; font-weight: 600; color: #FFFFFF;">Annual
+                                    <div class="intra-text-white-600-sm" >Annual
                                         Performance Review Cycle</div>
-                                    <div style="font-size: 0.75rem; color: #939FA8; margin-top: 2px;">Self-assessment
+                                    <div class="intra-meta-subtitle" >Self-assessment
                                         form DOC-2026-009 is ready.</div>
-                                    <div
-                                        style="font-size: 0.6875rem; color: #5C7290; margin-top: 4px; font-family: var(--font-mono);">
+                                    <div class="intra-mono-dept-meta"
+                                        >
                                         2h ago</div>
                                 </div>
                             </div>
-                            <div style="padding: 0.75rem 1rem; display: flex; gap: 0.75rem;">
-                                <span class="dept-dot eng" style="margin-top: 5px;"></span>
+                            <div class="intra-padding-0-75rem-1rem-beec" >
+                                <span class="dept-dot eng intra-mt-5"></span>
                                 <div>
-                                    <div style="font-size: 0.8125rem; font-weight: 600; color: #FFFFFF;">VP-900 Firmware
+                                    <div class="intra-text-white-600-sm" >VP-900 Firmware
                                         Release v4.2</div>
-                                    <div style="font-size: 0.75rem; color: #939FA8; margin-top: 2px;">Testing suite
+                                    <div class="intra-meta-subtitle" >Testing suite
                                         deployed to Almaty Lab 1.</div>
-                                    <div
-                                        style="font-size: 0.6875rem; color: #5C7290; margin-top: 4px; font-family: var(--font-mono);">
+                                    <div class="intra-mono-dept-meta"
+                                        >
                                         5h ago</div>
                                 </div>
                             </div>
@@ -150,115 +149,103 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
                 </div>
 
                 <!-- Ecosystem Switcher (11 Systems) -->
-                <div style="position: relative;">
-                    <button type="button" id="ecosystem-toggle-btn"
-                        style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); color: #FFFFFF; width: 36px; height: 36px; border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; cursor: pointer;"
+                <div class="intra-pos-relative" >
+                    <button class="intra-background-rgba-255-255-57e6" type="button" id="ecosystem-toggle-btn"
+                        
                         title="VOSTOKPRIBOR Ecosystem Switcher">
-                        <span class="material-symbols-outlined" style="font-size: 1.25rem;">apps</span>
+                        <span class="material-symbols-outlined intra-text-xl">apps</span>
                     </button>
 
                     <!-- 11-System Ecosystem Dropdown Menu -->
-                    <div class="ecosystem-dropdown" id="ecosystem-dropdown" style="width: 22rem; right: 0;">
-                        <div
-                            style="padding: 0.75rem 1rem; border-bottom: 1px solid rgba(220,225,230,0.12); display: flex; align-items: center; justify-content: space-between;">
+                    <div class="ecosystem-dropdown" id="ecosystem-dropdown" >
+                        <div class="intra-padding-0-75rem-1rem-4249"
+                            >
                             <div>
-                                <span
-                                    style="font-size: 0.8125rem; font-weight: 700; color: #FFFFFF; letter-spacing: 0.04em;">VOSTOKPRIBOR
+                                <span class="intra-font-size-0-8125rem-54a0"
+                                    >VOSTOKPRIBOR
                                     ECOSYSTEM</span>
-                                <div style="font-size: 0.6875rem; color: #8A94A0; font-family: var(--font-mono);">11
+                                <div class="intra-font-size-0-6875rem-e9c1" >11
                                     Unified Systems</div>
                             </div>
                             <span class="badge-classification internal">Enterprise SSO</span>
                         </div>
-                        <div
-                            style="padding: 0.5rem; max-height: 24rem; overflow-y: auto; display: flex; flex-direction: column; gap: 0.25rem;">
+                        <div class="intra-padding-0-5rem-max-ea3f"
+                            >
                             <a href="../VOSTOKPRIBOR Corporate Web Platform/index.php" class="ecosystem-item">
-                                <span class="material-symbols-outlined"
-                                    style="color: #1B3A5C; font-size: 1.25rem;">language</span>
+                                <span class="material-symbols-outlined intra-color-1b3a5c-font-size-0b1e">language</span>
                                 <div>
-                                    <div style="color: #FFFFFF; font-size: 0.8125rem; font-weight: 600;">Corporate Web Platform</div>
-                                    <div style="color: #8A94A0; font-size: 0.6875rem; font-family: var(--font-mono);">vostokpribor.local • System 01</div>
+                                    <div class="intra-text-white-bold-sm" >Corporate Web Platform</div>
+                                    <div class="intra-mono-muted-xs" >vostokpribor.local • System 01</div>
                                 </div>
                             </a>
                             <a href="../Online Shop B2B/index.php" class="ecosystem-item">
-                                <span class="material-symbols-outlined"
-                                    style="color: #0E7C86; font-size: 1.25rem;">shopping_bag</span>
+                                <span class="material-symbols-outlined intra-color-0e7c86-font-size-06b1">shopping_bag</span>
                                 <div>
-                                    <div style="color: #FFFFFF; font-size: 0.8125rem; font-weight: 600;">B2B Online Shop</div>
-                                    <div style="color: #8A94A0; font-size: 0.6875rem; font-family: var(--font-mono);">shop.vostokpribor.local • System 02</div>
+                                    <div class="intra-text-white-bold-sm" >B2B Online Shop</div>
+                                    <div class="intra-mono-muted-xs" >shop.vostokpribor.local • System 02</div>
                                 </div>
                             </a>
                             <a href="../Customer Portal/Dashboard.php" class="ecosystem-item">
-                                <span class="material-symbols-outlined"
-                                    style="color: #E8A33D; font-size: 1.25rem;">dashboard</span>
+                                <span class="material-symbols-outlined intra-color-e8a33d-font-size-5aef">dashboard</span>
                                 <div>
-                                    <div style="color: #FFFFFF; font-size: 0.8125rem; font-weight: 600;">Customer Portal</div>
-                                    <div style="color: #8A94A0; font-size: 0.6875rem; font-family: var(--font-mono);">portal.vostokpribor.local • System 03</div>
+                                    <div class="intra-text-white-bold-sm" >Customer Portal</div>
+                                    <div class="intra-mono-muted-xs" >portal.vostokpribor.local • System 03</div>
                                 </div>
                             </a>
-                            <a href="Dashboard.php" class="ecosystem-item"
-                                style="background-color: rgba(92,114,144,0.25); border-left-color: var(--system-accent);">
-                                <span class="material-symbols-outlined"
-                                    style="color: var(--system-accent); font-size: 1.25rem;">hub</span>
+                            <a href="Dashboard.php" class="ecosystem-item intra-background-color-rgba-92-020a">
+                                <span class="material-symbols-outlined intra-accent-xl">hub</span>
                                 <div>
-                                    <div style="color: #FFFFFF; font-size: 0.8125rem; font-weight: 600;">Employee Intranet</div>
-                                    <div style="color: #BDC6CF; font-size: 0.6875rem; font-family: var(--font-mono);">intranet.vostokpribor.local • Current (Sys 04)</div>
+                                    <div class="intra-text-white-bold-sm" >Employee Intranet</div>
+                                    <div class="intra-color-bdc6cf-font-size-99c9" >intranet.vostokpribor.local • Current (Sys 04)</div>
                                 </div>
                             </a>
                             <a href="../CRM/index.php" class="ecosystem-item">
-                                <span class="material-symbols-outlined"
-                                    style="color: #3B4C8C; font-size: 1.25rem;">groups</span>
+                                <span class="material-symbols-outlined intra-color-3b4c8c-font-size-67a0">groups</span>
                                 <div>
-                                    <div style="color: #FFFFFF; font-size: 0.8125rem; font-weight: 600;">CRM Platform</div>
-                                    <div style="color: #8A94A0; font-size: 0.6875rem; font-family: var(--font-mono);">crm.vostokpribor.local • System 05</div>
+                                    <div class="intra-text-white-bold-sm" >CRM Platform</div>
+                                    <div class="intra-mono-muted-xs" >crm.vostokpribor.local • System 05</div>
                                 </div>
                             </a>
                             <a href="../HR System/index.php" class="ecosystem-item">
-                                <span class="material-symbols-outlined"
-                                    style="color: #6E4C7C; font-size: 1.25rem;">person_search</span>
+                                <span class="material-symbols-outlined intra-color-6e4c7c-font-size-e5aa">person_search</span>
                                 <div>
-                                    <div style="color: #FFFFFF; font-size: 0.8125rem; font-weight: 600;">Human Resources (HR)</div>
-                                    <div style="color: #8A94A0; font-size: 0.6875rem; font-family: var(--font-mono);">hr.vostokpribor.local • System 06</div>
+                                    <div class="intra-text-white-bold-sm" >Human Resources (HR)</div>
+                                    <div class="intra-mono-muted-xs" >hr.vostokpribor.local • System 06</div>
                                 </div>
                             </a>
                             <a href="../Finance & Billing/index.php" class="ecosystem-item">
-                                <span class="material-symbols-outlined"
-                                    style="color: #2E6E4E; font-size: 1.25rem;">receipt_long</span>
+                                <span class="material-symbols-outlined intra-color-2e6e4e-font-size-0395">receipt_long</span>
                                 <div>
-                                    <div style="color: #FFFFFF; font-size: 0.8125rem; font-weight: 600;">Finance & Billing</div>
-                                    <div style="color: #8A94A0; font-size: 0.6875rem; font-family: var(--font-mono);">finance.vostokpribor.local • System 07</div>
+                                    <div class="intra-text-white-bold-sm" >Finance & Billing</div>
+                                    <div class="intra-mono-muted-xs" >finance.vostokpribor.local • System 07</div>
                                 </div>
                             </a>
                             <a href="../IT Helpdesk/index.php" class="ecosystem-item">
-                                <span class="material-symbols-outlined"
-                                    style="color: #C97A3D; font-size: 1.25rem;">support_agent</span>
+                                <span class="material-symbols-outlined intra-color-c97a3d-font-size-d3fb">support_agent</span>
                                 <div>
-                                    <div style="color: #FFFFFF; font-size: 0.8125rem; font-weight: 600;">IT Helpdesk & Service</div>
-                                    <div style="color: #8A94A0; font-size: 0.6875rem; font-family: var(--font-mono);">helpdesk.vostokpribor.local • System 08</div>
+                                    <div class="intra-text-white-bold-sm" >IT Helpdesk & Service</div>
+                                    <div class="intra-mono-muted-xs" >helpdesk.vostokpribor.local • System 08</div>
                                 </div>
                             </a>
                             <a href="../File Center/index.php" class="ecosystem-item">
-                                <span class="material-symbols-outlined"
-                                    style="color: #5A6470; font-size: 1.25rem;">folder_zip</span>
+                                <span class="material-symbols-outlined intra-color-5a6470-font-size-48ce">folder_zip</span>
                                 <div>
-                                    <div style="color: #FFFFFF; font-size: 0.8125rem; font-weight: 600;">File Center Hub</div>
-                                    <div style="color: #8A94A0; font-size: 0.6875rem; font-family: var(--font-mono);">files.vostokpribor.local • System 09</div>
+                                    <div class="intra-text-white-bold-sm" >File Center Hub</div>
+                                    <div class="intra-mono-muted-xs" >files.vostokpribor.local • System 09</div>
                                 </div>
                             </a>
                             <a href="../Developer/index.php" class="ecosystem-item">
-                                <span class="material-symbols-outlined"
-                                    style="color: #1E8FA6; font-size: 1.25rem;">terminal</span>
+                                <span class="material-symbols-outlined intra-color-1e8fa6-font-size-e073">terminal</span>
                                 <div>
-                                    <div style="color: #FFFFFF; font-size: 0.8125rem; font-weight: 600;">Developer / API Portal</div>
-                                    <div style="color: #8A94A0; font-size: 0.6875rem; font-family: var(--font-mono);">developer.vostokpribor.local • System 10</div>
+                                    <div class="intra-text-white-bold-sm" >Developer / API Portal</div>
+                                    <div class="intra-mono-muted-xs" >developer.vostokpribor.local • System 10</div>
                                 </div>
                             </a>
                             <a href="../Admin & Governance Portal/index.php" class="ecosystem-item">
-                                <span class="material-symbols-outlined"
-                                    style="color: #B23A32; font-size: 1.25rem;">security</span>
+                                <span class="material-symbols-outlined intra-color-b23a32-font-size-0dac">security</span>
                                 <div>
-                                    <div style="color: #FFFFFF; font-size: 0.8125rem; font-weight: 600;">Admin & Governance</div>
-                                    <div style="color: #8A94A0; font-size: 0.6875rem; font-family: var(--font-mono);">admin.vostokpribor.local • System 11</div>
+                                    <div class="intra-text-white-bold-sm" >Admin & Governance</div>
+                                    <div class="intra-mono-muted-xs" >admin.vostokpribor.local • System 11</div>
                                 </div>
                             </a>
                         </div>
@@ -266,27 +253,26 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
                 </div>
 
                 <!-- Authenticated User Profile Avatar -->
-                <div
-                    style="display: flex; align-items: center; gap: 0.625rem; padding-left: 0.5rem; border-left: 1px solid rgba(255,255,255,0.12);">
-                    <div class="avatar-circle"
-                        style="background-color: #1A73E8; width: 34px; height: 34px; font-size: 0.8125rem;">
+                <div class="intra-display-flex-align-items-f8dd"
+                    >
+                    <div class="avatar-circle intra-background-color-1a73e8-width-13e2">
                         EM
                         <span class="avatar-status-dot online"></span>
                     </div>
-                    <div style="display: flex; flex-direction: column;" class="user-info-text">
-                        <span style="color: #FFFFFF; font-weight: 600; font-size: 0.8125rem; line-height: 1.2;">Elena
+                    <div class="user-info-text intra-flex-col">
+                        <span class="intra-color-ffffff-font-weight-b287" >Elena
                             Morozova</span>
-                        <span style="color: #8A94A0; font-size: 0.6875rem; font-family: var(--font-mono);">CTO • L4
+                        <span class="intra-mono-muted-xs" >CTO • L4
                             Clear</span>
                     </div>
                 </div>
 
             </div>
 
-        
-<!-- Top Bar Sign Out -->
-<a href="../api/logout.php?system=Employee%20Intranet&redirect=../Employee%20Intranet/login.php" class="top-signout-btn" title="Sign Out of Employee Intranet" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" style="display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:4px;background:rgba(178,58,50,0.2);border:1px solid rgba(178,58,50,0.5);color:#FF8080;font-size:12px;font-weight:600;text-decoration:none;cursor:pointer;margin-left:8px;vertical-align:middle;transition:all 0.2s;" onmouseover="this.style.background='rgba(178,58,50,0.4)';this.style.color='#FFFFFF'" onmouseout="this.style.background='rgba(178,58,50,0.2)';this.style.color='#FF8080'"><span class="material-symbols-outlined" style="font-size:15px;line-height:1;">logout</span><span>Sign Out</span></a>
-</div>
+
+            <!-- Top Bar Sign Out -->
+            <a href="../api/logout.php?system=Employee%20Intranet&redirect=../Employee%20Intranet/login.php" class="top-signout-btn" title="Sign Out of Employee Intranet" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" ><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
+        </div>
     </header>
 
     <!-- ======================================================================
@@ -295,92 +281,89 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
     <aside class="intranet-sidebar" id="intranet-sidebar">
 
         <!-- Navigation Menu -->
-        <div style="padding-top: 1rem; display: flex; flex-direction: column; gap: 0.25rem;">
+        <div class="intra-padding-top-1rem-display-6c18" >
 
-            <div style="padding: 0 1rem 0.5rem; font-size: 0.6875rem; font-family: var(--font-mono); color: #687482; font-weight: 600; text-transform: uppercase;"
-                class="sidebar-section-title">
+            <div class="sidebar-section-title intra-padding-0-1rem-0-35ef">
                 COMMUNICATIONS & HUB
             </div>
 
             <!-- News & Announcements (Active) -->
             <a href="Dashboard.php" class="sidebar-link active">
-                <span class="material-symbols-outlined" style="font-size: 1.25rem;">campaign</span>
+                <span class="material-symbols-outlined intra-text-xl">campaign</span>
                 <span class="sidebar-label">News & Announcements</span>
             </a>
 
             <!-- Employee Directory -->
             <a href="EmployeeDirectory.php" class="sidebar-link">
-                <span class="material-symbols-outlined" style="font-size: 1.25rem;">badge</span>
+                <span class="material-symbols-outlined intra-text-xl">badge</span>
                 <span class="sidebar-label">Employee Directory</span>
-                <span class="sidebar-badge"
-                    style="margin-left: auto; background: rgba(92,114,144,0.3); color: #BDC6CF; font-family: var(--font-mono); font-size: 0.6875rem; padding: 0.1rem 0.4rem; border-radius: 999px;">95</span>
+                <span class="sidebar-badge intra-margin-left-auto-background-8fba">95</span>
             </a>
 
             <!-- Policies & Forms -->
             <a href="PoliciesAndForms.php" class="sidebar-link">
-                <span class="material-symbols-outlined" style="font-size: 1.25rem;">policy</span>
+                <span class="material-symbols-outlined intra-text-xl">policy</span>
                 <span class="sidebar-label">Policies & Forms</span>
             </a>
-<a href="Integrations.php" class="sidebar-link"><span class="material-symbols-outlined" style="font-size: 1.25rem; color: #00E5FF;">hub</span><span class="sidebar-label" style="color: #00E5FF; font-weight: 600;">System Integrations</span><span class="sidebar-badge" style="margin-left: auto; background: rgba(0,229,255,0.15); color: #00E5FF; font-family: var(--font-mono); font-size: 0.6875rem; padding: 0.1rem 0.4rem; border-radius: 4px;">SYS05</span></a>
+            <a href="Integrations.php" class="sidebar-link"><span class="material-symbols-outlined intra-font-size-1-25rem-a700">hub</span><span class="sidebar-label intra-color-00e5ff-font-weight-fe7a">System Integrations</span><span class="sidebar-badge intra-margin-left-auto-background-c33b">SYS05</span></a>
 
-            <div style="padding: 1rem 1rem 0.5rem; font-size: 0.6875rem; font-family: var(--font-mono); color: #687482; font-weight: 600; text-transform: uppercase;"
-                class="sidebar-section-title">
+            <div class="sidebar-section-title intra-padding-1rem-1rem-0-0f82">
                 EMPLOYEE SERVICES
             </div>
 
             <!-- Helpdesk / IT Support -->
             <a href="javascript:void(0)" class="sidebar-link" onclick="window.openQuickRequestModal('it')">
-                <span class="material-symbols-outlined" style="font-size: 1.25rem;">support_agent</span>
+                <span class="material-symbols-outlined intra-text-xl">support_agent</span>
                 <span class="sidebar-label">Helpdesk / IT Support</span>
             </a>
 
             <!-- Company Calendar -->
             <a href="javascript:void(0)" class="sidebar-link"
                 onclick="window.showIntranetToast('Calendar Sync Active', 'Connected to Almaty Exchange CalDAV server.', 'info')">
-                <span class="material-symbols-outlined" style="font-size: 1.25rem;">event</span>
+                <span class="material-symbols-outlined intra-text-xl">event</span>
                 <span class="sidebar-label">Company Calendar</span>
             </a>
 
             <!-- Room & Asset Booking -->
             <a href="javascript:void(0)" class="sidebar-link"
                 onclick="window.showIntranetToast('Resource Scheduler', 'Conference Rooms Alpha & Beta available today.', 'info')">
-                <span class="material-symbols-outlined" style="font-size: 1.25rem;">meeting_room</span>
+                <span class="material-symbols-outlined intra-text-xl">meeting_room</span>
                 <span class="sidebar-label">Room Booking</span>
             </a>
 
         </div>
 
         <!-- Sidebar Footer: User Card -->
-        <div
-            style="padding: 1rem; border-top: 1px solid rgba(220, 225, 230, 0.12); background-color: rgba(0, 0, 0, 0.15);">
-            <div style="display: flex; align-items: center; gap: 0.75rem;">
-                <div class="avatar-circle" style="background-color: #1A73E8;">
+        <div class="intra-padding-1rem-border-top-dd4e"
+            >
+            <div class="intra-flex-center-gap-md" >
+                <div class="avatar-circle intra-background-color-1a73e8-5fb8">
                     EM
                     <span class="avatar-status-dot online"></span>
                 </div>
-                <div style="flex: 1; min-width: 0;" class="user-info-text">
-                    <div
-                        style="font-size: 0.8125rem; font-weight: 600; color: #FFFFFF; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                <div class="user-info-text intra-flex-1-min-0">
+                    <div class="intra-font-size-0-8125rem-863b"
+                        >
                         Elena Morozova
                     </div>
-                    <div
-                        style="font-size: 0.6875rem; color: #8A94A0; display: flex; align-items: center; gap: 0.25rem;">
-                        <span class="dept-badge itd" style="padding: 0 0.3rem;">ITD</span>
+                    <div class="intra-font-size-0-6875rem-50ad"
+                        >
+                        <span class="dept-badge itd intra-padding-0-0-3rem-188d">ITD</span>
                         <span>Chief Tech Officer</span>
                     </div>
                 </div>
-                <button type="button"
-                    style="background: transparent; border: none; color: #8A94A0; cursor: pointer; padding: 0;"
+                <button class="intra-btn-icon-ghost" type="button"
+                    
                     title="Lock Session"
                     onclick="window.showIntranetToast('Security Notice', 'Session verified under ISO-27001 Zero-Trust policy.', 'info')">
-                    <span class="material-symbols-outlined" style="font-size: 1.1rem;">lock</span>
+                    <span class="material-symbols-outlined intra-text-11">lock</span>
                 </button>
             </div>
         </div>
 
 
         <!-- Log Out -->
-        
+
     </aside>
 
     <!-- Left-edge hover detection strip for collapsed rail state -->
@@ -388,32 +371,32 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
     MAIN CONTENT WRAPPER
     ====================================================================== -->
     <main class="intranet-content-wrapper" id="intranet-content-wrapper">
-        <div style="padding: 1.5rem; max-width: 86rem; margin: 0 auto;">
+        <div class="intra-padding-1-5rem-max-53c0" >
 
             <!-- Page Header Breadcrumb -->
-            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem;">
+            <div class="intra-display-flex-align-items-3241" >
                 <div>
-                    <div
-                        style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.75rem; font-family: var(--font-mono); color: var(--neutral-600); margin-bottom: 0.25rem;">
+                    <div class="intra-display-flex-align-items-f015"
+                        >
                         <span>INTRANET</span>
                         <span>/</span>
-                        <span style="color: var(--system-accent); font-weight: 600;">NEWS & ANNOUNCEMENTS</span>
+                        <span class="intra-color-var-system-accent-dff5" >NEWS & ANNOUNCEMENTS</span>
                     </div>
-                    <h1
-                        style="margin: 0; font-size: 1.5rem; font-weight: 700; color: var(--neutral-900); letter-spacing: -0.02em;">
+                    <h1 class="intra-margin-0-font-size-d321"
+                        >
                         Enterprise News & Communications
                     </h1>
                 </div>
 
-                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                <div class="intra-flex-center-gap-md" >
                     <button type="button" class="btn btn-secondary" onclick="window.openQuickRequestModal('it')"
-                        style="display: inline-flex; align-items: center; gap: 0.375rem;">
-                        <span class="material-symbols-outlined" style="font-size: 1rem;">engineering</span>
+                        >
+                        <span class="material-symbols-outlined intra-text-base">engineering</span>
                         IT Ticket
                     </button>
                     <button type="button" class="btn btn-primary" onclick="window.openQuickRequestModal('leave')"
-                        style="display: inline-flex; align-items: center; gap: 0.375rem;">
-                        <span class="material-symbols-outlined" style="font-size: 1rem;">flight_takeoff</span>
+                        >
+                        <span class="material-symbols-outlined intra-text-base">flight_takeoff</span>
                         Request Leave
                     </button>
                 </div>
@@ -423,38 +406,37 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
                  FEATURED WIDE ANNOUNCEMENT CAROUSEL
                  ============================================================== -->
             <section class="announcement-carousel-card" id="home-announcement-carousel"
-                style="margin-bottom: 1.75rem; padding: 2.25rem;">
-                <div style="position: relative; z-index: 2; max-width: 52rem;">
+                >
+                <div class="intra-position-relative-z-index-4d0f" >
 
-                    <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem;">
+                    <div class="intra-display-flex-align-items-6a3d" >
                         <span class="badge-classification internal" id="carousel-slide-badge"
-                            style="background-color: rgba(255,255,255,0.15); color: #FFFFFF; border-color: rgba(255,255,255,0.25);">
+                            >
                             CORPORATE STRATEGY
                         </span>
-                        <span style="font-family: var(--font-mono); font-size: 0.75rem; color: #BDC6CF;"
+                        <span class="intra-font-family-var-font-72b4" 
                             id="carousel-slide-date">
                             September 08, 2026
                         </span>
                     </div>
 
-                    <h2 id="carousel-slide-title"
-                        style="margin: 0 0 0.75rem; font-size: 1.75rem; font-weight: 700; color: #FFFFFF; line-height: 1.25;">
+                    <h2 class="intra-margin-0-0-0-7210" id="carousel-slide-title"
+                        >
                         Q3 Enterprise Assembly Modernization: Plant 2 Transition
                     </h2>
 
-                    <p id="carousel-slide-desc"
-                        style="margin: 0 0 1.5rem; font-size: 0.9375rem; color: #DCE1E6; line-height: 1.5; max-width: 44rem;">
+                    <p class="intra-margin-0-0-1-42e5" id="carousel-slide-desc"
+                        >
                         Beginning September 15, Assembly Plant 2 in Almaty will undergo planned calibration robotics
                         retrofits. Field engineering operations will reroute through Hub Alpha.
                     </p>
 
-                    <div style="display: flex; align-items: center; gap: 1.25rem;">
-                        <button type="button" id="carousel-slide-btn" class="btn btn-primary"
-                            style="display: inline-flex; align-items: center; gap: 0.375rem;">
+                    <div class="intra-display-flex-align-items-869e" >
+                        <button type="button" id="carousel-slide-btn" class="btn btn-primary intra-inline-flex-gap-xs">
                             Read Directive
-                            <span class="material-symbols-outlined" style="font-size: 1.1rem;">arrow_forward</span>
+                            <span class="material-symbols-outlined intra-text-11">arrow_forward</span>
                         </button>
-                        <span style="font-size: 0.8125rem; color: #BDC6CF;" id="carousel-slide-author">
+                        <span class="intra-font-size-0-8125rem-eeff"  id="carousel-slide-author">
                             Amina Karimova • Chief Operating Officer
                         </span>
                     </div>
@@ -462,31 +444,28 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
                 </div>
 
                 <!-- Carousel Controls & Dots -->
-                <div
-                    style="position: absolute; bottom: 1.5rem; right: 1.5rem; z-index: 5; display: flex; align-items: center; gap: 1rem;">
+                <div class="intra-position-absolute-bottom-1-19e7"
+                    >
                     <!-- Dots -->
-                    <div style="display: flex; align-items: center; gap: 0.375rem;">
-                        <button type="button" class="carousel-dot"
-                            style="width: 24px; height: 8px; border-radius: 4px; background: #FFFFFF; border: none; cursor: pointer; transition: all 0.2s;"
+                    <div class="intra-display-flex-align-items-1649" >
+                        <button type="button" class="carousel-dot intra-width-24px-height-8px-3a74"
                             title="Slide 1"></button>
-                        <button type="button" class="carousel-dot"
-                            style="width: 8px; height: 8px; border-radius: 4px; background: rgba(255,255,255,0.4); border: none; cursor: pointer; transition: all 0.2s;"
+                        <button type="button" class="carousel-dot intra-width-8px-height-8px-6638"
                             title="Slide 2"></button>
-                        <button type="button" class="carousel-dot"
-                            style="width: 8px; height: 8px; border-radius: 4px; background: rgba(255,255,255,0.4); border: none; cursor: pointer; transition: all 0.2s;"
+                        <button type="button" class="carousel-dot intra-width-8px-height-8px-6638"
                             title="Slide 3"></button>
                     </div>
                     <!-- Arrows -->
-                    <div style="display: flex; gap: 0.375rem;">
-                        <button type="button" id="carousel-prev-btn"
-                            style="width: 32px; height: 32px; border-radius: var(--radius-sm); background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.2); color: #FFFFFF; display: flex; align-items: center; justify-content: center; cursor: pointer;"
+                    <div class="intra-display-flex-gap-0-b7c2" >
+                        <button class="intra-width-32px-height-32px-3020" type="button" id="carousel-prev-btn"
+                            
                             title="Previous Slide">
-                            <span class="material-symbols-outlined" style="font-size: 1.1rem;">chevron_left</span>
+                            <span class="material-symbols-outlined intra-text-11">chevron_left</span>
                         </button>
-                        <button type="button" id="carousel-next-btn"
-                            style="width: 32px; height: 32px; border-radius: var(--radius-sm); background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.2); color: #FFFFFF; display: flex; align-items: center; justify-content: center; cursor: pointer;"
+                        <button class="intra-width-32px-height-32px-3020" type="button" id="carousel-next-btn"
+                            
                             title="Next Slide">
-                            <span class="material-symbols-outlined" style="font-size: 1.1rem;">chevron_right</span>
+                            <span class="material-symbols-outlined intra-text-11">chevron_right</span>
                         </button>
                     </div>
                 </div>
@@ -495,85 +474,69 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
             <!-- ==============================================================
                  TWO-COLUMN LAYOUT: Feed (Left) & Widgets (Right)
                  ============================================================== -->
-            <div style="display: grid; grid-template-columns: 1fr; gap: 1.75rem;" class="intranet-grid-layout">
-
-                <style>
-                    @media (min-width: 1024px) {
-                        .intranet-grid-layout {
-                            grid-template-columns: 1fr 340px !important;
-                        }
-                    }
-
-                    @media (min-width: 1280px) {
-                        .intranet-grid-layout {
-                            grid-template-columns: 1fr 380px !important;
-                        }
-                    }
-                </style>
+            <div class="intranet-grid-layout intra-display-grid-grid-template-4a9e">
 
                 <!-- ==========================================================
                      LEFT COLUMN: ANNOUNCEMENT FEED
                      ========================================================== -->
-                <div id="announcements-feed" style="display: flex; flex-direction: column; gap: 1rem;">
+                <div class="intra-display-flex-flex-direction-f48b" id="announcements-feed" >
 
                     <!-- Feed Filter Tabs -->
-                    <div
-                        style="display: flex; align-items: center; justify-content: space-between; padding-bottom: 0.5rem; border-bottom: 1px solid var(--neutral-200);">
-                        <div style="display: flex; gap: 0.5rem;">
-                            <span style="font-weight: 600; font-size: 0.875rem; color: var(--neutral-900);">All
+                    <div class="intra-display-flex-align-items-29ed"
+                        >
+                        <div class="intra-display-flex-gap-0-5fa1" >
+                            <span class="intra-font-weight-600-font-bc25" >All
                                 Updates</span>
-                            <span
-                                style="background: var(--neutral-100); color: var(--neutral-600); font-family: var(--font-mono); font-size: 0.75rem; padding: 0.1rem 0.4rem; border-radius: var(--radius-sm);">5
+                            <span class="intra-background-var-neutral-100-9b42"
+                                >5
                                 New</span>
                         </div>
-                        <span style="font-size: 0.75rem; color: var(--neutral-500); font-family: var(--font-mono);">
+                        <span class="intra-font-size-0-75rem-db0e" >
                             Live Feed • Synchronized
                         </span>
                     </div>
 
                     <!-- Feed Card 1: ITD Zero Trust -->
                     <article class="feed-card">
-                        <div
-                            style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.625rem;">
-                            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <div class="intra-flex-between-mb-sm"
+                            >
+                            <div class="intra-flex-center-gap-sm" >
                                 <span class="dept-dot itd"></span>
                                 <span class="dept-badge itd">ITD</span>
-                                <span style="font-size: 0.75rem; color: var(--neutral-500);">• Information
+                                <span class="intra-text-neutral-sm" >• Information
                                     Technology</span>
                             </div>
                             <span class="badge-classification confidential">Confidential</span>
                         </div>
 
-                        <h3
-                            style="margin: 0 0 0.5rem; font-size: 1.0625rem; font-weight: 600; color: var(--neutral-900);">
+                        <h3 class="intra-heading-h3"
+                            >
                             Zero-Trust Boundary Implementation: VPN Access Migration Completed
                         </h3>
 
-                        <p
-                            style="margin: 0 0 1rem; font-size: 0.8125rem; color: var(--neutral-700); line-height: 1.45;">
+                        <p class="intra-desc-p"
+                            >
                             All remote telemetry endpoints and staff laptops have now migrated to WireGuard encrypted
                             tunnels with certificate pinning. Legacy OpenVPN profiles will be decommissioned this Friday
                             at 22:00 Almaty time. Please review DOC-2026-001 for updated routing settings.
                         </p>
 
-                        <div
-                            style="display: flex; align-items: center; justify-content: space-between; padding-top: 0.75rem; border-top: 1px solid var(--neutral-200); font-size: 0.75rem;">
-                            <div style="display: flex; align-items: center; gap: 0.5rem;">
-                                <div class="avatar-circle"
-                                    style="background-color: #1A73E8; width: 28px; height: 28px; font-size: 0.6875rem;">
+                        <div class="intra-card-footer-meta"
+                            >
+                            <div class="intra-flex-center-gap-sm" >
+                                <div class="avatar-circle intra-background-color-1a73e8-width-a329">
                                     RK</div>
-                                <span style="font-weight: 500; color: var(--neutral-800);">Ruslan Kim</span>
-                                <span style="color: var(--neutral-400);">•</span>
-                                <span style="color: var(--neutral-500);">3 hours ago • 2 min read</span>
+                                <span class="intra-font-500-neutral" >Ruslan Kim</span>
+                                <span class="intra-color-neutral-400" >•</span>
+                                <span class="intra-color-neutral-500" >3 hours ago • 2 min read</span>
                             </div>
-                            <div style="display: flex; align-items: center; gap: 1rem; color: var(--neutral-500);">
-                                <span style="display: flex; align-items: center; gap: 0.25rem; cursor: pointer;"
+                            <div class="intra-flex-center-gap-neutral" >
+                                <span class="intra-flex-center-gap-xs-pointer" 
                                     onclick="window.showIntranetToast('Feedback Logged', 'Acknowledgment registered.', 'info')">
-                                    <span class="material-symbols-outlined" style="font-size: 1rem;">thumb_up</span> 18
+                                    <span class="material-symbols-outlined intra-text-base">thumb_up</span> 18
                                 </span>
-                                <span style="display: flex; align-items: center; gap: 0.25rem; cursor: pointer;">
-                                    <span class="material-symbols-outlined"
-                                        style="font-size: 1rem;">chat_bubble_outline</span> 4
+                                <span class="intra-flex-center-gap-xs-pointer" >
+                                    <span class="material-symbols-outlined intra-text-base">chat_bubble_outline</span> 4
                                 </span>
                             </div>
                         </div>
@@ -581,47 +544,45 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
 
                     <!-- Feed Card 2: ENG Calibration Firmware -->
                     <article class="feed-card">
-                        <div
-                            style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.625rem;">
-                            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <div class="intra-flex-between-mb-sm"
+                            >
+                            <div class="intra-flex-center-gap-sm" >
                                 <span class="dept-dot eng"></span>
                                 <span class="dept-badge eng">ENG</span>
-                                <span style="font-size: 0.75rem; color: var(--neutral-500);">• Engineering & R&D</span>
+                                <span class="intra-text-neutral-sm" >• Engineering & R&D</span>
                             </div>
                             <span class="badge-classification internal">Internal</span>
                         </div>
 
-                        <h3
-                            style="margin: 0 0 0.5rem; font-size: 1.0625rem; font-weight: 600; color: var(--neutral-900);">
+                        <h3 class="intra-heading-h3"
+                            >
                             Almaty Calibration Cleanroom Lab 2 Achieves ±0.02% Precision Baseline
                         </h3>
 
-                        <p
-                            style="margin: 0 0 1rem; font-size: 0.8125rem; color: var(--neutral-700); line-height: 1.45;">
+                        <p class="intra-desc-p"
+                            >
                             Through the integration of our VP-900 digital metrology suite, Cleanroom Lab 2 has
                             officially passed Kazakhstan National Standard (KazInMetr) certification. The bench testing
                             protocol for high-temperature turbine flow sensors is now available in the documentation
                             archive.
                         </p>
 
-                        <div
-                            style="display: flex; align-items: center; justify-content: space-between; padding-top: 0.75rem; border-top: 1px solid var(--neutral-200); font-size: 0.75rem;">
-                            <div style="display: flex; align-items: center; gap: 0.5rem;">
-                                <div class="avatar-circle"
-                                    style="background-color: #137333; width: 28px; height: 28px; font-size: 0.6875rem;">
+                        <div class="intra-card-footer-meta"
+                            >
+                            <div class="intra-flex-center-gap-sm" >
+                                <div class="avatar-circle intra-background-color-137333-width-682f">
                                     AZ</div>
-                                <span style="font-weight: 500; color: var(--neutral-800);">Arman Zhumabayev</span>
-                                <span style="color: var(--neutral-400);">•</span>
-                                <span style="color: var(--neutral-500);">Yesterday • 4 min read</span>
+                                <span class="intra-font-500-neutral" >Arman Zhumabayev</span>
+                                <span class="intra-color-neutral-400" >•</span>
+                                <span class="intra-color-neutral-500" >Yesterday • 4 min read</span>
                             </div>
-                            <div style="display: flex; align-items: center; gap: 1rem; color: var(--neutral-500);">
-                                <span style="display: flex; align-items: center; gap: 0.25rem; cursor: pointer;"
+                            <div class="intra-flex-center-gap-neutral" >
+                                <span class="intra-flex-center-gap-xs-pointer" 
                                     onclick="window.showIntranetToast('Feedback Logged', 'Acknowledgment registered.', 'info')">
-                                    <span class="material-symbols-outlined" style="font-size: 1rem;">thumb_up</span> 32
+                                    <span class="material-symbols-outlined intra-text-base">thumb_up</span> 32
                                 </span>
-                                <span style="display: flex; align-items: center; gap: 0.25rem; cursor: pointer;">
-                                    <span class="material-symbols-outlined"
-                                        style="font-size: 1rem;">chat_bubble_outline</span> 9
+                                <span class="intra-flex-center-gap-xs-pointer" >
+                                    <span class="material-symbols-outlined intra-text-base">chat_bubble_outline</span> 9
                                 </span>
                             </div>
                         </div>
@@ -629,46 +590,44 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
 
                     <!-- Feed Card 3: HRA Health & Benefits -->
                     <article class="feed-card">
-                        <div
-                            style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.625rem;">
-                            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <div class="intra-flex-between-mb-sm"
+                            >
+                            <div class="intra-flex-center-gap-sm" >
                                 <span class="dept-dot hra"></span>
                                 <span class="dept-badge hra">HRA</span>
-                                <span style="font-size: 0.75rem; color: var(--neutral-500);">• Human Resources</span>
+                                <span class="intra-text-neutral-sm" >• Human Resources</span>
                             </div>
                             <span class="badge-classification public">Public</span>
                         </div>
 
-                        <h3
-                            style="margin: 0 0 0.5rem; font-size: 1.0625rem; font-weight: 600; color: var(--neutral-900);">
+                        <h3 class="intra-heading-h3"
+                            >
                             Annual Health Screening & Corporate Medical Package 2026-2027
                         </h3>
 
-                        <p
-                            style="margin: 0 0 1rem; font-size: 0.8125rem; color: var(--neutral-700); line-height: 1.45;">
+                        <p class="intra-desc-p"
+                            >
                             All employees at the Almaty Central Facility and Regional Logistics Warehouses are eligible
                             for comprehensive medical checkups starting October 1. Book your preferred clinical provider
                             slot through the HR portal or visit Annex Suite 102.
                         </p>
 
-                        <div
-                            style="display: flex; align-items: center; justify-content: space-between; padding-top: 0.75rem; border-top: 1px solid var(--neutral-200); font-size: 0.75rem;">
-                            <div style="display: flex; align-items: center; gap: 0.5rem;">
-                                <div class="avatar-circle"
-                                    style="background-color: #6E4C7C; width: 28px; height: 28px; font-size: 0.6875rem;">
+                        <div class="intra-card-footer-meta"
+                            >
+                            <div class="intra-flex-center-gap-sm" >
+                                <div class="avatar-circle intra-background-color-6e4c7c-width-bec3">
                                     GK</div>
-                                <span style="font-weight: 500; color: var(--neutral-800);">Gulnara Kassymova</span>
-                                <span style="color: var(--neutral-400);">•</span>
-                                <span style="color: var(--neutral-500);">2 days ago • 1 min read</span>
+                                <span class="intra-font-500-neutral" >Gulnara Kassymova</span>
+                                <span class="intra-color-neutral-400" >•</span>
+                                <span class="intra-color-neutral-500" >2 days ago • 1 min read</span>
                             </div>
-                            <div style="display: flex; align-items: center; gap: 1rem; color: var(--neutral-500);">
-                                <span style="display: flex; align-items: center; gap: 0.25rem; cursor: pointer;"
+                            <div class="intra-flex-center-gap-neutral" >
+                                <span class="intra-flex-center-gap-xs-pointer" 
                                     onclick="window.showIntranetToast('Feedback Logged', 'Acknowledgment registered.', 'info')">
-                                    <span class="material-symbols-outlined" style="font-size: 1rem;">thumb_up</span> 25
+                                    <span class="material-symbols-outlined intra-text-base">thumb_up</span> 25
                                 </span>
-                                <span style="display: flex; align-items: center; gap: 0.25rem; cursor: pointer;">
-                                    <span class="material-symbols-outlined"
-                                        style="font-size: 1rem;">chat_bubble_outline</span> 2
+                                <span class="intra-flex-center-gap-xs-pointer" >
+                                    <span class="material-symbols-outlined intra-text-base">chat_bubble_outline</span> 2
                                 </span>
                             </div>
                         </div>
@@ -676,47 +635,45 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
 
                     <!-- Feed Card 4: OPS Logistics Pipeline -->
                     <article class="feed-card">
-                        <div
-                            style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.625rem;">
-                            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <div class="intra-flex-between-mb-sm"
+                            >
+                            <div class="intra-flex-center-gap-sm" >
                                 <span class="dept-dot ops"></span>
                                 <span class="dept-badge ops">OPS</span>
-                                <span style="font-size: 0.75rem; color: var(--neutral-500);">• Operations &
+                                <span class="intra-text-neutral-sm" >• Operations &
                                     Logistics</span>
                             </div>
                             <span class="badge-classification internal">Internal</span>
                         </div>
 
-                        <h3
-                            style="margin: 0 0 0.5rem; font-size: 1.0625rem; font-weight: 600; color: var(--neutral-900);">
+                        <h3 class="intra-heading-h3"
+                            >
                             Cross-Border Freight Clearance Timetable: Aktau Port Corridor
                         </h3>
 
-                        <p
-                            style="margin: 0 0 1rem; font-size: 0.8125rem; color: var(--neutral-700); line-height: 1.45;">
+                        <p class="intra-desc-p"
+                            >
                             Maritime container shipments carrying heavy automation actuators through Caspian Transit
                             Corridor B have resumed full maritime schedules. Customs documentation manifests must be
                             signed via System 06 (WMS) prior to dispatch.
                         </p>
 
-                        <div
-                            style="display: flex; align-items: center; justify-content: space-between; padding-top: 0.75rem; border-top: 1px solid var(--neutral-200); font-size: 0.75rem;">
-                            <div style="display: flex; align-items: center; gap: 0.5rem;">
-                                <div class="avatar-circle"
-                                    style="background-color: #00796B; width: 28px; height: 28px; font-size: 0.6875rem;">
+                        <div class="intra-card-footer-meta"
+                            >
+                            <div class="intra-flex-center-gap-sm" >
+                                <div class="avatar-circle intra-background-color-00796b-width-b618">
                                     SL</div>
-                                <span style="font-weight: 500; color: var(--neutral-800);">Sofia Lindqvist</span>
-                                <span style="color: var(--neutral-400);">•</span>
-                                <span style="color: var(--neutral-500);">3 days ago • 3 min read</span>
+                                <span class="intra-font-500-neutral" >Sofia Lindqvist</span>
+                                <span class="intra-color-neutral-400" >•</span>
+                                <span class="intra-color-neutral-500" >3 days ago • 3 min read</span>
                             </div>
-                            <div style="display: flex; align-items: center; gap: 1rem; color: var(--neutral-500);">
-                                <span style="display: flex; align-items: center; gap: 0.25rem; cursor: pointer;"
+                            <div class="intra-flex-center-gap-neutral" >
+                                <span class="intra-flex-center-gap-xs-pointer" 
                                     onclick="window.showIntranetToast('Feedback Logged', 'Acknowledgment registered.', 'info')">
-                                    <span class="material-symbols-outlined" style="font-size: 1rem;">thumb_up</span> 14
+                                    <span class="material-symbols-outlined intra-text-base">thumb_up</span> 14
                                 </span>
-                                <span style="display: flex; align-items: center; gap: 0.25rem; cursor: pointer;">
-                                    <span class="material-symbols-outlined"
-                                        style="font-size: 1rem;">chat_bubble_outline</span> 1
+                                <span class="intra-flex-center-gap-xs-pointer" >
+                                    <span class="material-symbols-outlined intra-text-base">chat_bubble_outline</span> 1
                                 </span>
                             </div>
                         </div>
@@ -727,110 +684,100 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
                 <!-- ==========================================================
                      RIGHT COLUMN: STACKED WIDGETS
                      ========================================================== -->
-                <div style="display: flex; flex-direction: column; gap: 1.25rem;">
+                <div class="intra-display-flex-flex-direction-a81b" >
 
                     <!-- WIDGET 1: TODAY'S CALENDAR -->
-                    <div class="intranet-card" style="padding: 1.25rem;">
-                        <div
-                            style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
-                            <div style="display: flex; align-items: center; gap: 0.5rem;">
-                                <span class="material-symbols-outlined"
-                                    style="color: var(--system-accent); font-size: 1.25rem;">event</span>
-                                <h3
-                                    style="margin: 0; font-size: 0.875rem; font-weight: 700; color: var(--neutral-900); text-transform: uppercase; letter-spacing: 0.04em;">
+                    <div class="intranet-card intra-p-125">
+                        <div class="intra-display-flex-align-items-4177"
+                            >
+                            <div class="intra-flex-center-gap-sm" >
+                                <span class="material-symbols-outlined intra-accent-xl">event</span>
+                                <h3 class="intra-margin-0-font-size-99fa"
+                                    >
                                     Today's Calendar</h3>
                             </div>
-                            <span
-                                style="font-family: var(--font-mono); font-size: 0.6875rem; color: var(--neutral-500);">Thu,
+                            <span class="intra-mono-neutral-xs"
+                                >Thu,
                                 Sep 10</span>
                         </div>
 
-                        <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                        <div class="intra-display-flex-flex-direction-84df" >
 
                             <!-- Event 1 -->
-                            <div
-                                style="padding: 0.75rem; background: var(--neutral-50); border: 1px solid var(--neutral-200); border-radius: var(--radius-sm); border-left: 3px solid var(--system-accent);">
-                                <div
-                                    style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.25rem;">
-                                    <span
-                                        style="font-family: var(--font-mono); font-size: 0.6875rem; font-weight: 600; color: var(--brand-primary);">10:00
+                            <div class="intra-padding-0-75rem-background-14c0"
+                                >
+                                <div class="intra-display-flex-align-items-6d7a"
+                                    >
+                                    <span class="intra-font-family-var-font-4519"
+                                        >10:00
                                         - 11:00</span>
-                                    <span class="badge-classification internal"
-                                        style="font-size: 0.625rem; padding: 0.1rem 0.35rem;">Conf C-302</span>
+                                    <span class="badge-classification internal intra-font-size-0-625rem-0b73">Conf C-302</span>
                                 </div>
-                                <div
-                                    style="font-size: 0.8125rem; font-weight: 600; color: var(--neutral-900); margin-bottom: 0.375rem;">
+                                <div class="intra-font-size-0-8125rem-3739"
+                                    >
                                     Executive Operations Sync & Q3 Milestones
                                 </div>
-                                <div style="display: flex; align-items: center; justify-content: space-between;">
-                                    <span style="font-size: 0.6875rem; color: var(--neutral-600);">Hybrid • WebRTC Room
+                                <div class="intra-display-flex-align-items-651c" >
+                                    <span class="intra-text-neutral-xs" >Hybrid • WebRTC Room
                                         Alpha</span>
-                                    <div style="display: flex; margin-left: 0.5rem;">
-                                        <div class="avatar-circle"
-                                            style="width: 22px; height: 22px; font-size: 0.625rem; background: #0F2438; margin-left: -4px; border: 1px solid #FFF;">
+                                    <div class="intra-display-flex-margin-left-bc41" >
+                                        <div class="avatar-circle intra-width-22px-height-22px-1368">
                                             VS</div>
-                                        <div class="avatar-circle"
-                                            style="width: 22px; height: 22px; font-size: 0.625rem; background: #0E7C86; margin-left: -4px; border: 1px solid #FFF;">
+                                        <div class="avatar-circle intra-width-22px-height-22px-1cfc">
                                             AK</div>
-                                        <div class="avatar-circle"
-                                            style="width: 22px; height: 22px; font-size: 0.625rem; background: #1A73E8; margin-left: -4px; border: 1px solid #FFF;">
+                                        <div class="avatar-circle intra-width-22px-height-22px-1845">
                                             EM</div>
                                     </div>
                                 </div>
                             </div>
 
                             <!-- Event 2 -->
-                            <div
-                                style="padding: 0.75rem; background: var(--neutral-50); border: 1px solid var(--neutral-200); border-radius: var(--radius-sm); border-left: 3px solid #137333;">
-                                <div
-                                    style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.25rem;">
-                                    <span
-                                        style="font-family: var(--font-mono); font-size: 0.6875rem; font-weight: 600; color: #137333;">14:30
+                            <div class="intra-padding-0-75rem-background-9e63"
+                                >
+                                <div class="intra-display-flex-align-items-6d7a"
+                                    >
+                                    <span class="intra-font-family-var-font-81be"
+                                        >14:30
                                         - 15:30</span>
-                                    <span class="dept-badge eng" style="font-size: 0.625rem;">ENG LAB 1</span>
+                                    <span class="dept-badge eng intra-font-size-0-625rem-ad81">ENG LAB 1</span>
                                 </div>
-                                <div
-                                    style="font-size: 0.8125rem; font-weight: 600; color: var(--neutral-900); margin-bottom: 0.375rem;">
+                                <div class="intra-font-size-0-8125rem-3739"
+                                    >
                                     VP-900 Calibration Protocol Review
                                 </div>
-                                <div style="display: flex; align-items: center; justify-content: space-between;">
-                                    <span style="font-size: 0.6875rem; color: var(--neutral-600);">In-Person Cleanroom
+                                <div class="intra-display-flex-align-items-651c" >
+                                    <span class="intra-text-neutral-xs" >In-Person Cleanroom
                                         Bay C</span>
-                                    <div style="display: flex; margin-left: 0.5rem;">
-                                        <div class="avatar-circle"
-                                            style="width: 22px; height: 22px; font-size: 0.625rem; background: #137333; margin-left: -4px; border: 1px solid #FFF;">
+                                    <div class="intra-display-flex-margin-left-bc41" >
+                                        <div class="avatar-circle intra-width-22px-height-22px-7f85">
                                             AZ</div>
-                                        <div class="avatar-circle"
-                                            style="width: 22px; height: 22px; font-size: 0.625rem; background: #137333; margin-left: -4px; border: 1px solid #FFF;">
+                                        <div class="avatar-circle intra-width-22px-height-22px-7f85">
                                             EH</div>
                                     </div>
                                 </div>
                             </div>
 
                             <!-- Event 3 -->
-                            <div
-                                style="padding: 0.75rem; background: var(--neutral-50); border: 1px solid var(--neutral-200); border-radius: var(--radius-sm); border-left: 3px solid #D9822B;">
-                                <div
-                                    style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.25rem;">
-                                    <span
-                                        style="font-family: var(--font-mono); font-size: 0.6875rem; font-weight: 600; color: #D9822B;">16:00
+                            <div class="intra-padding-0-75rem-background-c8d3"
+                                >
+                                <div class="intra-display-flex-align-items-6d7a"
+                                    >
+                                    <span class="intra-font-family-var-font-2ee9"
+                                        >16:00
                                         - 17:00</span>
-                                    <span class="badge-classification confidential"
-                                        style="font-size: 0.625rem; padding: 0.1rem 0.35rem;">Confidential</span>
+                                    <span class="badge-classification confidential intra-font-size-0-625rem-0b73">Confidential</span>
                                 </div>
-                                <div
-                                    style="font-size: 0.8125rem; font-weight: 600; color: var(--neutral-900); margin-bottom: 0.375rem;">
+                                <div class="intra-font-size-0-8125rem-3739"
+                                    >
                                     Security Architecture Board (Zero-Trust)
                                 </div>
-                                <div style="display: flex; align-items: center; justify-content: space-between;">
-                                    <span style="font-size: 0.6875rem; color: var(--neutral-600);">Virtual Conference
+                                <div class="intra-display-flex-align-items-651c" >
+                                    <span class="intra-text-neutral-xs" >Virtual Conference
                                         1</span>
-                                    <div style="display: flex; margin-left: 0.5rem;">
-                                        <div class="avatar-circle"
-                                            style="width: 22px; height: 22px; font-size: 0.625rem; background: #1A73E8; margin-left: -4px; border: 1px solid #FFF;">
+                                    <div class="intra-display-flex-margin-left-bc41" >
+                                        <div class="avatar-circle intra-width-22px-height-22px-1845">
                                             RK</div>
-                                        <div class="avatar-circle"
-                                            style="width: 22px; height: 22px; font-size: 0.625rem; background: #D84315; margin-left: -4px; border: 1px solid #FFF;">
+                                        <div class="avatar-circle intra-width-22px-height-22px-fdc2">
                                             TA</div>
                                     </div>
                                 </div>
@@ -840,63 +787,56 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
                     </div>
 
                     <!-- WIDGET 2: QUICK LINKS -->
-                    <div class="intranet-card" style="padding: 1.25rem;">
-                        <div
-                            style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
-                            <div style="display: flex; align-items: center; gap: 0.5rem;">
-                                <span class="material-symbols-outlined"
-                                    style="color: var(--system-accent); font-size: 1.25rem;">bolt</span>
-                                <h3
-                                    style="margin: 0; font-size: 0.875rem; font-weight: 700; color: var(--neutral-900); text-transform: uppercase; letter-spacing: 0.04em;">
+                    <div class="intranet-card intra-p-125">
+                        <div class="intra-display-flex-align-items-4177"
+                            >
+                            <div class="intra-flex-center-gap-sm" >
+                                <span class="material-symbols-outlined intra-accent-xl">bolt</span>
+                                <h3 class="intra-margin-0-font-size-99fa"
+                                    >
                                     Quick Links</h3>
                             </div>
-                            <span
-                                style="font-family: var(--font-mono); font-size: 0.6875rem; color: var(--neutral-500);">Frequently
+                            <span class="intra-mono-neutral-xs"
+                                >Frequently
                                 Used</span>
                         </div>
 
-                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.625rem;">
+                        <div class="intra-display-grid-grid-template-38cf" >
 
                             <div class="quick-link-btn" onclick="window.downloadDocSimulation('DOC-2026-005')">
-                                <span class="material-symbols-outlined"
-                                    style="color: #2E6E4E; font-size: 1.35rem; margin-bottom: 0.35rem;">receipt_long</span>
-                                <span style="font-size: 0.6875rem; font-weight: 600; text-align: center;">Submit
+                                <span class="material-symbols-outlined intra-color-2e6e4e-font-size-b435">receipt_long</span>
+                                <span class="intra-text-center-bold-xs" >Submit
                                     Expense</span>
                             </div>
 
                             <div class="quick-link-btn" onclick="window.openQuickRequestModal('leave')">
-                                <span class="material-symbols-outlined"
-                                    style="color: #E8A33D; font-size: 1.35rem; margin-bottom: 0.35rem;">date_range</span>
-                                <span style="font-size: 0.6875rem; font-weight: 600; text-align: center;">Request
+                                <span class="material-symbols-outlined intra-color-e8a33d-font-size-53c0">date_range</span>
+                                <span class="intra-text-center-bold-xs" >Request
                                     Leave</span>
                             </div>
 
                             <div class="quick-link-btn" onclick="window.openQuickRequestModal('it')">
-                                <span class="material-symbols-outlined"
-                                    style="color: #1A73E8; font-size: 1.35rem; margin-bottom: 0.35rem;">headset_mic</span>
-                                <span style="font-size: 0.6875rem; font-weight: 600; text-align: center;">IT
+                                <span class="material-symbols-outlined intra-color-1a73e8-font-size-d946">headset_mic</span>
+                                <span class="intra-text-center-bold-xs" >IT
                                     Helpdesk</span>
                             </div>
 
                             <div class="quick-link-btn"
                                 onclick="window.showIntranetToast('Conference Room Booking', 'Calendar integration active. Select room slot.', 'info')">
-                                <span class="material-symbols-outlined"
-                                    style="color: #0E7C86; font-size: 1.35rem; margin-bottom: 0.35rem;">domain</span>
-                                <span style="font-size: 0.6875rem; font-weight: 600; text-align: center;">Room
+                                <span class="material-symbols-outlined intra-color-0e7c86-font-size-0fa5">domain</span>
+                                <span class="intra-text-center-bold-xs" >Room
                                     Booking</span>
                             </div>
 
                             <a href="EmployeeDirectory.php" class="quick-link-btn">
-                                <span class="material-symbols-outlined"
-                                    style="color: #6E4C7C; font-size: 1.35rem; margin-bottom: 0.35rem;">schema</span>
-                                <span style="font-size: 0.6875rem; font-weight: 600; text-align: center;">Org
+                                <span class="material-symbols-outlined intra-color-6e4c7c-font-size-d7e2">schema</span>
+                                <span class="intra-text-center-bold-xs" >Org
                                     Chart</span>
                             </a>
 
                             <div class="quick-link-btn" onclick="window.downloadDocSimulation('DOC-2026-008')">
-                                <span class="material-symbols-outlined"
-                                    style="color: #B23A32; font-size: 1.35rem; margin-bottom: 0.35rem;">warning</span>
-                                <span style="font-size: 0.6875rem; font-weight: 600; text-align: center;">Safety
+                                <span class="material-symbols-outlined intra-color-b23a32-font-size-2115">warning</span>
+                                <span class="intra-text-center-bold-xs" >Safety
                                     Report</span>
                             </div>
 
@@ -904,83 +844,76 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
                     </div>
 
                     <!-- WIDGET 3: BIRTHDAYS & ANNIVERSARIES -->
-                    <div class="intranet-card" style="padding: 1.25rem;">
-                        <div
-                            style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
-                            <div style="display: flex; align-items: center; gap: 0.5rem;">
-                                <span class="material-symbols-outlined"
-                                    style="color: var(--system-accent); font-size: 1.25rem;">cake</span>
-                                <h3
-                                    style="margin: 0; font-size: 0.875rem; font-weight: 700; color: var(--neutral-900); text-transform: uppercase; letter-spacing: 0.04em;">
+                    <div class="intranet-card intra-p-125">
+                        <div class="intra-display-flex-align-items-4177"
+                            >
+                            <div class="intra-flex-center-gap-sm" >
+                                <span class="material-symbols-outlined intra-accent-xl">cake</span>
+                                <h3 class="intra-margin-0-font-size-99fa"
+                                    >
                                     Milestones & Birthdays</h3>
                             </div>
-                            <span
-                                style="font-family: var(--font-mono); font-size: 0.6875rem; color: var(--neutral-500);">September
+                            <span class="intra-mono-neutral-xs"
+                                >September
                                 2026</span>
                         </div>
 
-                        <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                        <div class="intra-display-flex-flex-direction-84df" >
 
                             <!-- Milestone 1 -->
-                            <div
-                                style="display: flex; align-items: center; gap: 0.75rem; padding: 0.5rem; background: var(--neutral-50); border-radius: var(--radius-sm);">
-                                <div class="avatar-circle"
-                                    style="background-color: #0E7C86; width: 34px; height: 34px; font-size: 0.75rem;">AK
+                            <div class="intra-display-flex-align-items-f1c5"
+                                >
+                                <div class="avatar-circle intra-background-color-0e7c86-width-3efb">AK
                                 </div>
-                                <div style="flex: 1; min-width: 0;">
-                                    <div
-                                        style="font-size: 0.8125rem; font-weight: 600; color: var(--neutral-900); display: flex; align-items: center; gap: 0.375rem;">
+                                <div class="intra-flex-1-min-0" >
+                                    <div class="intra-font-size-0-8125rem-825a"
+                                        >
                                         Amina Karimova
-                                        <span class="dept-badge ops"
-                                            style="font-size: 0.625rem; padding: 0 0.3rem;">OPS</span>
+                                        <span class="dept-badge ops intra-font-size-0-625rem-ad79">OPS</span>
                                     </div>
-                                    <div style="font-size: 0.6875rem; color: var(--neutral-600);">21 Years at
+                                    <div class="intra-text-neutral-xs" >21 Years at
                                         VOSTOKPRIBOR</div>
                                 </div>
-                                <span
-                                    style="font-family: var(--font-mono); font-size: 0.6875rem; font-weight: 600; color: var(--brand-accent); background: #FFF8E1; padding: 0.2rem 0.4rem; border-radius: 2px;">Sep
+                                <span class="intra-font-family-var-font-0047"
+                                    >Sep
                                     12</span>
                             </div>
 
                             <!-- Milestone 2 -->
-                            <div
-                                style="display: flex; align-items: center; gap: 0.75rem; padding: 0.5rem; background: var(--neutral-50); border-radius: var(--radius-sm);">
-                                <div class="avatar-circle"
-                                    style="background-color: #137333; width: 34px; height: 34px; font-size: 0.75rem;">JR
+                            <div class="intra-display-flex-align-items-f1c5"
+                                >
+                                <div class="avatar-circle intra-background-color-137333-width-b959">JR
                                 </div>
-                                <div style="flex: 1; min-width: 0;">
-                                    <div
-                                        style="font-size: 0.8125rem; font-weight: 600; color: var(--neutral-900); display: flex; align-items: center; gap: 0.375rem;">
+                                <div class="intra-flex-1-min-0" >
+                                    <div class="intra-font-size-0-8125rem-825a"
+                                        >
                                         Jonas Richter
-                                        <span class="dept-badge eng"
-                                            style="font-size: 0.625rem; padding: 0 0.3rem;">ENG</span>
+                                        <span class="dept-badge eng intra-font-size-0-625rem-ad79">ENG</span>
                                     </div>
-                                    <div style="font-size: 0.6875rem; color: var(--neutral-600);">Birthday Celebration
+                                    <div class="intra-text-neutral-xs" >Birthday Celebration
                                         🎂</div>
                                 </div>
-                                <span
-                                    style="font-family: var(--font-mono); font-size: 0.6875rem; font-weight: 600; color: var(--system-accent); background: var(--neutral-100); padding: 0.2rem 0.4rem; border-radius: 2px;">Sep
+                                <span class="intra-font-family-var-font-0141"
+                                    >Sep
                                     15</span>
                             </div>
 
                             <!-- Milestone 3 -->
-                            <div
-                                style="display: flex; align-items: center; gap: 0.75rem; padding: 0.5rem; background: var(--neutral-50); border-radius: var(--radius-sm);">
-                                <div class="avatar-circle"
-                                    style="background-color: #137333; width: 34px; height: 34px; font-size: 0.75rem;">OV
+                            <div class="intra-display-flex-align-items-f1c5"
+                                >
+                                <div class="avatar-circle intra-background-color-137333-width-b959">OV
                                 </div>
-                                <div style="flex: 1; min-width: 0;">
-                                    <div
-                                        style="font-size: 0.8125rem; font-weight: 600; color: var(--neutral-900); display: flex; align-items: center; gap: 0.375rem;">
+                                <div class="intra-flex-1-min-0" >
+                                    <div class="intra-font-size-0-8125rem-825a"
+                                        >
                                         Olga Voronova
-                                        <span class="dept-badge eng"
-                                            style="font-size: 0.625rem; padding: 0 0.3rem;">ENG</span>
+                                        <span class="dept-badge eng intra-font-size-0-625rem-ad79">ENG</span>
                                     </div>
-                                    <div style="font-size: 0.6875rem; color: var(--neutral-600);">9 Years at
+                                    <div class="intra-text-neutral-xs" >9 Years at
                                         VOSTOKPRIBOR</div>
                                 </div>
-                                <span
-                                    style="font-family: var(--font-mono); font-size: 0.6875rem; font-weight: 600; color: var(--brand-accent); background: #FFF8E1; padding: 0.2rem 0.4rem; border-radius: 2px;">Sep
+                                <span class="intra-font-family-var-font-0047"
+                                    >Sep
                                     19</span>
                             </div>
 
@@ -998,20 +931,20 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
          COMMAND PALETTE MODAL (Ctrl+K)
          ====================================================================== -->
     <div class="intranet-modal-backdrop" id="command-palette-modal">
-        <div class="intranet-modal-container" style="max-width: 42rem; border: 1px solid var(--system-accent);">
-            <div
-                style="background-color: var(--brand-primary-dark); padding: 0.875rem 1.25rem; display: flex; align-items: center; gap: 0.75rem; border-bottom: 1px solid rgba(255,255,255,0.12);">
-                <span class="material-symbols-outlined" style="color: var(--system-accent);">search</span>
-                <input type="text" id="command-palette-input" placeholder="Type a name, department, role, or policy..."
-                    style="background: transparent; border: none; outline: none; color: #FFFFFF; font-size: 1rem; width: 100%; font-family: var(--font-sans);">
-                <button type="button" id="close-command-palette-btn"
-                    style="background: transparent; border: none; color: #8A94A0; cursor: pointer; padding: 0;">
+        <div class="intranet-modal-container intra-max-width-42rem-border-7e8a">
+            <div class="intra-background-color-var-brand-3290"
+                >
+                <span class="material-symbols-outlined intra-color-var-system-accent-06f9">search</span>
+                <input class="intra-background-transparent-border-none-01d8" type="text" id="command-palette-input" placeholder="Type a name, department, role, or policy..."
+                    >
+                <button class="intra-btn-icon-ghost" type="button" id="close-command-palette-btn"
+                    >
                     <span class="material-symbols-outlined">close</span>
                 </button>
             </div>
-            <div id="command-palette-results" style="max-height: 24rem; overflow-y: auto; padding: 0.5rem;"></div>
-            <div
-                style="padding: 0.5rem 1rem; background: var(--neutral-100); border-top: 1px solid var(--neutral-200); display: flex; align-items: center; justify-content: space-between; font-size: 0.6875rem; color: var(--neutral-600); font-family: var(--font-mono);">
+            <div class="intra-max-height-24rem-overflow-0250" id="command-palette-results" ></div>
+            <div class="intra-padding-0-5rem-1rem-acd8"
+                >
                 <span>Navigate with mouse or keyboard</span>
                 <span>ESC to dismiss</span>
             </div>
@@ -1023,9 +956,9 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
 
     <!-- Single Consolidated JavaScript Engine -->
     <script src="js/intranet.js"></script>
-  <link rel="stylesheet" href="../assets/css/api-ui.css">
-  <script src="../assets/js/api-client.js"></script>
-  <script src="js/intranet-data.js"></script>
+    <link rel="stylesheet" href="../assets/css/api-ui.css">
+    <script src="../assets/js/api-client.js"></script>
+    <script src="js/intranet-data.js"></script>
 </body>
 
 </html>

@@ -26,10 +26,10 @@
     <div class="auth-status-beacon" title="Enterprise Partner Registration Active">
       <span class="status-dot-pulse"></span>
       <span>PARTNER ONBOARDING · LIVE</span>
-    
-<!-- Top Bar Sign Out -->
-<a href="../api/logout.php?system=Online%20Shop%20B2B&redirect=../Online%20Shop%20B2B/login.php" class="top-signout-btn" title="Sign Out of Online Shop B2B" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" style="display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:4px;background:rgba(178,58,50,0.2);border:1px solid rgba(178,58,50,0.5);color:#FF8080;font-size:12px;font-weight:600;text-decoration:none;cursor:pointer;margin-left:8px;vertical-align:middle;transition:all 0.2s;" onmouseover="this.style.background='rgba(178,58,50,0.4)';this.style.color='#FFFFFF'" onmouseout="this.style.background='rgba(178,58,50,0.2)';this.style.color='#FF8080'"><span class="material-symbols-outlined" style="font-size:15px;line-height:1;">logout</span><span>Sign Out</span></a>
-</div>
+
+      <!-- Top Bar Sign Out -->
+      <a href="../api/logout.php?system=Online%20Shop%20B2B&redirect=../Online%20Shop%20B2B/login.php" class="top-signout-btn" title="Sign Out of Online Shop B2B" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" ><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
+    </div>
   </header>
 
   <main class="auth-main">
@@ -64,7 +64,7 @@
             <div class="form-group">
               <label for="companyName" class="form-label">
                 <span>Legal Company Name</span>
-                <span style="color: var(--auth-accent);">*</span>
+                <span class="req-star">*</span>
               </label>
               <div class="input-container">
                 <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -77,7 +77,7 @@
             <div class="form-group">
               <label for="regNumber" class="form-label">
                 <span>Company Registration Number</span>
-                <span style="color: var(--auth-accent);">*</span>
+                <span class="req-star">*</span>
               </label>
               <div class="input-container">
                 <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -94,7 +94,7 @@
             <div class="form-group">
               <label for="country" class="form-label">
                 <span>Country of Registration</span>
-                <span style="color: var(--auth-accent);">*</span>
+                <span class="req-star">*</span>
               </label>
               <div class="input-container">
                 <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -134,7 +134,7 @@
             <div class="form-group">
               <label for="contactName" class="form-label">
                 <span>Primary Contact Name</span>
-                <span style="color: var(--auth-accent);">*</span>
+                <span class="req-star">*</span>
               </label>
               <div class="input-container">
                 <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -147,7 +147,7 @@
             <div class="form-group">
               <label for="contactEmail" class="form-label">
                 <span>Contact Email</span>
-                <span style="color: var(--auth-accent);">*</span>
+                <span class="req-star">*</span>
               </label>
               <div class="input-container">
                 <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -180,7 +180,7 @@
             <div class="form-group">
               <label for="partnerSector" class="form-label">
                 <span>Primary Industry</span>
-                <span style="color: var(--auth-accent);">*</span>
+                <span class="req-star">*</span>
               </label>
               <div class="input-container">
                 <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -216,7 +216,7 @@
             <span class="btn-text">Submit Enterprise Registration</span>
           </button>
 
-          <p style="text-align:center;font-size:12px;color:var(--auth-text-muted);margin-top:16px;">
+          <p class="auth-footer-text">
             Already have an account? <a href="login.php" class="utility-link">Log In</a> &nbsp;|&nbsp; <a href="signup.php" class="utility-link">Create individual account</a>
           </p>
         </form>
@@ -240,45 +240,7 @@
   </footer>
 
   <script src="js/dynamic-login-theme.js"></script>
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const registerForm = document.getElementById('register-form');
-      const submitBtn = document.getElementById('submit-btn');
-      const authAlert = document.getElementById('auth-alert');
-      const alertMessage = document.getElementById('alert-message');
-
-      function showAlert(msg, isError = true) {
-        authAlert.className = isError ? 'auth-alert active-error' : 'auth-alert active-success';
-        alertMessage.textContent = msg;
-        if (typeof updateLoginTheme === 'function') updateLoginTheme(msg);
-        if (isError) { authAlert.style.animation = 'none'; authAlert.offsetHeight; authAlert.style.animation = 'alertShake 0.3s ease'; }
-      }
-
-      registerForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const companyName = document.getElementById('companyName').value.trim();
-        const regNumber = document.getElementById('regNumber').value.trim();
-        const contactName = document.getElementById('contactName').value.trim();
-        const contactEmail = document.getElementById('contactEmail').value.trim();
-        const agreed = document.getElementById('agree-partner-terms').checked;
-
-        if (!companyName) { showAlert('Please enter your legal company name.'); return; }
-        if (!regNumber) { showAlert('Please enter your company registration number.'); return; }
-        if (!contactName) { showAlert('Please enter the primary contact name.'); return; }
-        if (!contactEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contactEmail)) { showAlert('Please enter a valid contact email address.'); return; }
-        if (!agreed) { showAlert('You must confirm authorization and agree to the Partner Agreement.'); return; }
-
-        submitBtn.classList.add('is-loading');
-        submitBtn.disabled = true;
-        setTimeout(() => {
-          showAlert('Enterprise registration for ' + companyName + ' submitted! Redirecting to login...', false);
-          try { sessionStorage.setItem('vp_partner_reg', JSON.stringify({ companyName, regNumber, contactName, contactEmail, status: 'pending_review', timestamp: new Date().toISOString() })); } catch (err) {}
-          setTimeout(() => {
-            window.location.href = 'login.php';
-          }, 1600);
-        }, 700);
-      });
-    });
-  </script>
+  <script src="js/register.js"></script>
 </body>
+
 </html>

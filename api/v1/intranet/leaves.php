@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Class 4: Employee Intranet - Leave Requests API
  * Location: api/v1/intranet/leaves.php
@@ -99,9 +100,15 @@ if ($method === 'POST') {
         $newId = (int)$pdo->lastInsertId();
 
         AuditLogger::logAction(
-            $applicant, null, 'Employee Intranet', 'EMP',
-            'SUBMIT_LEAVE_REQUEST', 'leave_requests', (string)$newId,
-            ['type' => $type, 'start' => $start, 'end' => $end], 'SUCCESS'
+            $applicant,
+            null,
+            'Employee Intranet',
+            'EMP',
+            'SUBMIT_LEAVE_REQUEST',
+            'leave_requests',
+            (string)$newId,
+            ['type' => $type, 'start' => $start, 'end' => $end],
+            'SUCCESS'
         );
 
         Response::success([
@@ -138,9 +145,15 @@ if ($method === 'PATCH') {
         ]);
 
         AuditLogger::logAction(
-            $approver, null, 'Employee Intranet', 'EMP',
-            "LEAVE_REQUEST_" . strtoupper($decision), 'leave_requests', (string)$leaveId,
-            ['decision' => $decision], 'SUCCESS'
+            $approver,
+            null,
+            'Employee Intranet',
+            'EMP',
+            "LEAVE_REQUEST_" . strtoupper($decision),
+            'leave_requests',
+            (string)$leaveId,
+            ['decision' => $decision],
+            'SUCCESS'
         );
 
         Response::success(['leave_id' => $leaveId, 'status' => $decision], "Leave request status updated");

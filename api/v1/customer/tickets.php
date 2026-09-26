@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Class 3: Customer Portal - Support Tickets API
  * Location: api/v1/customer/tickets.php
@@ -140,9 +141,15 @@ if ($method === 'POST') {
         $cmtStmt->execute([':tid' => $tktId, ':txt' => $message]);
 
         AuditLogger::logAction(
-            null, $cusId, 'Customer Portal', 'CUS',
-            'OPEN_CUSTOMER_SUPPORT_TICKET', 'tickets', $tktId,
-            ['priority' => $priority, 'system' => $system], 'SUCCESS'
+            null,
+            $cusId,
+            'Customer Portal',
+            'CUS',
+            'OPEN_CUSTOMER_SUPPORT_TICKET',
+            'tickets',
+            $tktId,
+            ['priority' => $priority, 'system' => $system],
+            'SUCCESS'
         );
 
         Response::success([

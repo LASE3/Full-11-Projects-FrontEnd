@@ -5,6 +5,7 @@ requireAuth('DOC');
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
@@ -12,49 +13,50 @@ requireAuth('DOC');
     <link rel="stylesheet" href="css/fc-tokens.css" />
     <link rel="stylesheet" href="css/fc-common.css" />
 </head>
+
 <body>
     <!-- TOP NAVIGATION BAR (System 09 Graphite 4px Accent Stripe) -->
     <header class="vk-top-navbar">
-        <div style="display: flex; align-items: center; gap: 24px;">
+        <div class="fc-flex-center-gap-24" >
             <a class="vk-brand-section" href="Dashboard.php">
-                <img alt="VOSTOKPRIBOR Official Mark" class="brand-logo-img" style="height: 30px; width: 30px; object-fit: contain;" src="assets/logo.svg" />
-                <div style="display: flex; flex-direction: column;">
-                    <div style="display: flex; align-items: center; gap: 8px;">
-                        <span style="font-family: var(--font-heading); font-weight: 700; font-size: 15px; letter-spacing: -0.02em;">VOSTOKPRIBOR</span>
+                <img alt="VOSTOKPRIBOR Official Mark" class="brand-logo-img fc-logo-img" src="assets/logo.svg" />
+                <div class="fc-flex-col" >
+                    <div class="fc-flex-center-gap-8" >
+                        <span class="fc-font-family-var-font-980b" >VOSTOKPRIBOR</span>
                         <span class="vk-system-badge">SYS-09 // FILE-CENTER</span>
                     </div>
-                    <span style="font-family: var(--font-mono); font-size: 10px; color: #94A3B8;">ALMATY CENTRAL • EST. 1968 • DOCUMENT VAULT v3.8.2</span>
+                    <span class="fc-font-family-var-font-54ae" >ALMATY CENTRAL • EST. 1968 • DOCUMENT VAULT v3.8.2</span>
                 </div>
             </a>
-            <div style="display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.06); padding: 4px 12px; border-radius: var(--radius-sm); border: 1px solid rgba(255,255,255,0.1);">
-                <span class="material-symbols-outlined text-[14px]" style="color: var(--vk-secondary);">fingerprint</span>
-                <span style="font-family: var(--font-mono); font-size: 11px; color: #E2E8F0;">INTEGRITY: <strong>HARDWARE HSM AUDIT LEDGER</strong></span>
+            <div class="fc-display-flex-align-items-bc9f" >
+                <span class="material-symbols-outlined text-[14px] fc-color-secondary">fingerprint</span>
+                <span class="fc-font-family-var-font-eb0b" >INTEGRITY: <strong>HARDWARE HSM AUDIT LEDGER</strong></span>
             </div>
         </div>
 
-        <div style="display: flex; align-items: center; gap: 16px;">
+        <div class="fc-flex-center-gap-16" >
             <button class="search-trigger-btn" type="button">
                 <span class="material-symbols-outlined text-[16px]">search</span>
                 <span>Search documents, DOC-IDs...</span>
                 <span class="kbd-shortcut">Ctrl K</span>
             </button>
-            <div style="display: flex; align-items: center; gap: 6px; font-family: var(--font-mono); font-size: 11px; color: #94A3B8; background: rgba(0,0,0,0.25); padding: 4px 10px; border-radius: var(--radius-sm);">
-                <span class="material-symbols-outlined text-[14px]" style="color: var(--vk-secondary);">schedule</span>
+            <div class="fc-display-flex-align-items-9eca" >
+                <span class="material-symbols-outlined text-[14px] fc-color-secondary">schedule</span>
                 <span class="station-live-clock">17:50:00 UTC+6</span>
             </div>
-            <div style="display: flex; align-items: center; gap: 10px; padding-left: 12px; border-left: 1px solid rgba(255,255,255,0.15);">
-                <div style="text-align: right;">
-                    <div style="font-size: 12px; font-weight: 600; color: #ffffff;">Farida Iskakova</div>
-                    <div style="font-family: var(--font-mono); font-size: 10px; color: #CBD5E1;">EMP-1019 • Lead Custodian</div>
+            <div class="fc-display-flex-align-items-20f3" >
+                <div class="fc-text-right" >
+                    <div class="fc-font-size-12px-font-2ab2" >Farida Iskakova</div>
+                    <div class="fc-font-family-var-font-5c5e" >EMP-1019 • Lead Custodian</div>
                 </div>
-                <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--vk-primary); display: flex; align-items: center; justify-content: center; border: 1px solid var(--vk-sys-accent);">
-                    <span class="material-symbols-outlined text-[18px]" style="color: #ffffff;">folder_managed</span>
+                <div class="fc-width-32px-height-32px-0eaf" >
+                    <span class="material-symbols-outlined text-[18px] fc-text-white">folder_managed</span>
                 </div>
             </div>
-        
-<!-- Top Bar Sign Out -->
-<a href="../api/logout.php?system=File%20Center&redirect=../File%20Center/login.php" class="top-signout-btn" title="Sign Out of File Center" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" style="display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:4px;background:rgba(178,58,50,0.2);border:1px solid rgba(178,58,50,0.5);color:#FF8080;font-size:12px;font-weight:600;text-decoration:none;cursor:pointer;margin-left:8px;vertical-align:middle;transition:all 0.2s;" onmouseover="this.style.background='rgba(178,58,50,0.4)';this.style.color='#FFFFFF'" onmouseout="this.style.background='rgba(178,58,50,0.2)';this.style.color='#FF8080'"><span class="material-symbols-outlined" style="font-size:15px;line-height:1;">logout</span><span>Sign Out</span></a>
-</div>
+
+            <!-- Top Bar Sign Out -->
+            <a href="../api/logout.php?system=File%20Center&redirect=../File%20Center/login.php" class="top-signout-btn" title="Sign Out of File Center" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" ><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
+        </div>
     </header>
 
     <!-- LEFT SIDEBAR -->
@@ -62,103 +64,103 @@ requireAuth('DOC');
         <div class="vk-sidebar-nav">
             <div class="vk-sidebar-header">Document Vault</div>
             <a class="vk-nav-item" href="Dashboard.php">
-                <div style="display: flex; align-items: center; gap: 10px;">
+                <div class="fc-flex-center-gap-10" >
                     <span class="material-symbols-outlined text-[18px]">folder_open</span>
                     <span>Document Repository</span>
                 </div>
                 <span class="nav-badge">15</span>
             </a>
             <a class="vk-nav-item" href="approvals.php">
-                <div style="display: flex; align-items: center; gap: 10px;">
+                <div class="fc-flex-center-gap-10" >
                     <span class="material-symbols-outlined text-[18px]">assignment_turned_in</span>
                     <span>Signoff &amp; Approvals</span>
                 </div>
-                <span class="vk-tag vk-tag-highly-confidential" style="font-size: 9px; padding: 1px 5px;">1 ACTION</span>
+                <span class="vk-tag vk-tag-highly-confidential fc-font-size-9px-padding-4279">1 ACTION</span>
             </a>
             <a class="vk-nav-item" href="upload.php">
-                <div style="display: flex; align-items: center; gap: 10px;">
+                <div class="fc-flex-center-gap-10" >
                     <span class="material-symbols-outlined text-[18px]">upload_file</span>
                     <span>Secure Ingestion</span>
                 </div>
             </a>
             <a class="vk-nav-item" href="retention.php">
-                <div style="display: flex; align-items: center; gap: 10px;">
+                <div class="fc-flex-center-gap-10" >
                     <span class="material-symbols-outlined text-[18px]">inventory_2</span>
                     <span>Retention &amp; Holds</span>
                 </div>
             </a>
             <a class="vk-nav-item active" href="audit.php">
-                <div style="display: flex; align-items: center; gap: 10px;">
+                <div class="fc-flex-center-gap-10" >
                     <span class="material-symbols-outlined text-[18px]">fingerprint</span>
                     <span>Integrity Ledger</span>
                 </div>
             </a>
 
-                        <div class="vk-sidebar-header" style="margin-top: 20px;">System Integrations</div>
+            <div class="vk-sidebar-header fc-mt-20">System Integrations</div>
             <a class="vk-nav-item" href="../VOSTOKPRIBOR Corporate Web Platform/index.php">
-                <div style="display: flex; align-items: center; gap: 10px;">
-                    <span class="material-symbols-outlined text-[18px]" style="color: #1B3A5C;">language</span>
+                <div class="fc-flex-center-gap-10" >
+                    <span class="material-symbols-outlined text-[18px] fc-color-1b3a5c-1796">language</span>
                     <span>Corporate Platform</span>
                 </div>
-                <span class="vk-tag" style="font-size: 9px; background: rgba(27,58,92,0.1); color: #1B3A5C; border: 1px solid #1B3A5C;">SYS-01</span>
+                <span class="vk-tag fc-font-size-9px-background-21b8">SYS-01</span>
             </a>
             <a class="vk-nav-item" href="../Employee Intranet/index.php">
-                <div style="display: flex; align-items: center; gap: 10px;">
-                    <span class="material-symbols-outlined text-[18px]" style="color: #5C7290;">badge</span>
+                <div class="fc-flex-center-gap-10" >
+                    <span class="material-symbols-outlined text-[18px] fc-color-5c7290-b50c">badge</span>
                     <span>Employee Intranet</span>
                 </div>
-                <span class="vk-tag" style="font-size: 9px; background: rgba(92,114,144,0.1); color: #5C7290; border: 1px solid #5C7290;">SYS-04</span>
+                <span class="vk-tag fc-font-size-9px-background-cfa1">SYS-04</span>
             </a>
             <a class="vk-nav-item" href="../Developer/index.php">
-                <div style="display: flex; align-items: center; gap: 10px;">
-                    <span class="material-symbols-outlined text-[18px]" style="color: #1E8FA6;">terminal</span>
+                <div class="fc-flex-center-gap-10" >
+                    <span class="material-symbols-outlined text-[18px] fc-color-1e8fa6-f90d">terminal</span>
                     <span>Developer / API Portal</span>
                 </div>
-                <span class="vk-tag" style="font-size: 9px; background: rgba(30,143,166,0.1); color: #1E8FA6; border: 1px solid #1E8FA6;">SYS-10</span>
+                <span class="vk-tag fc-font-size-9px-background-5382">SYS-10</span>
             </a>
             <a class="vk-nav-item" href="../Admin & Governance Portal/index.php">
-                <div style="display: flex; align-items: center; gap: 10px;">
-                    <span class="material-symbols-outlined text-[18px]" style="color: var(--vk-alert);">shield</span>
+                <div class="fc-flex-center-gap-10" >
+                    <span class="material-symbols-outlined text-[18px] fc-color-var-vk-alert-6578">shield</span>
                     <span>Admin &amp; Governance</span>
                 </div>
-                <span class="vk-tag" style="font-size: 9px; background: rgba(178,58,50,0.1); color: var(--vk-alert); border: 1px solid var(--vk-alert);">SYS-11</span>
+                <span class="vk-tag fc-font-size-9px-background-0f11">SYS-11</span>
             </a>
         </div>
 
-        <div style="padding: 16px; border-top: 1px solid var(--vk-neutral-200); background: #ffffff;">
-            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+        <div class="fc-padding-16px-border-top-d16d" >
+            <div class="fc-display-flex-align-items-81c3" >
                 <span class="status-dot-pulse"></span>
-                <span style="font-family: var(--font-mono); font-size: 11px; font-weight: 600; color: var(--vk-neutral-900);">HSM INTEGRITY ENGINE</span>
+                <span class="fc-font-family-var-font-1ab9" >HSM INTEGRITY ENGINE</span>
             </div>
-            <div style="font-family: var(--font-mono); font-size: 11px; color: var(--vk-neutral-600);">Hash Ledger: Zero Errors</div>
-            <div style="font-family: var(--font-mono); font-size: 10px; color: var(--vk-neutral-600); margin-top: 4px;">Last Audit Cycle: 100% PASS</div>
+            <div class="fc-mono-muted-11" >Hash Ledger: Zero Errors</div>
+            <div class="fc-font-family-var-font-940f" >Last Audit Cycle: 100% PASS</div>
         </div>
-    
-            <!-- Log Out -->
-            
-      </aside>
+
+        <!-- Log Out -->
+
+    </aside>
 
     <!-- MAIN CONTENT AREA -->
     <main class="vk-main-layout">
         <!-- HEADER BLOCK -->
-        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--vk-neutral-200);">
+        <div class="fc-display-flex-justify-content-f610" >
             <div>
-                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 6px;">
+                <div class="fc-display-flex-align-items-9bb7" >
                     <span class="vk-tag vk-tag-internal">CRYPTOGRAPHIC ASSURANCE // FIPS 140-3</span>
-                    <span style="font-family: var(--font-mono); font-size: 12px; color: var(--vk-neutral-600);">AUDIT-CYCLE: 2026-Q3</span>
+                    <span class="fc-mono-muted-12" >AUDIT-CYCLE: 2026-Q3</span>
                 </div>
-                <h1 style="font-size: 26px; font-weight: 700; color: var(--vk-primary); margin: 0; display: flex; align-items: center; gap: 10px;">
-                    <span class="material-symbols-outlined" style="font-size: 28px; color: var(--vk-secondary);">fingerprint</span>
+                <h1 class="fc-font-size-26px-font-5041" >
+                    <span class="material-symbols-outlined fc-font-size-28px-color-c410">fingerprint</span>
                     Cryptographic Integrity &amp; Document Audit Ledger
                 </h1>
-                <p style="color: var(--vk-neutral-600); font-size: 14px; margin: 4px 0 0 0;">
+                <p class="fc-color-var-vk-neutral-5a07" >
                     Bitwise verification of stored documents against the hardware HSM hash ledger and immutable custodial transaction trail.
                 </p>
             </div>
         </div>
 
         <!-- TWO COLUMN LAYOUT: CRYPTOGRAPHIC VERIFIER + ACCESS LEDGER -->
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px;">
+        <div class="fc-display-grid-grid-template-687b" >
             <!-- SHA-256 VERIFIER TOOL -->
             <div class="vk-card">
                 <div class="vk-card-header">
@@ -166,18 +168,18 @@ requireAuth('DOC');
                         <div class="vk-card-title">Real-Time Cryptographic Seal Verifier</div>
                         <div class="vk-card-subtitle">Query the Almaty Central HSM to detect bitwise corruption or tampering</div>
                     </div>
-                    <span class="vk-tag" style="background: rgba(14,124,134,0.1); color: var(--vk-secondary); border: 1px solid var(--vk-secondary);">
+                    <span class="vk-tag fc-background-rgba-14-124-0f4c">
                         SHA-256 CHECK
                     </span>
                 </div>
 
                 <div class="vk-card-body">
-                    <div style="display: flex; flex-direction: column; gap: 14px;">
+                    <div class="fc-display-flex-flex-direction-f4b1" >
                         <div>
-                            <label style="font-size: 12px; font-weight: 600; color: var(--vk-neutral-900); display: block; margin-bottom: 6px;">
+                            <label class="fc-font-size-12px-font-8504" >
                                 Select Registered Document from Manifest
                             </label>
-                            <select class="vk-btn vk-btn-outline" id="verify-select-doc" style="width: 100%; text-align: left; font-size: 12px;">
+                            <select class="vk-btn vk-btn-outline" id="verify-select-doc" >
                                 <option value="" data-expected-hash="">-- Choose a document to auto-populate checksum --</option>
                                 <option value="DOC-2026-004" data-expected-hash="9f8e7d6c5b4a3928170192837465abcdeffedcba98765432101234567890fedc">
                                     DOC-2026-004: PRJ-2026-002_Integration_Specification.pdf (BaltNord)
@@ -195,28 +197,28 @@ requireAuth('DOC');
                         </div>
 
                         <div>
-                            <label style="font-size: 12px; font-weight: 600; color: var(--vk-neutral-900); display: block; margin-bottom: 6px;">
+                            <label class="fc-font-size-12px-font-8504" >
                                 Target SHA-256 Digest (64 Hex Characters)
                             </label>
-                            <input class="vk-btn vk-btn-outline" id="verify-input-hash" type="text" placeholder="Paste 64-character SHA-256 hex string..." style="width: 100%; text-align: left; font-family: var(--font-mono); font-size: 11px;" />
+                            <input class="vk-btn vk-btn-outline" id="verify-input-hash" type="text" placeholder="Paste 64-character SHA-256 hex string..."  />
                         </div>
 
-                        <div style="display: flex; justify-content: flex-end; margin-top: 6px;">
+                        <div class="fc-display-flex-justify-content-9d73" >
                             <button class="vk-btn vk-btn-primary" id="btn-run-hash-verification" type="button">
                                 <span class="material-symbols-outlined text-[16px]">security</span> Verify Cryptographic Seal
                             </button>
                         </div>
 
                         <!-- VERIFICATION RESULT (Initially hidden) -->
-                        <div id="verify-result-box" style="display: none; padding: 14px; background: #DCFCE7; border: 1px solid #166534; border-radius: var(--radius-sm); margin-top: 10px;">
-                            <div style="display: flex; align-items: center; gap: 8px; font-weight: 700; color: #166534; font-size: 13px;">
+                        <div class="fc-display-none-padding-14px-1e95" id="verify-result-box" >
+                            <div class="fc-display-flex-align-items-3b8a" >
                                 <span class="material-symbols-outlined text-[18px]">verified</span>
                                 BITWISE INTEGRITY CONFIRMED // ZERO TAMPERING DETECTED
                             </div>
-                            <div style="font-family: var(--font-mono); font-size: 11px; color: #166534; margin-top: 6px; word-break: break-all;">
+                            <div class="fc-font-family-var-font-94fe" >
                                 Verified Digest: <span id="verify-disp-hash"></span>
                             </div>
-                            <div style="font-family: var(--font-mono); font-size: 10px; color: #15803D; margin-top: 4px;">
+                            <div class="fc-font-family-var-font-7b91" >
                                 Timestamp: <span id="verify-disp-timestamp"></span> &bull; Validated by: HSM-NODE-ALMATY-01
                             </div>
                         </div>
@@ -233,117 +235,117 @@ requireAuth('DOC');
                     </div>
                 </div>
 
-                <div class="vk-card-body" style="display: flex; flex-direction: column; gap: 16px;">
+                <div class="vk-card-body fc-display-flex-flex-direction-269e">
                     <div>
-                        <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px;">
-                            <span style="font-weight: 600; color: var(--vk-primary);">FIPS 140-3 Hardware Key Security</span>
-                            <span style="font-family: var(--font-mono); color: var(--vk-secondary); font-weight: 700;">ACTIVE (LEVEL 3)</span>
+                        <div class="fc-display-flex-justify-content-c0fa" >
+                            <span class="fc-text-primary-bold" >FIPS 140-3 Hardware Key Security</span>
+                            <span class="fc-font-family-var-font-90a6" >ACTIVE (LEVEL 3)</span>
                         </div>
-                        <div style="font-size: 11px; color: var(--vk-neutral-600);">Master signing key resides in hardware enclave in Almaty Datacenter.</div>
+                        <div class="fc-text-muted-11" >Master signing key resides in hardware enclave in Almaty Datacenter.</div>
                     </div>
 
-                    <div style="border-top: 1px solid var(--vk-neutral-200); padding-top: 12px;">
-                        <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px;">
-                            <span style="font-weight: 600; color: var(--vk-primary);">Automated Daily Hash Scrub</span>
-                            <span style="font-family: var(--font-mono); color: #166534; font-weight: 700;">PASSED (02:00 UTC+6)</span>
+                    <div class="fc-border-top-1px-solid-8a57" >
+                        <div class="fc-display-flex-justify-content-c0fa" >
+                            <span class="fc-text-primary-bold" >Automated Daily Hash Scrub</span>
+                            <span class="fc-font-family-var-font-1a77" >PASSED (02:00 UTC+6)</span>
                         </div>
-                        <div style="font-size: 11px; color: var(--vk-neutral-600);">1,842 files re-verified against root merkle tree. 0 mismatches.</div>
+                        <div class="fc-text-muted-11" >1,842 files re-verified against root merkle tree. 0 mismatches.</div>
                     </div>
 
-                    <div style="border-top: 1px solid var(--vk-neutral-200); padding-top: 12px;">
-                        <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px;">
-                            <span style="font-weight: 600; color: var(--vk-primary);">Disaster Recovery Replication</span>
-                            <span style="font-family: var(--font-mono); color: var(--vk-secondary); font-weight: 700;">SYNCHRONIZED</span>
+                    <div class="fc-border-top-1px-solid-8a57" >
+                        <div class="fc-display-flex-justify-content-c0fa" >
+                            <span class="fc-text-primary-bold" >Disaster Recovery Replication</span>
+                            <span class="fc-font-family-var-font-90a6" >SYNCHRONIZED</span>
                         </div>
-                        <div style="font-size: 11px; color: var(--vk-neutral-600);">Encrypted mirror synchronized to Astana secondary bunker.</div>
+                        <div class="fc-text-muted-11" >Encrypted mirror synchronized to Astana secondary bunker.</div>
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- CUSTODIAL AUDIT LOG TABLE -->
-        <div class="vk-card" style="margin-bottom: 30px;">
+        <div class="vk-card fc-mb-30">
             <div class="vk-card-header">
                 <div>
                     <div class="vk-card-title">Immutable Document Transaction Trail</div>
                     <div class="vk-card-subtitle">Complete chronological record of document access, signoffs, and exports</div>
                 </div>
-                <div style="width: 240px;">
-                    <input class="vk-btn vk-btn-outline" id="audit-search-input" type="text" placeholder="Filter log by user, DOC-ID..." style="width: 100%; text-align: left; font-size: 12px; padding: 4px 10px;" />
+                <div class="fc-width-240px-1e8d" >
+                    <input class="vk-btn vk-btn-outline" id="audit-search-input" type="text" placeholder="Filter log by user, DOC-ID..."  />
                 </div>
             </div>
 
-            <div class="vk-card-body" style="padding: 0;">
+            <div class="vk-card-body fc-p-0">
                 <table class="vk-table">
                     <thead>
                         <tr>
-                            <th style="width: 150px;">Timestamp (UTC+6)</th>
-                            <th style="width: 180px;">Actor / User</th>
-                            <th style="width: 130px;">Action</th>
-                            <th style="width: 140px;">Target DOC-ID</th>
+                            <th class="fc-width-150px-c251" >Timestamp (UTC+6)</th>
+                            <th class="fc-width-180px-21b9" >Actor / User</th>
+                            <th class="fc-width-130px-e314" >Action</th>
+                            <th class="fc-w-140" >Target DOC-ID</th>
                             <th>Transaction Scope / Notes</th>
-                            <th style="width: 100px; text-align: right;">Status</th>
+                            <th class="fc-width-100px-text-align-41b3" >Status</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr class="audit-log-row vk-table-row-highly-confidential">
-                            <td style="font-family: var(--font-mono); font-size: 11px;">2026-09-11 17:15:22</td>
+                            <td class="fc-mono-11" >2026-09-11 17:15:22</td>
                             <td>
-                                <div style="font-weight: 600;">Farida Iskakova</div>
-                                <div style="font-family: var(--font-mono); font-size: 10px; color: var(--vk-neutral-600);">EMP-1019 &bull; ENG</div>
+                                <div class="fc-font-semibold" >Farida Iskakova</div>
+                                <div class="fc-font-family-var-font-36a4" >EMP-1019 &bull; ENG</div>
                             </td>
-                            <td><span class="vk-tag" style="background: #E0E7FF; color: #3730A3;">SIGN_REVIEW</span></td>
+                            <td><span class="vk-tag fc-background-e0e7ff-color-3730a3-4a03">SIGN_REVIEW</span></td>
                             <td><code>DOC-2026-004</code></td>
-                            <td style="font-size: 12px;">Opened redaction inspection for BaltNord PRJ-2026-002 specification</td>
-                            <td style="text-align: right;"><span class="vk-status-badge status-approved">VERIFIED</span></td>
+                            <td class="fc-text-12" >Opened redaction inspection for BaltNord PRJ-2026-002 specification</td>
+                            <td class="fc-text-right" ><span class="vk-status-badge status-approved">VERIFIED</span></td>
                         </tr>
 
                         <tr class="audit-log-row vk-table-row-internal">
-                            <td style="font-family: var(--font-mono); font-size: 11px;">2026-09-11 16:42:01</td>
+                            <td class="fc-mono-11" >2026-09-11 16:42:01</td>
                             <td>
-                                <div style="font-weight: 600;">Dana Yermak</div>
-                                <div style="font-family: var(--font-mono); font-size: 10px; color: var(--vk-neutral-600);">EMP-1017 &bull; ENG</div>
+                                <div class="fc-font-semibold" >Dana Yermak</div>
+                                <div class="fc-font-family-var-font-36a4" >EMP-1017 &bull; ENG</div>
                             </td>
-                            <td><span class="vk-tag" style="background: #F1F5F9; color: #475569;">VIEW</span></td>
+                            <td><span class="vk-tag fc-background-f1f5f9-color-475569-9fb0">VIEW</span></td>
                             <td><code>DOC-2026-010</code></td>
-                            <td style="font-size: 12px;">Accessed API Integration Guide for developer gateway synchronization</td>
-                            <td style="text-align: right;"><span class="vk-status-badge status-approved">SUCCESS</span></td>
+                            <td class="fc-text-12" >Accessed API Integration Guide for developer gateway synchronization</td>
+                            <td class="fc-text-right" ><span class="vk-status-badge status-approved">SUCCESS</span></td>
                         </tr>
 
                         <tr class="audit-log-row vk-table-row-confidential">
-                            <td style="font-family: var(--font-mono); font-size: 11px;">2026-09-11 14:10:44</td>
+                            <td class="fc-mono-11" >2026-09-11 14:10:44</td>
                             <td>
-                                <div style="font-weight: 600;">Markus Klein</div>
-                                <div style="font-family: var(--font-mono); font-size: 10px; color: var(--vk-neutral-600);">EMP-1010 &bull; SAL</div>
+                                <div class="fc-font-semibold" >Markus Klein</div>
+                                <div class="fc-font-family-var-font-36a4" >EMP-1010 &bull; SAL</div>
                             </td>
-                            <td><span class="vk-tag" style="background: #FEF3C7; color: #92400E;">EXPORT</span></td>
+                            <td><span class="vk-tag fc-background-fef3c7-color-92400e-d4d7">EXPORT</span></td>
                             <td><code>DOC-2026-003</code></td>
-                            <td style="font-size: 12px;">Exported customer copy of Aral Geomatics Statement of Work</td>
-                            <td style="text-align: right;"><span class="vk-status-badge status-approved">SUCCESS</span></td>
+                            <td class="fc-text-12" >Exported customer copy of Aral Geomatics Statement of Work</td>
+                            <td class="fc-text-right" ><span class="vk-status-badge status-approved">SUCCESS</span></td>
                         </tr>
 
                         <tr class="audit-log-row vk-table-row-highly-confidential">
-                            <td style="font-family: var(--font-mono); font-size: 11px;">2026-09-11 11:20:18</td>
+                            <td class="fc-mono-11" >2026-09-11 11:20:18</td>
                             <td>
-                                <div style="font-weight: 600;">Timur Akhmetov</div>
-                                <div style="font-family: var(--font-mono); font-size: 10px; color: var(--vk-neutral-600);">EMP-1005 &bull; EXE</div>
+                                <div class="fc-font-semibold" >Timur Akhmetov</div>
+                                <div class="fc-font-family-var-font-36a4" >EMP-1005 &bull; EXE</div>
                             </td>
-                            <td><span class="vk-tag" style="background: #FEE2E2; color: #991B1B;">LEGAL_HOLD</span></td>
+                            <td><span class="vk-tag fc-background-fee2e2-color-991b1b-7752">LEGAL_HOLD</span></td>
                             <td><code>DOC-2026-007</code></td>
-                            <td style="font-size: 12px;">Applied statutory audit preservation lock on Employee Access Matrix</td>
-                            <td style="text-align: right;"><span class="vk-status-badge status-approved">ENFORCED</span></td>
+                            <td class="fc-text-12" >Applied statutory audit preservation lock on Employee Access Matrix</td>
+                            <td class="fc-text-right" ><span class="vk-status-badge status-approved">ENFORCED</span></td>
                         </tr>
 
                         <tr class="audit-log-row vk-table-row-highly-confidential">
-                            <td style="font-family: var(--font-mono); font-size: 11px;">2026-09-10 14:12:05</td>
+                            <td class="fc-mono-11" >2026-09-10 14:12:05</td>
                             <td>
-                                <div style="font-weight: 600;">Dana Yermak</div>
-                                <div style="font-family: var(--font-mono); font-size: 10px; color: var(--vk-neutral-600);">EMP-1017 &bull; ENG</div>
+                                <div class="fc-font-semibold" >Dana Yermak</div>
+                                <div class="fc-font-family-var-font-36a4" >EMP-1017 &bull; ENG</div>
                             </td>
-                            <td><span class="vk-tag" style="background: #DCFCE7; color: #166534;">INGEST_DRAFT</span></td>
+                            <td><span class="vk-tag fc-background-dcfce7-color-166534-4a19">INGEST_DRAFT</span></td>
                             <td><code>DOC-2026-004</code></td>
-                            <td style="font-size: 12px;">Uploaded initial revision of PRJ-2026-002_Integration_Specification.pdf</td>
-                            <td style="text-align: right;"><span class="vk-status-badge status-approved">ENQUEUED</span></td>
+                            <td class="fc-text-12" >Uploaded initial revision of PRJ-2026-002_Integration_Specification.pdf</td>
+                            <td class="fc-text-right" ><span class="vk-status-badge status-approved">ENQUEUED</span></td>
                         </tr>
                     </tbody>
                 </table>
@@ -353,14 +355,14 @@ requireAuth('DOC');
 
     <!-- DOCKED ENTERPRISE STATUS BAR -->
     <footer class="vk-status-bar">
-        <div style="display: flex; align-items: center; gap: 16px;">
-            <div style="display: flex; align-items: center; gap: 8px;">
+        <div class="fc-flex-center-gap-16" >
+            <div class="fc-flex-center-gap-8" >
                 <span class="status-dot-pulse"></span>
                 <span>ALMATY-VAULT-01 // HSM CLUSTER SYNCHRONIZED</span>
             </div>
             <span>VOLUME: 842.6 GB / 4.8 TB (17.5%)</span>
         </div>
-        <div style="display: flex; align-items: center; gap: 20px;">
+        <div class="fc-display-flex-align-items-bf7c" >
             <span>ACTIVE SENSITIVITY ENCLAVE: FOUR-TIER RBAC</span>
             <span>IEC 62443 / ISO 27001 AUDIT COMPLIANT</span>
         </div>
@@ -370,7 +372,7 @@ requireAuth('DOC');
     <div class="cmd-palette-backdrop" id="cmd-palette-modal">
         <div class="cmd-palette-box">
             <div class="cmd-palette-header">
-                <span class="material-symbols-outlined text-[20px]" style="color: var(--vk-sys-accent);">folder_managed</span>
+                <span class="material-symbols-outlined text-[20px] fc-color-accent">folder_managed</span>
                 <input class="cmd-palette-input" id="cmd-palette-input" type="text" placeholder="Type a document ID, name, or jump to view..." />
             </div>
             <div class="cmd-palette-list" id="cmd-palette-results">
@@ -404,4 +406,5 @@ requireAuth('DOC');
     <script src="js/fc-common.js"></script>
     <script src="js/fc-audit.js"></script>
 </body>
+
 </html>

@@ -4,66 +4,68 @@
    ========================================================================== */
 
 .metrics-kpi-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 16px;
-    margin-bottom: 24px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
 }
 
 .kpi-metric-card {
-    background: #ffffff;
-    border: 1px solid var(--vk-neutral-200);
-    border-radius: var(--radius-md);
-    padding: 16px 20px;
-    box-shadow: var(--shadow-sm);
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
+  background: #ffffff;
+  border: 1px solid var(--vk-neutral-200);
+  border-radius: var(--radius-md);
+  padding: 16px 20px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .kpi-title {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    color: var(--vk-neutral-600);
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--vk-neutral-600);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .kpi-value {
-    font-family: var(--font-mono);
-    font-size: 28px;
-    font-weight: 700;
-    color: var(--vk-primary);
-    margin-top: 8px;
+  font-family: var(--font-mono);
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--vk-primary);
+  margin-top: 8px;
 }
 
 .kpi-subtext {
-    font-size: 12px;
-    color: var(--vk-neutral-600);
-    margin-top: 4px;
+  font-size: 12px;
+  color: var(--vk-neutral-600);
+  margin-top: 4px;
 }
 
 .chart-mockup {
-    width: 100%;
-    height: 180px;
-    display: flex;
-    align-items: flex-end;
-    gap: 8px;
-    padding-top: 16px;
+  width: 100%;
+  height: 180px;
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  padding-top: 16px;
 }
 
 .chart-bar-col {
-    flex: 1;
-    background-color: var(--vk-sys-accent-light);
-    border-top: 2px solid var(--vk-sys-accent);
-    border-radius: 2px 2px 0 0;
-    position: relative;
-    transition: height 0.3s ease, background-color 0.2s ease;
+  flex: 1;
+  background-color: var(--vk-sys-accent-light);
+  border-top: 2px solid var(--vk-sys-accent);
+  border-radius: 2px 2px 0 0;
+  position: relative;
+  transition:
+    height 0.3s ease,
+    background-color 0.2s ease;
 }
 
 .chart-bar-col:hover {
-    background-color: var(--vk-sys-accent);
+  background-color: var(--vk-sys-accent);
 }

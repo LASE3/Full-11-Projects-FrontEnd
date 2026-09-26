@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Class 2: Online Shop B2B - Quotes / RFQ API
  * Location: api/v1/shop/quotes.php
@@ -82,9 +83,15 @@ if ($method === 'POST') {
         $newQuoteId = $pdo->lastInsertId();
 
         AuditLogger::logAction(
-            $empId, $targetCus, 'Online Shop B2B', 'SHP',
-            'CREATE_B2B_PRICE_QUOTE', 'quotes', (string)$newQuoteId,
-            ['prod_id' => $prodId, 'quantity' => $qty, 'unit_price' => $unitPrice], 'SUCCESS'
+            $empId,
+            $targetCus,
+            'Online Shop B2B',
+            'SHP',
+            'CREATE_B2B_PRICE_QUOTE',
+            'quotes',
+            (string)$newQuoteId,
+            ['prod_id' => $prodId, 'quantity' => $qty, 'unit_price' => $unitPrice],
+            'SUCCESS'
         );
 
         Response::success([

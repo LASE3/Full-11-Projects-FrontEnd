@@ -1,9 +1,11 @@
 <?php
+
 /**
  * VOSTOKPRIBOR Bilingual Translation Engine (English & Arabic)
  * Location: api/helpers/I18n.php
  */
-class I18n {
+class I18n
+{
     private static $dictionary = [
         'en' => [
             // Statuses
@@ -109,7 +111,8 @@ class I18n {
         ]
     ];
 
-    public static function translate($key, $lang = 'en') {
+    public static function translate($key, $lang = 'en')
+    {
         $lang = strtolower(substr($lang, 0, 2)) === 'ar' ? 'ar' : 'en';
         return self::$dictionary[$lang][$key] ?? $key;
     }

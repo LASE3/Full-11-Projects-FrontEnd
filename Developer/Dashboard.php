@@ -20,63 +20,61 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
 <body>
     <!-- TOP NAVIGATION BAR (Deep Navy + 4px Cyan Identity Stripe) -->
     <header class="vk-top-navbar">
-        <div style="display: flex; align-items: center; gap: 24px;">
+        <div class="dev-flex-center-gap-24" >
             <a class="vk-brand-section" href="Dashboard.php">
-                <img alt="VOSTOKPRIBOR Official Mark" class="brand-logo-img"
-                    style="height: 30px; width: 30px; object-fit: contain;"
+                <img alt="VOSTOKPRIBOR Official Mark" class="brand-logo-img dev-logo-img"
                     src="assets/logo.svg" />
-                <div style="display: flex; flex-direction: column;">
-                    <div style="display: flex; align-items: center; gap: 8px;">
-                        <span
-                            style="font-family: var(--font-heading); font-weight: 700; font-size: 15px; letter-spacing: -0.02em;">VOSTOKPRIBOR</span>
+                <div class="dev-flex-col" >
+                    <div class="dev-flex-center-gap-8" >
+                        <span class="dev-font-family-var-font-980b"
+                            >VOSTOKPRIBOR</span>
                         <span class="vk-system-badge">SYS-10 // DEV-PORTAL</span>
                     </div>
-                    <span style="font-family: var(--font-mono); font-size: 10px; color: #94A3B8;">ALMATY CENTRAL • EST.
+                    <span class="dev-font-family-var-font-54ae" >ALMATY CENTRAL • EST.
                         1968 • API GATEWAY v4.12.0</span>
                 </div>
             </a>
-            <div
-                style="display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.06); padding: 4px 12px; border-radius: var(--radius-sm); border: 1px solid rgba(255,255,255,0.1);">
-                <span class="material-symbols-outlined text-[14px]" style="color: var(--vk-sys-accent);">hub</span>
-                <span style="font-family: var(--font-mono); font-size: 11px; color: #E2E8F0;">FQDN:
+            <div class="dev-display-flex-align-items-bc9f"
+                >
+                <span class="material-symbols-outlined text-[14px] dev-color-accent">hub</span>
+                <span class="dev-font-family-var-font-eb0b" >FQDN:
                     <strong>developer.vostokpribor.local</strong></span>
             </div>
         </div>
 
-        <div style="display: flex; align-items: center; gap: 16px;">
+        <div class="dev-flex-center-gap-16" >
             <!-- Search Bar Trigger (Ctrl + K) -->
-            <div style="position: relative; width: 280px;">
-                <span class="material-symbols-outlined text-[16px]"
-                    style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: #64748B;">search</span>
+            <div class="dev-search-box-wrap" >
+                <span class="material-symbols-outlined text-[16px] dev-position-absolute-left-10px-d4a8">search</span>
                 <input class="search-trigger-input" type="text" placeholder="Search API docs, schemas (Ctrl + K)"
                     readonly
-                    style="width: 100%; height: 32px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: var(--radius-sm); padding-left: 32px; padding-right: 12px; font-family: var(--font-mono); font-size: 11px; color: #ffffff; cursor: pointer;" />
+                     />
             </div>
 
             <!-- Almaty Live Station Time -->
-            <div
-                style="display: flex; align-items: center; gap: 6px; font-family: var(--font-mono); font-size: 11px; color: #94A3B8; background: rgba(0,0,0,0.25); padding: 4px 10px; border-radius: var(--radius-sm);">
-                <span class="material-symbols-outlined text-[14px]" style="color: var(--vk-secondary);">schedule</span>
+            <div class="dev-display-flex-align-items-9eca"
+                >
+                <span class="material-symbols-outlined text-[14px] dev-color-secondary">schedule</span>
                 <span class="station-live-clock">17:15:00 UTC+6</span>
             </div>
 
             <!-- Partner Session Persona (CUS-1002 BaltNord) -->
-            <div
-                style="display: flex; align-items: center; gap: 10px; padding-left: 12px; border-left: 1px solid rgba(255,255,255,0.15);">
-                <div style="text-align: right;">
-                    <div style="font-size: 12px; font-weight: 600; color: #ffffff;">Kristaps Ozols</div>
-                    <div style="font-family: var(--font-mono); font-size: 10px; color: var(--vk-sys-accent);">CUS-1002 •
+            <div class="dev-display-flex-align-items-20f3"
+                >
+                <div class="dev-text-right" >
+                    <div class="dev-font-size-12px-font-2ab2" >Kristaps Ozols</div>
+                    <div class="dev-font-family-var-font-b636" >CUS-1002 •
                         BaltNord</div>
                 </div>
-                <div
-                    style="width: 32px; height: 32px; border-radius: 50%; background: var(--vk-primary); display: flex; align-items: center; justify-content: center; border: 1px solid var(--vk-sys-accent);">
-                    <span class="material-symbols-outlined text-[18px]" style="color: #ffffff;">person</span>
+                <div class="dev-width-32px-height-32px-0eaf"
+                    >
+                    <span class="material-symbols-outlined text-[18px] dev-text-white">person</span>
                 </div>
             </div>
-        
-<!-- Top Bar Sign Out -->
-<a href="../api/logout.php?system=Developer&redirect=../Developer/login.php" class="top-signout-btn" title="Sign Out of Developer" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" style="display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:4px;background:rgba(178,58,50,0.2);border:1px solid rgba(178,58,50,0.5);color:#FF8080;font-size:12px;font-weight:600;text-decoration:none;cursor:pointer;margin-left:8px;vertical-align:middle;transition:all 0.2s;" onmouseover="this.style.background='rgba(178,58,50,0.4)';this.style.color='#FFFFFF'" onmouseout="this.style.background='rgba(178,58,50,0.2)';this.style.color='#FF8080'"><span class="material-symbols-outlined" style="font-size:15px;line-height:1;">logout</span><span>Sign Out</span></a>
-</div>
+
+            <!-- Top Bar Sign Out -->
+            <a href="../api/logout.php?system=Developer&redirect=../Developer/login.php" class="top-signout-btn" title="Sign Out of Developer" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" ><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
+        </div>
     </header>
 
     <!-- LEFT SIDEBAR -->
@@ -84,120 +82,125 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
         <div class="vk-sidebar-nav">
             <div class="vk-sidebar-header">Core Documentation</div>
             <a class="vk-nav-item active" href="Dashboard.php">
-                <div style="display: flex; align-items: center; gap: 10px;">
+                <div class="dev-flex-center-gap-10" >
                     <span class="material-symbols-outlined text-[18px]">menu_book</span>
                     <span>API Reference</span>
                 </div>
-                <span
-                    style="font-family: var(--font-mono); font-size: 10px; color: var(--vk-sys-accent); font-weight: 700;">REST</span>
+                <span class="dev-font-family-var-font-829c"
+                    >REST</span>
             </a>
             <a class="vk-nav-item" href="guides.php">
-                <div style="display: flex; align-items: center; gap: 10px;">
+                <div class="dev-flex-center-gap-10" >
                     <span class="material-symbols-outlined text-[18px]">architecture</span>
                     <span>Integration Guides</span>
                 </div>
-                <span class="badge-classification badge-internal" style="font-size: 8px;">DOC-010</span>
+                <span class="badge-classification badge-internal dev-font-size-8px-c136">DOC-010</span>
             </a>
 
-            <div class="vk-sidebar-header" style="margin-top: 16px;">Partner Enclave</div>
+            <div class="vk-sidebar-header dev-mt-16">Partner Enclave</div>
             <a class="vk-nav-item" href="credentials.php">
-                <div style="display: flex; align-items: center; gap: 10px;">
+                <div class="dev-flex-center-gap-10" >
                     <span class="material-symbols-outlined text-[18px]">key</span>
                     <span>API Credentials</span>
                 </div>
-                <span style="font-family: var(--font-mono); font-size: 10px; color: var(--vk-neutral-600);">Vault</span>
+                <span class="dev-font-family-var-font-36a4" >Vault</span>
             </a>
             <a class="vk-nav-item" href="sandbox.php">
-                <div style="display: flex; align-items: center; gap: 10px;">
+                <div class="dev-flex-center-gap-10" >
                     <span class="material-symbols-outlined text-[18px]">code_blocks</span>
                     <span>Testing Sandbox</span>
                 </div>
-                <span class="vk-status-badge status-sandbox" style="padding: 1px 6px; font-size: 9px;">LIVE</span>
+                <span class="vk-status-badge status-sandbox dev-padding-1px-6px-font-7734">LIVE</span>
             </a>
             <a class="vk-nav-item" href="metrics.php">
-                <div style="display: flex; align-items: center; gap: 10px;">
+                <div class="dev-flex-center-gap-10" >
                     <span class="material-symbols-outlined text-[18px]">monitoring</span>
                     <span>Usage &amp; Telemetry</span>
                 </div>
-                <span
-                    style="font-family: var(--font-mono); font-size: 10px; color: var(--vk-secondary); font-weight: 700;">99.98%</span>
+                <span class="dev-font-family-var-font-7016"
+                    >99.98%</span>
             </a>
-<a href="Integrations.php" class="sidebar-nav-item"><div class="sidebar-item-left"><span class="sidebar-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00E5FF" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></span><span style="color: #00E5FF; font-weight: 600;">System Integrations</span></div><span class="sidebar-badge" style="background: rgba(0,229,255,0.15); color: #00E5FF;">SYS04</span></a>
+            <a href="Integrations.php" class="sidebar-nav-item">
+                <div class="sidebar-item-left"><span class="sidebar-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00E5FF" stroke-width="2">
+                            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+                            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+                        </svg></span><span class="dev-color-00e5ff-font-weight-fe7a" >System Integrations</span></div><span class="sidebar-badge dev-background-rgba-0-229-2595">SYS04</span>
+            </a>
 
-            <div class="vk-sidebar-header" style="margin-top: 16px;">Organization</div>
+            <div class="vk-sidebar-header dev-mt-16">Organization</div>
             <a class="vk-nav-item" href="partner-registration.php">
-                <div style="display: flex; align-items: center; gap: 10px;">
+                <div class="dev-flex-center-gap-10" >
                     <span class="material-symbols-outlined text-[18px]">verified_user</span>
                     <span>Partner Registration</span>
                 </div>
-                <span style="font-family: var(--font-mono); font-size: 10px; color: var(--vk-accent-cta);">NDA</span>
+                <span class="dev-font-family-var-font-296e" >NDA</span>
             </a>
-            <div class="vk-sidebar-header" style="margin-top: 16px;">Unified Ecosystem</div>
+            <div class="vk-sidebar-header dev-mt-16">Unified Ecosystem</div>
             <a class="vk-nav-item" href="../VOSTOKPRIBOR Corporate Web Platform/index.php">
-                <div style="display: flex; align-items: center; gap: 10px;">
-                    <span class="material-symbols-outlined text-[18px]" style="color: #1B3A5C;">language</span>
+                <div class="dev-flex-center-gap-10" >
+                    <span class="material-symbols-outlined text-[18px] dev-color-1b3a5c-1796">language</span>
                     <span>Corporate Platform</span>
                 </div>
-                <span class="vk-tag" style="font-size: 9px; background: rgba(27,58,92,0.1); color: #1B3A5C; border: 1px solid #1B3A5C;">SYS-01</span>
+                <span class="vk-tag dev-font-size-9px-background-21b8">SYS-01</span>
             </a>
             <a class="vk-nav-item" href="../Employee Intranet/index.php">
-                <div style="display: flex; align-items: center; gap: 10px;">
-                    <span class="material-symbols-outlined text-[18px]" style="color: #5C7290;">badge</span>
+                <div class="dev-flex-center-gap-10" >
+                    <span class="material-symbols-outlined text-[18px] dev-color-5c7290-b50c">badge</span>
                     <span>Employee Intranet</span>
                 </div>
-                <span class="vk-tag" style="font-size: 9px; background: rgba(92,114,144,0.1); color: #5C7290; border: 1px solid #5C7290;">SYS-04</span>
+                <span class="vk-tag dev-font-size-9px-background-cfa1">SYS-04</span>
             </a>
             <a class="vk-nav-item" href="../File Center/index.php">
-                <div style="display: flex; align-items: center; gap: 10px;">
-                    <span class="material-symbols-outlined text-[18px]" style="color: #5A6470;">folder_zip</span>
+                <div class="dev-flex-center-gap-10" >
+                    <span class="material-symbols-outlined text-[18px] dev-color-5a6470-9f56">folder_zip</span>
                     <span>File Center</span>
                 </div>
-                <span class="vk-tag" style="font-size: 9px; background: rgba(90,100,112,0.1); color: #5A6470; border: 1px solid #5A6470;">SYS-09</span>
+                <span class="vk-tag dev-font-size-9px-background-7efe">SYS-09</span>
             </a>
             <a class="vk-nav-item" href="../Admin & Governance Portal/index.php">
-                <div style="display: flex; align-items: center; gap: 10px;">
-                    <span class="material-symbols-outlined text-[18px]" style="color: var(--vk-alert);">shield</span>
+                <div class="dev-flex-center-gap-10" >
+                    <span class="material-symbols-outlined text-[18px] dev-color-alert">shield</span>
                     <span>Admin &amp; Governance</span>
                 </div>
-                <span class="vk-tag vk-tag-confidential" style="font-size: 10px;">SYS-11</span>
+                <span class="vk-tag vk-tag-confidential dev-text-10">SYS-11</span>
             </a>
         </div>
 
         <!-- Technical Lead Contacts (PDF Grounded: EMP-1020 & EMP-1017) -->
-        <div
-            style="padding: 16px; border-top: 1px solid var(--vk-neutral-200); background-color: #F8FAFC; font-size: 11px;">
-            <div
-                style="font-family: var(--font-mono); font-weight: 700; color: var(--vk-neutral-600); text-transform: uppercase; margin-bottom: 6px;">
+        <div class="dev-padding-16px-border-top-156b"
+            >
+            <div class="dev-font-family-var-font-6447"
+                >
                 Portal Custodians</div>
-            <div style="color: var(--vk-primary); font-weight: 600;">Jonas Richter (EMP-1020)</div>
-            <div style="color: var(--vk-neutral-600); font-size: 10px;">Lead Developer • ENG</div>
-            <div style="color: var(--vk-primary); font-weight: 600; margin-top: 6px;">Dana Yermak (EMP-1017)</div>
-            <div style="color: var(--vk-neutral-600); font-size: 10px;">Integration Engineer • ENG</div>
+            <div class="dev-color-var-vk-primary-1a7b" >Jonas Richter (EMP-1020)</div>
+            <div class="dev-color-var-vk-neutral-19bc" >Lead Developer • ENG</div>
+            <div class="dev-color-var-vk-primary-57e8" >Dana Yermak (EMP-1017)</div>
+            <div class="dev-color-var-vk-neutral-19bc" >Integration Engineer • ENG</div>
         </div>
 
         <!-- Log Out -->
-        
+
     </aside>
 
     <!-- MAIN APP BODY -->
     <main class="vk-app-body">
         <!-- Page Header & Classification Bar -->
-        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px;">
+        <div class="dev-display-flex-justify-content-387e" >
             <div>
-                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
-                    <span style="font-family: var(--font-mono); font-size: 11px; color: var(--vk-neutral-600);">ROOT /
+                <div class="dev-display-flex-align-items-81c3" >
+                    <span class="dev-mono-muted-11" >ROOT /
                         SYSTEM 10 / API REFERENCE</span>
                     <span class="badge-classification badge-public">Public API</span>
                 </div>
-                <h1 style="font-size: 26px; font-weight: 700; color: var(--vk-primary-dark); letter-spacing: -0.02em;">
+                <h1 class="dev-font-size-26px-font-2295" >
                     Industrial Equipment &amp; Automation API v1
                 </h1>
-                <p style="color: var(--vk-neutral-600); font-size: 14px; margin-top: 4px; max-width: 820px;">
+                <p class="dev-color-var-vk-neutral-5666" >
                     Official RESTful and telemetry streaming interfaces for precision optical measurement packages,
                     geodetic kits, PLC integration, and enterprise B2B fulfillment pipelines.
                 </p>
             </div>
-            <div style="display: flex; gap: 10px;">
+            <div class="dev-display-flex-gap-10px-0ed0" >
                 <a class="vk-btn vk-btn-outline" href="guides.php">
                     <span class="material-symbols-outlined text-[16px]">menu_book</span> Quickstart Guide
                 </a>
@@ -208,24 +211,23 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
         </div>
 
         <!-- System Baseline Specs Banner (PDF Cross-Reference) -->
-        <div class="vk-card tag-internal" style="margin-bottom: 28px; background: #ffffff;">
-            <div class="vk-card-body"
-                style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px;">
-                <div style="display: flex; align-items: center; gap: 16px;">
-                    <div
-                        style="width: 42px; height: 42px; background: rgba(30, 143, 166, 0.12); border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; color: var(--vk-sys-accent);">
+        <div class="vk-card tag-internal dev-margin-bottom-28px-background-8be5">
+            <div class="vk-card-body dev-display-flex-align-items-8ee2">
+                <div class="dev-flex-center-gap-16" >
+                    <div class="dev-width-42px-height-42px-234f"
+                        >
                         <span class="material-symbols-outlined text-[24px]">terminal</span>
                     </div>
                     <div>
-                        <div style="font-weight: 700; font-size: 14px; color: var(--vk-primary);">Statutory
+                        <div class="dev-font-weight-700-font-2e8f" >Statutory
                             Specification DOC-2026-010 Synchronized</div>
-                        <div style="font-size: 12px; color: var(--vk-neutral-600);">
-                            Conforms to Republic Heavy Automation Standards • Base URL: <code
-                                style="font-family: var(--font-mono); color: var(--vk-primary); background: #F1F5F9; padding: 2px 6px;">https://developer.vostokpribor.local/v1</code>
+                        <div class="dev-font-size-12px-color-6366" >
+                            Conforms to Republic Heavy Automation Standards • Base URL: <code class="dev-font-family-var-font-7268"
+                                >https://developer.vostokpribor.local/v1</code>
                         </div>
                     </div>
                 </div>
-                <div style="display: flex; align-items: center; gap: 12px;">
+                <div class="dev-display-flex-align-items-1c20" >
                     <span class="badge-classification badge-internal">DOC-2026-010 • INTERNAL SPEC</span>
                     <button class="vk-btn vk-btn-outline"
                         onclick="window.showToast('SPEC DOWNLOADED', 'Saved OpenAPI 3.0 YAML descriptor for System 10.', 'success')">
@@ -240,13 +242,13 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
             <!-- ENDPOINT 1: PROD-1001 Optical Sensor Package Telemetry -->
             <div class="endpoint-card tag-internal" id="endpoint-optical">
                 <div class="endpoint-header">
-                    <div style="display: flex; align-items: center; gap: 12px;">
+                    <div class="dev-display-flex-align-items-1c20" >
                         <span class="endpoint-badge-get">GET</span>
                         <span class="endpoint-path">/v1/sensors/optical/telemetry</span>
                         <span class="badge-classification badge-internal">Internal • PROD-1001</span>
                     </div>
-                    <div style="display: flex; align-items: center; gap: 10px;">
-                        <span style="font-family: var(--font-mono); font-size: 11px; color: var(--vk-neutral-600);">Rate
+                    <div class="dev-flex-center-gap-10" >
+                        <span class="dev-mono-muted-11" >Rate
                             Limit: 10k/min</span>
                         <button class="vk-btn vk-btn-outline btn-try-sandbox" data-method="GET"
                             data-url="/v1/sensors/optical/telemetry">
@@ -256,18 +258,18 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
                 </div>
                 <div class="endpoint-body">
                     <div class="endpoint-docs-col">
-                        <div
-                            style="font-weight: 600; font-size: 14px; color: var(--vk-primary-dark); margin-bottom: 6px;">
+                        <div class="dev-font-weight-600-font-94c0"
+                            >
                             Fetch Industrial Optical Sensor Package Real-time Telemetry
                         </div>
-                        <p style="font-size: 13px; color: var(--vk-neutral-600); line-height: 1.5;">
+                        <p class="dev-font-size-13px-color-78fc" >
                             Retrieves high-frequency telemetry streams from field-deployed optical inspection and sensor
                             apparatus (PROD-1001), including spectral resolution peak, focal plane operating
                             temperature, and signal-to-noise ratio.
                         </p>
 
-                        <div
-                            style="margin-top: 16px; font-weight: 600; font-size: 12px; color: var(--vk-neutral-900); text-transform: uppercase; letter-spacing: 0.04em;">
+                        <div class="dev-margin-top-16px-font-dc1f"
+                            >
                             Query Parameters</div>
                         <table class="param-table">
                             <thead>
@@ -288,7 +290,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
                                 <tr>
                                     <td class="param-name">sample_window_sec</td>
                                     <td class="param-type">integer</td>
-                                    <td><span style="font-size: 10px; color: var(--vk-neutral-600);">Optional</span>
+                                    <td><span class="dev-font-size-10px-color-f312" >Optional</span>
                                     </td>
                                     <td>Window for rolling average (1 to 60, default: 5)</td>
                                 </tr>
@@ -297,7 +299,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
                     </div>
                     <div class="endpoint-code-col">
                         <div class="code-tabs-nav">
-                            <div style="display: flex; gap: 6px;">
+                            <div class="dev-display-flex-gap-6px-4a5d" >
                                 <button class="code-tab-btn active" data-endpoint="endpoint-optical"
                                     data-lang="curl">cURL</button>
                                 <button class="code-tab-btn" data-endpoint="endpoint-optical"
@@ -306,8 +308,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
                                     data-lang="node">Node.js</button>
                                 <button class="code-tab-btn" data-endpoint="endpoint-optical" data-lang="go">Go</button>
                             </div>
-                            <button class="vk-btn-outline copy-code-btn"
-                                style="padding: 2px 8px; font-size: 11px; color: #94A3B8; border-color: rgba(255,255,255,0.15);">
+                            <button class="vk-btn-outline copy-code-btn dev-padding-2px-8px-font-bd20">
                                 <span class="material-symbols-outlined text-[14px]">content_copy</span> Copy
                             </button>
                         </div>
@@ -321,13 +322,13 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
             <!-- ENDPOINT 2: PROD-1002 Precision Geodetic Measurement Kit -->
             <div class="endpoint-card tag-internal" id="endpoint-geodetic">
                 <div class="endpoint-header">
-                    <div style="display: flex; align-items: center; gap: 12px;">
+                    <div class="dev-display-flex-align-items-1c20" >
                         <span class="endpoint-badge-get">GET</span>
                         <span class="endpoint-path">/v1/devices/geodetic/measurements</span>
                         <span class="badge-classification badge-internal">Internal • PROD-1002</span>
                     </div>
-                    <div style="display: flex; align-items: center; gap: 10px;">
-                        <span style="font-family: var(--font-mono); font-size: 11px; color: var(--vk-neutral-600);">Rate
+                    <div class="dev-flex-center-gap-10" >
+                        <span class="dev-mono-muted-11" >Rate
                             Limit: 5k/min</span>
                         <button class="vk-btn vk-btn-outline btn-try-sandbox" data-method="GET"
                             data-url="/v1/devices/geodetic/measurements">
@@ -337,18 +338,18 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
                 </div>
                 <div class="endpoint-body">
                     <div class="endpoint-docs-col">
-                        <div
-                            style="font-weight: 600; font-size: 14px; color: var(--vk-primary-dark); margin-bottom: 6px;">
+                        <div class="dev-font-weight-600-font-94c0"
+                            >
                             Precision Geodetic Measurement Kit (PROD-1002) Calibration Vectors
                         </div>
-                        <p style="font-size: 13px; color: var(--vk-neutral-600); line-height: 1.5;">
+                        <p class="dev-font-size-13px-color-78fc" >
                             Provides distance vectors, laser interferometer precision readings, and atmospheric
                             refraction indices for geodetic surveying instrumentation deployed with CUS-1001 (Aral
                             Geomatics) and CUS-1002 (BaltNord).
                         </p>
 
-                        <div
-                            style="margin-top: 16px; font-weight: 600; font-size: 12px; color: var(--vk-neutral-900); text-transform: uppercase;">
+                        <div class="dev-margin-top-16px-font-1eeb"
+                            >
                             Parameters</div>
                         <table class="param-table">
                             <thead>
@@ -371,7 +372,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
                     </div>
                     <div class="endpoint-code-col">
                         <div class="code-tabs-nav">
-                            <div style="display: flex; gap: 6px;">
+                            <div class="dev-display-flex-gap-6px-4a5d" >
                                 <button class="code-tab-btn active" data-endpoint="endpoint-geodetic"
                                     data-lang="curl">cURL</button>
                                 <button class="code-tab-btn" data-endpoint="endpoint-geodetic"
@@ -381,8 +382,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
                                 <button class="code-tab-btn" data-endpoint="endpoint-geodetic"
                                     data-lang="go">Go</button>
                             </div>
-                            <button class="vk-btn-outline copy-code-btn"
-                                style="padding: 2px 8px; font-size: 11px; color: #94A3B8; border-color: rgba(255,255,255,0.15);">
+                            <button class="vk-btn-outline copy-code-btn dev-padding-2px-8px-font-bd20">
                                 <span class="material-symbols-outlined text-[14px]">content_copy</span> Copy
                             </button>
                         </div>
@@ -395,13 +395,13 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
             <!-- ENDPOINT 3: PROD-1004 SCADA Frame Ingestion -->
             <div class="endpoint-card tag-confidential" id="endpoint-scada">
                 <div class="endpoint-header">
-                    <div style="display: flex; align-items: center; gap: 12px;">
+                    <div class="dev-display-flex-align-items-1c20" >
                         <span class="endpoint-badge-post">POST</span>
                         <span class="endpoint-path">/v1/scada/ingest/frames</span>
                         <span class="badge-classification badge-confidential">Confidential • PROD-1004</span>
                     </div>
-                    <div style="display: flex; align-items: center; gap: 10px;">
-                        <span style="font-family: var(--font-mono); font-size: 11px; color: var(--vk-neutral-600);">Rate
+                    <div class="dev-flex-center-gap-10" >
+                        <span class="dev-mono-muted-11" >Rate
                             Limit: 50k/min</span>
                         <button class="vk-btn vk-btn-outline btn-try-sandbox" data-method="POST"
                             data-url="/v1/scada/ingest/frames"
@@ -412,16 +412,16 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
                 </div>
                 <div class="endpoint-body">
                     <div class="endpoint-docs-col">
-                        <div
-                            style="font-weight: 600; font-size: 14px; color: var(--vk-primary-dark); margin-bottom: 6px;">
+                        <div class="dev-font-weight-600-font-94c0"
+                            >
                             Industrial PLC Integration (PROD-1004) High-Speed Ingestion
                         </div>
-                        <p style="font-size: 13px; color: var(--vk-neutral-600); line-height: 1.5;">
+                        <p class="dev-font-size-13px-color-78fc" >
                             Ingests Modbus-TCP, OPC-UA, and telemetry frames directly into System 11 Ingestion Bridges
                             with microsecond timestamp validation.
                         </p>
-                        <div
-                            style="margin-top: 16px; font-weight: 600; font-size: 12px; color: var(--vk-neutral-900); text-transform: uppercase;">
+                        <div class="dev-margin-top-16px-font-1eeb"
+                            >
                             Body Parameters (JSON)</div>
                         <table class="param-table">
                             <thead>
@@ -456,7 +456,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
                     </div>
                     <div class="endpoint-code-col">
                         <div class="code-tabs-nav">
-                            <div style="display: flex; gap: 6px;">
+                            <div class="dev-display-flex-gap-6px-4a5d" >
                                 <button class="code-tab-btn active" data-endpoint="endpoint-scada"
                                     data-lang="curl">cURL</button>
                                 <button class="code-tab-btn" data-endpoint="endpoint-scada"
@@ -465,8 +465,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
                                     data-lang="node">Node.js</button>
                                 <button class="code-tab-btn" data-endpoint="endpoint-scada" data-lang="go">Go</button>
                             </div>
-                            <button class="vk-btn-outline copy-code-btn"
-                                style="padding: 2px 8px; font-size: 11px; color: #94A3B8; border-color: rgba(255,255,255,0.15);">
+                            <button class="vk-btn-outline copy-code-btn dev-padding-2px-8px-font-bd20">
                                 <span class="material-symbols-outlined text-[14px]">content_copy</span> Copy
                             </button>
                         </div>
@@ -489,12 +488,12 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
     <footer class="vk-footer">
         <div class="vk-footer-grid">
             <div>
-                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
-                    <div class="vk-brand-logo-badge" style="width: 28px; height: 28px; font-size: 14px;">VP</div>
-                    <span
-                        style="font-family: var(--font-heading); font-weight: 700; font-size: 16px;">VOSTOKPRIBOR</span>
+                <div class="dev-display-flex-align-items-6d35" >
+                    <div class="vk-brand-logo-badge dev-width-28px-height-28px-5ff9">VP</div>
+                    <span class="dev-font-family-var-font-deae"
+                        >VOSTOKPRIBOR</span>
                 </div>
-                <p style="color: #94A3B8; font-size: 13px; line-height: 1.6; max-width: 320px;">
+                <p class="dev-color-94a3b8-font-size-fa90" >
                     Vostokpribor Global Logistics &amp; Supply JSC.<br />
                     Industrial equipment, precision measurement, and engineering automation since 1968. Almaty,
                     Kazakhstan.
@@ -521,9 +520,9 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
             <div>
                 <h4>System Jurisdiction</h4>
                 <ul>
-                    <li><span style="color: #94A3B8;">Domain: local.vostokpribor</span></li>
-                    <li><span style="color: #94A3B8;">Gateway: Almaty Station Primary</span></li>
-                    <li><span class="vk-status-badge status-active" style="padding: 2px 8px; font-size: 10px;">GATEWAY:
+                    <li><span class="dev-text-slate-400" >Domain: local.vostokpribor</span></li>
+                    <li><span class="dev-text-slate-400" >Gateway: Almaty Station Primary</span></li>
+                    <li><span class="vk-status-badge status-active dev-padding-2px-8px-font-90eb">GATEWAY:
                             99.98% SLA</span></li>
                 </ul>
             </div>

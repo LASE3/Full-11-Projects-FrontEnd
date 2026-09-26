@@ -26,10 +26,10 @@
     <div class="auth-status-beacon" title="B2B Account Registration Gateway Active">
       <span class="status-dot-pulse"></span>
       <span>B2B REGISTRATION GATEWAY · LIVE</span>
-    
-<!-- Top Bar Sign Out -->
-<a href="../api/logout.php?system=Online%20Shop%20B2B&redirect=../Online%20Shop%20B2B/login.php" class="top-signout-btn" title="Sign Out of Online Shop B2B" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" style="display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:4px;background:rgba(178,58,50,0.2);border:1px solid rgba(178,58,50,0.5);color:#FF8080;font-size:12px;font-weight:600;text-decoration:none;cursor:pointer;margin-left:8px;vertical-align:middle;transition:all 0.2s;" onmouseover="this.style.background='rgba(178,58,50,0.4)';this.style.color='#FFFFFF'" onmouseout="this.style.background='rgba(178,58,50,0.2)';this.style.color='#FF8080'"><span class="material-symbols-outlined" style="font-size:15px;line-height:1;">logout</span><span>Sign Out</span></a>
-</div>
+
+      <!-- Top Bar Sign Out -->
+      <a href="../api/logout.php?system=Online%20Shop%20B2B&redirect=../Online%20Shop%20B2B/login.php" class="top-signout-btn" title="Sign Out of Online Shop B2B" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" ><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
+    </div>
   </header>
 
   <main class="auth-main">
@@ -63,7 +63,7 @@
             <div class="form-group">
               <label for="fullName" class="form-label">
                 <span>Full Name</span>
-                <span style="color: var(--auth-accent);">*</span>
+                <span class="req-star">*</span>
               </label>
               <div class="input-container">
                 <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -76,7 +76,7 @@
             <div class="form-group">
               <label for="jobTitle" class="form-label">
                 <span>Job Title</span>
-                <span style="color: var(--auth-accent);">*</span>
+                <span class="req-star">*</span>
               </label>
               <div class="input-container">
                 <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -92,7 +92,7 @@
             <div class="form-group">
               <label for="orgName" class="form-label">
                 <span>Organization / Company</span>
-                <span style="color: var(--auth-accent);">*</span>
+                <span class="req-star">*</span>
               </label>
               <div class="input-container">
                 <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -105,7 +105,7 @@
             <div class="form-group">
               <label for="sector" class="form-label">
                 <span>Industry Sector</span>
-                <span style="color: var(--auth-accent);">*</span>
+                <span class="req-star">*</span>
               </label>
               <div class="input-container">
                 <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -133,7 +133,7 @@
             <div class="form-group">
               <label for="email" class="form-label">
                 <span>Business Email</span>
-                <span style="color: var(--auth-accent);">*</span>
+                <span class="req-star">*</span>
               </label>
               <div class="input-container">
                 <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -146,7 +146,7 @@
             <div class="form-group">
               <label for="accountId" class="form-label">
                 <span>Requested Account ID</span>
-                <span style="color: var(--auth-accent);">*</span>
+                <span class="req-star">*</span>
               </label>
               <div class="input-container">
                 <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -165,7 +165,7 @@
             <div class="form-group">
               <label for="password" class="form-label">
                 <span>Password</span>
-                <span style="color: var(--auth-accent);">*</span>
+                <span class="req-star">*</span>
               </label>
               <div class="input-container">
                 <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -184,7 +184,7 @@
             <div class="form-group">
               <label for="confirmPassword" class="form-label">
                 <span>Confirm Password</span>
-                <span style="color: var(--auth-accent);">*</span>
+                <span class="req-star">*</span>
               </label>
               <div class="input-container">
                 <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -208,7 +208,7 @@
             <span class="btn-text">Create B2B Account</span>
           </button>
 
-          <p style="text-align:center;font-size:12px;color:var(--auth-text-muted);margin-top:16px;">
+          <p class="auth-footer-text">
             Already have an account? <a href="login.php" class="utility-link">Log In</a>
           </p>
         </form>
@@ -232,67 +232,7 @@
   </footer>
 
   <script src="js/dynamic-login-theme.js"></script>
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const signupForm = document.getElementById('signup-form');
-      const submitBtn = document.getElementById('submit-btn');
-      const authAlert = document.getElementById('auth-alert');
-      const alertMessage = document.getElementById('alert-message');
-      const passwordInput = document.getElementById('password');
-      const confirmPasswordInput = document.getElementById('confirmPassword');
-      const togglePasswordBtn = document.getElementById('toggle-password-btn');
-      const eyeIcon = document.getElementById('eye-icon');
-
-      togglePasswordBtn.addEventListener('click', () => {
-        const isPassword = passwordInput.getAttribute('type') === 'password';
-        passwordInput.setAttribute('type', isPassword ? 'text' : 'password');
-        eyeIcon.innerHTML = isPassword
-          ? '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line>'
-          : '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle>';
-      });
-
-      function showAlert(msg, isError = true) {
-        authAlert.className = isError ? 'auth-alert active-error' : 'auth-alert active-success';
-        alertMessage.textContent = msg;
-        if (typeof updateLoginTheme === 'function') updateLoginTheme(msg);
-        if (isError) { authAlert.style.animation = 'none'; authAlert.offsetHeight; authAlert.style.animation = 'alertShake 0.3s ease'; }
-      }
-
-      function hideAlert() {
-        authAlert.className = 'auth-alert';
-        if (typeof updateLoginTheme === 'function') updateLoginTheme('Create B2B Account');
-      }
-
-      signupForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        hideAlert();
-        const fullName = document.getElementById('fullName').value.trim();
-        const orgName = document.getElementById('orgName').value.trim();
-        const email = document.getElementById('email').value.trim();
-        const accountId = document.getElementById('accountId').value.trim();
-        const password = passwordInput.value;
-        const confirmPassword = confirmPasswordInput.value;
-        const agreed = document.getElementById('agree-terms').checked;
-
-        if (!fullName) { showAlert('Please enter your full name.'); return; }
-        if (!orgName) { showAlert('Please enter your organization name.'); return; }
-        if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showAlert('Please enter a valid business email address.'); return; }
-        if (!accountId) { showAlert('Please enter your requested Account ID (e.g. CUS-1099).'); return; }
-        if (password.length < 12) { showAlert('Password must be at least 12 characters.'); return; }
-        if (password !== confirmPassword) { showAlert('Passwords do not match. Please re-enter.'); return; }
-        if (!agreed) { showAlert('You must agree to the Terms of Service to proceed.'); return; }
-
-        submitBtn.classList.add('is-loading');
-        submitBtn.disabled = true;
-        setTimeout(() => {
-          showAlert('B2B Account Request Submitted for ' + orgName + '! Redirecting to login...', false);
-          try { sessionStorage.setItem('vp_shop_reg', JSON.stringify({ fullName, orgName, email, accountId, status: 'pending_review', timestamp: new Date().toISOString() })); } catch (err) {}
-          setTimeout(() => {
-            window.location.href = 'login.php';
-          }, 1600);
-        }, 700);
-      });
-    });
-  </script>
+  <script src="js/signup.js"></script>
 </body>
+
 </html>

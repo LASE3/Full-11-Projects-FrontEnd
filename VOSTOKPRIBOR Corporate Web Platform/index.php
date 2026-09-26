@@ -24,37 +24,7 @@
 
     <!-- Tailwind CSS with Enterprise Design Tokens -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    colors: {
-                        "brand-primary": "#1B3A5C",
-                        "brand-primary-dark": "#0F2438",
-                        "brand-secondary": "#0E7C86",
-                        "brand-accent": "#E8A33D",
-                        "neutral-900": "#101418",
-                        "neutral-800": "#1E252D",
-                        "neutral-700": "#323B44",
-                        "neutral-600": "#4A5560",
-                        "neutral-300": "#BDC6CF",
-                        "neutral-200": "#DCE1E6",
-                        "neutral-100": "#EDF1F4",
-                        "neutral-50": "#F5F7F9",
-                        "class-public": "#8A94A0",
-                        "class-internal": "#3E7CB1",
-                        "class-confidential": "#D9822B",
-                        "class-restricted": "#B23A32"
-                    },
-                    fontFamily: {
-                        sans: ['IBM Plex Sans', 'sans-serif'],
-                        mono: ['JetBrains Mono', 'monospace']
-                    }
-                }
-            }
-        };
-    </script>
+    <script src="js/corporate-tailwind.js"></script>
 </head>
 
 <body class="bg-neutral-50 font-sans text-neutral-900 antialiased selection:bg-brand-secondary selection:text-white">
@@ -95,7 +65,7 @@
                 <a href="#leadership" class="nav-link">Leadership</a>
                 <a href="#network" class="nav-link">Global Hubs</a>
                 <a href="#contact-rfq" class="nav-link">Contact</a>
-                <a href="Integrations.php" class="nav-link" style="color: #00E5FF; font-weight: 600; border: 1px solid rgba(0,229,255,0.3); border-radius: 4px; padding: 0.25rem 0.5rem;">🔗 Integrations (SYS11)</a>
+                <a href="Integrations.php" class="nav-link nav-link-integrations">🔗 Integrations (SYS11)</a>
             </nav>
 
             <!-- Actions & Ecosystem Switcher -->
@@ -731,7 +701,7 @@
 
                 <!-- 2026 -->
                 <div class="timeline-node md:grid md:grid-cols-2 md:gap-8 items-center">
-                    <div class="timeline-dot" style="background-color: var(--brand-accent);"></div>
+                    <div class="timeline-dot"></div>
                     <div class="md:text-right pl-12 md:pl-0 pr-0 md:pr-8 mb-4 md:mb-0">
                         <span
                             class="inline-block font-mono text-sm font-bold text-neutral-900 bg-amber-100 px-2.5 py-0.5 rounded border border-amber-300 mb-1">2026

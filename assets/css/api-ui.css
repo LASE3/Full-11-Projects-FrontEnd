@@ -25,9 +25,12 @@
   padding: 14px 16px;
   border-radius: 10px;
   background: rgba(15, 20, 35, 0.96);
+  -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
-  border: 1px solid rgba(255,255,255,0.08);
-  box-shadow: 0 8px 32px rgba(0,0,0,0.45), 0 2px 8px rgba(0,0,0,0.3);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.45),
+    0 2px 8px rgba(0, 0, 0, 0.3);
   pointer-events: auto;
   animation: vpToastIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) both;
   min-width: 280px;
@@ -38,10 +41,18 @@
 }
 
 /* ─── Toast Types ─────────────────────────────────────────────── */
-.vp-toast--success { border-left: 3px solid #2ecc71; }
-.vp-toast--error   { border-left: 3px solid #e74c3c; }
-.vp-toast--warning { border-left: 3px solid #f39c12; }
-.vp-toast--info    { border-left: 3px solid #3498db; }
+.vp-toast--success {
+  border-left: 3px solid #2ecc71;
+}
+.vp-toast--error {
+  border-left: 3px solid #e74c3c;
+}
+.vp-toast--warning {
+  border-left: 3px solid #f39c12;
+}
+.vp-toast--info {
+  border-left: 3px solid #3498db;
+}
 
 .vp-toast__icon {
   width: 22px;
@@ -55,10 +66,22 @@
   flex-shrink: 0;
   margin-top: 1px;
 }
-.vp-toast--success .vp-toast__icon { background: rgba(46,204,113,0.2); color: #2ecc71; }
-.vp-toast--error   .vp-toast__icon { background: rgba(231,76,60,0.2);  color: #e74c3c; }
-.vp-toast--warning .vp-toast__icon { background: rgba(243,156,18,0.2); color: #f39c12; }
-.vp-toast--info    .vp-toast__icon { background: rgba(52,152,219,0.2); color: #3498db; }
+.vp-toast--success .vp-toast__icon {
+  background: rgba(46, 204, 113, 0.2);
+  color: #2ecc71;
+}
+.vp-toast--error .vp-toast__icon {
+  background: rgba(231, 76, 60, 0.2);
+  color: #e74c3c;
+}
+.vp-toast--warning .vp-toast__icon {
+  background: rgba(243, 156, 18, 0.2);
+  color: #f39c12;
+}
+.vp-toast--info .vp-toast__icon {
+  background: rgba(52, 152, 219, 0.2);
+  color: #3498db;
+}
 
 .vp-toast__body {
   flex: 1;
@@ -83,7 +106,7 @@
 .vp-toast__close {
   background: none;
   border: none;
-  color: rgba(255,255,255,0.35);
+  color: rgba(255, 255, 255, 0.35);
   font-size: 18px;
   line-height: 1;
   cursor: pointer;
@@ -92,14 +115,16 @@
   margin-top: -2px;
   transition: color 0.15s;
 }
-.vp-toast__close:hover { color: rgba(255,255,255,0.75); }
+.vp-toast__close:hover {
+  color: rgba(255, 255, 255, 0.75);
+}
 
 /* ─── Spinner ─────────────────────────────────────────────────── */
 .vp-spinner {
   display: inline-block;
   width: 18px;
   height: 18px;
-  border: 2px solid rgba(255,255,255,0.15);
+  border: 2px solid rgba(255, 255, 255, 0.15);
   border-top-color: #f5a623;
   border-radius: 50%;
   animation: vpSpin 0.65s linear infinite;
@@ -108,14 +133,25 @@
 
 /* ─── Keyframes ─────────────────────────────────────────────────── */
 @keyframes vpToastIn {
-  from { opacity: 0; transform: translateX(40px) scale(0.95); }
-  to   { opacity: 1; transform: translateX(0)    scale(1); }
+  from {
+    opacity: 0;
+    transform: translateX(40px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
 }
 @keyframes vpToastOut {
-  to { opacity: 0; transform: translateX(40px) scale(0.95); }
+  to {
+    opacity: 0;
+    transform: translateX(40px) scale(0.95);
+  }
 }
 @keyframes vpSpin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* RTL adjustments */
@@ -127,5 +163,8 @@
   animation: vpToastOutRtl 0.3s ease-in forwards;
 }
 @keyframes vpToastOutRtl {
-  to { opacity: 0; transform: translateX(-40px) scale(0.95); }
+  to {
+    opacity: 0;
+    transform: translateX(-40px) scale(0.95);
+  }
 }

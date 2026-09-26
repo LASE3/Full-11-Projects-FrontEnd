@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Class 2: Online Shop B2B - Products API
  * Location: api/v1/shop/products.php

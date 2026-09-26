@@ -4,39 +4,42 @@
  */
 
 (function () {
-    'use strict';
+  "use strict";
 
-    /**
-     * Filter projects table by search input and execution stage
-     */
-    window.filterProjects = function () {
-        const searchInput = document.getElementById('projectFilterInput');
-        const stageSelect = document.getElementById('projectStageSelect');
+  /**
+   * Filter projects table by search input and execution stage
+   */
+  window.filterProjects = function () {
+    const searchInput = document.getElementById("projectFilterInput");
+    const stageSelect = document.getElementById("projectStageSelect");
 
-        const searchVal = (searchInput ? searchInput.value : '').toLowerCase();
-        const stageVal = stageSelect ? stageSelect.value : 'ALL';
-        const rows = document.querySelectorAll('table tbody tr:not([class*="bg-surface-container-low/60"])');
+    const searchVal = (searchInput ? searchInput.value : "").toLowerCase();
+    const stageVal = stageSelect ? stageSelect.value : "ALL";
+    const rows = document.querySelectorAll(
+      'table tbody tr:not([class*="bg-surface-container-low/60"])',
+    );
 
-        rows.forEach(row => {
-            const text = row.innerText.toLowerCase();
-            const matchesSearch = !searchVal || text.includes(searchVal);
-            const matchesStage = (stageVal === 'ALL' || text.includes(stageVal.toLowerCase()));
+    rows.forEach((row) => {
+      const text = row.innerText.toLowerCase();
+      const matchesSearch = !searchVal || text.includes(searchVal);
+      const matchesStage =
+        stageVal === "ALL" || text.includes(stageVal.toLowerCase());
 
-            if (matchesSearch && matchesStage) {
-                row.style.display = '';
-            } else {
-                row.style.display = 'none';
-            }
-        });
-    };
+      if (matchesSearch && matchesStage) {
+        row.style.display = "";
+      } else {
+        row.style.display = "none";
+      }
+    });
+  };
 
-    /**
-     * Display interactive Request For Quotation (RFQ) / Scope Change dialog
-     */
-    window.showRFQModal = function () {
-        if (!window.openModal) return;
+  /**
+   * Display interactive Request For Quotation (RFQ) / Scope Change dialog
+   */
+  window.showRFQModal = function () {
+    if (!window.openModal) return;
 
-        window.openModal(`
+    window.openModal(`
             <div class="flex flex-col gap-4 text-left">
                 <div class="flex items-center gap-3 pb-3 border-b border-outline/20">
                     <div class="p-2.5 rounded bg-tertiary-fixed text-primary">
@@ -78,16 +81,15 @@
                 </div>
             </div>
         `);
-    };
+  };
 
-    /**
-     * Check query parameters for automatic RFQ dialog
-     */
-    document.addEventListener('DOMContentLoaded', () => {
-        const params = new URLSearchParams(window.location.search);
-        if (params.get('rfq') === 'true') {
-            setTimeout(window.showRFQModal, 400);
-        }
-    });
-
+  /**
+   * Check query parameters for automatic RFQ dialog
+   */
+  document.addEventListener("DOMContentLoaded", () => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("rfq") === "true") {
+      setTimeout(window.showRFQModal, 400);
+    }
+  });
 })();

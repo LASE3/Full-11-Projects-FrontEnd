@@ -23,12 +23,11 @@ requireAuth('CUS');
     <link rel="stylesheet" href="css/common.css" />
     <link rel="stylesheet" href="css/support.css" />
     <script src="https://cdn.tailwindcss.com"></script>
-    <script
-        id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { colors: { "primary": "#000e1d", "secondary": "#436084", "primary-container": "#0f2438", "surface-container-highest": "#e0e3e5", "inverse-primary": "#b4c8e3", "secondary-fixed": "#d2e4ff", "on-secondary-container": "#3f5b7f", "surface-bright": "#f8f9fb", "primary-fixed-dim": "#b4c8e3", "on-secondary-fixed-variant": "#2b486b", "on-tertiary-fixed-variant": "#643f00", "surface-container-low": "#f2f4f6", "on-error": "#ffffff", "tertiary-fixed": "#ffddb5", "tertiary-container": "#331e00", "inverse-on-surface": "#eff1f3", "on-tertiary-fixed": "#2a1800", "on-secondary-fixed": "#001c38", "on-background": "#191c1e", "secondary-container": "#b6d4fe", "inverse-surface": "#2d3133", "tertiary": "#150a00", "error-container": "#ffdad6", "on-primary-fixed": "#071d30", "secondary-fixed-dim": "#abc9f2", "error": "#ba1a1a", "primary-fixed": "#d0e4ff", "surface-container": "#eceef0", "on-primary-fixed-variant": "#35485e", "on-error-container": "#93000a", "surface-variant": "#e0e3e5", "on-primary": "#ffffff", "on-tertiary-container": "#bb7d16", "on-secondary": "#ffffff", "background": "#f8f9fb", "surface-container-lowest": "#ffffff", "on-surface-variant": "#43474c", "surface": "#f8f9fb", "surface-tint": "#4d6077", "tertiary-fixed-dim": "#ffb956", "outline": "#74777d", "on-primary-container": "#788ca4", "surface-dim": "#d8dadc", "outline-variant": "#c4c6cd", "surface-container-high": "#e6e8ea", "on-tertiary": "#ffffff", "on-surface": "#191c1e" }, borderRadius: { "DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem" }, spacing: { "unit-md": "0.75rem", "grid-gutter": "1rem", "unit-lg": "1.5rem", "unit-xl": "2rem", "unit-sm": "0.5rem", "unit-2xs": "0.125rem", "grid-margin": "1.5rem", "unit-2xl": "3rem", "unit-base": "1rem", "unit-xs": "0.25rem" }, fontFamily: { "body-md": ["IBM Plex Sans"], "technical-tag": ["JetBrains Mono"], "display-lg": ["IBM Plex Sans"], "headline-lg": ["IBM Plex Sans"], "body-sm": ["IBM Plex Sans"], "body-lg": ["IBM Plex Sans"], "headline-md": ["IBM Plex Sans"], "headline-sm": ["IBM Plex Sans"], "data-mono-md": ["JetBrains Mono"], "data-mono-lg": ["JetBrains Mono"], "label-caps": ["IBM Plex Sans"], "display-lg-mobile": ["IBM Plex Sans"] }, fontSize: { "body-md": ["13px", { "lineHeight": "18px", "letterSpacing": "0em", "fontWeight": "400" }], "technical-tag": ["10px", { "lineHeight": "12px", "letterSpacing": "0.02em", "fontWeight": "500" }], "display-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700" }], "headline-lg": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.015em", "fontWeight": "600" }], "body-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.005em", "fontWeight": "400" }], "body-lg": ["15px", { "lineHeight": "22px", "letterSpacing": "0em", "fontWeight": "400" }], "headline-md": ["20px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600" }], "headline-sm": ["16px", { "lineHeight": "24px", "letterSpacing": "-0.005em", "fontWeight": "600" }], "data-mono-md": ["12px", { "lineHeight": "16px", "letterSpacing": "-0.01em", "fontWeight": "500" }], "data-mono-lg": ["14px", { "lineHeight": "20px", "letterSpacing": "-0.02em", "fontWeight": "600" }], "label-caps": ["11px", { "lineHeight": "14px", "letterSpacing": "0.06em", "fontWeight": "700" }], "display-lg-mobile": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700" }] } } } };</script>
+    <script src="js/tailwind-config.js"></script>
     <script src="js/portal.js"></script>
-  <link rel="stylesheet" href="../assets/css/api-ui.css">
-  <script src="../assets/js/api-client.js"></script>
-  <script src="js/portal-data.js"></script>
+    <link rel="stylesheet" href="../assets/css/api-ui.css">
+    <script src="../assets/js/api-client.js"></script>
+    <script src="js/portal-data.js"></script>
     <script src="js/support.js"></script>
 </head>
 
@@ -85,10 +84,10 @@ requireAuth('CUS');
                     class="w-8 h-8 rounded-full object-cover ring-1 ring-tertiary-fixed/50"
                     src="https://lh3.googleusercontent.com/aida-public/AB6AXuBxrM-O7aJYHYCDtkoA3WwbiOe6BxJ0vK7AcnogxwZN9MACsknTlpyGKyy-lWl2Hwn9IEZLPDCvVGrmxN2kvPEfzbJ5E4u5x6-38EP2exwXW8Dmm-7oMTzMG07_rmRLbT0xvZwQMFEwa4qJO5LcWbn58eWx3fSkVjAmSI3UWO8dCTgRg6GBgrY_MTUl-JF-JUf4K5CGPp0o4tvKoxbSqSysGT8r3j8de3w_sfk4F8p9ysiXXfbUkWPV" />
             </div>
-        
-<!-- Top Bar Sign Out -->
-<a href="../api/logout.php?system=Customer%20Portal&redirect=../Customer%20Portal/login.php" class="top-signout-btn" title="Sign Out of Customer Portal" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" style="display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:4px;background:rgba(178,58,50,0.2);border:1px solid rgba(178,58,50,0.5);color:#FF8080;font-size:12px;font-weight:600;text-decoration:none;cursor:pointer;margin-left:8px;vertical-align:middle;transition:all 0.2s;" onmouseover="this.style.background='rgba(178,58,50,0.4)';this.style.color='#FFFFFF'" onmouseout="this.style.background='rgba(178,58,50,0.2)';this.style.color='#FF8080'"><span class="material-symbols-outlined" style="font-size:15px;line-height:1;">logout</span><span>Sign Out</span></a>
-</div>
+
+            <!-- Top Bar Sign Out -->
+            <a href="../api/logout.php?system=Customer%20Portal&redirect=../Customer%20Portal/login.php" class="top-signout-btn" title="Sign Out of Customer Portal" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" ><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
+        </div>
     </header>
     <aside id="portal-sidebar"
         class="fixed left-0 top-16 bottom-0 w-64 bg-primary-container z-40 flex flex-col justify-between border-r border-outline/20">
@@ -159,7 +158,7 @@ requireAuth('CUS');
                     </svg><span class="">Account Settings</span></a>
             </nav>
         </div>
-                
+
         <div class="portal-manager-card p-3 m-3 rounded-lg bg-primary/95 border border-outline/25 shadow-sm text-xs select-none">
             <div class="flex items-center justify-between mb-1.5">
                 <span class="font-label-caps text-[10px] text-tertiary-fixed uppercase font-bold tracking-wider">Assigned Manager</span>
@@ -425,7 +424,7 @@ requireAuth('CUS');
                                     </td>
                                     <td class="py-unit-sm px-unit-base">
                                         <div class="font-headline-sm text-headline-sm text-primary font-semibold">Blast
-                                             Furnace #5</div>
+                                            Furnace #5</div>
                                         <div
                                             class="font-technical-tag text-technical-tag text-secondary flex items-center gap-1">
                                             <span class="w-1.5 h-1.5 rounded-full bg-error"></span>

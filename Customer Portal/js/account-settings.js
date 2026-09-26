@@ -4,69 +4,89 @@
  */
 
 (function () {
-    'use strict';
+  "use strict";
 
-    let activeMasterKey = 'vstk_live_e992b4fa817c992019488e001928374a88f199a2';
+  let activeMasterKey = "vstk_live_e992b4fa817c992019488e001928374a88f199a2";
 
-    /**
-     * Switch settings tab view
-     */
-    window.switchTab = function (targetId) {
-        document.querySelectorAll('.tab-btn').forEach(b => {
-            b.classList.remove('bg-surface-container-lowest', 'text-primary', 'shadow-sm');
-            b.classList.add('text-on-surface-variant');
-            if (b.getAttribute('data-target') === targetId) {
-                b.classList.add('bg-surface-container-lowest', 'text-primary', 'shadow-sm');
-                b.classList.remove('text-on-surface-variant');
-            }
-        });
+  /**
+   * Switch settings tab view
+   */
+  window.switchTab = function (targetId) {
+    document.querySelectorAll(".tab-btn").forEach((b) => {
+      b.classList.remove(
+        "bg-surface-container-lowest",
+        "text-primary",
+        "shadow-sm",
+      );
+      b.classList.add("text-on-surface-variant");
+      if (b.getAttribute("data-target") === targetId) {
+        b.classList.add(
+          "bg-surface-container-lowest",
+          "text-primary",
+          "shadow-sm",
+        );
+        b.classList.remove("text-on-surface-variant");
+      }
+    });
 
-        const targetElement = document.getElementById(targetId);
-        if (targetElement) {
-            targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    const targetElement = document.getElementById(targetId);
+    if (targetElement) {
+      targetElement.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
+
+  /**
+   * Save configuration changes with cryptographic signoff animation
+   */
+  window.saveAllSettings = function () {
+    const saveBtn = document.getElementById("save-cfg-btn");
+    if (saveBtn) {
+      const originalText = saveBtn.innerHTML;
+      saveBtn.innerHTML =
+        '<span class="material-symbols-outlined text-lg animate-spin">refresh</span><span>Saving...</span>';
+      setTimeout(() => {
+        saveBtn.innerHTML =
+          '<span class="material-symbols-outlined text-lg">check</span><span>Configuration Committed</span>';
+        saveBtn.classList.add("bg-primary", "text-tertiary-fixed");
+        if (window.showToast) {
+          window.showToast(
+            "Configuration Committed",
+            "Changes cryptographically signed (Crypto-Pro GOST R 34.10)",
+            "success",
+          );
         }
-    };
+        setTimeout(() => {
+          saveBtn.innerHTML = originalText;
+          saveBtn.classList.remove("bg-primary", "text-tertiary-fixed");
+        }, 2500);
+      }, 600);
+    }
+  };
 
-    /**
-     * Save configuration changes with cryptographic signoff animation
-     */
-    window.saveAllSettings = function () {
-        const saveBtn = document.getElementById('save-cfg-btn');
-        if (saveBtn) {
-            const originalText = saveBtn.innerHTML;
-            saveBtn.innerHTML = '<span class="material-symbols-outlined text-lg animate-spin">refresh</span><span>Saving...</span>';
-            setTimeout(() => {
-                saveBtn.innerHTML = '<span class="material-symbols-outlined text-lg">check</span><span>Configuration Committed</span>';
-                saveBtn.classList.add('bg-primary', 'text-tertiary-fixed');
-                if (window.showToast) {
-                    window.showToast('Configuration Committed', 'Changes cryptographically signed (Crypto-Pro GOST R 34.10)', 'success');
-                }
-                setTimeout(() => {
-                    saveBtn.innerHTML = originalText;
-                    saveBtn.classList.remove('bg-primary', 'text-tertiary-fixed');
-                }, 2500);
-            }, 600);
-        }
-    };
+  /**
+   * Copy SCADA API Key to clipboard
+   */
+  window.copyApiKey = function () {
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(activeMasterKey).then(() => {
+        if (window.showToast)
+          window.showToast(
+            "API Key Copied",
+            "SCADA Master Secret copied to clipboard",
+            "success",
+          );
+      });
+    } else {
+      if (window.showToast)
+        window.showToast("API Key", activeMasterKey, "info");
+    }
+  };
 
-    /**
-     * Copy SCADA API Key to clipboard
-     */
-    window.copyApiKey = function () {
-        if (navigator.clipboard) {
-            navigator.clipboard.writeText(activeMasterKey).then(() => {
-                if (window.showToast) window.showToast('API Key Copied', 'SCADA Master Secret copied to clipboard', 'success');
-            });
-        } else {
-            if (window.showToast) window.showToast('API Key', activeMasterKey, 'info');
-        }
-    };
-
-    /**
-     * Display SCADA API Key Rotation Warning Modal
-     */
-    window.showRotateKeyModal = function () {
-        const modalHtml = `
+  /**
+   * Display SCADA API Key Rotation Warning Modal
+   */
+  window.showRotateKeyModal = function () {
+    const modalHtml = `
             <div class="space-y-4 text-left">
                 <div class="p-3 rounded bg-surface-container-low border border-outline-variant/40 text-body-sm text-primary">
                     <div class="flex items-center gap-2 mb-1">
@@ -90,61 +110,84 @@
                 </div>
             </div>
         `;
-        if (window.openModal) {
-            window.openModal('Rotate SCADA Industrial API Key', modalHtml);
-        }
-    };
+    if (window.openModal) {
+      window.openModal("Rotate SCADA Industrial API Key", modalHtml);
+    }
+  };
 
-    /**
-     * Confirm SCADA API key rotation and generate fresh 256-bit token
-     */
-    window.confirmRotateKey = function () {
-        const modal = document.getElementById('portal-dynamic-modal');
-        if (modal) modal.remove();
+  /**
+   * Confirm SCADA API key rotation and generate fresh 256-bit token
+   */
+  window.confirmRotateKey = function () {
+    const modal = document.getElementById("portal-dynamic-modal");
+    if (modal) modal.remove();
 
-        const randomHex = Array.from({ length: 32 }, () => Math.floor(Math.random() * 16).toString(16)).join('');
-        activeMasterKey = 'vstk_live_' + randomHex;
-        
-        const display = document.getElementById('scadaApiKeyDisplay');
-        if (display) {
-            display.textContent = 'vstk_live_********************************' + randomHex.slice(-4);
-        }
-        if (window.showToast) {
-            window.showToast('Key Rotated', 'New SCADA Master Key generated & synced to Gateway VP-GW-09', 'success');
-        }
-    };
+    const randomHex = Array.from({ length: 32 }, () =>
+      Math.floor(Math.random() * 16).toString(16),
+    ).join("");
+    activeMasterKey = "vstk_live_" + randomHex;
 
-    /**
-     * Dispatch simulated telemetry webhook test
-     */
-    window.testWebhookEndpoint = function () {
-        if (window.showToast) {
-            window.showToast('Webhook Tested', 'Telemetry test payload dispatched: HTTP 200 OK (14ms latency)', 'success');
-        }
-    };
+    const display = document.getElementById("scadaApiKeyDisplay");
+    if (display) {
+      display.textContent =
+        "vstk_live_********************************" + randomHex.slice(-4);
+    }
+    if (window.showToast) {
+      window.showToast(
+        "Key Rotated",
+        "New SCADA Master Key generated & synced to Gateway VP-GW-09",
+        "success",
+      );
+    }
+  };
 
-    /**
-     * Toggle alert notification channel switch
-     */
-    window.toggleNotificationSwitch = function (btn) {
-        const isChecked = btn.getAttribute('aria-checked') === 'true';
-        const newChecked = !isChecked;
-        btn.setAttribute('aria-checked', newChecked ? 'true' : 'false');
+  /**
+   * Dispatch simulated telemetry webhook test
+   */
+  window.testWebhookEndpoint = function () {
+    if (window.showToast) {
+      window.showToast(
+        "Webhook Tested",
+        "Telemetry test payload dispatched: HTTP 200 OK (14ms latency)",
+        "success",
+      );
+    }
+  };
 
-        if (newChecked) {
-            btn.className = 'w-10 h-5 bg-on-tertiary-container rounded-full flex items-center justify-end px-1 cursor-pointer transition-colors';
-            if (window.showToast) window.showToast('Channel Activated', 'Notification channel enabled', 'info');
-        } else {
-            btn.className = 'w-10 h-5 bg-surface-container-high rounded-full flex items-center justify-start px-1 cursor-pointer transition-colors';
-            if (window.showToast) window.showToast('Channel Muted', 'Notification channel disabled', 'info');
-        }
-    };
+  /**
+   * Toggle alert notification channel switch
+   */
+  window.toggleNotificationSwitch = function (btn) {
+    const isChecked = btn.getAttribute("aria-checked") === "true";
+    const newChecked = !isChecked;
+    btn.setAttribute("aria-checked", newChecked ? "true" : "false");
 
-    /**
-     * Display session termination modal
-     */
-    window.terminateOtherSessions = function () {
-        const modalHtml = `
+    if (newChecked) {
+      btn.className =
+        "w-10 h-5 bg-on-tertiary-container rounded-full flex items-center justify-end px-1 cursor-pointer transition-colors";
+      if (window.showToast)
+        window.showToast(
+          "Channel Activated",
+          "Notification channel enabled",
+          "info",
+        );
+    } else {
+      btn.className =
+        "w-10 h-5 bg-surface-container-high rounded-full flex items-center justify-start px-1 cursor-pointer transition-colors";
+      if (window.showToast)
+        window.showToast(
+          "Channel Muted",
+          "Notification channel disabled",
+          "info",
+        );
+    }
+  };
+
+  /**
+   * Display session termination modal
+   */
+  window.terminateOtherSessions = function () {
+    const modalHtml = `
             <div class="space-y-4 text-left">
                 <div class="p-3 rounded bg-surface-container-low border border-outline-variant/40 text-body-sm text-primary">
                     <div class="flex items-center gap-2 mb-1">
@@ -161,31 +204,35 @@
                 </div>
             </div>
         `;
-        if (window.openModal) {
-            window.openModal('Revoke Remote Sessions', modalHtml);
-        }
-    };
+    if (window.openModal) {
+      window.openModal("Revoke Remote Sessions", modalHtml);
+    }
+  };
 
-    /**
-     * Confirm remote sessions revocation
-     */
-    window.confirmTerminateSessions = function () {
-        const modal = document.getElementById('portal-dynamic-modal');
-        if (modal) modal.remove();
+  /**
+   * Confirm remote sessions revocation
+   */
+  window.confirmTerminateSessions = function () {
+    const modal = document.getElementById("portal-dynamic-modal");
+    if (modal) modal.remove();
 
-        document.querySelectorAll('.remote-session-row').forEach(row => {
-            row.remove();
-        });
-        if (window.showToast) {
-            window.showToast('Sessions Terminated', 'Remote sessions revoked successfully.', 'success');
-        }
-    };
+    document.querySelectorAll(".remote-session-row").forEach((row) => {
+      row.remove();
+    });
+    if (window.showToast) {
+      window.showToast(
+        "Sessions Terminated",
+        "Remote sessions revoked successfully.",
+        "success",
+      );
+    }
+  };
 
-    /**
-     * Display Clearance Elevation request form
-     */
-    window.requestClearanceElevation = function () {
-        const modalHtml = `
+  /**
+   * Display Clearance Elevation request form
+   */
+  window.requestClearanceElevation = function () {
+    const modalHtml = `
             <form onsubmit="event.preventDefault(); window.submitClearanceElevation();" class="space-y-4 text-left">
                 <div>
                     <label class="block font-label-caps text-label-caps text-secondary uppercase mb-1">Requested Clearance Tier</label>
@@ -210,41 +257,44 @@
                 </div>
             </form>
         `;
-        if (window.openModal) {
-            window.openModal('Request Clearance Elevation', modalHtml);
-        }
-    };
+    if (window.openModal) {
+      window.openModal("Request Clearance Elevation", modalHtml);
+    }
+  };
 
-    /**
-     * Submit clearance elevation request
-     */
-    window.submitClearanceElevation = function () {
-        const modal = document.getElementById('portal-dynamic-modal');
-        if (modal) modal.remove();
-        if (window.showToast) {
-            window.showToast('Elevation Submitted', 'Elevation request #REQ-9014 submitted to Viktor Morozov for signoff', 'success');
-        }
-    };
+  /**
+   * Submit clearance elevation request
+   */
+  window.submitClearanceElevation = function () {
+    const modal = document.getElementById("portal-dynamic-modal");
+    if (modal) modal.remove();
+    if (window.showToast) {
+      window.showToast(
+        "Elevation Submitted",
+        "Elevation request #REQ-9014 submitted to Viktor Morozov for signoff",
+        "success",
+      );
+    }
+  };
 
-    /**
-     * Attach tab click event listeners and parse URL query parameters
-     */
-    document.addEventListener('DOMContentLoaded', () => {
-        document.querySelectorAll('.tab-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const targetId = btn.getAttribute('data-target');
-                window.switchTab(targetId);
-            });
-        });
-
-        const params = new URLSearchParams(window.location.search);
-        const tabParam = params.get('tab');
-        if (tabParam) {
-            const targetId = 'panel-' + tabParam;
-            if (document.getElementById(targetId)) {
-                setTimeout(() => window.switchTab(targetId), 200);
-            }
-        }
+  /**
+   * Attach tab click event listeners and parse URL query parameters
+   */
+  document.addEventListener("DOMContentLoaded", () => {
+    document.querySelectorAll(".tab-btn").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const targetId = btn.getAttribute("data-target");
+        window.switchTab(targetId);
+      });
     });
 
+    const params = new URLSearchParams(window.location.search);
+    const tabParam = params.get("tab");
+    if (tabParam) {
+      const targetId = "panel-" + tabParam;
+      if (document.getElementById(targetId)) {
+        setTimeout(() => window.switchTab(targetId), 200);
+      }
+    }
+  });
 })();

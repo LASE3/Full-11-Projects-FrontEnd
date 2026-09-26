@@ -1,4 +1,5 @@
 <?php
+
 /**
  * VOSTOKPRIBOR Finance & Billing - Core Database API Controller
  * Handles all CRUD actions and database interactions for SYS-04 / SYS-08
@@ -22,7 +23,8 @@ $pdo = getDbConnection();
 $action = $_REQUEST['action'] ?? '';
 
 // Helper to send JSON response
-function jsonReply($data, $statusCode = 200) {
+function jsonReply($data, $statusCode = 200)
+{
     http_response_code($statusCode);
     header('Content-Type: application/json; charset=utf-8');
     echo json_encode($data);
@@ -30,7 +32,8 @@ function jsonReply($data, $statusCode = 200) {
 }
 
 // Generate Next Invoice ID
-function generateNextInvoiceId($pdo) {
+function generateNextInvoiceId($pdo)
+{
     $stmt = $pdo->query("SELECT MAX(CAST(SUBSTRING(inv_id, 10) AS UNSIGNED)) as max_num FROM invoices WHERE inv_id LIKE 'INV-2026-%'");
     $maxNum = $stmt->fetchColumn();
     $nextNum = ($maxNum ? (int)$maxNum : 10) + 1;
@@ -450,8 +453,18 @@ try {
 
             $output = fopen('php://output', 'w');
             fputcsv($output, [
-                'Invoice ID', 'Customer ID', 'Company Name', 'Project ID', 'Project Name',
-                'Total Value', 'Currency', 'Payment Status', 'Issued Date', 'Due Date', 'Paid Date', 'Terms'
+                'Invoice ID',
+                'Customer ID',
+                'Company Name',
+                'Project ID',
+                'Project Name',
+                'Total Value',
+                'Currency',
+                'Payment Status',
+                'Issued Date',
+                'Due Date',
+                'Paid Date',
+                'Terms'
             ]);
 
             $stmt = $pdo->query("

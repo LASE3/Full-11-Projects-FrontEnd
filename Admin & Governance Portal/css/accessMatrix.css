@@ -4,33 +4,40 @@
    ========================================================================== */
 
 .role-row {
-    transition: background-color 0.15s ease;
+  transition: background-color 0.15s ease;
 }
 
 .role-row:hover {
-    background-color: rgba(0, 36, 68, 0.03);
+  background-color: rgba(0, 36, 68, 0.03);
 }
 
 .permission-pill {
-    transition: transform 0.15s ease, background-color 0.15s ease;
+  transition:
+    transform 0.15s ease,
+    background-color 0.15s ease;
 }
 
 .permission-pill:hover {
-    transform: scale(1.05);
+  transform: scale(1.05);
 }
 
 .tier-strip-l5 {
-    border-left: 4px solid #B23A32;
+  border-left: 4px solid #b23a32;
 }
 
 .tier-strip-l4 {
-    border-left: 4px solid #D9822B;
+  border-left: 4px solid #d9822b;
 }
 
 .tier-strip-l3 {
-    border-left: 4px solid #006972;
+  border-left: 4px solid #006972;
 }
 
 .tier-strip-l2 {
-    border-left: 4px solid #436084;
+  border-left: 4px solid #436084;
 }
+
+.tier-strip-default {
+  border-left: 4px solid #3e7cb1;
+}
+

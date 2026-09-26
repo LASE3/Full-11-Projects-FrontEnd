@@ -13,7 +13,7 @@ $incidents = $compliance['incidents'];
 
 $totalReviews = count($reviews);
 $compliantReviews = count(array_filter($reviews, fn($r) => stripos($r['action_taken'], 'Attested') !== false || stripos($r['action_taken'], 'Validated') !== false));
-$deviationReviews = count(array_filter($reviews, fn($r) => stripos($r['finding'], 'Breach') !== false || stripos($r['action_taken'], 'Orphan') !== false || stripos($r['finding'], 'Unlawful') !== false));
+$deviationReviews = count(array_filter($reviews, fn($r) => stripos($r['fiسnding'], 'Breach') !== false || stripos($r['action_taken'], 'Orphan') !== false || stripos($r['finding'], 'Unlawful') !== false));
 $remediationReviews = $totalReviews - $compliantReviews - $deviationReviews;
 if ($remediationReviews < 0) $remediationReviews = 0;
 ?>
@@ -66,7 +66,8 @@ if ($remediationReviews < 0) $remediationReviews = 0;
                 <div
                     class="hidden lg:flex items-center gap-space-xs px-space-sm py-space-2xs bg-surface-container-lowest/10 rounded font-telemetry-micro text-telemetry-micro text-on-primary">
                     <span class="material-symbols-outlined text-[14px] text-secondary-fixed">hub</span><span>10/10
-                        Ingestion Nodes Active</span></div><button
+                        Ingestion Nodes Active</span>
+                </div><button
                     class="relative p-space-xs text-on-primary hover:text-secondary-fixed transition-colors"><span
                         class="material-symbols-outlined text-[20px]">notifications</span><span
                         class="absolute top-0 right-0 w-4 h-4 bg-error text-on-error font-telemetry-micro text-[10px] leading-4 text-center font-bold rounded-full">3</span></button>
@@ -84,10 +85,10 @@ if ($remediationReviews < 0) $remediationReviews = 0;
                             class="material-symbols-outlined text-on-primary text-[18px]">person</span></div>
                 </div>
             </div>
-        
-<!-- Top Bar Sign Out -->
-<a href="../api/logout.php?system=Admin%20%26%20Governance%20Portal&redirect=../Admin%20%26%20Governance%20Portal/login.php" class="top-signout-btn" title="Sign Out of Admin &amp; Governance Portal" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" style="display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:4px;background:rgba(178,58,50,0.2);border:1px solid rgba(178,58,50,0.5);color:#FF8080;font-size:12px;font-weight:600;text-decoration:none;cursor:pointer;margin-left:8px;vertical-align:middle;transition:all 0.2s;" onmouseover="this.style.background='rgba(178,58,50,0.4)';this.style.color='#FFFFFF'" onmouseout="this.style.background='rgba(178,58,50,0.2)';this.style.color='#FF8080'"><span class="material-symbols-outlined" style="font-size:15px;line-height:1;">logout</span><span>Sign Out</span></a>
-</div>
+
+            <!-- Top Bar Sign Out -->
+            <a href="../api/logout.php?system=Admin%20%26%20Governance%20Portal&redirect=../Admin%20%26%20Governance%20Portal/login.php" class="top-signout-btn" title="Sign Out of Admin &amp; Governance Portal" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" ><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
+        </div>
     </header>
     <aside
         class="fixed left-0 top-[60px] h-[calc(100vh-60px)] w-[260px] bg-primary z-40 flex flex-col justify-between border-r border-outline/30 select-none overflow-y-auto">
@@ -121,7 +122,8 @@ if ($remediationReviews < 0) $remediationReviews = 0;
                             Accounts</span></div><span
                         class="font-telemetry-micro text-[10px] px-space-2xs bg-surface-variant/20 text-on-primary-container rounded">7
                         Active</span>
-                </a></nav>
+                </a>
+            </nav>
             <div class="px-space-md mb-space-xs"><span
                     class="font-label-uppercase text-label-uppercase text-on-primary-container tracking-wider">AUDIT
                     &amp; INTELLIGENCE</span></div>
@@ -147,7 +149,10 @@ if ($remediationReviews < 0) $remediationReviews = 0;
                             class="font-bold uppercase">Break-Glass Access</span></div><span
                         class="material-symbols-outlined text-[16px] text-error">lock_open</span>
                 </a>
-                <a class="flex items-center justify-between px-space-sm py-space-xs rounded text-error hover:bg-error-container hover:text-on-error-container transition-all font-body-compact text-body-compact" data-path="emergency-lockdown" href="EmergencyLockdown.php"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[18px] text-error">lock</span><span class="font-bold uppercase">Emergency Lockdown</span></div><span class="font-telemetry-micro text-[10px] px-space-2xs bg-error text-on-error font-bold rounded">DEFCON-1</span></a></nav>
+                <a class="flex items-center justify-between px-space-sm py-space-xs rounded text-error hover:bg-error-container hover:text-on-error-container transition-all font-body-compact text-body-compact" data-path="emergency-lockdown" href="EmergencyLockdown.php">
+                    <div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[18px] text-error">lock</span><span class="font-bold uppercase">Emergency Lockdown</span></div><span class="font-telemetry-micro text-[10px] px-space-2xs bg-error text-on-error font-bold rounded">DEFCON-1</span>
+                </a>
+            </nav>
             <div class="px-space-md mb-space-xs"><span
                     class="font-label-uppercase text-label-uppercase text-on-primary-container tracking-wider">REGULATORY
                     &amp; RISK</span></div>
@@ -171,10 +176,11 @@ if ($remediationReviews < 0) $remediationReviews = 0;
                     <div class="flex items-center gap-space-sm"><span
                             class="material-symbols-outlined text-[18px]">gavel</span><span>Compliance Oversight</span>
                     </div>
-                </a></nav>
+                </a>
+            </nav>
         </div>
-                    
-            <div class="p-space-md bg-primary-container/40 border-t border-outline/20 flex flex-col gap-space-2xs">
+
+        <div class="p-space-md bg-primary-container/40 border-t border-outline/20 flex flex-col gap-space-2xs">
             <div class="flex items-center justify-between"><span
                     class="font-security-stamp text-[10px] text-secondary-fixed-dim uppercase tracking-wider">SEC-OPS
                     FACILITY</span>
@@ -184,13 +190,14 @@ if ($remediationReviews < 0) $remediationReviews = 0;
             </div>
             <div
                 class="font-telemetry-data text-telemetry-data text-on-primary font-semibold tracking-wider pt-space-2xs">
-                <span class="station-live-clock">UTC+6 (ALMATY TIME)</span></div>
+                <span class="station-live-clock">UTC+6 (ALMATY TIME)</span>
+            </div>
         </div>
     </aside>
     <div class="pl-[260px]">
         <main class="relative pt-[60px] w-full min-h-screen bg-surface px-gutter-desktop py-space-lg">
             <div class="flex flex-col w-full">
-                
+
                 <!-- BREADCRUMBS & CONSOLE RUNBAR -->
                 <div
                     class="flex flex-col md:flex-row md:items-center justify-between gap-space-sm pb-space-sm mb-space-base border-b border-surface-variant">
@@ -1029,7 +1036,7 @@ if ($remediationReviews < 0) $remediationReviews = 0;
                     </div>
                 </div>
                 <!-- INTERACTIVE CLIENT MICRO-LOGIC -->
-                
+
             </div>
         </main>
     </div>

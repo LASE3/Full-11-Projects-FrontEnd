@@ -6,60 +6,68 @@
 
 :root {
   /* Brand & System Palette */
-  --nav-bg: #0F2438;                  /* Deep Navy top nav */
-  --accent-teal: #0E7C86;             /* System 02 Identity Accent (4px stripe, active states) */
+  --nav-bg: #0f2438; /* Deep Navy top nav */
+  --accent-teal: #0e7c86; /* System 02 Identity Accent (4px stripe, active states) */
   --accent-teal-hover: #0b6871;
   --accent-teal-light: rgba(14, 124, 134, 0.12);
-  --secondary-brand: #1B3A5C;         /* Steel Blue secondary brand */
+  --secondary-brand: #1b3a5c; /* Steel Blue secondary brand */
   --secondary-brand-hover: #142c46;
   --secondary-brand-light: rgba(27, 58, 92, 0.08);
-  --signal-amber: #E8A33D;            /* Primary CTA buttons */
+  --signal-amber: #e8a33d; /* Primary CTA buttons */
   --signal-amber-hover: #d4902b;
   --signal-amber-active: #bd7e22;
   --signal-amber-light: rgba(232, 163, 61, 0.15);
-  --confidential-tag: #D9822B;        /* Amber-Orange left-border tag for confidential data tables */
+  --confidential-tag: #d9822b; /* Amber-Orange left-border tag for confidential data tables */
   --confidential-bg: rgba(217, 130, 43, 0.06);
 
   /* Neutrals & Surfaces */
-  --bg-main: #F5F7F9;                 /* Neutral Light Background */
-  --bg-surface: #FFFFFF;              /* Crisp White Card Surfaces */
-  --bg-surface-alt: #EDF1F5;          /* Subdued card header / wells */
-  --bg-surface-inset: #E4E9EE;        /* Inset containers */
-  --border-light: #E0E5EA;            /* Border lines */
-  --border-subtle: #CFD8E1;           /* Component borders */
-  --border-dark: #A8B7C7;             /* Focus / active borders */
-  --text-primary: #101418;            /* High-contrast dark text */
-  --text-secondary: #475467;          /* Muted technical captions */
-  --text-tertiary: #667085;           /* Secondary metadata */
-  --text-on-dark: #FFFFFF;            /* Text on dark navy / steel blue */
-  --text-on-dark-muted: #8EA1B4;      /* Secondary text on dark navy */
+  --bg-main: #f5f7f9; /* Neutral Light Background */
+  --bg-surface: #ffffff; /* Crisp White Card Surfaces */
+  --bg-surface-alt: #edf1f5; /* Subdued card header / wells */
+  --bg-surface-inset: #e4e9ee; /* Inset containers */
+  --border-light: #e0e5ea; /* Border lines */
+  --border-subtle: #cfd8e1; /* Component borders */
+  --border-dark: #a8b7c7; /* Focus / active borders */
+  --text-primary: #101418; /* High-contrast dark text */
+  --text-secondary: #475467; /* Muted technical captions */
+  --text-tertiary: #667085; /* Secondary metadata */
+  --text-on-dark: #ffffff; /* Text on dark navy / steel blue */
+  --text-on-dark-muted: #8ea1b4; /* Secondary text on dark navy */
 
   /* Status Colors */
-  --status-green: #107C41;            /* Paid / In Stock / Nominal */
-  --status-green-bg: #E7F6EC;
-  --status-amber: #B26A00;            /* Pending / Lead Time */
-  --status-amber-bg: #FFF4E5;
-  --status-blue: #0066B3;             /* Processing / Scheduled */
-  --status-blue-bg: #E6F2FC;
-  --status-red: #D12420;              /* Out of Stock / High Priority */
-  --status-red-bg: #FEECEB;
+  --status-green: #107c41; /* Paid / In Stock / Nominal */
+  --status-green-bg: #e7f6ec;
+  --status-amber: #b26a00; /* Pending / Lead Time */
+  --status-amber-bg: #fff4e5;
+  --status-blue: #0066b3; /* Processing / Scheduled */
+  --status-blue-bg: #e6f2fc;
+  --status-red: #d12420; /* Out of Stock / High Priority */
+  --status-red-bg: #feeceb;
 
   /* Typography */
-  --font-primary: 'IBM Plex Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-mono: 'JetBrains Mono', 'IBM Plex Mono', SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --font-primary:
+    "IBM Plex Sans", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, sans-serif;
+  --font-mono:
+    "JetBrains Mono", "IBM Plex Mono", SFMono-Regular, Menlo, Monaco, Consolas,
+    monospace;
 
   /* Geometry & Elevation */
   --radius-sm: 4px;
-  --radius-md: 8px;                  /* Required 8px rounded corners */
+  --radius-md: 8px; /* Required 8px rounded corners */
   --radius-lg: 12px;
   --radius-full: 9999px;
-  
-  --shadow-subtle: 0 1px 3px rgba(16, 20, 24, 0.05), 0 1px 2px rgba(16, 20, 24, 0.03);
-  --shadow-card: 0 2px 6px rgba(15, 36, 56, 0.06), 0 1px 3px rgba(15, 36, 56, 0.04);
-  --shadow-card-hover: 0 8px 20px rgba(15, 36, 56, 0.10), 0 2px 6px rgba(15, 36, 56, 0.05);
-  --shadow-dropdown: 0 10px 25px -3px rgba(15, 36, 56, 0.18), 0 4px 10px rgba(15, 36, 56, 0.08);
+
+  --shadow-subtle:
+    0 1px 3px rgba(16, 20, 24, 0.05), 0 1px 2px rgba(16, 20, 24, 0.03);
+  --shadow-card:
+    0 2px 6px rgba(15, 36, 56, 0.06), 0 1px 3px rgba(15, 36, 56, 0.04);
+  --shadow-card-hover:
+    0 8px 20px rgba(15, 36, 56, 0.1), 0 2px 6px rgba(15, 36, 56, 0.05);
+  --shadow-dropdown:
+    0 10px 25px -3px rgba(15, 36, 56, 0.18), 0 4px 10px rgba(15, 36, 56, 0.08);
   --shadow-drawer: -6px 0 24px rgba(15, 36, 56, 0.18);
-  
+
   --transition-fast: 0.15s ease;
   --transition-normal: 0.25s ease;
 }
@@ -67,7 +75,9 @@
 /* ==========================================================================
    Base & Reset
    ========================================================================== */
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
@@ -95,7 +105,10 @@ a {
   text-decoration: none;
 }
 
-button, input, select, textarea {
+button,
+input,
+select,
+textarea {
   font-family: inherit;
   font-size: inherit;
 }
@@ -180,13 +193,13 @@ button, input, select, textarea {
   font-size: 16px;
   font-weight: 700;
   letter-spacing: 0.5px;
-  color: #FFFFFF;
+  color: #ffffff;
 }
 
 .system-tag {
   background: rgba(14, 124, 134, 0.25);
   border: 1px solid var(--accent-teal);
-  color: #4DD8E6;
+  color: #4dd8e6;
   font-family: var(--font-mono);
   font-size: 10px;
   font-weight: 600;
@@ -208,17 +221,26 @@ button, input, select, textarea {
 .status-dot-pulse {
   width: 7px;
   height: 7px;
-  background-color: #2ED573;
+  background-color: #2ed573;
   border-radius: 50%;
   display: inline-block;
-  box-shadow: 0 0 6px #2ED573;
+  box-shadow: 0 0 6px #2ed573;
   animation: pulse-green 2s infinite ease-in-out;
 }
 
 @keyframes pulse-green {
-  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(46, 213, 115, 0.7); }
-  70% { transform: scale(1.1); box-shadow: 0 0 0 6px rgba(46, 213, 115, 0); }
-  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(46, 213, 115, 0); }
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(46, 213, 115, 0.7);
+  }
+  70% {
+    transform: scale(1.1);
+    box-shadow: 0 0 0 6px rgba(46, 213, 115, 0);
+  }
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(46, 213, 115, 0);
+  }
 }
 
 /* Nav Navigation Links */
@@ -244,18 +266,18 @@ button, input, select, textarea {
 }
 
 .nav-link:hover {
-  color: #FFFFFF;
+  color: #ffffff;
   background: rgba(255, 255, 255, 0.06);
 }
 
 .nav-link.active {
-  color: #FFFFFF;
+  color: #ffffff;
   background: rgba(14, 124, 134, 0.22);
   border: 1px solid rgba(14, 124, 134, 0.45);
 }
 
 .nav-link.active::after {
-  content: '';
+  content: "";
   position: absolute;
   bottom: -11px;
   left: 50%;
@@ -273,7 +295,7 @@ button, input, select, textarea {
   padding: 1px 6px;
   border-radius: 10px;
   background: rgba(255, 255, 255, 0.15);
-  color: #FFFFFF;
+  color: #ffffff;
 }
 
 /* Right Header Controls */
@@ -306,7 +328,7 @@ button, input, select, textarea {
   width: 24px;
   height: 24px;
   background: var(--secondary-brand);
-  color: #FFFFFF;
+  color: #ffffff;
   border-radius: 4px;
   font-family: var(--font-mono);
   font-size: 10px;
@@ -327,7 +349,7 @@ button, input, select, textarea {
   font-family: var(--font-mono);
   font-size: 11px;
   font-weight: 600;
-  color: #FFFFFF;
+  color: #ffffff;
   line-height: 1.1;
 }
 
@@ -397,7 +419,7 @@ button, input, select, textarea {
   position: relative;
   background: rgba(255, 255, 255, 0.08);
   border: 1px solid rgba(255, 255, 255, 0.16);
-  color: #FFFFFF;
+  color: #ffffff;
   width: 40px;
   height: 40px;
   border-radius: var(--radius-md);
@@ -463,7 +485,7 @@ button, input, select, textarea {
    Sub-Header Breadcrumbs & Global Telemetry Bar
    ========================================================================== */
 .sub-header-bar {
-  background-color: #FFFFFF;
+  background-color: #ffffff;
   border-bottom: 1px solid var(--border-light);
   padding: 8px 24px;
   font-size: 12px;
@@ -547,8 +569,14 @@ button, input, select, textarea {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(4px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* ==========================================================================
@@ -667,7 +695,7 @@ button, input, select, textarea {
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #FFFFFF;
+  background-color: #ffffff;
   transition: all var(--transition-fast);
   flex-shrink: 0;
 }
@@ -682,7 +710,7 @@ input[type="checkbox"]:checked + .custom-checkbox {
 }
 
 input[type="checkbox"]:checked + .custom-checkbox::after {
-  content: '';
+  content: "";
   width: 4px;
   height: 8px;
   border: solid white;
@@ -782,7 +810,7 @@ input[type="checkbox"]:checked + .custom-checkbox::after {
 
 .toolbar-search-box:focus-within {
   border-color: var(--accent-teal);
-  background: #FFFFFF;
+  background: #ffffff;
 }
 
 .toolbar-search-box input {
@@ -858,7 +886,7 @@ input[type="checkbox"]:checked + .custom-checkbox::after {
 
 .view-btn.active {
   background: var(--secondary-brand);
-  color: #FFFFFF;
+  color: #ffffff;
 }
 
 /* Active Filter Chips */
@@ -870,7 +898,7 @@ input[type="checkbox"]:checked + .custom-checkbox::after {
 }
 
 .filter-chip {
-  background: #FFFFFF;
+  background: #ffffff;
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-sm);
   padding: 3px 8px;
@@ -917,7 +945,10 @@ input[type="checkbox"]:checked + .custom-checkbox::after {
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  transition: transform var(--transition-fast), box-shadow var(--transition-fast), border-color var(--transition-fast);
+  transition:
+    transform var(--transition-fast),
+    box-shadow var(--transition-fast),
+    border-color var(--transition-fast);
   position: relative;
 }
 
@@ -929,7 +960,7 @@ input[type="checkbox"]:checked + .custom-checkbox::after {
 
 .product-card__visual {
   height: 180px;
-  background: linear-gradient(180deg, #EDF2F7 0%, #E2E8F0 100%);
+  background: linear-gradient(180deg, #edf2f7 0%, #e2e8f0 100%);
   position: relative;
   display: flex;
   align-items: center;
@@ -951,8 +982,8 @@ input[type="checkbox"]:checked + .custom-checkbox::after {
   position: absolute;
   top: 10px;
   left: 10px;
-  background: rgba(15, 36, 56, 0.90);
-  color: #FFFFFF;
+  background: rgba(15, 36, 56, 0.9);
+  color: #ffffff;
   font-family: var(--font-mono);
   font-size: 10.5px;
   font-weight: 600;
@@ -1236,7 +1267,7 @@ input[type="checkbox"]:checked + .custom-checkbox::after {
 
 .gallery-viewport {
   height: 400px;
-  background: linear-gradient(135deg, #F0F4F8 0%, #E2E9F0 100%);
+  background: linear-gradient(135deg, #f0f4f8 0%, #e2e9f0 100%);
   border: 1px solid var(--border-light);
   border-radius: var(--radius-md);
   position: relative;
@@ -1259,7 +1290,7 @@ input[type="checkbox"]:checked + .custom-checkbox::after {
 
 .viewport-badge {
   background: rgba(15, 36, 56, 0.85);
-  color: #FFFFFF;
+  color: #ffffff;
   font-family: var(--font-mono);
   font-size: 10px;
   padding: 3px 8px;
@@ -1305,7 +1336,7 @@ input[type="checkbox"]:checked + .custom-checkbox::after {
 
 .gallery-thumb.active {
   border-color: var(--accent-teal);
-  background: #FFFFFF;
+  background: #ffffff;
   box-shadow: 0 0 0 2px var(--accent-teal-light);
 }
 
@@ -1345,7 +1376,7 @@ input[type="checkbox"]:checked + .custom-checkbox::after {
 }
 
 .btn-download-asset {
-  background: #FFFFFF;
+  background: #ffffff;
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-sm);
   padding: 6px 8px;
@@ -1392,7 +1423,7 @@ input[type="checkbox"]:checked + .custom-checkbox::after {
   font-size: 12px;
   font-weight: 700;
   background: var(--nav-bg);
-  color: #FFFFFF;
+  color: #ffffff;
   padding: 2px 8px;
   border-radius: var(--radius-sm);
   letter-spacing: 0.5px;
@@ -1500,7 +1531,7 @@ input[type="checkbox"]:checked + .custom-checkbox::after {
 }
 
 .spec-table tr:nth-child(odd) {
-  background-color: #FFFFFF;
+  background-color: #ffffff;
 }
 
 .spec-table td {
@@ -1563,7 +1594,7 @@ input[type="checkbox"]:checked + .custom-checkbox::after {
 }
 
 .tier-card {
-  background: #FFFFFF;
+  background: #ffffff;
   border: 1px solid var(--border-light);
   border-radius: var(--radius-sm);
   padding: 8px 10px;
@@ -1601,7 +1632,7 @@ input[type="checkbox"]:checked + .custom-checkbox::after {
   align-items: center;
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
-  background: #FFFFFF;
+  background: #ffffff;
   overflow: hidden;
   height: 42px;
 }
@@ -1903,21 +1934,32 @@ input[type="checkbox"]:checked + .custom-checkbox::after {
 .timeline-step.completed .step-node {
   background-color: var(--accent-teal);
   border-color: var(--accent-teal);
-  color: #FFFFFF;
+  color: #ffffff;
 }
 
 .timeline-step.active .step-node {
-  background-color: #FFFFFF;
+  background-color: #ffffff;
   border-color: var(--accent-teal);
   color: var(--accent-teal);
-  box-shadow: 0 0 0 4px var(--accent-teal-light), 0 0 12px rgba(14, 124, 134, 0.4);
+  box-shadow:
+    0 0 0 4px var(--accent-teal-light),
+    0 0 12px rgba(14, 124, 134, 0.4);
   animation: pulse-teal 2s infinite ease-in-out;
 }
 
 @keyframes pulse-teal {
-  0% { transform: scale(1); box-shadow: 0 0 0 4px var(--accent-teal-light); }
-  50% { transform: scale(1.08); box-shadow: 0 0 0 8px rgba(14, 124, 134, 0.25); }
-  100% { transform: scale(1); box-shadow: 0 0 0 4px var(--accent-teal-light); }
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 4px var(--accent-teal-light);
+  }
+  50% {
+    transform: scale(1.08);
+    box-shadow: 0 0 0 8px rgba(14, 124, 134, 0.25);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 4px var(--accent-teal-light);
+  }
 }
 
 .step-name {
@@ -1962,7 +2004,7 @@ input[type="checkbox"]:checked + .custom-checkbox::after {
 
 .live-badge-teal {
   background: var(--accent-teal);
-  color: #FFFFFF;
+  color: #ffffff;
   font-family: var(--font-mono);
   font-size: 10.5px;
   font-weight: 700;
@@ -2109,7 +2151,7 @@ input[type="checkbox"]:checked + .custom-checkbox::after {
 }
 
 .data-table tbody tr:hover {
-  background-color: #F8FAFC;
+  background-color: #f8fafc;
 }
 
 /* REQUIRED: Left-border tag in amber-orange #D9822B on order/customer info table rows */
@@ -2179,7 +2221,7 @@ input[type="checkbox"]:checked + .custom-checkbox::after {
 
 .btn-table-action:hover {
   background: var(--secondary-brand);
-  color: #FFFFFF;
+  color: #ffffff;
 }
 
 /* ==========================================================================
@@ -2228,7 +2270,7 @@ input[type="checkbox"]:checked + .custom-checkbox::after {
 
 .drawer-header {
   background: var(--nav-bg);
-  color: #FFFFFF;
+  color: #ffffff;
   padding: 18px 24px;
   display: flex;
   align-items: center;
@@ -2255,7 +2297,7 @@ input[type="checkbox"]:checked + .custom-checkbox::after {
 .drawer-close-btn {
   background: rgba(255, 255, 255, 0.1);
   border: none;
-  color: #FFFFFF;
+  color: #ffffff;
   width: 32px;
   height: 32px;
   border-radius: var(--radius-sm);
@@ -2296,7 +2338,7 @@ input[type="checkbox"]:checked + .custom-checkbox::after {
 }
 
 .drawer-item-card {
-  background: #FFFFFF;
+  background: #ffffff;
   border: 1px solid var(--border-light);
   border-radius: var(--radius-sm);
   padding: 12px;
@@ -2356,7 +2398,7 @@ input[type="checkbox"]:checked + .custom-checkbox::after {
 
 .toast {
   background: var(--nav-bg);
-  color: #FFFFFF;
+  color: #ffffff;
   border-left: 4px solid var(--signal-amber);
   border-radius: var(--radius-sm);
   padding: 12px 18px;
@@ -2378,8 +2420,14 @@ input[type="checkbox"]:checked + .custom-checkbox::after {
 }
 
 @keyframes slideInRight {
-  from { transform: translateX(100%); opacity: 0; }
-  to { transform: translateX(0); opacity: 1; }
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
 }
 
 /* ==========================================================================
@@ -2417,7 +2465,7 @@ input[type="checkbox"]:checked + .custom-checkbox::after {
 }
 
 .footer-links a:hover {
-  color: #FFFFFF;
+  color: #ffffff;
 }
 
 /* ==========================================================================
@@ -2507,7 +2555,8 @@ input[type="checkbox"]:checked + .custom-checkbox::after {
     flex-direction: column;
     align-items: stretch;
   }
-  .pdp-btn-quote, .pdp-btn-cart {
+  .pdp-btn-quote,
+  .pdp-btn-cart {
     width: 100%;
   }
   .quantity-control {
@@ -2543,4 +2592,209 @@ input[type="checkbox"]:checked + .custom-checkbox::after {
     display: none;
   }
 }
+
+
+/* Unified Top Sign-Out Button */
+.top-signout-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 12px;
+  border-radius: 4px;
+  background: rgba(178, 58, 50, 0.2);
+  border: 1px solid rgba(178, 58, 50, 0.5);
+  color: #ff8080;
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  margin-left: 8px;
+  vertical-align: middle;
+  transition: all 0.2s ease;
+}
+
+.top-signout-btn:hover {
+  background: rgba(178, 58, 50, 0.4);
+  color: #ffffff;
+}
+
+.top-signout-btn .material-symbols-outlined {
+  font-size: 15px;
+  line-height: 1;
+}
+
+/* Customer Selector Dropdown in Shop Topbar */
+.shop-customer-company {
+  font-size: 12px;
+  color: var(--text-primary);
+  display: block;
+}
+
+.shop-customer-id {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--text-secondary);
+}
+
+.shop-customer-tier {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--accent-teal);
+  font-weight: 600;
+}
+
+/* Nav & Header Utilities */
+.shop-nav-integrations {
+  color: #00E5FF;
+  border: 1px solid rgba(0, 229, 255, 0.3);
+  border-radius: 4px;
+  padding: 0.35rem 0.6rem;
+  margin-left: 0.5rem;
+}
+
+.shop-nav-integrations .nav-badge-count {
+  background: rgba(0, 229, 255, 0.2);
+  color: #00E5FF;
+}
+
+.shop-nav-integrations-label {
+  font-weight: 600;
+}
+
+.shop-text-muted-dark {
+  color: var(--text-on-dark-muted);
+}
+
+.shop-status-nominal {
+  color: var(--status-green);
+}
+
+.shop-confidential-label {
+  color: var(--confidential-tag);
+}
+
+.shop-text-tertiary {
+  color: var(--text-tertiary);
+}
+
+.shop-text-right {
+  text-align: right;
+}
+
+.shop-divider-v {
+  opacity: 0.4;
+}
+
+/* Modal Form Controls & Summaries */
+.shop-modal-panel-inset {
+  background: var(--bg-surface-alt);
+  padding: 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-light);
+  font-size: 11.5px;
+}
+
+.shop-modal-section-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--secondary-brand);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.shop-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.shop-form-group-divided {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-top: 1px solid var(--border-light);
+  padding-top: 14px;
+}
+
+.shop-form-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.shop-form-select,
+.shop-form-input {
+  padding: 8px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  background: #FFFFFF;
+}
+
+.shop-form-input-mono {
+  padding: 8px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+
+.shop-summary-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.shop-summary-row-total {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  border-top: 1px solid var(--border-light);
+  padding-top: 8px;
+}
+
+.shop-summary-label {
+  font-size: 12px;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.shop-summary-label-total {
+  font-size: 13px;
+  color: var(--text-primary);
+  font-weight: 700;
+}
+
+.shop-price-rfq-total {
+  font-size: 20px;
+}
+
+.shop-price-cart-subtotal {
+  font-size: 16px;
+}
+
+.shop-price-cart-total {
+  font-size: 22px;
+}
+
+.shop-btn-modal-action {
+  width: 100%;
+  height: 42px;
+}
+
+.shop-footer-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.shop-footer-company {
+  color: #FFFFFF;
+}
+
+.filter-checkbox-input {
+  cursor: pointer;
+  accent-color: var(--orange-primary, #f97316);
+}
+
 

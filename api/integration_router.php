@@ -1,4 +1,5 @@
 <?php
+
 /**
  * VOSTOKPRIBOR Universal System Integration Router & API Gateway
  * Manages inter-system communication between all 11 enterprise systems.
@@ -58,17 +59,28 @@ $isSuperAdmin = ($userClearance === 'L4' || ($currentUser['email'] ?? '') === 'a
 
 // System mapping helper
 $systemCodeMap = [
-    'SYS01' => 'ADM', 'ADM' => 'SYS01',
-    'SYS02' => 'CRM', 'CRM' => 'SYS02',
-    'SYS03' => 'CUS', 'CUS' => 'SYS03',
-    'SYS04' => 'DEV', 'DEV' => 'SYS04',
-    'SYS05' => 'EMP', 'EMP' => 'SYS05',
-    'SYS06' => 'DOC', 'DOC' => 'SYS06',
-    'SYS07' => 'FIN', 'FIN' => 'SYS07',
-    'SYS08' => 'HR',  'HR'  => 'SYS08',
-    'SYS09' => 'IT',  'IT'  => 'SYS09',
-    'SYS10' => 'SHP', 'SHP' => 'SYS10',
-    'SYS11' => 'WEB', 'WEB' => 'SYS11',
+    'SYS01' => 'ADM',
+    'ADM' => 'SYS01',
+    'SYS02' => 'CRM',
+    'CRM' => 'SYS02',
+    'SYS03' => 'CUS',
+    'CUS' => 'SYS03',
+    'SYS04' => 'DEV',
+    'DEV' => 'SYS04',
+    'SYS05' => 'EMP',
+    'EMP' => 'SYS05',
+    'SYS06' => 'DOC',
+    'DOC' => 'SYS06',
+    'SYS07' => 'FIN',
+    'FIN' => 'SYS07',
+    'SYS08' => 'HR',
+    'HR'  => 'SYS08',
+    'SYS09' => 'IT',
+    'IT'  => 'SYS09',
+    'SYS10' => 'SHP',
+    'SHP' => 'SYS10',
+    'SYS11' => 'WEB',
+    'WEB' => 'SYS11',
     'ALL'   => 'ALL'
 ];
 
@@ -154,7 +166,6 @@ if ($method === 'GET') {
             ]
         ]);
         exit;
-
     } catch (Exception $e) {
         http_response_code(500);
         echo json_encode(['success' => false, 'error' => $e->getMessage()]);
@@ -200,7 +211,7 @@ if ($method === 'POST') {
             // Permission denied: log unauthorized attempt
             $endpoint = $customEndpoint ?: "/api/integrations/{$linkCode}/dispatch";
             $summary = "UNAUTHORIZED: User '{$actorId}' with clearance {$userClearance} attempted access requiring {$link['required_clearance']}";
-            
+
             $logStmt = $pdo->prepare("
                 INSERT INTO system_integration_logs 
                 (link_code, source_system_id, target_system_id, api_protocol, endpoint, payload_summary, direction, status_code, actor_id)
@@ -391,7 +402,6 @@ if ($method === 'POST') {
             'result' => $resultData
         ]);
         exit;
-
     } catch (Exception $e) {
         http_response_code(500);
         echo json_encode(['success' => false, 'error' => $e->getMessage()]);

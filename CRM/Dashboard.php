@@ -13,12 +13,14 @@ $custCount = (int)($pdo->query("SELECT COUNT(*) FROM customers")->fetchColumn() 
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>VOSTOKPRIBOR CRM · Executive Dashboard</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
+
 <body>
 
   <div class="app-container">
@@ -43,7 +45,7 @@ $custCount = (int)($pdo->query("SELECT COUNT(*) FROM customers")->fetchColumn() 
               <div class="brand-subline">
                 <span class="status-dot-pulse"></span>
                 <span>crm.vostokpribor.local</span>
-                <span style="opacity: 0.5;">|</span>
+                <span class="crm-opacity-50" >|</span>
                 <span>ENTERPRISE SALES</span>
               </div>
             </div>
@@ -62,7 +64,7 @@ $custCount = (int)($pdo->query("SELECT COUNT(*) FROM customers")->fetchColumn() 
         <!-- Right System Metrics & Profile -->
         <div class="top-nav__actions">
           <div class="pipeline-sync-badge">
-            <span style="color: #2ECC71;">●</span>
+            <span class="crm-status-success" >●</span>
             <span>Sync: <strong>Active 99.98%</strong></span>
           </div>
 
@@ -71,7 +73,10 @@ $custCount = (int)($pdo->query("SELECT COUNT(*) FROM customers")->fetchColumn() 
           </button>
 
           <button class="icon-button" title="Sales Telemetry Notifications" onclick="window.crmApp.showToast('Operational Telemetry Alert', 'Severstal PJSC accessed Proposal Spec #PRJ-VP-7721.')">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+              <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+            </svg>
             <span class="badge-dot"></span>
           </button>
 
@@ -83,10 +88,10 @@ $custCount = (int)($pdo->query("SELECT COUNT(*) FROM customers")->fetchColumn() 
             </div>
           </div>
         </div>
-      
-<!-- Top Bar Sign Out -->
-<a href="../api/logout.php?system=CRM&redirect=../CRM/login.php" class="top-signout-btn" title="Sign Out of CRM" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" style="display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:4px;background:rgba(178,58,50,0.2);border:1px solid rgba(178,58,50,0.5);color:#FF8080;font-size:12px;font-weight:600;text-decoration:none;cursor:pointer;margin-left:8px;vertical-align:middle;transition:all 0.2s;" onmouseover="this.style.background='rgba(178,58,50,0.4)';this.style.color='#FFFFFF'" onmouseout="this.style.background='rgba(178,58,50,0.2)';this.style.color='#FF8080'"><span class="material-symbols-outlined" style="font-size:15px;line-height:1;">logout</span><span>Sign Out</span></a>
-</div>
+
+        <!-- Top Bar Sign Out -->
+        <a href="../api/logout.php?system=CRM&redirect=../CRM/login.php" class="top-signout-btn" title="Sign Out of CRM" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" ><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
+      </div>
     </header>
 
     <div class="main-layout">
@@ -101,7 +106,12 @@ $custCount = (int)($pdo->query("SELECT COUNT(*) FROM customers")->fetchColumn() 
             <a href="Dashboard.php" class="sidebar-nav-item active">
               <div class="sidebar-item-left">
                 <span class="sidebar-icon">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="7" height="7" />
+                    <rect x="14" y="3" width="7" height="7" />
+                    <rect x="14" y="14" width="7" height="7" />
+                    <rect x="3" y="14" width="7" height="7" />
+                  </svg>
                 </span>
                 <span>Dashboard</span>
               </div>
@@ -111,7 +121,12 @@ $custCount = (int)($pdo->query("SELECT COUNT(*) FROM customers")->fetchColumn() 
             <a href="Leads.php" class="sidebar-nav-item">
               <div class="sidebar-item-left">
                 <span class="sidebar-icon">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                    <circle cx="9" cy="7" r="4" />
+                    <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                  </svg>
                 </span>
                 <span>Leads</span>
               </div>
@@ -122,7 +137,14 @@ $custCount = (int)($pdo->query("SELECT COUNT(*) FROM customers")->fetchColumn() 
             <a href="Customers.php" class="sidebar-nav-item">
               <div class="sidebar-item-left">
                 <span class="sidebar-icon">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18"/><path d="M5 21V7l8-4v18"/><path d="M19 21V11l-6-4"/><path d="M9 9h1"/><path d="M9 13h1"/><path d="M9 17h1"/></svg>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 21h18" />
+                    <path d="M5 21V7l8-4v18" />
+                    <path d="M19 21V11l-6-4" />
+                    <path d="M9 9h1" />
+                    <path d="M9 13h1" />
+                    <path d="M9 17h1" />
+                  </svg>
                 </span>
                 <span>Customers</span>
               </div>
@@ -133,7 +155,10 @@ $custCount = (int)($pdo->query("SELECT COUNT(*) FROM customers")->fetchColumn() 
             <a href="Opportunities.php" class="sidebar-nav-item">
               <div class="sidebar-item-left">
                 <span class="sidebar-icon">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 14 14"/></svg>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10" />
+                    <polyline points="12 6 12 12 14 14" />
+                  </svg>
                 </span>
                 <span>Opportunities</span>
               </div>
@@ -144,7 +169,12 @@ $custCount = (int)($pdo->query("SELECT COUNT(*) FROM customers")->fetchColumn() 
             <a href="QuotesAndContracts.php" class="sidebar-nav-item">
               <div class="sidebar-item-left">
                 <span class="sidebar-icon">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                    <polyline points="14 2 14 8 20 8" />
+                    <line x1="16" y1="13" x2="8" y2="13" />
+                    <line x1="16" y1="17" x2="8" y2="17" />
+                  </svg>
                 </span>
                 <span>Quotes &amp; Contracts</span>
               </div>
@@ -155,7 +185,11 @@ $custCount = (int)($pdo->query("SELECT COUNT(*) FROM customers")->fetchColumn() 
             <a href="Projects.php" class="sidebar-nav-item">
               <div class="sidebar-item-left">
                 <span class="sidebar-icon">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon points="12 2 2 7 12 12 22 7 12 2" />
+                    <polyline points="2 17 12 22 22 17" />
+                    <polyline points="2 12 12 17 22 12" />
+                  </svg>
                 </span>
                 <span>Projects</span>
               </div>
@@ -166,7 +200,11 @@ $custCount = (int)($pdo->query("SELECT COUNT(*) FROM customers")->fetchColumn() 
             <a href="SalesForecast.php" class="sidebar-nav-item">
               <div class="sidebar-item-left">
                 <span class="sidebar-icon">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="20" x2="18" y2="10" />
+                    <line x1="12" y1="20" x2="12" y2="4" />
+                    <line x1="6" y1="20" x2="6" y2="14" />
+                  </svg>
                 </span>
                 <span>Sales Forecast</span>
               </div>
@@ -177,48 +215,60 @@ $custCount = (int)($pdo->query("SELECT COUNT(*) FROM customers")->fetchColumn() 
             <a href="Integrations.php" class="sidebar-nav-item">
               <div class="sidebar-item-left">
                 <span class="sidebar-icon">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00E5FF" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00E5FF" stroke-width="2">
+                    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+                    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+                  </svg>
                 </span>
-                <span style="color: #00E5FF; font-weight: 600;">System Integrations</span>
+                <span class="crm-nav-integrations" >System Integrations</span>
               </div>
-              <span class="sidebar-badge" style="background: rgba(0,229,255,0.15); color: #00E5FF; border: 1px solid rgba(0,229,255,0.3);">SYS02</span>
+              <span class="sidebar-badge crm-badge-integrations" >SYS02</span>
             </a>
           </nav>
         </div>
 
         <!-- Sidebar Bottom Quota Progress Widget -->
-        
-                      <div class="sidebar-section-title" style="margin-top: 1rem;">Unified Ecosystem</div>
-          <nav class="sidebar-nav" style="margin-bottom: 0.5rem;">
-            <a href="../VOSTOKPRIBOR Corporate Web Platform/index.php" class="sidebar-nav-item">
-              <div class="sidebar-item-left">
-                <span class="sidebar-icon">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-                </span>
-                <span>Corporate Platform</span>
-              </div>
-              <span class="sidebar-badge" style="font-size: 10px;">SYS 01</span>
-            </a>
-            <a href="../Employee Intranet/index.php" class="sidebar-nav-item">
-              <div class="sidebar-item-left">
-                <span class="sidebar-icon">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-                </span>
-                <span>Employee Intranet</span>
-              </div>
-              <span class="sidebar-badge" style="font-size: 10px;">SYS 04</span>
-            </a>
-          </nav>
-            <!-- Log Out -->
-            
+
+        <div class="sidebar-section-title crm-mt-4" >Unified Ecosystem</div>
+        <nav class="sidebar-nav crm-mb-2" >
+          <a href="../VOSTOKPRIBOR Corporate Web Platform/index.php" class="sidebar-nav-item">
+            <div class="sidebar-item-left">
+              <span class="sidebar-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10" />
+                  <line x1="2" y1="12" x2="22" y2="12" />
+                  <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+                </svg>
+              </span>
+              <span>Corporate Platform</span>
+            </div>
+            <span class="sidebar-badge crm-text-xs" >SYS 01</span>
+          </a>
+          <a href="../Employee Intranet/index.php" class="sidebar-nav-item">
+            <div class="sidebar-item-left">
+              <span class="sidebar-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="3" width="7" height="7" />
+                  <rect x="14" y="3" width="7" height="7" />
+                  <rect x="14" y="14" width="7" height="7" />
+                  <rect x="3" y="14" width="7" height="7" />
+                </svg>
+              </span>
+              <span>Employee Intranet</span>
+            </div>
+            <span class="sidebar-badge crm-text-xs" >SYS 04</span>
+          </a>
+        </nav>
+        <!-- Log Out -->
+
         <div class="sidebar-footer">
           <div class="quota-widget-card">
             <div class="quota-widget-header">
               <span>FY2024 Q4 Quota Target</span>
-              <strong style="color: var(--crm-amber);">82%</strong>
+              <strong class="crm-text-amber" >82%</strong>
             </div>
             <div class="quota-progress-track">
-              <div class="quota-progress-bar" style="width: 82%;"></div>
+              <div class="quota-progress-bar crm-w-82" ></div>
             </div>
             <div class="quota-widget-footer">
               <span class="quota-val-current">$18.45M</span>
@@ -247,7 +297,7 @@ $custCount = (int)($pdo->query("SELECT COUNT(*) FROM customers")->fetchColumn() 
               <p class="page-subtitle">Enterprise industrial accounts, live deal flow, and revenue forecast for Severstal, NLMK, and Norilsk Nickel</p>
             </div>
             <div class="page-header-actions">
-              <div class="filter-select" style="display: inline-flex; align-items: center; gap: 0.5rem;">
+              <div class="filter-select crm-inline-flex-sm" >
                 <span>📅 FY2024 - Q4 (Oct - Dec)</span>
               </div>
               <button class="btn btn-outline" onclick="window.crmApp.showToast('Export Manifest', 'Pipeline report exported as CSV ledger.')">
@@ -269,7 +319,7 @@ $custCount = (int)($pdo->query("SELECT COUNT(*) FROM customers")->fetchColumn() 
               </div>
               <div class="kpi-value-row">
                 <span class="kpi-value kpi-value-mono">28</span>
-                <span style="font-size: 13px; color: var(--crm-text-muted); font-weight: 500;">Leads</span>
+                <span class="crm-text-muted-md" >Leads</span>
               </div>
               <div class="kpi-footer">
                 <span>6 Qualified this week</span>
@@ -285,7 +335,7 @@ $custCount = (int)($pdo->query("SELECT COUNT(*) FROM customers")->fetchColumn() 
               </div>
               <div class="kpi-value-row">
                 <span class="kpi-value kpi-value-mono">42</span>
-                <span style="font-size: 13px; color: var(--crm-text-muted); font-weight: 500;">Active Deals</span>
+                <span class="crm-text-muted-md" >Active Deals</span>
               </div>
               <div class="kpi-footer">
                 <span>18 in Late Negotiation</span>
@@ -301,7 +351,7 @@ $custCount = (int)($pdo->query("SELECT COUNT(*) FROM customers")->fetchColumn() 
               </div>
               <div class="kpi-value-row">
                 <span class="kpi-value kpi-value-mono">$18.45M</span>
-                <span style="font-size: 12px; color: var(--crm-text-muted);">USD</span>
+                <span class="crm-text-muted-12" >USD</span>
               </div>
               <div class="kpi-footer">
                 <span>Weighted: <strong>$12.80M</strong></span>
@@ -317,7 +367,7 @@ $custCount = (int)($pdo->query("SELECT COUNT(*) FROM customers")->fetchColumn() 
               </div>
               <div class="kpi-value-row">
                 <span class="kpi-value kpi-value-mono">68.4%</span>
-                <span style="font-size: 12px; color: var(--crm-text-muted);">Close Ratio</span>
+                <span class="crm-text-muted-12" >Close Ratio</span>
               </div>
               <div class="kpi-footer">
                 <span>Industry Benchmark: 45%</span>
@@ -331,7 +381,7 @@ $custCount = (int)($pdo->query("SELECT COUNT(*) FROM customers")->fetchColumn() 
             <div class="card-header-row">
               <div>
                 <h3 class="card-title">Commercial Deal Progression Pipeline (Stage Funnel)</h3>
-                <p style="font-size: 11.5px; color: var(--crm-text-secondary); margin-top: 2px;">
+                <p class="crm-meta-subtext" >
                   Active conversion trajectory from initial RFQ qualification through counter-signed commercial execution
                 </p>
               </div>
@@ -430,7 +480,7 @@ $custCount = (int)($pdo->query("SELECT COUNT(*) FROM customers")->fetchColumn() 
               <div class="card-header-row">
                 <div>
                   <h3 class="card-title">My Assigned Industrial Accounts</h3>
-                  <p style="font-size: 11.5px; color: var(--crm-text-secondary); margin-top: 2px;">
+                  <p class="crm-meta-subtext" >
                     Confidential customer data tagged with amber-orange (#D9822B) boundary
                   </p>
                 </div>
@@ -459,11 +509,11 @@ $custCount = (int)($pdo->query("SELECT COUNT(*) FROM customers")->fetchColumn() 
                       <span class="tier-badge strategic">Strategic Tier-1</span>
                     </td>
                     <td>
-                      <strong style="font-family: var(--crm-font-mono); color: var(--crm-navy);">$6,850,000</strong>
+                      <strong class="crm-mono-navy" >$6,850,000</strong>
                     </td>
                     <td>
-                      <span style="font-family: var(--crm-font-mono); font-weight: 700; color: var(--crm-indigo);">3 Deals</span>
-                      <span style="font-size: 11px; color: var(--crm-text-muted);">($2.9M)</span>
+                      <span class="crm-mono-bold-indigo" >3 Deals</span>
+                      <span class="crm-text-muted-sm" >($2.9M)</span>
                     </td>
                     <td>
                       <a href="CustomerDetail.php" class="btn btn-outline btn-sm">Inspect →</a>
@@ -481,11 +531,11 @@ $custCount = (int)($pdo->query("SELECT COUNT(*) FROM customers")->fetchColumn() 
                       <span class="tier-badge tier-1">Tier-1 Enterprise</span>
                     </td>
                     <td>
-                      <strong style="font-family: var(--crm-font-mono); color: var(--crm-navy);">$4,200,000</strong>
+                      <strong class="crm-mono-navy" >$4,200,000</strong>
                     </td>
                     <td>
-                      <span style="font-family: var(--crm-font-mono); font-weight: 700; color: var(--crm-indigo);">2 Deals</span>
-                      <span style="font-size: 11px; color: var(--crm-text-muted);">($1.3M)</span>
+                      <span class="crm-mono-bold-indigo" >2 Deals</span>
+                      <span class="crm-text-muted-sm" >($1.3M)</span>
                     </td>
                     <td>
                       <a href="CustomerDetail.php" class="btn btn-outline btn-sm">Inspect →</a>
@@ -503,11 +553,11 @@ $custCount = (int)($pdo->query("SELECT COUNT(*) FROM customers")->fetchColumn() 
                       <span class="tier-badge strategic">Strategic Tier-1</span>
                     </td>
                     <td>
-                      <strong style="font-family: var(--crm-font-mono); color: var(--crm-navy);">$8,400,000</strong>
+                      <strong class="crm-mono-navy" >$8,400,000</strong>
                     </td>
                     <td>
-                      <span style="font-family: var(--crm-font-mono); font-weight: 700; color: var(--crm-indigo);">1 Deal</span>
-                      <span style="font-size: 11px; color: var(--crm-text-muted);">($2.4M)</span>
+                      <span class="crm-mono-bold-indigo" >1 Deal</span>
+                      <span class="crm-text-muted-sm" >($2.4M)</span>
                     </td>
                     <td>
                       <a href="CustomerDetail.php" class="btn btn-outline btn-sm">Inspect →</a>
@@ -525,11 +575,11 @@ $custCount = (int)($pdo->query("SELECT COUNT(*) FROM customers")->fetchColumn() 
                       <span class="tier-badge tier-2">Tier-2 Enterprise</span>
                     </td>
                     <td>
-                      <strong style="font-family: var(--crm-font-mono); color: var(--crm-navy);">$2,100,000</strong>
+                      <strong class="crm-mono-navy" >$2,100,000</strong>
                     </td>
                     <td>
-                      <span style="font-family: var(--crm-font-mono); font-weight: 700; color: var(--crm-indigo);">1 Deal</span>
-                      <span style="font-size: 11px; color: var(--crm-text-muted);">($1.65M)</span>
+                      <span class="crm-mono-bold-indigo" >1 Deal</span>
+                      <span class="crm-text-muted-sm" >($1.65M)</span>
                     </td>
                     <td>
                       <a href="CustomerDetail.php" class="btn btn-outline btn-sm">Inspect →</a>
@@ -547,11 +597,11 @@ $custCount = (int)($pdo->query("SELECT COUNT(*) FROM customers")->fetchColumn() 
                       <span class="tier-badge tier-2">Tier-2 Enterprise</span>
                     </td>
                     <td>
-                      <strong style="font-family: var(--crm-font-mono); color: var(--crm-navy);">$1,950,000</strong>
+                      <strong class="crm-mono-navy" >$1,950,000</strong>
                     </td>
                     <td>
-                      <span style="font-family: var(--crm-font-mono); font-weight: 700; color: var(--crm-indigo);">1 Won</span>
-                      <span style="font-size: 11px; color: var(--crm-text-muted);">($418K)</span>
+                      <span class="crm-mono-bold-indigo" >1 Won</span>
+                      <span class="crm-text-muted-sm" >($418K)</span>
                     </td>
                     <td>
                       <a href="CustomerDetail.php" class="btn btn-outline btn-sm">Inspect →</a>
@@ -566,7 +616,7 @@ $custCount = (int)($pdo->query("SELECT COUNT(*) FROM customers")->fetchColumn() 
               <div class="card-header-row">
                 <div>
                   <h3 class="card-title">Commercial Activity Stream</h3>
-                  <p style="font-size: 11.5px; color: var(--crm-text-secondary); margin-top: 2px;">
+                  <p class="crm-meta-subtext" >
                     Real-time sales touchpoints, quote logs &amp; audits
                   </p>
                 </div>
@@ -638,7 +688,7 @@ $custCount = (int)($pdo->query("SELECT COUNT(*) FROM customers")->fetchColumn() 
             <input type="text" id="new-opp-title" class="form-input" placeholder="e.g. Blast Furnace Gas Skid Automation Phase 2" required />
           </div>
 
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+          <div class="crm-grid-2col" >
             <div class="form-group">
               <label class="form-label" for="new-opp-client">Client Enterprise Account</label>
               <select id="new-opp-client" class="form-select" required>
@@ -657,7 +707,7 @@ $custCount = (int)($pdo->query("SELECT COUNT(*) FROM customers")->fetchColumn() 
             </div>
           </div>
 
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+          <div class="crm-grid-2col" >
             <div class="form-group">
               <label class="form-label" for="new-opp-stage">Initial Pipeline Stage</label>
               <select id="new-opp-stage" class="form-select">
@@ -676,9 +726,9 @@ $custCount = (int)($pdo->query("SELECT COUNT(*) FROM customers")->fetchColumn() 
           </div>
 
           <div class="form-group">
-            <label style="display: flex; align-items: center; gap: 0.5rem; font-size: 12px; cursor: pointer;">
+            <label class="crm-clickable-pill" >
               <input type="checkbox" id="new-opp-confidential" checked />
-              <span>Apply Alert-Red <strong style="color: var(--crm-tag-confidential);">"Highly Confidential"</strong> Commercial Data Tag</span>
+              <span>Apply Alert-Red <strong class="crm-text-confidential" >"Highly Confidential"</strong> Commercial Data Tag</span>
             </label>
           </div>
         </div>
@@ -734,4 +784,5 @@ $custCount = (int)($pdo->query("SELECT COUNT(*) FROM customers")->fetchColumn() 
   <script src="../assets/js/api-client.js"></script>
   <script src="js/crm-data.js"></script>
 </body>
+
 </html>

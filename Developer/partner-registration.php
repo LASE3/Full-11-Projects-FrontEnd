@@ -5,6 +5,7 @@ requireAuth('DEV');
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
@@ -13,49 +14,50 @@ requireAuth('DEV');
     <link rel="stylesheet" href="css/dev-common.css" />
     <link rel="stylesheet" href="css/dev-registration.css" />
 </head>
+
 <body>
     <!-- TOP NAVIGATION BAR (System 10 Cyan 4px stripe) -->
     <header class="vk-top-navbar">
-        <div style="display: flex; align-items: center; gap: 24px;">
+        <div class="dev-flex-center-gap-24" >
             <a class="vk-brand-section" href="Dashboard.php">
-                <img alt="VOSTOKPRIBOR Official Mark" class="brand-logo-img" style="height: 30px; width: 30px; object-fit: contain;" src="assets/logo.svg" />
-                <div style="display: flex; flex-direction: column;">
-                    <div style="display: flex; align-items: center; gap: 8px;">
-                        <span style="font-family: var(--font-heading); font-weight: 700; font-size: 15px; letter-spacing: -0.02em;">VOSTOKPRIBOR</span>
+                <img alt="VOSTOKPRIBOR Official Mark" class="brand-logo-img dev-logo-img" src="assets/logo.svg" />
+                <div class="dev-flex-col" >
+                    <div class="dev-flex-center-gap-8" >
+                        <span class="dev-font-family-var-font-980b" >VOSTOKPRIBOR</span>
                         <span class="vk-system-badge">SYS-10 // DEV-PORTAL</span>
                     </div>
-                    <span style="font-family: var(--font-mono); font-size: 10px; color: #94A3B8;">ALMATY CENTRAL • EST. 1968 • API GATEWAY v4.12.0</span>
+                    <span class="dev-font-family-var-font-54ae" >ALMATY CENTRAL • EST. 1968 • API GATEWAY v4.12.0</span>
                 </div>
             </a>
-            <div style="display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.06); padding: 4px 12px; border-radius: var(--radius-sm); border: 1px solid rgba(255,255,255,0.1);">
-                <span class="material-symbols-outlined text-[14px]" style="color: var(--vk-sys-accent);">how_to_reg</span>
-                <span style="font-family: var(--font-mono); font-size: 11px; color: #E2E8F0;">ONBOARDING: <strong>PARTNER ENCLAVE CLEARANCE</strong></span>
+            <div class="dev-display-flex-align-items-bc9f" >
+                <span class="material-symbols-outlined text-[14px] dev-color-accent">how_to_reg</span>
+                <span class="dev-font-family-var-font-eb0b" >ONBOARDING: <strong>PARTNER ENCLAVE CLEARANCE</strong></span>
             </div>
         </div>
 
-        <div style="display: flex; align-items: center; gap: 16px;">
-            <div style="position: relative; width: 280px;">
-                <span class="material-symbols-outlined text-[16px]" style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: #64748B;">search</span>
+        <div class="dev-flex-center-gap-16" >
+            <div class="dev-search-box-wrap" >
+                <span class="material-symbols-outlined text-[16px] dev-position-absolute-left-10px-d4a8">search</span>
                 <input class="search-trigger-input" type="text" placeholder="Search guides, forms (Ctrl + K)" readonly
-                    style="width: 100%; height: 32px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: var(--radius-sm); padding-left: 32px; padding-right: 12px; font-family: var(--font-mono); font-size: 11px; color: #ffffff; cursor: pointer;" />
+                     />
             </div>
-            <div style="display: flex; align-items: center; gap: 6px; font-family: var(--font-mono); font-size: 11px; color: #94A3B8; background: rgba(0,0,0,0.25); padding: 4px 10px; border-radius: var(--radius-sm);">
-                <span class="material-symbols-outlined text-[14px]" style="color: var(--vk-secondary);">schedule</span>
+            <div class="dev-display-flex-align-items-9eca" >
+                <span class="material-symbols-outlined text-[14px] dev-color-secondary">schedule</span>
                 <span class="station-live-clock">17:28:00 UTC+6</span>
             </div>
-            <div style="display: flex; align-items: center; gap: 10px; padding-left: 12px; border-left: 1px solid rgba(255,255,255,0.15);">
-                <div style="text-align: right;">
-                    <div style="font-size: 12px; font-weight: 600; color: #ffffff;">Jonas Richter</div>
-                    <div style="font-family: var(--font-mono); font-size: 10px; color: var(--vk-sys-accent);">EMP-1020 • Lead Dev</div>
+            <div class="dev-display-flex-align-items-20f3" >
+                <div class="dev-text-right" >
+                    <div class="dev-font-size-12px-font-2ab2" >Jonas Richter</div>
+                    <div class="dev-font-family-var-font-b636" >EMP-1020 • Lead Dev</div>
                 </div>
-                <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--vk-primary); display: flex; align-items: center; justify-content: center; border: 1px solid var(--vk-sys-accent);">
-                    <span class="material-symbols-outlined text-[18px]" style="color: #ffffff;">person</span>
+                <div class="dev-width-32px-height-32px-0eaf" >
+                    <span class="material-symbols-outlined text-[18px] dev-text-white">person</span>
                 </div>
             </div>
-        
-<!-- Top Bar Sign Out -->
-<a href="../api/logout.php?system=Developer&redirect=../Developer/login.php" class="top-signout-btn" title="Sign Out of Developer" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" style="display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:4px;background:rgba(178,58,50,0.2);border:1px solid rgba(178,58,50,0.5);color:#FF8080;font-size:12px;font-weight:600;text-decoration:none;cursor:pointer;margin-left:8px;vertical-align:middle;transition:all 0.2s;" onmouseover="this.style.background='rgba(178,58,50,0.4)';this.style.color='#FFFFFF'" onmouseout="this.style.background='rgba(178,58,50,0.2)';this.style.color='#FF8080'"><span class="material-symbols-outlined" style="font-size:15px;line-height:1;">logout</span><span>Sign Out</span></a>
-</div>
+
+            <!-- Top Bar Sign Out -->
+            <a href="../api/logout.php?system=Developer&redirect=../Developer/login.php" class="top-signout-btn" title="Sign Out of Developer" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" ><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
+        </div>
     </header>
 
     <!-- LEFT SIDEBAR -->
@@ -63,132 +65,132 @@ requireAuth('DEV');
         <div class="vk-sidebar-nav">
             <div class="vk-sidebar-header">Core Documentation</div>
             <a class="vk-nav-item" href="Dashboard.php">
-                <div style="display: flex; align-items: center; gap: 10px;">
+                <div class="dev-flex-center-gap-10" >
                     <span class="material-symbols-outlined text-[18px]">menu_book</span>
                     <span>API Reference</span>
                 </div>
-                <span class="vk-tag" style="font-size: 10px;">v4.1</span>
+                <span class="vk-tag dev-text-10">v4.1</span>
             </a>
             <a class="vk-nav-item" href="guides.php">
-                <div style="display: flex; align-items: center; gap: 10px;">
+                <div class="dev-flex-center-gap-10" >
                     <span class="material-symbols-outlined text-[18px]">integration_instructions</span>
                     <span>Integration Guides</span>
                 </div>
-                <span class="vk-tag vk-tag-internal" style="font-size: 10px;">DOC-2026</span>
+                <span class="vk-tag vk-tag-internal dev-text-10">DOC-2026</span>
             </a>
 
-            <div class="vk-sidebar-header" style="margin-top: 20px;">Developer Tools</div>
+            <div class="vk-sidebar-header dev-margin-top-20px-194b">Developer Tools</div>
             <a class="vk-nav-item" href="credentials.php">
-                <div style="display: flex; align-items: center; gap: 10px;">
+                <div class="dev-flex-center-gap-10" >
                     <span class="material-symbols-outlined text-[18px]">key</span>
                     <span>API Credentials</span>
                 </div>
             </a>
             <a class="vk-nav-item" href="sandbox.php">
-                <div style="display: flex; align-items: center; gap: 10px;">
+                <div class="dev-flex-center-gap-10" >
                     <span class="material-symbols-outlined text-[18px]">terminal</span>
                     <span>Interactive Sandbox</span>
                 </div>
             </a>
             <a class="vk-nav-item" href="metrics.php">
-                <div style="display: flex; align-items: center; gap: 10px;">
+                <div class="dev-flex-center-gap-10" >
                     <span class="material-symbols-outlined text-[18px]">monitoring</span>
                     <span>Usage &amp; Telemetry</span>
                 </div>
             </a>
             <a class="vk-nav-item active" href="partner-registration.php">
-                <div style="display: flex; align-items: center; gap: 10px;">
+                <div class="dev-flex-center-gap-10" >
                     <span class="material-symbols-outlined text-[18px]">how_to_reg</span>
                     <span>Partner Registration</span>
                 </div>
             </a>
 
-                        <div class="vk-sidebar-header" style="margin-top: 16px;">Unified Ecosystem</div>
+            <div class="vk-sidebar-header dev-mt-16">Unified Ecosystem</div>
             <a class="vk-nav-item" href="../VOSTOKPRIBOR Corporate Web Platform/index.php">
-                <div style="display: flex; align-items: center; gap: 10px;">
-                    <span class="material-symbols-outlined text-[18px]" style="color: #1B3A5C;">language</span>
+                <div class="dev-flex-center-gap-10" >
+                    <span class="material-symbols-outlined text-[18px] dev-color-1b3a5c-1796">language</span>
                     <span>Corporate Platform</span>
                 </div>
-                <span class="vk-tag" style="font-size: 9px; background: rgba(27,58,92,0.1); color: #1B3A5C; border: 1px solid #1B3A5C;">SYS-01</span>
+                <span class="vk-tag dev-font-size-9px-background-21b8">SYS-01</span>
             </a>
             <a class="vk-nav-item" href="../Employee Intranet/index.php">
-                <div style="display: flex; align-items: center; gap: 10px;">
-                    <span class="material-symbols-outlined text-[18px]" style="color: #5C7290;">badge</span>
+                <div class="dev-flex-center-gap-10" >
+                    <span class="material-symbols-outlined text-[18px] dev-color-5c7290-b50c">badge</span>
                     <span>Employee Intranet</span>
                 </div>
-                <span class="vk-tag" style="font-size: 9px; background: rgba(92,114,144,0.1); color: #5C7290; border: 1px solid #5C7290;">SYS-04</span>
+                <span class="vk-tag dev-font-size-9px-background-cfa1">SYS-04</span>
             </a>
             <a class="vk-nav-item" href="../File Center/index.php">
-                <div style="display: flex; align-items: center; gap: 10px;">
-                    <span class="material-symbols-outlined text-[18px]" style="color: #5A6470;">folder_zip</span>
+                <div class="dev-flex-center-gap-10" >
+                    <span class="material-symbols-outlined text-[18px] dev-color-5a6470-9f56">folder_zip</span>
                     <span>File Center</span>
                 </div>
-                <span class="vk-tag" style="font-size: 9px; background: rgba(90,100,112,0.1); color: #5A6470; border: 1px solid #5A6470;">SYS-09</span>
+                <span class="vk-tag dev-font-size-9px-background-7efe">SYS-09</span>
             </a>
             <a class="vk-nav-item" href="../Admin & Governance Portal/index.php">
-                <div style="display: flex; align-items: center; gap: 10px;">
-                    <span class="material-symbols-outlined text-[18px]" style="color: var(--vk-alert);">shield</span>
+                <div class="dev-flex-center-gap-10" >
+                    <span class="material-symbols-outlined text-[18px] dev-color-alert">shield</span>
                     <span>Admin &amp; Governance</span>
                 </div>
-                <span class="vk-tag vk-tag-confidential" style="font-size: 10px;">SYS-11</span>
+                <span class="vk-tag vk-tag-confidential dev-text-10">SYS-11</span>
             </a>
         </div>
 
-        <div style="padding: 16px; border-top: 1px solid var(--vk-neutral-200); background: #ffffff;">
-            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+        <div class="dev-padding-16px-border-top-d16d" >
+            <div class="dev-display-flex-align-items-81c3" >
                 <span class="vk-status-indicator online"></span>
-                <span style="font-family: var(--font-mono); font-size: 11px; font-weight: 600; color: var(--vk-neutral-900);">REGISTRATION ENCLAVE</span>
+                <span class="dev-font-family-var-font-1ab9" >REGISTRATION ENCLAVE</span>
             </div>
-            <div style="font-family: var(--font-mono); font-size: 11px; color: var(--vk-neutral-600);">Auto-Vetting: Active (Level 2)</div>
-            <div style="font-family: var(--font-mono); font-size: 10px; color: var(--vk-neutral-600); margin-top: 4px;">Approval SLA: &lt; 24 Hours</div>
+            <div class="dev-mono-muted-11" >Auto-Vetting: Active (Level 2)</div>
+            <div class="dev-font-family-var-font-940f" >Approval SLA: &lt; 24 Hours</div>
         </div>
-    
-            <!-- Log Out -->
-            
-      </aside>
+
+        <!-- Log Out -->
+
+    </aside>
 
     <!-- MAIN CONTENT AREA -->
     <main class="vk-main-layout">
         <div class="reg-form-container">
             <!-- HEADER BLOCK -->
-            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--vk-neutral-200);">
+            <div class="dev-display-flex-justify-content-f610" >
                 <div>
-                    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 6px;">
+                    <div class="dev-display-flex-align-items-9bb7" >
                         <span class="vk-tag vk-tag-internal">CLASSIFICATION: INTERNAL // #3E7CB1</span>
-                        <span style="font-family: var(--font-mono); font-size: 12px; color: var(--vk-neutral-600);">FORM: PARTNER-ONBOARD-v2.4</span>
+                        <span class="dev-font-family-var-font-133f" >FORM: PARTNER-ONBOARD-v2.4</span>
                     </div>
-                    <h1 style="font-size: 26px; font-weight: 700; color: var(--vk-primary); margin: 0; display: flex; align-items: center; gap: 10px;">
-                        <span class="material-symbols-outlined" style="font-size: 28px; color: var(--vk-sys-accent);">how_to_reg</span>
+                    <h1 class="dev-font-size-26px-font-5041" >
+                        <span class="material-symbols-outlined dev-font-size-28px-color-a4d3">how_to_reg</span>
                         Enterprise Partner &amp; Client Onboarding
                     </h1>
-                    <p style="color: var(--vk-neutral-600); font-size: 14px; margin: 4px 0 0 0;">
+                    <p class="dev-color-var-vk-neutral-5a07" >
                         Apply for automated SCADA gateway API access, issue client certificates, and establish telemetry bridge enclaves with VOSTOKPRIBOR.
                     </p>
                 </div>
                 <div>
-                    <button class="vk-btn vk-btn-outline" id="btn-autofill-baltnord" type="button" style="font-size: 12px;">
+                    <button class="vk-btn vk-btn-outline" id="btn-autofill-baltnord" type="button" >
                         <span class="material-symbols-outlined text-[16px]">dataset</span> Autofill BaltNord Spec (CUS-1002)
                     </button>
                 </div>
             </div>
 
             <!-- REGISTRATION FORM -->
-            <form id="partner-registration-form" class="vk-card" style="margin-bottom: 30px;">
+            <form id="partner-registration-form" class="vk-card dev-margin-bottom-30px-9550">
                 <div class="vk-card-header">
                     <div>
                         <div class="vk-card-title">Clearance Application Form</div>
                         <div class="vk-card-subtitle">All submitted credentials are encrypted via hardware HSM modules in Almaty Central Datacenter</div>
                     </div>
-                    <span class="vk-tag" style="background: rgba(14,124,134,0.1); color: var(--vk-secondary); border: 1px solid var(--vk-secondary);">
+                    <span class="vk-tag dev-background-rgba-14-124-0f4c">
                         IEC 62443 COMPLIANT
                     </span>
                 </div>
 
                 <div class="vk-card-body">
                     <!-- SECTION 1: ORGANIZATION & CONTACT -->
-                    <div style="margin-bottom: 20px;">
-                        <h3 style="font-size: 14px; font-weight: 700; color: var(--vk-primary); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.04em; display: flex; align-items: center; gap: 8px;">
-                            <span class="material-symbols-outlined text-[18px]" style="color: var(--vk-sys-accent);">corporate_fare</span>
+                    <div class="dev-mb-20" >
+                        <h3 class="dev-font-size-14px-font-5262" >
+                            <span class="material-symbols-outlined text-[18px] dev-color-accent">corporate_fare</span>
                             1. Organization &amp; Integration Contact
                         </h3>
 
@@ -232,12 +234,12 @@ requireAuth('DEV');
                         </div>
                     </div>
 
-                    <div style="border-top: 1px solid var(--vk-neutral-200); margin: 24px 0;"></div>
+                    <div class="dev-border-top-1px-solid-dae1" ></div>
 
                     <!-- SECTION 2: ACCESS SCOPE & ENCLAVE -->
-                    <div style="margin-bottom: 20px;">
-                        <h3 style="font-size: 14px; font-weight: 700; color: var(--vk-primary); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.04em; display: flex; align-items: center; gap: 8px;">
-                            <span class="material-symbols-outlined text-[18px]" style="color: var(--vk-sys-accent);">tune</span>
+                    <div class="dev-mb-20" >
+                        <h3 class="dev-font-size-14px-font-5262" >
+                            <span class="material-symbols-outlined text-[18px] dev-color-accent">tune</span>
                             2. Target Environment &amp; Requested Scopes
                         </h3>
 
@@ -258,40 +260,40 @@ requireAuth('DEV');
                             </label>
                             <div class="scope-checkbox-grid">
                                 <label class="scope-card-option selected">
-                                    <input type="checkbox" value="telemetry:read" checked style="margin-top: 2px;" />
+                                    <input class="dev-mt-2" type="checkbox" value="telemetry:read" checked  />
                                     <div>
-                                        <div style="font-weight: 600; font-size: 12px; color: var(--vk-primary);">telemetry:read</div>
-                                        <div style="font-size: 11px; color: var(--vk-neutral-600); margin-top: 2px;">
+                                        <div class="dev-font-weight-600-font-5c2a" >telemetry:read</div>
+                                        <div class="dev-font-size-11px-color-3171" >
                                             Read-only access to sensor streams (VP-1001, VP-1002, VP-1004).
                                         </div>
                                     </div>
                                 </label>
 
                                 <label class="scope-card-option selected">
-                                    <input type="checkbox" value="orders:read_write" checked style="margin-top: 2px;" />
+                                    <input class="dev-mt-2" type="checkbox" value="orders:read_write" checked  />
                                     <div>
-                                        <div style="font-weight: 600; font-size: 12px; color: var(--vk-primary);">orders:read_write</div>
-                                        <div style="font-size: 11px; color: var(--vk-neutral-600); margin-top: 2px;">
+                                        <div class="dev-font-weight-600-font-5c2a" >orders:read_write</div>
+                                        <div class="dev-font-size-11px-color-3171" >
                                             B2B spare parts orders, stock queries, and dispatch tracking.
                                         </div>
                                     </div>
                                 </label>
 
                                 <label class="scope-card-option">
-                                    <input type="checkbox" value="actuator:write" style="margin-top: 2px;" />
+                                    <input class="dev-mt-2" type="checkbox" value="actuator:write"  />
                                     <div>
-                                        <div style="font-weight: 600; font-size: 12px; color: var(--vk-alert);">actuator:write (RESTRICTED)</div>
-                                        <div style="font-size: 11px; color: var(--vk-neutral-600); margin-top: 2px;">
+                                        <div class="dev-font-weight-600-font-5ddc" >actuator:write (RESTRICTED)</div>
+                                        <div class="dev-font-size-11px-color-3171" >
                                             Send control signals to industrial valves and actuators. Requires IEC 62443 L3 clearance.
                                         </div>
                                     </div>
                                 </label>
 
                                 <label class="scope-card-option">
-                                    <input type="checkbox" value="audit:read" style="margin-top: 2px;" />
+                                    <input class="dev-mt-2" type="checkbox" value="audit:read"  />
                                     <div>
-                                        <div style="font-weight: 600; font-size: 12px; color: var(--vk-primary);">audit:read</div>
-                                        <div style="font-size: 11px; color: var(--vk-neutral-600); margin-top: 2px;">
+                                        <div class="dev-font-weight-600-font-5c2a" >audit:read</div>
+                                        <div class="dev-font-size-11px-color-3171" >
                                             Stream security audit logs and gateway transaction history.
                                         </div>
                                     </div>
@@ -300,12 +302,12 @@ requireAuth('DEV');
                         </div>
                     </div>
 
-                    <div style="border-top: 1px solid var(--vk-neutral-200); margin: 24px 0;"></div>
+                    <div class="dev-border-top-1px-solid-dae1" ></div>
 
                     <!-- SECTION 3: PUBLIC KEY / MTLS IDENTITY -->
-                    <div style="margin-bottom: 20px;">
-                        <h3 style="font-size: 14px; font-weight: 700; color: var(--vk-primary); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.04em; display: flex; align-items: center; gap: 8px;">
-                            <span class="material-symbols-outlined text-[18px]" style="color: var(--vk-sys-accent);">key</span>
+                    <div class="dev-mb-20" >
+                        <h3 class="dev-font-size-14px-font-5262" >
+                            <span class="material-symbols-outlined text-[18px] dev-color-accent">key</span>
                             3. Cryptographic Identity (Public Key / CSR)
                         </h3>
 
@@ -313,37 +315,37 @@ requireAuth('DEV');
                             <label class="form-label" for="reg-public-key">
                                 Ed25519 Public Key or PEM Certificate Request (Optional for Sandbox)
                             </label>
-                            <textarea class="form-textarea" id="reg-public-key" rows="3" placeholder="ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAA... or -----BEGIN CERTIFICATE REQUEST-----" style="font-family: var(--font-mono); font-size: 11px;"></textarea>
+                            <textarea class="form-textarea" id="reg-public-key" rows="3" placeholder="ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAA... or -----BEGIN CERTIFICATE REQUEST-----" ></textarea>
                         </div>
                     </div>
 
-                    <div style="border-top: 1px solid var(--vk-neutral-200); margin: 24px 0;"></div>
+                    <div class="dev-border-top-1px-solid-dae1" ></div>
 
                     <!-- SECTION 4: COMPLIANCE & ATTESTATION -->
-                    <div style="margin-bottom: 24px;">
-                        <h3 style="font-size: 14px; font-weight: 700; color: var(--vk-primary); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.04em; display: flex; align-items: center; gap: 8px;">
-                            <span class="material-symbols-outlined text-[18px]" style="color: var(--vk-sys-accent);">gavel</span>
+                    <div class="dev-margin-bottom-24px-dc2c" >
+                        <h3 class="dev-font-size-14px-font-5262" >
+                            <span class="material-symbols-outlined text-[18px] dev-color-accent">gavel</span>
                             4. Regulatory Attestation &amp; Security Compliance
                         </h3>
 
                         <div class="legal-box">
-                            <strong>VOSTOKPRIBOR API ACCESS &amp; TELEMETRY INTERCHANGE AGREEMENT:</strong><br/>
-                            1. Access to the VOSTOKPRIBOR Enterprise API Gateway is subject to the security provisions defined in Statutory Document DOC-2026-010 (API_Integration_Guide.pdf).<br/>
-                            2. Partner agrees to store API secret tokens and mTLS private keys exclusively within compliant HSM or encrypted key storage enclaves. Hardcoding keys in client-side code is strictly prohibited.<br/>
-                            3. Telemetry streams originating from industrial controllers (VP-1001, VP-1002, VP-1004) are subject to Kazakhstani Industrial Cybersecurity Regulations and IEC 62443-4-2 standards.<br/>
+                            <strong>VOSTOKPRIBOR API ACCESS &amp; TELEMETRY INTERCHANGE AGREEMENT:</strong><br />
+                            1. Access to the VOSTOKPRIBOR Enterprise API Gateway is subject to the security provisions defined in Statutory Document DOC-2026-010 (API_Integration_Guide.pdf).<br />
+                            2. Partner agrees to store API secret tokens and mTLS private keys exclusively within compliant HSM or encrypted key storage enclaves. Hardcoding keys in client-side code is strictly prohibited.<br />
+                            3. Telemetry streams originating from industrial controllers (VP-1001, VP-1002, VP-1004) are subject to Kazakhstani Industrial Cybersecurity Regulations and IEC 62443-4-2 standards.<br />
                             4. VOSTOKPRIBOR reserves the authority to revoke API tokens immediately upon detecting anomalous polling frequencies or unauthorized actuator command dispatches.
                         </div>
 
-                        <div style="display: flex; flex-direction: column; gap: 10px;">
-                            <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--vk-neutral-900); cursor: pointer;">
+                        <div class="dev-display-flex-flex-direction-e4b1" >
+                            <label class="dev-display-flex-align-items-ab55" >
                                 <input id="reg-compliance-doc" type="checkbox" required />
                                 <span>I have read and agree to comply with <strong>DOC-2026-010 (API Integration Guide)</strong>.</span>
                             </label>
-                            <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--vk-neutral-900); cursor: pointer;">
+                            <label class="dev-display-flex-align-items-ab55" >
                                 <input id="reg-compliance-iec" type="checkbox" required />
                                 <span>We affirm that all connecting integration bridges meet <strong>IEC 62443-4-2</strong> cybersecurity levels.</span>
                             </label>
-                            <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--vk-neutral-900); cursor: pointer;">
+                            <label class="dev-display-flex-align-items-ab55" >
                                 <input id="reg-compliance-nda" type="checkbox" required />
                                 <span>We accept the bilateral Non-Disclosure Agreement under Almaty Central Jurisdiction.</span>
                             </label>
@@ -351,7 +353,7 @@ requireAuth('DEV');
                     </div>
 
                     <!-- SUBMIT BUTTON -->
-                    <div style="display: flex; justify-content: flex-end; gap: 12px; align-items: center; padding-top: 16px; border-top: 1px solid var(--vk-neutral-200);">
+                    <div class="dev-display-flex-justify-content-ef47" >
                         <button class="vk-btn vk-btn-outline" type="reset">Reset Form</button>
                         <button class="vk-btn vk-btn-primary" type="submit">
                             <span class="material-symbols-outlined text-[18px]">verified_user</span>
@@ -362,10 +364,10 @@ requireAuth('DEV');
             </form>
 
             <!-- REGISTRATION SUCCESS CONTAINER (Shown on submit) -->
-            <div id="reg-success-container" class="vk-card" style="display: none; margin-bottom: 30px; border-left: 4px solid var(--vk-secondary);">
-                <div class="vk-card-header" style="background: rgba(14,124,134,0.05);">
-                    <div style="display: flex; align-items: center; gap: 12px;">
-                        <span class="material-symbols-outlined text-[28px]" style="color: var(--vk-secondary);">check_circle</span>
+            <div id="reg-success-container" class="vk-card dev-display-none-margin-bottom-366d">
+                <div class="vk-card-header dev-background-rgba-14-124-0a52">
+                    <div class="dev-display-flex-align-items-1c20" >
+                        <span class="material-symbols-outlined text-[28px] dev-color-secondary">check_circle</span>
                         <div>
                             <div class="vk-card-title">Clearance Request Successfully Enqueued</div>
                             <div class="vk-card-subtitle">Your onboarding application has been transmitted to VOSTOKPRIBOR Systems Engineering</div>
@@ -375,30 +377,30 @@ requireAuth('DEV');
                 </div>
 
                 <div class="vk-card-body">
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 20px; padding: 16px; background: var(--vk-neutral-50); border: 1px solid var(--vk-neutral-200); border-radius: var(--radius-sm);">
+                    <div class="dev-display-grid-grid-template-17e2" >
                         <div>
-                            <div style="font-size: 11px; font-family: var(--font-mono); color: var(--vk-neutral-600);">TICKET ID</div>
-                            <div id="disp-reg-ticket" style="font-family: var(--font-mono); font-weight: 700; font-size: 14px; color: var(--vk-primary); margin-top: 2px;">ENCLAVE-REQ-981244</div>
+                            <div class="dev-font-size-11px-font-b2cd" >TICKET ID</div>
+                            <div class="dev-font-family-var-font-cf89" id="disp-reg-ticket" >ENCLAVE-REQ-981244</div>
                         </div>
                         <div>
-                            <div style="font-size: 11px; font-family: var(--font-mono); color: var(--vk-neutral-600);">ORGANIZATION</div>
-                            <div id="disp-reg-company" style="font-weight: 600; font-size: 13px; color: var(--vk-neutral-900); margin-top: 2px;">BaltNord Process Systems</div>
+                            <div class="dev-font-size-11px-font-b2cd" >ORGANIZATION</div>
+                            <div class="dev-font-weight-600-font-d257" id="disp-reg-company" >BaltNord Process Systems</div>
                         </div>
                         <div>
-                            <div style="font-size: 11px; font-family: var(--font-mono); color: var(--vk-neutral-600);">CONTACT</div>
-                            <div id="disp-reg-contact" style="font-size: 13px; color: var(--vk-neutral-900); margin-top: 2px;">Kristaps Ozols</div>
+                            <div class="dev-font-size-11px-font-b2cd" >CONTACT</div>
+                            <div class="dev-font-size-13px-color-fb5d" id="disp-reg-contact" >Kristaps Ozols</div>
                         </div>
                         <div>
-                            <div style="font-size: 11px; font-family: var(--font-mono); color: var(--vk-neutral-600);">TARGET ENCLAVE</div>
-                            <div id="disp-reg-env" style="font-family: var(--font-mono); font-weight: 600; font-size: 13px; color: var(--vk-sys-accent); margin-top: 2px;">SANDBOX</div>
+                            <div class="dev-font-size-11px-font-b2cd" >TARGET ENCLAVE</div>
+                            <div class="dev-font-family-var-font-b2cb" id="disp-reg-env" >SANDBOX</div>
                         </div>
                     </div>
 
-                    <p style="font-size: 13px; color: var(--vk-neutral-600); line-height: 1.6;">
+                    <p class="dev-font-size-13px-color-7e03" >
                         A security engineer from the Developer &amp; API Portal team (Lead: <strong>Jonas Richter EMP-1020</strong>; Integration: <strong>Dana Yermak EMP-1017</strong>) will inspect your certificate request and provision the initial Sandbox API credentials. You will receive an automated dispatch notification upon clearance.
                     </p>
 
-                    <div style="display: flex; gap: 12px; margin-top: 20px;">
+                    <div class="dev-display-flex-gap-12px-4896" >
                         <a class="vk-btn vk-btn-primary" href="credentials.php">
                             <span class="material-symbols-outlined text-[16px]">key</span> Go to API Credentials Vault
                         </a>
@@ -415,49 +417,49 @@ requireAuth('DEV');
     <footer class="vk-footer">
         <div class="vk-footer-grid">
             <div>
-                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
-                    <span style="font-weight: 700; font-size: 14px; color: #ffffff; letter-spacing: 0.04em;">VOSTOKPRIBOR</span>
-                    <span class="vk-tag" style="background: rgba(30,143,166,0.2); color: var(--vk-sys-accent); border: 1px solid var(--vk-sys-accent); font-size: 10px;">SYSTEM 10</span>
+                <div class="dev-display-flex-align-items-6751" >
+                    <span class="dev-font-weight-700-font-230a" >VOSTOKPRIBOR</span>
+                    <span class="vk-tag dev-background-rgba-30-143-5c91">SYSTEM 10</span>
                 </div>
-                <p style="font-size: 12px; line-height: 1.6; margin: 0 0 12px 0; color: #94A3B8;">
+                <p class="dev-font-size-12px-line-7c36" >
                     Industrial equipment, automation, and logistics systems manufacturer. Established in 1968 in Almaty, Kazakhstan. Developer Platform &amp; API Enclave Gateway.
                 </p>
-                <div style="font-family: var(--font-mono); font-size: 11px; color: #64748B;">
+                <div class="dev-font-family-var-font-a82b" >
                     FQDN: developer.vostokpribor.local • Node IP: 10.240.0.12
                 </div>
             </div>
 
             <div>
-                <div style="font-family: var(--font-mono); font-size: 11px; text-transform: uppercase; color: #94A3B8; margin-bottom: 8px; letter-spacing: 0.05em;">Developer Resources</div>
-                <div style="display: flex; flex-direction: column; gap: 6px; font-size: 12px;">
-                    <a href="Dashboard.php" style="color: #CBD5E1; text-decoration: none;">API Reference (OpenAPI 3.1)</a>
-                    <a href="guides.php" style="color: #CBD5E1; text-decoration: none;">Integration Guide (DOC-2026-010)</a>
-                    <a href="credentials.php" style="color: #CBD5E1; text-decoration: none;">Partner Key Enclave</a>
-                    <a href="sandbox.php" style="color: #CBD5E1; text-decoration: none;">Interactive Dispatch Console</a>
+                <div class="dev-font-family-var-font-7870" >Developer Resources</div>
+                <div class="dev-display-flex-flex-direction-e6a0" >
+                    <a class="dev-link-slate-300" href="Dashboard.php" >API Reference (OpenAPI 3.1)</a>
+                    <a class="dev-link-slate-300" href="guides.php" >Integration Guide (DOC-2026-010)</a>
+                    <a class="dev-link-slate-300" href="credentials.php" >Partner Key Enclave</a>
+                    <a class="dev-link-slate-300" href="sandbox.php" >Interactive Dispatch Console</a>
                 </div>
             </div>
 
             <div>
-                <div style="font-family: var(--font-mono); font-size: 11px; text-transform: uppercase; color: #94A3B8; margin-bottom: 8px; letter-spacing: 0.05em;">Security &amp; Compliance</div>
-                <div style="display: flex; flex-direction: column; gap: 6px; font-size: 12px;">
-                    <span style="color: #94A3B8;">IEC 62443-4-2 Industrial Security</span>
-                    <span style="color: #94A3B8;">ISO 27001 Certified Gateway</span>
-                    <span style="color: #94A3B8;">mTLS Ed25519 Partner Clearance</span>
-                    <a href="../Admin & Governance Portal/index.php" style="color: var(--vk-alert); text-decoration: none;">Admin Governance Enclave</a>
+                <div class="dev-font-family-var-font-7870" >Security &amp; Compliance</div>
+                <div class="dev-display-flex-flex-direction-e6a0" >
+                    <span class="dev-text-slate-400" >IEC 62443-4-2 Industrial Security</span>
+                    <span class="dev-text-slate-400" >ISO 27001 Certified Gateway</span>
+                    <span class="dev-text-slate-400" >mTLS Ed25519 Partner Clearance</span>
+                    <a class="dev-color-var-vk-alert-7bac" href="../Admin & Governance Portal/index.php" >Admin Governance Enclave</a>
                 </div>
             </div>
 
             <div>
-                <div style="font-family: var(--font-mono); font-size: 11px; text-transform: uppercase; color: #94A3B8; margin-bottom: 8px; letter-spacing: 0.05em;">Engineering Contacts</div>
-                <div style="font-size: 12px; line-height: 1.6; color: #94A3B8;">
+                <div class="dev-font-family-var-font-7870" >Engineering Contacts</div>
+                <div class="dev-font-size-12px-line-049d" >
                     <div><strong>Dana Yermak (EMP-1017)</strong></div>
-                    <div style="font-family: var(--font-mono); font-size: 11px; color: var(--vk-sys-accent);">dana.yermak@vostokpribor.local</div>
-                    <div style="margin-top: 6px;"><strong>Jonas Richter (EMP-1020)</strong></div>
-                    <div style="font-family: var(--font-mono); font-size: 11px; color: var(--vk-sys-accent);">jonas.richter@vostokpribor.local</div>
+                    <div class="dev-font-family-var-font-d009" >dana.yermak@vostokpribor.local</div>
+                    <div class="dev-margin-top-6px-57a7" ><strong>Jonas Richter (EMP-1020)</strong></div>
+                    <div class="dev-font-family-var-font-d009" >jonas.richter@vostokpribor.local</div>
                 </div>
             </div>
         </div>
-        <div style="max-width: 1400px; margin: 20px auto 0 auto; padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.08); font-family: var(--font-mono); font-size: 11px; color: #64748B; display: flex; justify-content: space-between;">
+        <div class="dev-max-width-1400px-margin-79e2" >
             <span>&copy; 1968&ndash;2026 VOSTOKPRIBOR. All industrial and telemetric protocols reserved.</span>
             <span>DATA SENSITIVITY: INTERNAL (RESTRICTED TO PARTNER SYSTEMS)</span>
         </div>
@@ -467,7 +469,7 @@ requireAuth('DEV');
     <div class="cmd-palette-backdrop" id="cmd-palette-modal">
         <div class="cmd-palette-box">
             <div class="cmd-palette-header">
-                <span class="material-symbols-outlined text-[20px]" style="color: var(--vk-sys-accent);">terminal</span>
+                <span class="material-symbols-outlined text-[20px] dev-color-accent">terminal</span>
                 <input class="cmd-palette-input" id="cmd-palette-input" type="text" placeholder="Type a command or jump to documentation..." />
             </div>
             <div class="cmd-palette-list" id="cmd-palette-results">
@@ -505,4 +507,5 @@ requireAuth('DEV');
     <script src="js/dev-common.js"></script>
     <script src="js/dev-registration.js"></script>
 </body>
+
 </html>

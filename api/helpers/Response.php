@@ -1,9 +1,11 @@
 <?php
+
 /**
  * VOSTOKPRIBOR Standardized API Response Helper
  * Location: api/helpers/Response.php
  */
-class Response {
+class Response
+{
     /**
      * Send standard JSON response
      * @param bool $success
@@ -12,7 +14,8 @@ class Response {
      * @param int $statusCode
      * @param array $meta
      */
-    public static function send($success, $data = null, $message = '', $statusCode = 200, $meta = []) {
+    public static function send($success, $data = null, $message = '', $statusCode = 200, $meta = [])
+    {
         http_response_code($statusCode);
         header('Content-Type: application/json; charset=utf-8');
         header('X-Content-Type-Options: nosniff');
@@ -37,11 +40,13 @@ class Response {
         exit;
     }
 
-    public static function success($data = null, $message = 'Success', $statusCode = 200, $meta = []) {
+    public static function success($data = null, $message = 'Success', $statusCode = 200, $meta = [])
+    {
         self::send(true, $data, $message, $statusCode, $meta);
     }
 
-    public static function error($message = 'Error', $statusCode = 400, $data = null) {
+    public static function error($message = 'Error', $statusCode = 400, $data = null)
+    {
         self::send(false, $data, $message, $statusCode);
     }
 }

@@ -4,129 +4,149 @@
  */
 
 (function () {
-    'use strict';
+  "use strict";
 
-    const dossierData = {
-        1: {
-            id: 'CERT-2024-HPF-0994',
-            title: 'High-Pressure Flowmeter HPF-900X Calibration Certificate',
-            badge: 'ROSTEST CERTIFIED',
-            badgeClass: 'bg-secondary-fixed text-on-secondary-fixed',
-            hash: '0x8F9A83BC902E4D2',
-            docType: 'Calibration Certificate'
-        },
-        2: {
-            id: 'DWG-7721-PND-V3',
-            title: 'Blast Furnace #5 Automation Wiring Schematic & P&ID Diagram',
-            badge: 'ACTIVE ENGINEERING SPEC',
-            badgeClass: 'bg-primary-fixed text-on-primary-fixed',
-            hash: '0x33CD71EE99A814B',
-            docType: 'AutoCAD P&ID Technical Schematic'
-        },
-        3: {
-            id: 'DOC-7721-FAT.pdf',
-            title: 'Factory Acceptance Test (FAT) Protocol - Gas Skid #4',
-            badge: 'FAT PASSED / SIGNED',
-            badgeClass: 'bg-secondary-fixed text-on-secondary-fixed',
-            hash: '0x10B45C9921DF883',
-            docType: 'Factory Acceptance Protocol'
-        },
-        4: {
-            id: 'ADDENDUM-CA-402',
-            title: 'Spare Parts Consignment Agreement Q4 2024',
-            badge: 'PENDING CLIENT SIGNATURE',
-            badgeClass: 'bg-tertiary-fixed text-on-tertiary-fixed',
-            hash: '0xEE3344BC556A102',
-            docType: 'Commercial Legal Addendum'
-        },
-        5: {
-            id: 'HSE-OP-402-REV1',
-            title: 'Optical Pyrometer Array Installation Manual & Safety Cert',
-            badge: 'COMPLIANT',
-            badgeClass: 'bg-secondary-fixed text-on-secondary-fixed',
-            hash: '0x77AF223910CC029',
-            docType: 'HSE Industrial Safety Dossier'
-        },
-        6: {
-            id: 'VP-LP-400-CAL-2024',
-            title: 'Continuous Casting Machine #3 Laser Profiler Accuracy Verification',
-            badge: 'VALID',
-            badgeClass: 'bg-secondary-fixed text-on-secondary-fixed',
-            hash: '0x992BCC184029EA1',
-            docType: 'Optical Calibration Report'
-        }
-    };
+  const dossierData = {
+    1: {
+      id: "CERT-2024-HPF-0994",
+      title: "High-Pressure Flowmeter HPF-900X Calibration Certificate",
+      badge: "ROSTEST CERTIFIED",
+      badgeClass: "bg-secondary-fixed text-on-secondary-fixed",
+      hash: "0x8F9A83BC902E4D2",
+      docType: "Calibration Certificate",
+    },
+    2: {
+      id: "DWG-7721-PND-V3",
+      title: "Blast Furnace #5 Automation Wiring Schematic & P&ID Diagram",
+      badge: "ACTIVE ENGINEERING SPEC",
+      badgeClass: "bg-primary-fixed text-on-primary-fixed",
+      hash: "0x33CD71EE99A814B",
+      docType: "AutoCAD P&ID Technical Schematic",
+    },
+    3: {
+      id: "DOC-7721-FAT.pdf",
+      title: "Factory Acceptance Test (FAT) Protocol - Gas Skid #4",
+      badge: "FAT PASSED / SIGNED",
+      badgeClass: "bg-secondary-fixed text-on-secondary-fixed",
+      hash: "0x10B45C9921DF883",
+      docType: "Factory Acceptance Protocol",
+    },
+    4: {
+      id: "ADDENDUM-CA-402",
+      title: "Spare Parts Consignment Agreement Q4 2024",
+      badge: "PENDING CLIENT SIGNATURE",
+      badgeClass: "bg-tertiary-fixed text-on-tertiary-fixed",
+      hash: "0xEE3344BC556A102",
+      docType: "Commercial Legal Addendum",
+    },
+    5: {
+      id: "HSE-OP-402-REV1",
+      title: "Optical Pyrometer Array Installation Manual & Safety Cert",
+      badge: "COMPLIANT",
+      badgeClass: "bg-secondary-fixed text-on-secondary-fixed",
+      hash: "0x77AF223910CC029",
+      docType: "HSE Industrial Safety Dossier",
+    },
+    6: {
+      id: "VP-LP-400-CAL-2024",
+      title:
+        "Continuous Casting Machine #3 Laser Profiler Accuracy Verification",
+      badge: "VALID",
+      badgeClass: "bg-secondary-fixed text-on-secondary-fixed",
+      hash: "0x992BCC184029EA1",
+      docType: "Optical Calibration Report",
+    },
+  };
 
-    let activeDocIndex = 1;
-    let currentCategory = 'all';
+  let activeDocIndex = 1;
+  let currentCategory = "all";
 
-    /**
-     * Select active document and populate inspector pane
-     */
-    window.selectDoc = function (docIndex) {
-        activeDocIndex = docIndex;
-        const item = dossierData[docIndex];
-        if (!item) return;
+  /**
+   * Select active document and populate inspector pane
+   */
+  window.selectDoc = function (docIndex) {
+    activeDocIndex = docIndex;
+    const item = dossierData[docIndex];
+    if (!item) return;
 
-        const idEl = document.getElementById('inspect-id');
-        if (idEl) idEl.textContent = item.id;
+    const idEl = document.getElementById("inspect-id");
+    if (idEl) idEl.textContent = item.id;
 
-        const titleEl = document.getElementById('inspect-title');
-        if (titleEl) titleEl.textContent = item.title;
+    const titleEl = document.getElementById("inspect-title");
+    if (titleEl) titleEl.textContent = item.title;
 
-        const badgeEl = document.getElementById('inspect-badge');
-        if (badgeEl) {
-            badgeEl.textContent = item.badge;
-            badgeEl.className = `px-2 py-0.5 rounded font-technical-tag text-technical-tag font-bold ${item.badgeClass}`;
-        }
+    const badgeEl = document.getElementById("inspect-badge");
+    if (badgeEl) {
+      badgeEl.textContent = item.badge;
+      badgeEl.className = `px-2 py-0.5 rounded font-technical-tag text-technical-tag font-bold ${item.badgeClass}`;
+    }
 
-        // Update highlighted row in UI
-        document.querySelectorAll('.doc-item').forEach(row => {
-            row.classList.remove('ring-1', 'ring-primary', 'bg-surface-container-high/30');
-        });
-        const targetRow = document.getElementById(`doc-row-${docIndex}`);
-        if (targetRow) {
-            targetRow.classList.add('ring-1', 'ring-primary', 'bg-surface-container-high/30');
-        }
-    };
+    // Update highlighted row in UI
+    document.querySelectorAll(".doc-item").forEach((row) => {
+      row.classList.remove(
+        "ring-1",
+        "ring-primary",
+        "bg-surface-container-high/30",
+      );
+    });
+    const targetRow = document.getElementById(`doc-row-${docIndex}`);
+    if (targetRow) {
+      targetRow.classList.add(
+        "ring-1",
+        "ring-primary",
+        "bg-surface-container-high/30",
+      );
+    }
+  };
 
-    /**
-     * Download or preview the currently selected document
-     */
-    window.downloadActiveDoc = function () {
-        const item = dossierData[activeDocIndex];
-        if (!item) return;
-        if (window.previewDocument) {
-            window.previewDocument(item.id, item.title, item.docType);
+  /**
+   * Download or preview the currently selected document
+   */
+  window.downloadActiveDoc = function () {
+    const item = dossierData[activeDocIndex];
+    if (!item) return;
+    if (window.previewDocument) {
+      window.previewDocument(item.id, item.title, item.docType);
+    } else {
+      alert(`Downloading ${item.id}: ${item.title}`);
+    }
+  };
+
+  /**
+   * Copy shareable permalink to the active document
+   */
+  window.shareDocLink = function () {
+    const item = dossierData[activeDocIndex];
+    const url = `${window.location.origin}${window.location.pathname}?doc=${activeDocIndex}`;
+    navigator.clipboard
+      .writeText(url)
+      .then(() => {
+        if (window.showToast) {
+          window.showToast(
+            "Verification Link Copied",
+            `Permalink ready for ${item.id}`,
+            "info",
+          );
         } else {
-            alert(`Downloading ${item.id}: ${item.title}`);
+          alert(`Link copied: ${url}`);
         }
-    };
+      })
+      .catch(() => {
+        if (window.showToast) {
+          window.showToast(
+            "Link Ready",
+            `Verification link ready for ${item.id}`,
+            "info",
+          );
+        }
+      });
+  };
 
-    /**
-     * Copy shareable permalink to the active document
-     */
-    window.shareDocLink = function () {
-        const item = dossierData[activeDocIndex];
-        const url = `${window.location.origin}${window.location.pathname}?doc=${activeDocIndex}`;
-        navigator.clipboard.writeText(url).then(() => {
-            if (window.showToast) {
-                window.showToast('Verification Link Copied', `Permalink ready for ${item.id}`, 'info');
-            } else {
-                alert(`Link copied: ${url}`);
-            }
-        }).catch(() => {
-            if (window.showToast) {
-                window.showToast('Link Ready', `Verification link ready for ${item.id}`, 'info');
-            }
-        });
-    };
-
-    /**
-     * Zoom high-resolution Rosstandart official holographic metrology seal
-     */
-    window.zoomSeal = function () {
-        const html = `
+  /**
+   * Zoom high-resolution Rosstandart official holographic metrology seal
+   */
+  window.zoomSeal = function () {
+    const html = `
             <div class="space-y-4 text-center">
                 <div class="p-2 bg-primary/10 rounded border border-primary/20">
                     <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDtnCICKWeo-mQgvBwmZpdtevmChXuzWhIDwStOXuwAUo9Ojn72F-k-PDQ9QfDmHmaTy3ehEIK0dv-KkM7nYXjtsoLgjR-jIfOOlaeUbP2h1GfSpD0lctAiofFyI7_loO8FZTkZ9raJ61_cCc4vew6eKpZ39WitYfcvOBsWfBfN6BnnGUCQhgF_eKECU6zV_AQDtv3oFu4TxL12wAKgZLpepR8MVcWqcTXFaC_dkcsPXDNJ1erxonZe" 
@@ -144,75 +164,81 @@
                 </div>
             </div>
         `;
-        if (window.openModal) {
-            window.openModal('Rosstandart Verification Seal (High-Resolution)', html);
-        }
-    };
+    if (window.openModal) {
+      window.openModal("Rosstandart Verification Seal (High-Resolution)", html);
+    }
+  };
 
-    /**
-     * Batch download all engineering dossiers
-     */
-    window.batchDownloadDocs = function () {
-        if (window.showToast) {
-            window.showToast('Compiling Archives', 'Bundling 54 engineering assets into encrypted archive: Severstal_Dossiers_2024.zip', 'info');
-        }
-    };
+  /**
+   * Batch download all engineering dossiers
+   */
+  window.batchDownloadDocs = function () {
+    if (window.showToast) {
+      window.showToast(
+        "Compiling Archives",
+        "Bundling 54 engineering assets into encrypted archive: Severstal_Dossiers_2024.zip",
+        "info",
+      );
+    }
+  };
 
-    /**
-     * Filter documents by category tab
-     */
-    window.filterDocCategory = function (btn, cat) {
-        currentCategory = cat;
-        document.querySelectorAll('.doc-tab-btn').forEach(b => {
-            b.className = 'doc-tab-btn px-unit-md py-1.5 rounded font-label-caps text-label-caps bg-surface-container text-on-surface-variant hover:bg-surface-container-high transition-colors whitespace-nowrap';
-        });
-        if (btn) {
-            btn.className = 'doc-tab-btn px-unit-md py-1.5 rounded font-label-caps text-label-caps bg-primary text-on-primary whitespace-nowrap shadow-sm';
-        }
-        window.filterDocTable();
-    };
+  /**
+   * Filter documents by category tab
+   */
+  window.filterDocCategory = function (btn, cat) {
+    currentCategory = cat;
+    document.querySelectorAll(".doc-tab-btn").forEach((b) => {
+      b.className =
+        "doc-tab-btn px-unit-md py-1.5 rounded font-label-caps text-label-caps bg-surface-container text-on-surface-variant hover:bg-surface-container-high transition-colors whitespace-nowrap";
+    });
+    if (btn) {
+      btn.className =
+        "doc-tab-btn px-unit-md py-1.5 rounded font-label-caps text-label-caps bg-primary text-on-primary whitespace-nowrap shadow-sm";
+    }
+    window.filterDocTable();
+  };
 
-    /**
-     * Filter documents table rows based on category, search input, facility, and equipment
-     */
-    window.filterDocTable = function () {
-        const queryInput = document.getElementById('docSearchInput');
-        const facilitySelect = document.getElementById('docFacilitySelect');
-        const equipmentSelect = document.getElementById('docEquipmentSelect');
-        const pkiSelect = document.getElementById('docPKISelect');
+  /**
+   * Filter documents table rows based on category, search input, facility, and equipment
+   */
+  window.filterDocTable = function () {
+    const queryInput = document.getElementById("docSearchInput");
+    const facilitySelect = document.getElementById("docFacilitySelect");
+    const equipmentSelect = document.getElementById("docEquipmentSelect");
+    const pkiSelect = document.getElementById("docPKISelect");
 
-        const query = (queryInput ? queryInput.value : '').toLowerCase().trim();
-        const facility = facilitySelect ? facilitySelect.value : 'all';
-        const equipment = equipmentSelect ? equipmentSelect.value : 'all';
-        const pki = pkiSelect ? pkiSelect.value : 'all';
+    const query = (queryInput ? queryInput.value : "").toLowerCase().trim();
+    const facility = facilitySelect ? facilitySelect.value : "all";
+    const equipment = equipmentSelect ? equipmentSelect.value : "all";
+    const pki = pkiSelect ? pkiSelect.value : "all";
 
-        const items = document.querySelectorAll('.doc-item');
-        items.forEach(item => {
-            const cat = item.getAttribute('data-category') || '';
-            const fac = item.getAttribute('data-facility') || '';
-            const eq = item.getAttribute('data-equipment') || '';
-            const pkiStat = item.getAttribute('data-pki') || '';
-            const text = item.innerText.toLowerCase();
+    const items = document.querySelectorAll(".doc-item");
+    items.forEach((item) => {
+      const cat = item.getAttribute("data-category") || "";
+      const fac = item.getAttribute("data-facility") || "";
+      const eq = item.getAttribute("data-equipment") || "";
+      const pkiStat = item.getAttribute("data-pki") || "";
+      const text = item.innerText.toLowerCase();
 
-            const matchesCat = currentCategory === 'all' || cat === currentCategory;
-            const matchesFac = facility === 'all' || fac.includes(facility);
-            const matchesEq = equipment === 'all' || eq.includes(equipment);
-            const matchesPki = pki === 'all' || pkiStat === pki;
-            const matchesQuery = !query || text.includes(query);
+      const matchesCat = currentCategory === "all" || cat === currentCategory;
+      const matchesFac = facility === "all" || fac.includes(facility);
+      const matchesEq = equipment === "all" || eq.includes(equipment);
+      const matchesPki = pki === "all" || pkiStat === pki;
+      const matchesQuery = !query || text.includes(query);
 
-            if (matchesCat && matchesFac && matchesEq && matchesPki && matchesQuery) {
-                item.style.display = '';
-            } else {
-                item.style.display = 'none';
-            }
-        });
-    };
+      if (matchesCat && matchesFac && matchesEq && matchesPki && matchesQuery) {
+        item.style.display = "";
+      } else {
+        item.style.display = "none";
+      }
+    });
+  };
 
-    /**
-     * Verify cryptographic SHA-256 hash
-     */
-    window.verifyHash = function (hash) {
-        const html = `
+  /**
+   * Verify cryptographic SHA-256 hash
+   */
+  window.verifyHash = function (hash) {
+    const html = `
             <div class="space-y-3 text-left">
                 <div class="p-3 bg-secondary-fixed/30 rounded border border-secondary-fixed flex items-center gap-3">
                     <span class="material-symbols-outlined text-secondary text-2xl">verified_user</span>
@@ -234,18 +260,18 @@
                 </div>
             </div>
         `;
-        if (window.openModal) {
-            window.openModal('Cryptographic Audit Verification', html);
-        } else {
-            alert('Verified hash: ' + hash);
-        }
-    };
+    if (window.openModal) {
+      window.openModal("Cryptographic Audit Verification", html);
+    } else {
+      alert("Verified hash: " + hash);
+    }
+  };
 
-    /**
-     * Sign confidential commercial addendum
-     */
-    window.signConfidentialAddendum = function (id) {
-        const html = `
+  /**
+   * Sign confidential commercial addendum
+   */
+  window.signConfidentialAddendum = function (id) {
+    const html = `
             <div class="space-y-4 text-left">
                 <div class="p-3 bg-tertiary-fixed/30 rounded border border-tertiary-fixed/50">
                     <div class="font-bold text-on-surface text-sm">Counter-Signature Required: ${id}</div>
@@ -279,37 +305,42 @@
                 </div>
             </div>
         `;
-        if (window.openModal) {
-            window.openModal('Execute Electronic Signature', html);
-        }
-    };
+    if (window.openModal) {
+      window.openModal("Execute Electronic Signature", html);
+    }
+  };
 
-    /**
-     * Complete simulated addendum signing
-     */
-    window.completeAddendumSigning = function (id) {
-        const modal = document.getElementById('portal-dynamic-modal');
-        if (modal) modal.remove();
+  /**
+   * Complete simulated addendum signing
+   */
+  window.completeAddendumSigning = function (id) {
+    const modal = document.getElementById("portal-dynamic-modal");
+    if (modal) modal.remove();
 
-        if (window.showToast) {
-            window.showToast('Signature Attached', `Addendum ${id} electronically sealed and counter-signed with Crypto-Pro EDS`, 'success');
-        }
+    if (window.showToast) {
+      window.showToast(
+        "Signature Attached",
+        `Addendum ${id} electronically sealed and counter-signed with Crypto-Pro EDS`,
+        "success",
+      );
+    }
 
-        const r4 = document.getElementById('doc-row-4');
-        if (r4) {
-            const badge = r4.querySelector('div:nth-child(2) span');
-            if (badge) {
-                badge.className = 'inline-flex items-center px-1.5 py-0.5 rounded bg-secondary-fixed text-on-secondary-fixed font-technical-tag text-technical-tag font-bold w-fit';
-                badge.textContent = 'SIGNED & COUNTER-VALIDATED';
-            }
-        }
-    };
+    const r4 = document.getElementById("doc-row-4");
+    if (r4) {
+      const badge = r4.querySelector("div:nth-child(2) span");
+      if (badge) {
+        badge.className =
+          "inline-flex items-center px-1.5 py-0.5 rounded bg-secondary-fixed text-on-secondary-fixed font-technical-tag text-technical-tag font-bold w-fit";
+        badge.textContent = "SIGNED & COUNTER-VALIDATED";
+      }
+    }
+  };
 
-    /**
-     * Display Technical Passport Upload modal with SHA-256 calculation
-     */
-    window.showUploadPassportModal = function () {
-        const html = `
+  /**
+   * Display Technical Passport Upload modal with SHA-256 calculation
+   */
+  window.showUploadPassportModal = function () {
+    const html = `
             <div class="space-y-4 text-left">
                 <div class="border-2 border-dashed border-outline-variant/50 rounded-lg p-6 flex flex-col items-center justify-center bg-surface-container cursor-pointer hover:bg-surface-container-high transition-colors text-center"
                     onclick="document.getElementById('passportFileInput').click()">
@@ -364,63 +395,78 @@
                 </div>
             </div>
         `;
-        if (window.openModal) {
-            window.openModal('Upload Engineering Technical Passport', html);
+    if (window.openModal) {
+      window.openModal("Upload Engineering Technical Passport", html);
+    }
+  };
+
+  /**
+   * File selection change handler
+   */
+  window.handlePassportFileSelected = function (input) {
+    if (input.files && input.files[0]) {
+      const f = input.files[0];
+      const feedback = document.getElementById("fileSelectedFeedback");
+      const nameDisp = document.getElementById("fileNameDisplay");
+      const digestDisp = document.getElementById("computedDigest");
+      if (feedback && nameDisp && digestDisp) {
+        feedback.classList.remove("hidden");
+        nameDisp.textContent = `${f.name} (${(f.size / (1024 * 1024)).toFixed(2)} MB)`;
+        digestDisp.textContent =
+          "0x" +
+          Array.from(crypto.getRandomValues(new Uint8Array(8)))
+            .map((b) => b.toString(16).padStart(2, "0"))
+            .join("")
+            .toUpperCase();
+      }
+    }
+  };
+
+  /**
+   * Confirm simulated passport ingestion
+   */
+  window.submitPassportUpload = function () {
+    const modal = document.getElementById("portal-dynamic-modal");
+    if (modal) modal.remove();
+
+    const model =
+      document.getElementById("uploadModelInput")?.value || "Technical Asset";
+    if (window.showToast) {
+      window.showToast(
+        "Dossier Ingested",
+        `Passport for ${model} ingested and SHA-256 sealed in Rosstandart gateway`,
+        "success",
+      );
+    }
+  };
+
+  /**
+   * Parse query parameters on load
+   */
+  document.addEventListener("DOMContentLoaded", () => {
+    const params = new URLSearchParams(window.location.search);
+    const docParam = params.get("doc");
+    if (docParam) {
+      const num = parseInt(docParam, 10);
+      if (!isNaN(num) && dossierData[num]) {
+        window.selectDoc(num);
+      } else {
+        for (const key in dossierData) {
+          if (
+            dossierData[key].id
+              .toLowerCase()
+              .includes(docParam.toLowerCase()) ||
+            dossierData[key].title
+              .toLowerCase()
+              .includes(docParam.toLowerCase())
+          ) {
+            window.selectDoc(parseInt(key, 10));
+            break;
+          }
         }
-    };
-
-    /**
-     * File selection change handler
-     */
-    window.handlePassportFileSelected = function (input) {
-        if (input.files && input.files[0]) {
-            const f = input.files[0];
-            const feedback = document.getElementById('fileSelectedFeedback');
-            const nameDisp = document.getElementById('fileNameDisplay');
-            const digestDisp = document.getElementById('computedDigest');
-            if (feedback && nameDisp && digestDisp) {
-                feedback.classList.remove('hidden');
-                nameDisp.textContent = `${f.name} (${(f.size / (1024 * 1024)).toFixed(2)} MB)`;
-                digestDisp.textContent = '0x' + Array.from(crypto.getRandomValues(new Uint8Array(8))).map(b => b.toString(16).padStart(2, '0')).join('').toUpperCase();
-            }
-        }
-    };
-
-    /**
-     * Confirm simulated passport ingestion
-     */
-    window.submitPassportUpload = function () {
-        const modal = document.getElementById('portal-dynamic-modal');
-        if (modal) modal.remove();
-
-        const model = document.getElementById('uploadModelInput')?.value || 'Technical Asset';
-        if (window.showToast) {
-            window.showToast('Dossier Ingested', `Passport for ${model} ingested and SHA-256 sealed in Rosstandart gateway`, 'success');
-        }
-    };
-
-    /**
-     * Parse query parameters on load
-     */
-    document.addEventListener('DOMContentLoaded', () => {
-        const params = new URLSearchParams(window.location.search);
-        const docParam = params.get('doc');
-        if (docParam) {
-            const num = parseInt(docParam, 10);
-            if (!isNaN(num) && dossierData[num]) {
-                window.selectDoc(num);
-            } else {
-                for (const key in dossierData) {
-                    if (dossierData[key].id.toLowerCase().includes(docParam.toLowerCase()) || 
-                        dossierData[key].title.toLowerCase().includes(docParam.toLowerCase())) {
-                        window.selectDoc(parseInt(key, 10));
-                        break;
-                    }
-                }
-            }
-        } else if (params.get('upload') === 'true') {
-            setTimeout(window.showUploadPassportModal, 400);
-        }
-    });
-
+      }
+    } else if (params.get("upload") === "true") {
+      setTimeout(window.showUploadPassportModal, 400);
+    }
+  });
 })();

@@ -7,6 +7,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
@@ -15,49 +16,50 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
     <link rel="stylesheet" href="css/fc-common.css" />
     <link rel="stylesheet" href="css/fc-repo.css" />
 </head>
+
 <body>
     <!-- TOP NAVIGATION BAR (System 09 Graphite 4px Accent Stripe) -->
     <header class="vk-top-navbar">
-        <div style="display: flex; align-items: center; gap: 24px;">
+        <div class="fc-flex-center-gap-24" >
             <a class="vk-brand-section" href="Dashboard.php">
-                <img alt="VOSTOKPRIBOR Official Mark" class="brand-logo-img" style="height: 30px; width: 30px; object-fit: contain;" src="assets/logo.svg" />
-                <div style="display: flex; flex-direction: column;">
-                    <div style="display: flex; align-items: center; gap: 8px;">
-                        <span style="font-family: var(--font-heading); font-weight: 700; font-size: 15px; letter-spacing: -0.02em;">VOSTOKPRIBOR</span>
+                <img alt="VOSTOKPRIBOR Official Mark" class="brand-logo-img fc-logo-img" src="assets/logo.svg" />
+                <div class="fc-flex-col" >
+                    <div class="fc-flex-center-gap-8" >
+                        <span class="fc-font-family-var-font-980b" >VOSTOKPRIBOR</span>
                         <span class="vk-system-badge">SYS-09 // FILE-CENTER</span>
                     </div>
-                    <span style="font-family: var(--font-mono); font-size: 10px; color: #94A3B8;">ALMATY CENTRAL • EST. 1968 • DOCUMENT VAULT v3.8.2</span>
+                    <span class="fc-font-family-var-font-54ae" >ALMATY CENTRAL • EST. 1968 • DOCUMENT VAULT v3.8.2</span>
                 </div>
             </a>
-            <div style="display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.06); padding: 4px 12px; border-radius: var(--radius-sm); border: 1px solid rgba(255,255,255,0.1);">
-                <span class="material-symbols-outlined text-[14px]" style="color: var(--vk-sys-accent);">folder_special</span>
-                <span style="font-family: var(--font-mono); font-size: 11px; color: #E2E8F0;">VAULT: <strong>CENTRAL DOCUMENT REPOSITORY</strong></span>
+            <div class="fc-display-flex-align-items-bc9f" >
+                <span class="material-symbols-outlined text-[14px] fc-color-accent">folder_special</span>
+                <span class="fc-font-family-var-font-eb0b" >VAULT: <strong>CENTRAL DOCUMENT REPOSITORY</strong></span>
             </div>
         </div>
 
-        <div style="display: flex; align-items: center; gap: 16px;">
+        <div class="fc-flex-center-gap-16" >
             <button class="search-trigger-btn" type="button">
                 <span class="material-symbols-outlined text-[16px]">search</span>
                 <span>Search documents, DOC-IDs...</span>
                 <span class="kbd-shortcut">Ctrl K</span>
             </button>
-            <div style="display: flex; align-items: center; gap: 6px; font-family: var(--font-mono); font-size: 11px; color: #94A3B8; background: rgba(0,0,0,0.25); padding: 4px 10px; border-radius: var(--radius-sm);">
-                <span class="material-symbols-outlined text-[14px]" style="color: var(--vk-secondary);">schedule</span>
+            <div class="fc-display-flex-align-items-9eca" >
+                <span class="material-symbols-outlined text-[14px] fc-color-secondary">schedule</span>
                 <span class="station-live-clock">17:42:00 UTC+6</span>
             </div>
-            <div style="display: flex; align-items: center; gap: 10px; padding-left: 12px; border-left: 1px solid rgba(255,255,255,0.15);">
-                <div style="text-align: right;">
-                    <div style="font-size: 12px; font-weight: 600; color: #ffffff;">Farida Iskakova</div>
-                    <div style="font-family: var(--font-mono); font-size: 10px; color: #CBD5E1;">EMP-1019 • Lead Custodian</div>
+            <div class="fc-display-flex-align-items-20f3" >
+                <div class="fc-text-right" >
+                    <div class="fc-font-size-12px-font-2ab2" >Farida Iskakova</div>
+                    <div class="fc-font-family-var-font-5c5e" >EMP-1019 • Lead Custodian</div>
                 </div>
-                <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--vk-primary); display: flex; align-items: center; justify-content: center; border: 1px solid var(--vk-sys-accent);">
-                    <span class="material-symbols-outlined text-[18px]" style="color: #ffffff;">folder_managed</span>
+                <div class="fc-width-32px-height-32px-0eaf" >
+                    <span class="material-symbols-outlined text-[18px] fc-text-white">folder_managed</span>
                 </div>
             </div>
-        
-<!-- Top Bar Sign Out -->
-<a href="../api/logout.php?system=File%20Center&redirect=../File%20Center/login.php" class="top-signout-btn" title="Sign Out of File Center" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" style="display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:4px;background:rgba(178,58,50,0.2);border:1px solid rgba(178,58,50,0.5);color:#FF8080;font-size:12px;font-weight:600;text-decoration:none;cursor:pointer;margin-left:8px;vertical-align:middle;transition:all 0.2s;" onmouseover="this.style.background='rgba(178,58,50,0.4)';this.style.color='#FFFFFF'" onmouseout="this.style.background='rgba(178,58,50,0.2)';this.style.color='#FF8080'"><span class="material-symbols-outlined" style="font-size:15px;line-height:1;">logout</span><span>Sign Out</span></a>
-</div>
+
+            <!-- Top Bar Sign Out -->
+            <a href="../api/logout.php?system=File%20Center&redirect=../File%20Center/login.php" class="top-signout-btn" title="Sign Out of File Center" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" ><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
+        </div>
     </header>
 
     <!-- LEFT SIDEBAR (Authenticated System 09) -->
@@ -65,103 +67,108 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
         <div class="vk-sidebar-nav">
             <div class="vk-sidebar-header">Document Vault</div>
             <a class="vk-nav-item active" href="Dashboard.php">
-                <div style="display: flex; align-items: center; gap: 10px;">
+                <div class="fc-flex-center-gap-10" >
                     <span class="material-symbols-outlined text-[18px]">folder_open</span>
                     <span>Document Repository</span>
                 </div>
                 <span class="nav-badge">15</span>
             </a>
             <a class="vk-nav-item" href="approvals.php">
-                <div style="display: flex; align-items: center; gap: 10px;">
+                <div class="fc-flex-center-gap-10" >
                     <span class="material-symbols-outlined text-[18px]">assignment_turned_in</span>
                     <span>Signoff &amp; Approvals</span>
                 </div>
-                <span class="vk-tag vk-tag-highly-confidential" style="font-size: 9px; padding: 1px 5px;">1 ACTION</span>
+                <span class="vk-tag vk-tag-highly-confidential fc-font-size-9px-padding-4279">1 ACTION</span>
             </a>
             <a class="vk-nav-item" href="upload.php">
-                <div style="display: flex; align-items: center; gap: 10px;">
+                <div class="fc-flex-center-gap-10" >
                     <span class="material-symbols-outlined text-[18px]">upload_file</span>
                     <span>Secure Ingestion</span>
                 </div>
             </a>
             <a class="vk-nav-item" href="retention.php">
-                <div style="display: flex; align-items: center; gap: 10px;">
+                <div class="fc-flex-center-gap-10" >
                     <span class="material-symbols-outlined text-[18px]">inventory_2</span>
                     <span>Retention &amp; Holds</span>
                 </div>
             </a>
-<a href="Integrations.php" class="sidebar-nav-item"><div class="sidebar-item-left"><span class="sidebar-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00E5FF" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></span><span style="color: #00E5FF; font-weight: 600;">System Integrations</span></div><span class="sidebar-badge" style="background: rgba(0,229,255,0.15); color: #00E5FF;">SYS06</span></a>
+            <a href="Integrations.php" class="sidebar-nav-item">
+                <div class="sidebar-item-left"><span class="sidebar-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00E5FF" stroke-width="2">
+                            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+                            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+                        </svg></span><span class="fc-color-00e5ff-font-weight-fe7a" >System Integrations</span></div><span class="sidebar-badge fc-background-rgba-0-229-2595">SYS06</span>
+            </a>
             <a class="vk-nav-item" href="audit.php">
-                <div style="display: flex; align-items: center; gap: 10px;">
+                <div class="fc-flex-center-gap-10" >
                     <span class="material-symbols-outlined text-[18px]">fingerprint</span>
                     <span>Integrity Ledger</span>
                 </div>
             </a>
 
-                        <div class="vk-sidebar-header" style="margin-top: 20px;">System Integrations</div>
+            <div class="vk-sidebar-header fc-mt-20">System Integrations</div>
             <a class="vk-nav-item" href="../VOSTOKPRIBOR Corporate Web Platform/index.php">
-                <div style="display: flex; align-items: center; gap: 10px;">
-                    <span class="material-symbols-outlined text-[18px]" style="color: #1B3A5C;">language</span>
+                <div class="fc-flex-center-gap-10" >
+                    <span class="material-symbols-outlined text-[18px] fc-color-1b3a5c-1796">language</span>
                     <span>Corporate Platform</span>
                 </div>
-                <span class="vk-tag" style="font-size: 9px; background: rgba(27,58,92,0.1); color: #1B3A5C; border: 1px solid #1B3A5C;">SYS-01</span>
+                <span class="vk-tag fc-font-size-9px-background-21b8">SYS-01</span>
             </a>
             <a class="vk-nav-item" href="../Employee Intranet/index.php">
-                <div style="display: flex; align-items: center; gap: 10px;">
-                    <span class="material-symbols-outlined text-[18px]" style="color: #5C7290;">badge</span>
+                <div class="fc-flex-center-gap-10" >
+                    <span class="material-symbols-outlined text-[18px] fc-color-5c7290-b50c">badge</span>
                     <span>Employee Intranet</span>
                 </div>
-                <span class="vk-tag" style="font-size: 9px; background: rgba(92,114,144,0.1); color: #5C7290; border: 1px solid #5C7290;">SYS-04</span>
+                <span class="vk-tag fc-font-size-9px-background-cfa1">SYS-04</span>
             </a>
             <a class="vk-nav-item" href="../Developer/index.php">
-                <div style="display: flex; align-items: center; gap: 10px;">
-                    <span class="material-symbols-outlined text-[18px]" style="color: #1E8FA6;">terminal</span>
+                <div class="fc-flex-center-gap-10" >
+                    <span class="material-symbols-outlined text-[18px] fc-color-1e8fa6-f90d">terminal</span>
                     <span>Developer / API Portal</span>
                 </div>
-                <span class="vk-tag" style="font-size: 9px; background: rgba(30,143,166,0.1); color: #1E8FA6; border: 1px solid #1E8FA6;">SYS-10</span>
+                <span class="vk-tag fc-font-size-9px-background-5382">SYS-10</span>
             </a>
             <a class="vk-nav-item" href="../Admin & Governance Portal/index.php">
-                <div style="display: flex; align-items: center; gap: 10px;">
-                    <span class="material-symbols-outlined text-[18px]" style="color: var(--vk-alert);">shield</span>
+                <div class="fc-flex-center-gap-10" >
+                    <span class="material-symbols-outlined text-[18px] fc-color-var-vk-alert-6578">shield</span>
                     <span>Admin &amp; Governance</span>
                 </div>
-                <span class="vk-tag" style="font-size: 9px; background: rgba(178,58,50,0.1); color: var(--vk-alert); border: 1px solid var(--vk-alert);">SYS-11</span>
+                <span class="vk-tag fc-font-size-9px-background-0f11">SYS-11</span>
             </a>
         </div>
 
-        <div style="padding: 16px; border-top: 1px solid var(--vk-neutral-200); background: #ffffff;">
-            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+        <div class="fc-padding-16px-border-top-d16d" >
+            <div class="fc-display-flex-align-items-81c3" >
                 <span class="status-dot-pulse"></span>
-                <span style="font-family: var(--font-mono); font-size: 11px; font-weight: 600; color: var(--vk-neutral-900);">ENCLAVE HSM ONLINE</span>
+                <span class="fc-font-family-var-font-1ab9" >ENCLAVE HSM ONLINE</span>
             </div>
-            <div style="font-family: var(--font-mono); font-size: 11px; color: var(--vk-neutral-600);">Node: files.vostokpribor.local</div>
-            <div style="font-family: var(--font-mono); font-size: 10px; color: var(--vk-neutral-600); margin-top: 4px;">FIPS 140-3 Hardware Sealed</div>
+            <div class="fc-mono-muted-11" >Node: files.vostokpribor.local</div>
+            <div class="fc-font-family-var-font-940f" >FIPS 140-3 Hardware Sealed</div>
         </div>
-    
-            <!-- Log Out -->
-            
-      </aside>
+
+        <!-- Log Out -->
+
+    </aside>
 
     <!-- MAIN CONTENT AREA -->
     <main class="vk-main-layout">
         <!-- HEADER BLOCK -->
         <div class="repo-header-toolbar">
             <div>
-                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 6px;">
-                    <span class="vk-tag" style="background: var(--vk-sys-badge-bg); color: var(--vk-primary-dark); border: 1px solid var(--vk-sys-accent);">
+                <div class="fc-display-flex-align-items-9bb7" >
+                    <span class="vk-tag fc-background-var-vk-sys-9005">
                         SYSTEM 09 // GRAPHITE #5A6470
                     </span>
-                    <span style="font-family: var(--font-mono); font-size: 12px; color: var(--vk-neutral-600);">FQDN: files.vostokpribor.local</span>
+                    <span class="fc-mono-muted-12" >FQDN: files.vostokpribor.local</span>
                 </div>
-                <h1 style="font-size: 26px; font-weight: 700; color: var(--vk-primary); margin: 0; display: flex; align-items: center; gap: 10px;">
-                    <span class="material-symbols-outlined" style="font-size: 28px; color: var(--vk-sys-accent);">source_environment</span>
+                <h1 class="fc-font-size-26px-font-5041" >
+                    <span class="material-symbols-outlined fc-font-size-28px-color-a4d3">source_environment</span>
                     Central Enterprise Document Repository
                 </h1>
-                <p style="color: var(--vk-neutral-600); font-size: 14px; margin: 4px 0 0 0;">
+                <p class="fc-color-var-vk-neutral-5a07" >
                     Authoritative archival store, technical specifications, bilateral customer contracts, and regulatory audit records for VOSTOKPRIBOR.
                 </p>
             </div>
-            <div style="display: flex; gap: 10px; align-items: center;">
+            <div class="fc-display-flex-gap-10px-c623" >
                 <a class="vk-btn vk-btn-outline" href="approvals.php">
                     <span class="material-symbols-outlined text-[16px]">rule</span> Review Queue (1)
                 </a>
@@ -176,10 +183,10 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
             <div class="repo-stat-card">
                 <div class="repo-stat-label">
                     <span>Registered Documents</span>
-                    <span class="material-symbols-outlined text-[18px]" style="color: var(--vk-sys-accent);">description</span>
+                    <span class="material-symbols-outlined text-[18px] fc-color-accent">description</span>
                 </div>
                 <div class="repo-stat-value">1,842</div>
-                <div class="repo-stat-subtext" style="color: var(--vk-secondary); display: flex; align-items: center; gap: 4px;">
+                <div class="repo-stat-subtext fc-color-var-vk-secondary-bd5b">
                     <span class="material-symbols-outlined text-[14px]">trending_up</span> 15 Core Baseline Manifest
                 </div>
             </div>
@@ -187,27 +194,27 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
             <div class="repo-stat-card">
                 <div class="repo-stat-label">
                     <span>Encrypted Vault Volume</span>
-                    <span class="material-symbols-outlined text-[18px]" style="color: var(--vk-secondary);">lock</span>
+                    <span class="material-symbols-outlined text-[18px] fc-color-secondary">lock</span>
                 </div>
-                <div class="repo-stat-value">842.6 <span style="font-size: 14px; font-weight: 400; color: var(--vk-neutral-600);">GB</span></div>
+                <div class="repo-stat-value">842.6 <span class="fc-font-size-14px-font-8cb8" >GB</span></div>
                 <div class="repo-stat-subtext">AES-256-GCM hardware envelope</div>
             </div>
 
             <div class="repo-stat-card">
                 <div class="repo-stat-label">
                     <span>Pending Approvals</span>
-                    <span class="material-symbols-outlined text-[18px]" style="color: var(--vk-accent-cta);">pending_actions</span>
+                    <span class="material-symbols-outlined text-[18px] fc-color-var-vk-accent-33d2">pending_actions</span>
                 </div>
-                <div class="repo-stat-value" style="color: var(--vk-accent-cta);">1 Action</div>
+                <div class="repo-stat-value fc-color-var-vk-accent-33d2">1 Action</div>
                 <div class="repo-stat-subtext">DOC-2026-004 awaiting Farida Iskakova</div>
             </div>
 
             <div class="repo-stat-card">
                 <div class="repo-stat-label">
                     <span>Integrity Verification</span>
-                    <span class="material-symbols-outlined text-[18px]" style="color: var(--vk-secondary);">verified</span>
+                    <span class="material-symbols-outlined text-[18px] fc-color-secondary">verified</span>
                 </div>
-                <div class="repo-stat-value" style="color: #2E6E4E;">100.0%</div>
+                <div class="repo-stat-value fc-color-2e6e4e-f283">100.0%</div>
                 <div class="repo-stat-subtext">All SHA-256 anchors matched</div>
             </div>
         </div>
@@ -217,32 +224,32 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
             <div class="filter-pills-group">
                 <button class="filter-pill active" data-class-filter="all">
                     <span>All Classifications</span>
-                    <span style="font-family: var(--font-mono); font-size: 11px;">(15)</span>
+                    <span class="fc-mono-11" >(15)</span>
                 </button>
                 <button class="filter-pill pill-highly-confidential" data-class-filter="highly-confidential">
-                    <span class="material-symbols-outlined text-[14px]" style="color: var(--vk-class-highly-confidential);">lock</span>
+                    <span class="material-symbols-outlined text-[14px] fc-color-var-vk-class-66a0">lock</span>
                     <span>Highly Confidential</span>
-                    <span style="font-family: var(--font-mono); font-size: 11px;">(6)</span>
+                    <span class="fc-mono-11" >(6)</span>
                 </button>
                 <button class="filter-pill pill-confidential" data-class-filter="confidential">
-                    <span class="material-symbols-outlined text-[14px]" style="color: var(--vk-class-confidential);">shield</span>
+                    <span class="material-symbols-outlined text-[14px] fc-color-var-vk-class-7bf4">shield</span>
                     <span>Confidential</span>
-                    <span style="font-family: var(--font-mono); font-size: 11px;">(6)</span>
+                    <span class="fc-mono-11" >(6)</span>
                 </button>
                 <button class="filter-pill pill-internal" data-class-filter="internal">
-                    <span class="material-symbols-outlined text-[14px]" style="color: var(--vk-class-internal);">corporate_fare</span>
+                    <span class="material-symbols-outlined text-[14px] fc-color-var-vk-class-5979">corporate_fare</span>
                     <span>Internal</span>
-                    <span style="font-family: var(--font-mono); font-size: 11px;">(2)</span>
+                    <span class="fc-mono-11" >(2)</span>
                 </button>
                 <button class="filter-pill pill-public" data-class-filter="public">
-                    <span class="material-symbols-outlined text-[14px]" style="color: var(--vk-class-public);">public</span>
+                    <span class="material-symbols-outlined text-[14px] fc-color-var-vk-class-8bc0">public</span>
                     <span>Public</span>
-                    <span style="font-family: var(--font-mono); font-size: 11px;">(1)</span>
+                    <span class="fc-mono-11" >(1)</span>
                 </button>
             </div>
 
             <div class="repo-search-box">
-                <span class="material-symbols-outlined text-[16px]" style="color: var(--vk-neutral-600);">search</span>
+                <span class="material-symbols-outlined text-[16px] fc-color-var-vk-neutral-a8c4">search</span>
                 <input class="repo-search-input" id="repo-search-input" type="text" placeholder="Filter DOC-ID, name, project..." />
             </div>
         </div>
@@ -252,65 +259,65 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
             <!-- LEFT: FOLDER TREE -->
             <div class="folder-tree-card">
                 <div class="folder-tree-title">
-                    <span class="material-symbols-outlined text-[16px]" style="color: var(--vk-sys-accent);">account_tree</span>
+                    <span class="material-symbols-outlined text-[16px] fc-color-accent">account_tree</span>
                     <span>Partitions</span>
                 </div>
                 <div class="folder-item active" data-folder-slug="all">
-                    <div style="display: flex; align-items: center; gap: 8px;">
+                    <div class="fc-flex-center-gap-8" >
                         <span class="material-symbols-outlined text-[16px]">folder</span>
                         <span>All Partitions</span>
                     </div>
-                    <span style="font-family: var(--font-mono); font-size: 10px;">15</span>
+                    <span class="fc-mono-10" >15</span>
                 </div>
                 <div class="folder-item" data-folder-slug="governance">
-                    <div style="display: flex; align-items: center; gap: 8px;">
+                    <div class="fc-flex-center-gap-8" >
                         <span class="material-symbols-outlined text-[16px]">gavel</span>
                         <span>/Corporate/Gov</span>
                     </div>
-                    <span style="font-family: var(--font-mono); font-size: 10px;">3</span>
+                    <span class="fc-mono-10" >3</span>
                 </div>
                 <div class="folder-item" data-folder-slug="projects">
-                    <div style="display: flex; align-items: center; gap: 8px;">
+                    <div class="fc-flex-center-gap-8" >
                         <span class="material-symbols-outlined text-[16px]">precision_manufacturing</span>
                         <span>/Projects/Eng</span>
                     </div>
-                    <span style="font-family: var(--font-mono); font-size: 10px;">4</span>
+                    <span class="fc-mono-10" >4</span>
                 </div>
                 <div class="folder-item" data-folder-slug="contracts">
-                    <div style="display: flex; align-items: center; gap: 8px;">
+                    <div class="fc-flex-center-gap-8" >
                         <span class="material-symbols-outlined text-[16px]">handshake</span>
                         <span>/Commercial/SOW</span>
                     </div>
-                    <span style="font-family: var(--font-mono); font-size: 10px;">2</span>
+                    <span class="fc-mono-10" >2</span>
                 </div>
                 <div class="folder-item" data-folder-slug="finance">
-                    <div style="display: flex; align-items: center; gap: 8px;">
+                    <div class="fc-flex-center-gap-8" >
                         <span class="material-symbols-outlined text-[16px]">payments</span>
                         <span>/Finance/Billing</span>
                     </div>
-                    <span style="font-family: var(--font-mono); font-size: 10px;">2</span>
+                    <span class="fc-mono-10" >2</span>
                 </div>
                 <div class="folder-item" data-folder-slug="hr">
-                    <div style="display: flex; align-items: center; gap: 8px;">
+                    <div class="fc-flex-center-gap-8" >
                         <span class="material-symbols-outlined text-[16px]">badge</span>
                         <span>/HR/Personnel</span>
                     </div>
-                    <span style="font-family: var(--font-mono); font-size: 10px;">2</span>
+                    <span class="fc-mono-10" >2</span>
                 </div>
                 <div class="folder-item" data-folder-slug="operations">
-                    <div style="display: flex; align-items: center; gap: 8px;">
+                    <div class="fc-flex-center-gap-8" >
                         <span class="material-symbols-outlined text-[16px]">local_shipping</span>
                         <span>/Operations/Suppliers</span>
                     </div>
-                    <span style="font-family: var(--font-mono); font-size: 10px;">2</span>
+                    <span class="fc-mono-10" >2</span>
                 </div>
 
-                <div style="margin-top: 20px; padding-top: 14px; border-top: 1px solid var(--vk-neutral-200);">
-                    <div style="font-family: var(--font-mono); font-size: 10px; color: var(--vk-neutral-600); text-transform: uppercase;">Storage Quota</div>
-                    <div style="height: 6px; background: var(--vk-neutral-200); border-radius: 3px; overflow: hidden; margin-top: 6px;">
-                        <div style="width: 17.5%; height: 100%; background: var(--vk-sys-accent);"></div>
+                <div class="fc-margin-top-20px-padding-aa3e" >
+                    <div class="fc-font-family-var-font-afcc" >Storage Quota</div>
+                    <div class="fc-height-6px-background-var-86f3" >
+                        <div class="fc-width-17-5-height-4883" ></div>
                     </div>
-                    <div style="display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: 10px; color: var(--vk-neutral-600); margin-top: 4px;">
+                    <div class="fc-display-flex-justify-content-6d82" >
                         <span>842 GB used</span>
                         <span>4.8 TB cap</span>
                     </div>
@@ -319,23 +326,23 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
 
             <!-- RIGHT: MAIN DOCUMENT TABLE (15 Official Documents from PDF) -->
             <div class="vk-table-container">
-                <div style="padding: 12px 16px; background: #F8FAFC; border-bottom: 1px solid var(--vk-neutral-200); display: flex; justify-content: space-between; align-items: center;">
-                    <div style="font-family: var(--font-heading); font-size: 13px; font-weight: 700; color: var(--vk-primary);">
+                <div class="fc-padding-12px-16px-background-6c79" >
+                    <div class="fc-font-family-var-font-ecce" >
                         OFFICIAL DOCUMENT REGISTER (DOC-2026-001 TO DOC-2026-015)
                     </div>
-                    <div style="font-family: var(--font-mono); font-size: 11px; color: var(--vk-neutral-600);">
+                    <div class="fc-mono-muted-11" >
                         Showing <span id="visible-docs-count">15</span> documents
                     </div>
                 </div>
                 <table class="vk-table">
                     <thead>
                         <tr>
-                            <th style="width: 130px;">DOC-ID</th>
+                            <th class="fc-width-130px-e314" >DOC-ID</th>
                             <th>Filename &amp; Description</th>
-                            <th style="width: 170px;">Classification</th>
-                            <th style="width: 140px;">System Tag</th>
-                            <th style="width: 110px;">Status</th>
-                            <th style="width: 90px; text-align: right;">Action</th>
+                            <th class="fc-width-170px-ef4a" >Classification</th>
+                            <th class="fc-w-140" >System Tag</th>
+                            <th class="fc-width-110px-3e28" >Status</th>
+                            <th class="fc-width-90px-text-align-c9fd" >Action</th>
                         </tr>
                     </thead>
                     <tbody id="repo-table-body">
@@ -354,13 +361,13 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
                             data-hash="a89f30b9148d423985bf4f481c81c4e97a5b3992b1cf5600ea8b1990c681ea88">
                             <td><code>DOC-2026-001</code></td>
                             <td>
-                                <div style="font-weight: 600; color: var(--vk-primary);">Corporate_Information_Security_Policy.pdf</div>
-                                <div style="font-size: 11px; color: var(--vk-neutral-600);">Master enterprise cybersecurity charter &amp; access policy</div>
+                                <div class="fc-text-primary-bold" >Corporate_Information_Security_Policy.pdf</div>
+                                <div class="fc-text-muted-11" >Master enterprise cybersecurity charter &amp; access policy</div>
                             </td>
                             <td><span class="vk-tag vk-tag-highly-confidential">Highly Confidential</span></td>
-                            <td><span class="vk-tag" style="font-size: 10px;">Admin &amp; Gov</span></td>
+                            <td><span class="vk-tag fc-text-10">Admin &amp; Gov</span></td>
                             <td><span class="vk-status-badge status-approved">Approved</span></td>
-                            <td style="text-align: right;">
+                            <td class="fc-text-right" >
                                 <button class="vk-btn vk-btn-sm vk-btn-outline btn-inspect-doc">Inspect</button>
                             </td>
                         </tr>
@@ -380,13 +387,13 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
                             data-hash="7b2a9e334f590bb821034f828a1c89283e7428fb17c1817e81037894a8217e92">
                             <td><code>DOC-2026-002</code></td>
                             <td>
-                                <div style="font-weight: 600; color: var(--vk-primary);">Customer_Onboarding_Standard.pdf</div>
-                                <div style="font-size: 11px; color: var(--vk-neutral-600);">Commercial account vetting protocol &amp; KYC</div>
+                                <div class="fc-text-primary-bold" >Customer_Onboarding_Standard.pdf</div>
+                                <div class="fc-text-muted-11" >Commercial account vetting protocol &amp; KYC</div>
                             </td>
                             <td><span class="vk-tag vk-tag-confidential">Confidential</span></td>
-                            <td><span class="vk-tag" style="font-size: 10px;">CRM</span></td>
+                            <td><span class="vk-tag fc-text-10">CRM</span></td>
                             <td><span class="vk-status-badge status-approved">Approved</span></td>
-                            <td style="text-align: right;">
+                            <td class="fc-text-right" >
                                 <button class="vk-btn vk-btn-sm vk-btn-outline btn-inspect-doc">Inspect</button>
                             </td>
                         </tr>
@@ -406,13 +413,13 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
                             data-hash="4e1a8b928172c3d4e5f60718293a4b5c6d7e8f90123456789abcdef012345678">
                             <td><code>DOC-2026-003</code></td>
                             <td>
-                                <div style="font-weight: 600; color: var(--vk-primary);">PRJ-2026-001_Statement_of_Work.pdf</div>
-                                <div style="font-size: 11px; color: var(--vk-neutral-600);">Aral Geomatics Group &bull; Optical Sensor Integration SOW</div>
+                                <div class="fc-text-primary-bold" >PRJ-2026-001_Statement_of_Work.pdf</div>
+                                <div class="fc-text-muted-11" >Aral Geomatics Group &bull; Optical Sensor Integration SOW</div>
                             </td>
                             <td><span class="vk-tag vk-tag-confidential">Confidential</span></td>
-                            <td><span class="vk-tag" style="font-size: 10px;">File Center</span></td>
+                            <td><span class="vk-tag fc-text-10">File Center</span></td>
                             <td><span class="vk-status-badge status-approved">Approved</span></td>
-                            <td style="text-align: right;">
+                            <td class="fc-text-right" >
                                 <button class="vk-btn vk-btn-sm vk-btn-outline btn-inspect-doc">Inspect</button>
                             </td>
                         </tr>
@@ -432,17 +439,17 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
                             data-hash="9f8e7d6c5b4a3928170192837465abcdeffedcba98765432101234567890fedc">
                             <td><code>DOC-2026-004</code></td>
                             <td>
-                                <div style="font-weight: 700; color: var(--vk-alert); display: flex; align-items: center; gap: 6px;">
+                                <div class="fc-font-weight-700-color-9c73" >
                                     <span>PRJ-2026-002_Integration_Specification.pdf</span>
-                                    <span class="vk-tag" style="background: #FEE2E2; color: #991B1B; font-size: 9px;">ACTION NEEDED</span>
+                                    <span class="vk-tag fc-background-fee2e2-color-991b1b-440c">ACTION NEEDED</span>
                                 </div>
-                                <div style="font-size: 11px; color: var(--vk-neutral-600);">BaltNord SCADA Ingestion &bull; Reviewed by Farida Iskakova</div>
+                                <div class="fc-text-muted-11" >BaltNord SCADA Ingestion &bull; Reviewed by Farida Iskakova</div>
                             </td>
                             <td><span class="vk-tag vk-tag-highly-confidential">Highly Confidential</span></td>
-                            <td><span class="vk-tag" style="font-size: 10px;">File Center</span></td>
+                            <td><span class="vk-tag fc-text-10">File Center</span></td>
                             <td><span class="vk-status-badge status-in-review">In Review</span></td>
-                            <td style="text-align: right;">
-                                <a class="vk-btn vk-btn-sm vk-btn-primary" href="approvals.php" style="padding: 2px 8px; font-size: 11px;">Sign</a>
+                            <td class="fc-text-right" >
+                                <a class="vk-btn vk-btn-sm vk-btn-primary" href="approvals.php" >Sign</a>
                             </td>
                         </tr>
 
@@ -461,13 +468,13 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
                             data-hash="1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef">
                             <td><code>DOC-2026-005</code></td>
                             <td>
-                                <div style="font-weight: 600; color: var(--vk-primary);">INV-2026-002_Billing_Record.pdf</div>
-                                <div style="font-size: 11px; color: var(--vk-neutral-600);">BaltNord Milestone 1 billing attestation (€120,000)</div>
+                                <div class="fc-text-primary-bold" >INV-2026-002_Billing_Record.pdf</div>
+                                <div class="fc-text-muted-11" >BaltNord Milestone 1 billing attestation (€120,000)</div>
                             </td>
                             <td><span class="vk-tag vk-tag-confidential">Confidential</span></td>
-                            <td><span class="vk-tag" style="font-size: 10px;">Finance</span></td>
+                            <td><span class="vk-tag fc-text-10">Finance</span></td>
                             <td><span class="vk-status-badge status-approved">Approved</span></td>
-                            <td style="text-align: right;">
+                            <td class="fc-text-right" >
                                 <button class="vk-btn vk-btn-sm vk-btn-outline btn-inspect-doc">Inspect</button>
                             </td>
                         </tr>
@@ -487,13 +494,13 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
                             data-hash="abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890">
                             <td><code>DOC-2026-006</code></td>
                             <td>
-                                <div style="font-weight: 600; color: var(--vk-primary);">Employee_Onboarding_Procedure.pdf</div>
-                                <div style="font-size: 11px; color: var(--vk-neutral-600);">Standard Operating Procedure &bull; SOP-05 HR Enrollment</div>
+                                <div class="fc-text-primary-bold" >Employee_Onboarding_Procedure.pdf</div>
+                                <div class="fc-text-muted-11" >Standard Operating Procedure &bull; SOP-05 HR Enrollment</div>
                             </td>
                             <td><span class="vk-tag vk-tag-confidential">Confidential</span></td>
-                            <td><span class="vk-tag" style="font-size: 10px;">HR</span></td>
+                            <td><span class="vk-tag fc-text-10">HR</span></td>
                             <td><span class="vk-status-badge status-approved">Approved</span></td>
-                            <td style="text-align: right;">
+                            <td class="fc-text-right" >
                                 <button class="vk-btn vk-btn-sm vk-btn-outline btn-inspect-doc">Inspect</button>
                             </td>
                         </tr>
@@ -513,13 +520,13 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
                             data-hash="deadbeef1029384756abcdef0192837465bcaefd1234567890fedcba98765432">
                             <td><code>DOC-2026-007</code></td>
                             <td>
-                                <div style="font-weight: 600; color: var(--vk-primary);">Employee_Access_Matrix.xlsx</div>
-                                <div style="font-size: 11px; color: var(--vk-neutral-600);">Complete RBAC and clearance register for 95 employees</div>
+                                <div class="fc-text-primary-bold" >Employee_Access_Matrix.xlsx</div>
+                                <div class="fc-text-muted-11" >Complete RBAC and clearance register for 95 employees</div>
                             </td>
                             <td><span class="vk-tag vk-tag-highly-confidential">Highly Confidential</span></td>
-                            <td><span class="vk-tag" style="font-size: 10px;">Admin &amp; Gov</span></td>
+                            <td><span class="vk-tag fc-text-10">Admin &amp; Gov</span></td>
                             <td><span class="vk-status-badge status-approved">Approved</span></td>
-                            <td style="text-align: right;">
+                            <td class="fc-text-right" >
                                 <button class="vk-btn vk-btn-sm vk-btn-outline btn-inspect-doc">Inspect</button>
                             </td>
                         </tr>
@@ -539,13 +546,13 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
                             data-hash="9876543210fedcba9876543210fedcba9876543210fedcba9876543210fedcba">
                             <td><code>DOC-2026-008</code></td>
                             <td>
-                                <div style="font-weight: 600; color: var(--vk-primary);">Supplier_Evaluation_2026.pdf</div>
-                                <div style="font-size: 11px; color: var(--vk-neutral-600);">Tier-1 industrial transducer vendor scorecard</div>
+                                <div class="fc-text-primary-bold" >Supplier_Evaluation_2026.pdf</div>
+                                <div class="fc-text-muted-11" >Tier-1 industrial transducer vendor scorecard</div>
                             </td>
                             <td><span class="vk-tag vk-tag-confidential">Confidential</span></td>
-                            <td><span class="vk-tag" style="font-size: 10px;">Operations</span></td>
+                            <td><span class="vk-tag fc-text-10">Operations</span></td>
                             <td><span class="vk-status-badge status-approved">Approved</span></td>
-                            <td style="text-align: right;">
+                            <td class="fc-text-right" >
                                 <button class="vk-btn vk-btn-sm vk-btn-outline btn-inspect-doc">Inspect</button>
                             </td>
                         </tr>
@@ -565,13 +572,13 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
                             data-hash="0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef">
                             <td><code>DOC-2026-009</code></td>
                             <td>
-                                <div style="font-weight: 600; color: var(--vk-primary);">Optical_Sensor_Product_Catalog.pdf</div>
-                                <div style="font-size: 11px; color: var(--vk-neutral-600);">Standard B2B product specifications &bull; Public distribution</div>
+                                <div class="fc-text-primary-bold" >Optical_Sensor_Product_Catalog.pdf</div>
+                                <div class="fc-text-muted-11" >Standard B2B product specifications &bull; Public distribution</div>
                             </td>
                             <td><span class="vk-tag vk-tag-public">Public</span></td>
-                            <td><span class="vk-tag" style="font-size: 10px;">E-Commerce</span></td>
+                            <td><span class="vk-tag fc-text-10">E-Commerce</span></td>
                             <td><span class="vk-status-badge status-approved">Approved</span></td>
-                            <td style="text-align: right;">
+                            <td class="fc-text-right" >
                                 <button class="vk-btn vk-btn-sm vk-btn-outline btn-inspect-doc">Inspect</button>
                             </td>
                         </tr>
@@ -591,13 +598,13 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
                             data-hash="554433221100aabbccddeeff99887766554433221100aabbccddeeff99887766">
                             <td><code>DOC-2026-010</code></td>
                             <td>
-                                <div style="font-weight: 600; color: var(--vk-primary);">API_Integration_Guide.pdf</div>
-                                <div style="font-size: 11px; color: var(--vk-neutral-600);">REST &amp; gRPC endpoints protocol for partner systems</div>
+                                <div class="fc-text-primary-bold" >API_Integration_Guide.pdf</div>
+                                <div class="fc-text-muted-11" >REST &amp; gRPC endpoints protocol for partner systems</div>
                             </td>
                             <td><span class="vk-tag vk-tag-internal">Internal</span></td>
-                            <td><span class="vk-tag" style="font-size: 10px;">Developer Portal</span></td>
+                            <td><span class="vk-tag fc-text-10">Developer Portal</span></td>
                             <td><span class="vk-status-badge status-approved">Approved</span></td>
-                            <td style="text-align: right;">
+                            <td class="fc-text-right" >
                                 <button class="vk-btn vk-btn-sm vk-btn-outline btn-inspect-doc">Inspect</button>
                             </td>
                         </tr>
@@ -617,13 +624,13 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
                             data-hash="feefeeddccbbaa99887766554433221100feefeeddccbbaa9988776655443322">
                             <td><code>DOC-2026-011</code></td>
                             <td>
-                                <div style="font-weight: 600; color: var(--vk-primary);">Disaster_Recovery_Plan.pdf</div>
-                                <div style="font-size: 11px; color: var(--vk-neutral-600);">Cold site failover &amp; Almaty datastore replication runbook</div>
+                                <div class="fc-text-primary-bold" >Disaster_Recovery_Plan.pdf</div>
+                                <div class="fc-text-muted-11" >Cold site failover &amp; Almaty datastore replication runbook</div>
                             </td>
                             <td><span class="vk-tag vk-tag-highly-confidential">Highly Confidential</span></td>
-                            <td><span class="vk-tag" style="font-size: 10px;">IT Helpdesk</span></td>
+                            <td><span class="vk-tag fc-text-10">IT Helpdesk</span></td>
                             <td><span class="vk-status-badge status-approved">Approved</span></td>
-                            <td style="text-align: right;">
+                            <td class="fc-text-right" >
                                 <button class="vk-btn vk-btn-sm vk-btn-outline btn-inspect-doc">Inspect</button>
                             </td>
                         </tr>
@@ -643,13 +650,13 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
                             data-hash="99887766554433221100feefeeddccbbaa99887766554433221100feefeeddcc">
                             <td><code>DOC-2026-012</code></td>
                             <td>
-                                <div style="font-weight: 600; color: var(--vk-primary);">Annual_Corporate_Budget_2026.xlsx</div>
-                                <div style="font-size: 11px; color: var(--vk-neutral-600);">Capital allocation &bull; Executive board authorization only</div>
+                                <div class="fc-text-primary-bold" >Annual_Corporate_Budget_2026.xlsx</div>
+                                <div class="fc-text-muted-11" >Capital allocation &bull; Executive board authorization only</div>
                             </td>
                             <td><span class="vk-tag vk-tag-highly-confidential">Highly Confidential</span></td>
-                            <td><span class="vk-tag" style="font-size: 10px;">Finance</span></td>
+                            <td><span class="vk-tag fc-text-10">Finance</span></td>
                             <td><span class="vk-status-badge status-approved">Approved</span></td>
-                            <td style="text-align: right;">
+                            <td class="fc-text-right" >
                                 <button class="vk-btn vk-btn-sm vk-btn-outline btn-inspect-doc">Inspect</button>
                             </td>
                         </tr>
@@ -669,13 +676,13 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
                             data-hash="11223344556677889900aabbccddeeff11223344556677889900aabbccddeeff">
                             <td><code>DOC-2026-013</code></td>
                             <td>
-                                <div style="font-weight: 600; color: var(--vk-primary);">Customer_Service_Handbook.pdf</div>
-                                <div style="font-size: 11px; color: var(--vk-neutral-600);">Operational guidelines for regional account liaisons</div>
+                                <div class="fc-text-primary-bold" >Customer_Service_Handbook.pdf</div>
+                                <div class="fc-text-muted-11" >Operational guidelines for regional account liaisons</div>
                             </td>
                             <td><span class="vk-tag vk-tag-internal">Internal</span></td>
-                            <td><span class="vk-tag" style="font-size: 10px;">Intranet</span></td>
+                            <td><span class="vk-tag fc-text-10">Intranet</span></td>
                             <td><span class="vk-status-badge status-approved">Approved</span></td>
-                            <td style="text-align: right;">
+                            <td class="fc-text-right" >
                                 <button class="vk-btn vk-btn-sm vk-btn-outline btn-inspect-doc">Inspect</button>
                             </td>
                         </tr>
@@ -695,13 +702,13 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
                             data-hash="3344556677889900aabbccddeeff11223344556677889900aabbccddeeff1122">
                             <td><code>DOC-2026-014</code></td>
                             <td>
-                                <div style="font-weight: 600; color: var(--vk-primary);">PRJ-2026-007_Test_Report.pdf</div>
-                                <div style="font-size: 11px; color: var(--vk-neutral-600);">Seismic Vibration Array &bull; Acceptance Testing Certificate</div>
+                                <div class="fc-text-primary-bold" >PRJ-2026-007_Test_Report.pdf</div>
+                                <div class="fc-text-muted-11" >Seismic Vibration Array &bull; Acceptance Testing Certificate</div>
                             </td>
                             <td><span class="vk-tag vk-tag-confidential">Confidential</span></td>
-                            <td><span class="vk-tag" style="font-size: 10px;">File Center</span></td>
+                            <td><span class="vk-tag fc-text-10">File Center</span></td>
                             <td><span class="vk-status-badge status-approved">Approved</span></td>
-                            <td style="text-align: right;">
+                            <td class="fc-text-right" >
                                 <button class="vk-btn vk-btn-sm vk-btn-outline btn-inspect-doc">Inspect</button>
                             </td>
                         </tr>
@@ -721,13 +728,13 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
                             data-hash="bbccddeeff00112233445566778899aabbccddeeff00112233445566778899aa">
                             <td><code>DOC-2026-015</code></td>
                             <td>
-                                <div style="font-weight: 600; color: var(--vk-primary);">Board_Risk_Register_2026.xlsx</div>
-                                <div style="font-size: 11px; color: var(--vk-neutral-600);">Statutory enterprise risk matrix &bull; Board of Directors</div>
+                                <div class="fc-text-primary-bold" >Board_Risk_Register_2026.xlsx</div>
+                                <div class="fc-text-muted-11" >Statutory enterprise risk matrix &bull; Board of Directors</div>
                             </td>
                             <td><span class="vk-tag vk-tag-highly-confidential">Highly Confidential</span></td>
-                            <td><span class="vk-tag" style="font-size: 10px;">Admin &amp; Gov</span></td>
+                            <td><span class="vk-tag fc-text-10">Admin &amp; Gov</span></td>
                             <td><span class="vk-status-badge status-approved">Approved</span></td>
-                            <td style="text-align: right;">
+                            <td class="fc-text-right" >
                                 <button class="vk-btn vk-btn-sm vk-btn-outline btn-inspect-doc">Inspect</button>
                             </td>
                         </tr>
@@ -742,15 +749,15 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
         <div class="doc-drawer" id="doc-drawer">
             <div class="doc-drawer-header">
                 <div>
-                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+                    <div class="fc-display-flex-align-items-0b62" >
                         <span id="drawer-class-badge" class="vk-tag vk-tag-highly-confidential">HIGHLY CONFIDENTIAL</span>
-                        <span style="font-family: var(--font-mono); font-size: 11px; color: var(--vk-neutral-600);" id="drawer-doc-id">DOC-2026-004</span>
+                        <span class="fc-mono-muted-11"  id="drawer-doc-id">DOC-2026-004</span>
                     </div>
-                    <div style="font-family: var(--font-heading); font-size: 16px; font-weight: 700; color: var(--vk-primary);" id="drawer-doc-name">
+                    <div class="fc-font-family-var-font-3629"  id="drawer-doc-name">
                         PRJ-2026-002_Integration_Specification.pdf
                     </div>
                 </div>
-                <button type="button" id="btn-close-drawer" style="background: none; border: none; cursor: pointer; color: var(--vk-neutral-600);">
+                <button class="fc-background-none-border-none-3e7e" type="button" id="btn-close-drawer" >
                     <span class="material-symbols-outlined text-[20px]">close</span>
                 </button>
             </div>
@@ -766,7 +773,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
                     <div class="doc-meta-val" id="drawer-doc-custodian">Farida Iskakova (EMP-1019)</div>
                 </div>
 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                <div class="fc-display-grid-grid-template-38f6" >
                     <div class="doc-meta-item">
                         <div class="doc-meta-label">File Size</div>
                         <div class="doc-meta-val" id="drawer-doc-size">4.5 MB</div>
@@ -777,7 +784,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
                     </div>
                 </div>
 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                <div class="fc-display-grid-grid-template-38f6" >
                     <div class="doc-meta-item">
                         <div class="doc-meta-label">Originating System</div>
                         <div class="doc-meta-val" id="drawer-doc-system">File Center</div>
@@ -792,21 +799,21 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
                     <div class="doc-meta-label">SHA-256 Checksum (Hardware Seal)</div>
                     <div class="hash-code-block">
                         <span id="drawer-doc-hash">9f8e7d6c5b4a3928170192837465abcdeffedcba98765432101234567890fedc</span>
-                        <button type="button" id="btn-copy-drawer-hash" style="background: none; border: none; cursor: pointer; color: var(--vk-neutral-600);" title="Copy Checksum">
+                        <button class="fc-background-none-border-none-3e7e" type="button" id="btn-copy-drawer-hash"  title="Copy Checksum">
                             <span class="material-symbols-outlined text-[16px]">content_copy</span>
                         </button>
                     </div>
                 </div>
 
-                <div style="border-top: 1px solid var(--vk-neutral-200); padding-top: 16px;">
-                    <div class="doc-meta-label" style="margin-bottom: 8px;">Access Control &amp; Redaction Rule</div>
-                    <p style="font-size: 12px; color: var(--vk-neutral-600); line-height: 1.6;">
+                <div class="fc-border-top-1px-solid-0abf" >
+                    <div class="doc-meta-label fc-margin-bottom-8px-ccd7">Access Control &amp; Redaction Rule</div>
+                    <p class="fc-font-size-12px-color-d8b2" >
                         Direct file extraction restricted to L3+ engineering clearance. For external client synchronization, access must be routed through the redaction approval pipeline.
                     </p>
                 </div>
 
-                <div style="display: flex; gap: 10px; margin-top: auto;">
-                    <button class="vk-btn vk-btn-primary" id="btn-drawer-download" type="button" style="flex: 1;">
+                <div class="fc-display-flex-gap-10px-a570" >
+                    <button class="vk-btn vk-btn-primary" id="btn-drawer-download" type="button" >
                         <span class="material-symbols-outlined text-[16px]">download</span> Decrypt &amp; Download
                     </button>
                     <a class="vk-btn vk-btn-outline" href="approvals.php">
@@ -819,14 +826,14 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
 
     <!-- DOCKED ENTERPRISE STATUS BAR -->
     <footer class="vk-status-bar">
-        <div style="display: flex; align-items: center; gap: 16px;">
-            <div style="display: flex; align-items: center; gap: 8px;">
+        <div class="fc-flex-center-gap-16" >
+            <div class="fc-flex-center-gap-8" >
                 <span class="status-dot-pulse"></span>
                 <span>ALMATY-VAULT-01 // HSM CLUSTER SYNCHRONIZED</span>
             </div>
             <span>VOLUME: 842.6 GB / 4.8 TB (17.5%)</span>
         </div>
-        <div style="display: flex; align-items: center; gap: 20px;">
+        <div class="fc-display-flex-align-items-bf7c" >
             <span>ACTIVE SENSITIVITY ENCLAVE: FOUR-TIER RBAC</span>
             <span>IEC 62443 / ISO 27001 AUDIT COMPLIANT</span>
         </div>
@@ -836,7 +843,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
     <div class="cmd-palette-backdrop" id="cmd-palette-modal">
         <div class="cmd-palette-box">
             <div class="cmd-palette-header">
-                <span class="material-symbols-outlined text-[20px]" style="color: var(--vk-sys-accent);">folder_managed</span>
+                <span class="material-symbols-outlined text-[20px] fc-color-accent">folder_managed</span>
                 <input class="cmd-palette-input" id="cmd-palette-input" type="text" placeholder="Type a document ID, name, or jump to view..." />
             </div>
             <div class="cmd-palette-list" id="cmd-palette-results">
@@ -867,4 +874,5 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
     <script src="js/fc-common.js"></script>
     <script src="js/fc-repo.js"></script>
 </body>
+
 </html>

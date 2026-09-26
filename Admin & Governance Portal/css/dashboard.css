@@ -4,42 +4,42 @@
    ========================================================================== */
 
 .matrix-row {
-    transition: background-color 0.15s ease;
-    cursor: pointer;
+  transition: background-color 0.15s ease;
+  cursor: pointer;
 }
 
 .matrix-row:hover {
-    background-color: rgba(0, 36, 68, 0.04);
+  background-color: rgba(0, 36, 68, 0.04);
 }
 
 .selected-row {
-    background-color: rgba(0, 36, 68, 0.08) !important;
-    border-left: 4px solid #002444 !important;
+  background-color: rgba(0, 36, 68, 0.08) !important;
+  border-left: 4px solid #002444 !important;
 }
 
 /* Slide-over Remediation Drawer */
 #remediationDrawer {
-    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 /* Attestation progress bars */
 .attestation-indicator {
-    transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* Status Stripe Indicators */
 .stripe-error {
-    border-left: 4px solid #ba1a1a;
+  border-left: 4px solid #ba1a1a;
 }
 
 .stripe-warning {
-    border-left: 4px solid #d79530;
+  border-left: 4px solid #d79530;
 }
 
 .stripe-success {
-    border-left: 4px solid #006972;
+  border-left: 4px solid #006972;
 }
 
 .stripe-primary {
-    border-left: 4px solid #002444;
+  border-left: 4px solid #002444;
 }

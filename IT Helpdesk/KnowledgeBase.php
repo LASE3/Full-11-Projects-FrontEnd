@@ -5,12 +5,14 @@ requireAuth('IT');
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>VOSTOKPRIBOR IT Helpdesk · Knowledge Base &amp; SOP Library</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
+
 <body>
 
   <div class="app-container">
@@ -30,7 +32,7 @@ requireAuth('IT');
               <div class="brand-subline">
                 <span class="status-dot-pulse"></span>
                 <span>helpdesk.vostokpribor.local</span>
-                <span style="opacity: 0.5;">|</span>
+                <span class="hd-opacity-50" >|</span>
                 <span>SUPPORT OPERATIONS</span>
               </div>
             </div>
@@ -46,12 +48,15 @@ requireAuth('IT');
         </div>
 
         <div class="top-nav__actions">
-          <div class="pipeline-sync-badge" style="display: flex; align-items: center; gap: 0.35rem; font-family: var(--hd-font-mono); font-size: 10px; color: var(--hd-text-inverse-muted); background: rgba(255,255,255,0.06); padding: 3px 8px; border-radius: var(--hd-radius-sm); border: 1px solid rgba(255,255,255,0.08);">
-            <span style="color: #2ECC71;">●</span>
+          <div class="pipeline-sync-badge hd-badge-telemetry" >
+            <span class="hd-status-success" >●</span>
             <span>SLA: <strong>98.4% Compliant</strong></span>
           </div>
           <button class="icon-button" title="Incident Telemetry Notifications" onclick="window.hdApp.showToast('Critical Alert', 'SCADA Gateway Node #3 packet loss detected in Lipetsk Bay.', 'critical')">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+              <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+            </svg>
             <span class="badge-dot"></span>
           </button>
           <div class="top-user-profile" onclick="window.hdApp.showToast('Active Tech Session', 'Alexey Ivanov · Tier 3 IT Operations Engineer')">
@@ -62,92 +67,124 @@ requireAuth('IT');
             </div>
           </div>
         </div>
-      
-<!-- Top Bar Sign Out -->
-<a href="../api/logout.php?system=IT%20Helpdesk&redirect=../IT%20Helpdesk/login.php" class="top-signout-btn" title="Sign Out of IT Helpdesk" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" style="display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:4px;background:rgba(178,58,50,0.2);border:1px solid rgba(178,58,50,0.5);color:#FF8080;font-size:12px;font-weight:600;text-decoration:none;cursor:pointer;margin-left:8px;vertical-align:middle;transition:all 0.2s;" onmouseover="this.style.background='rgba(178,58,50,0.4)';this.style.color='#FFFFFF'" onmouseout="this.style.background='rgba(178,58,50,0.2)';this.style.color='#FF8080'"><span class="material-symbols-outlined" style="font-size:15px;line-height:1;">logout</span><span>Sign Out</span></a>
-</div>
+
+        <!-- Top Bar Sign Out -->
+        <a href="../api/logout.php?system=IT%20Helpdesk&redirect=../IT%20Helpdesk/login.php" class="top-signout-btn" title="Sign Out of IT Helpdesk" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" ><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
+      </div>
     </header>
 
     <div class="main-layout">
-      <!-- SIDEBAR -->
-      <aside class="sidebar">
+            <aside class="sidebar">
         <div>
           <div class="sidebar-section-title">IT Support Operations</div>
           <nav class="sidebar-nav">
             <a href="Dashboard.php" class="sidebar-nav-item">
               <div class="sidebar-item-left">
-                <span class="sidebar-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></span>
+                <span class="sidebar-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="7" height="7" />
+                    <rect x="14" y="3" width="7" height="7" />
+                    <rect x="14" y="14" width="7" height="7" />
+                    <rect x="3" y="14" width="7" height="7" />
+                  </svg></span>
                 <span>Dashboard</span>
               </div>
             </a>
             <a href="TicketQueue.php" class="sidebar-nav-item">
               <div class="sidebar-item-left">
-                <span class="sidebar-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></span>
+                <span class="sidebar-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                    <polyline points="14 2 14 8 20 8" />
+                    <line x1="16" y1="13" x2="8" y2="13" />
+                    <line x1="16" y1="17" x2="8" y2="17" />
+                  </svg></span>
                 <span>Ticket Queue</span>
               </div>
               <span class="sidebar-badge badge-orange">34</span>
             </a>
             <a href="MyTickets.php" class="sidebar-nav-item">
               <div class="sidebar-item-left">
-                <span class="sidebar-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
+                <span class="sidebar-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                    <circle cx="12" cy="7" r="4" />
+                  </svg></span>
                 <span>My Tickets</span>
               </div>
               <span class="sidebar-badge badge-red">8</span>
             </a>
             <a href="KnowledgeBase.php" class="sidebar-nav-item active">
               <div class="sidebar-item-left">
-                <span class="sidebar-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></span>
+                <span class="sidebar-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+                  </svg></span>
                 <span>Knowledge Base</span>
               </div>
               <span class="sidebar-badge">142</span>
             </a>
             <a href="AssetManagement.php" class="sidebar-nav-item">
               <div class="sidebar-item-left">
-                <span class="sidebar-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"/><rect x="2" y="14" width="20" height="8" rx="2" ry="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg></span>
+                <span class="sidebar-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="2" y="2" width="20" height="8" rx="2" ry="2" />
+                    <rect x="2" y="14" width="20" height="8" rx="2" ry="2" />
+                    <line x1="6" y1="6" x2="6.01" y2="6" />
+                    <line x1="6" y1="18" x2="6.01" y2="18" />
+                  </svg></span>
                 <span>Asset Management</span>
               </div>
               <span class="sidebar-badge">1,820</span>
             </a>
             <a href="SLAReports.php" class="sidebar-nav-item">
               <div class="sidebar-item-left">
-                <span class="sidebar-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></span>
+                <span class="sidebar-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10" />
+                    <polyline points="12 6 12 12 16 14" />
+                  </svg></span>
                 <span>SLA Reports</span>
               </div>
               <span class="sidebar-badge badge-green">98.4%</span>
             </a>
           </nav>
         </div>
-        
-                      <div class="sidebar-section-title" style="margin-top: 1rem;">Unified Ecosystem</div>
-          <nav class="sidebar-nav" style="margin-bottom: 0.5rem;">
-            <a href="../VOSTOKPRIBOR Corporate Web Platform/index.php" class="sidebar-nav-item">
-              <div class="sidebar-item-left">
-                <span class="sidebar-icon">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-                </span>
-                <span>Corporate Platform</span>
-              </div>
-              <span class="sidebar-badge" style="font-size: 10px;">SYS 01</span>
-            </a>
-            <a href="../Employee Intranet/index.php" class="sidebar-nav-item">
-              <div class="sidebar-item-left">
-                <span class="sidebar-icon">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-                </span>
-                <span>Employee Intranet</span>
-              </div>
-              <span class="sidebar-badge" style="font-size: 10px;">SYS 04</span>
-            </a>
-          </nav>
-            <!-- Log Out -->
-            
+
+        <div class="sidebar-section-title hd-mt-4" >Unified Ecosystem</div>
+        <nav class="sidebar-nav hd-mb-2" >
+          <a href="../VOSTOKPRIBOR Corporate Web Platform/index.php" class="sidebar-nav-item">
+            <div class="sidebar-item-left">
+              <span class="sidebar-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10" />
+                  <line x1="2" y1="12" x2="22" y2="12" />
+                  <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+                </svg>
+              </span>
+              <span>Corporate Platform</span>
+            </div>
+            <span class="sidebar-badge hd-text-xs" >SYS 01</span>
+          </a>
+          <a href="../Employee Intranet/index.php" class="sidebar-nav-item">
+            <div class="sidebar-item-left">
+              <span class="sidebar-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="3" width="7" height="7" />
+                  <rect x="14" y="3" width="7" height="7" />
+                  <rect x="14" y="14" width="7" height="7" />
+                  <rect x="3" y="14" width="7" height="7" />
+                </svg>
+              </span>
+              <span>Employee Intranet</span>
+            </div>
+            <span class="sidebar-badge hd-text-xs" >SYS 04</span>
+          </a>
+        </nav>
+        <!-- Log Out -->
+
         <div class="sidebar-footer">
           <div class="security-widget-card">
             <div class="security-widget-header">
               <span>Incident Response Gateway</span>
               <span class="security-badge-status">● LIVE</span>
             </div>
-            <div style="font-size: 11px; color: var(--hd-text-inverse-muted); margin-top: 2px;">
+            <div class="hd-text-inverse-muted-sm" >
               Active Escalations: <strong>3 P1 Incidents</strong>
             </div>
           </div>
@@ -177,43 +214,43 @@ requireAuth('IT');
           </div>
 
           <!-- Knowledge Cards Grid -->
-          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem;">
+          <div class="hd-grid-kb" >
             <!-- Article 1 -->
-            <div class="hd-card" style="border-top: 3.5px solid var(--hd-orange); cursor: pointer;" onclick="window.hdApp.showToast('Article Opened', 'KB-4091: SCADA Modbus RS-485 Optical Isolation SOP.')">
-              <div style="font-size: 10.5px; font-family: var(--hd-font-mono); color: var(--hd-orange); font-weight: 700; margin-bottom: 0.35rem;">KB-4091 · SCADA NETWORKING</div>
-              <h3 style="font-size: 14px; font-weight: 700; color: var(--hd-navy); margin-bottom: 0.4rem;">RS-485 Modbus Serial EMI Troubleshooting</h3>
-              <p style="font-size: 12px; color: var(--hd-text-secondary); line-height: 1.5; margin-bottom: 0.85rem;">
+            <div class="hd-card hd-card-kb-orange"  onclick="window.hdApp.showToast('Article Opened', 'KB-4091: SCADA Modbus RS-485 Optical Isolation SOP.')">
+              <div class="hd-kb-cat-orange" >KB-4091 · SCADA NETWORKING</div>
+              <h3 class="hd-kb-title" >RS-485 Modbus Serial EMI Troubleshooting</h3>
+              <p class="hd-kb-desc" >
                 Step-by-step failover procedure for Moxa MB3170 gateways when induction furnace interference degrades copper bus signal-to-noise ratio.
               </p>
-              <div style="display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: var(--hd-text-muted);">
+              <div class="hd-kb-footer-meta" >
                 <span>Updated 3 days ago</span>
-                <span style="font-weight: 600; color: var(--hd-navy);">Read Runbook →</span>
+                <span class="hd-font-semibold-navy" >Read Runbook →</span>
               </div>
             </div>
 
             <!-- Article 2 -->
-            <div class="hd-card" style="border-top: 3.5px solid var(--hd-steel-blue); cursor: pointer;" onclick="window.hdApp.showToast('Article Opened', 'KB-3184: Cleanroom Airlock Interlock Recovery.')">
-              <div style="font-size: 10.5px; font-family: var(--hd-font-mono); color: var(--hd-steel-blue); font-weight: 700; margin-bottom: 0.35rem;">KB-3184 · ACCESS CONTROL</div>
-              <h3 style="font-size: 14px; font-weight: 700; color: var(--hd-navy); margin-bottom: 0.4rem;">Cleanroom ISO Class 4 Airlock Interlock Recovery</h3>
-              <p style="font-size: 12px; color: var(--hd-text-secondary); line-height: 1.5; margin-bottom: 0.85rem;">
+            <div class="hd-card hd-card-kb-steel"  onclick="window.hdApp.showToast('Article Opened', 'KB-3184: Cleanroom Airlock Interlock Recovery.')">
+              <div class="hd-kb-cat-steel" >KB-3184 · ACCESS CONTROL</div>
+              <h3 class="hd-kb-title" >Cleanroom ISO Class 4 Airlock Interlock Recovery</h3>
+              <p class="hd-kb-desc" >
                 Emergency bypass protocols, RFID reader recalibration, and pressure differential sensor zeroing for cleanroom bays A through D.
               </p>
-              <div style="display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: var(--hd-text-muted);">
+              <div class="hd-kb-footer-meta" >
                 <span>Updated 1 week ago</span>
-                <span style="font-weight: 600; color: var(--hd-navy);">Read Runbook →</span>
+                <span class="hd-font-semibold-navy" >Read Runbook →</span>
               </div>
             </div>
 
             <!-- Article 3 -->
-            <div class="hd-card" style="border-top: 3.5px solid var(--hd-success); cursor: pointer;" onclick="window.hdApp.showToast('Article Opened', 'KB-2015: ISO 9001 PKI Certificate Renewal.')">
-              <div style="font-size: 10.5px; font-family: var(--hd-font-mono); color: var(--hd-success); font-weight: 700; margin-bottom: 0.35rem;">KB-2015 · PKI INFRASTRUCTURE</div>
-              <h3 style="font-size: 14px; font-weight: 700; color: var(--hd-navy); margin-bottom: 0.4rem;">Hardware Security Module (HSM) Token Renewal</h3>
-              <p style="font-size: 12px; color: var(--hd-text-secondary); line-height: 1.5; margin-bottom: 0.85rem;">
+            <div class="hd-card hd-card-kb-success"  onclick="window.hdApp.showToast('Article Opened', 'KB-2015: ISO 9001 PKI Certificate Renewal.')">
+              <div class="hd-kb-cat-success" >KB-2015 · PKI INFRASTRUCTURE</div>
+              <h3 class="hd-kb-title" >Hardware Security Module (HSM) Token Renewal</h3>
+              <p class="hd-kb-desc" >
                 Cryptographic key issuance and CSR generation for automated test sign-off compliant with GOST R 34.12-2015 algorithms.
               </p>
-              <div style="display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: var(--hd-text-muted);">
+              <div class="hd-kb-footer-meta" >
                 <span>Updated 2 weeks ago</span>
-                <span style="font-weight: 600; color: var(--hd-navy);">Read Runbook →</span>
+                <span class="hd-font-semibold-navy" >Read Runbook →</span>
               </div>
             </div>
           </div>
@@ -225,4 +262,5 @@ requireAuth('IT');
   <div id="toast-container"></div>
   <script src="js/app.js"></script>
 </body>
+
 </html>

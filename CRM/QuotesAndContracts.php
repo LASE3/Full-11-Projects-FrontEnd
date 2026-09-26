@@ -5,12 +5,14 @@ requireAuth('CRM');
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>VOSTOKPRIBOR CRM · Quotes &amp; Contracts Matrix</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
+
 <body>
 
   <div class="app-container">
@@ -30,7 +32,7 @@ requireAuth('CRM');
               <div class="brand-subline">
                 <span class="status-dot-pulse"></span>
                 <span>crm.vostokpribor.local</span>
-                <span style="opacity: 0.5;">|</span>
+                <span class="crm-opacity-50" >|</span>
                 <span>CONTRACTS REGISTRY</span>
               </div>
             </div>
@@ -47,14 +49,17 @@ requireAuth('CRM');
 
         <div class="top-nav__actions">
           <div class="pipeline-sync-badge">
-            <span style="color: #2ECC71;">●</span>
+            <span class="crm-status-success" >●</span>
             <span>Sync: <strong>Active 99.98%</strong></span>
           </div>
           <button class="btn btn-primary-amber btn-sm" onclick="window.crmApp.openModal('modal-new-quote')">
             <span>+ Create Quote</span>
           </button>
           <button class="icon-button" title="Telemetry" onclick="window.crmApp.showToast('Contract Sealed', 'MSA-2024-SVST-088 encrypted EDS seal verified by GOST key.')">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+              <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+            </svg>
             <span class="badge-dot"></span>
           </button>
           <div class="top-user-profile" onclick="window.crmApp.showToast('User Clearance', 'Mikhail Sorokin · Level 4 Authorization')">
@@ -65,10 +70,10 @@ requireAuth('CRM');
             </div>
           </div>
         </div>
-      
-<!-- Top Bar Sign Out -->
-<a href="../api/logout.php?system=CRM&redirect=../CRM/login.php" class="top-signout-btn" title="Sign Out of CRM" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" style="display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:4px;background:rgba(178,58,50,0.2);border:1px solid rgba(178,58,50,0.5);color:#FF8080;font-size:12px;font-weight:600;text-decoration:none;cursor:pointer;margin-left:8px;vertical-align:middle;transition:all 0.2s;" onmouseover="this.style.background='rgba(178,58,50,0.4)';this.style.color='#FFFFFF'" onmouseout="this.style.background='rgba(178,58,50,0.2)';this.style.color='#FF8080'"><span class="material-symbols-outlined" style="font-size:15px;line-height:1;">logout</span><span>Sign Out</span></a>
-</div>
+
+        <!-- Top Bar Sign Out -->
+        <a href="../api/logout.php?system=CRM&redirect=../CRM/login.php" class="top-signout-btn" title="Sign Out of CRM" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" ><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
+      </div>
     </header>
 
     <div class="main-layout">
@@ -80,7 +85,12 @@ requireAuth('CRM');
             <a href="Dashboard.php" class="sidebar-nav-item">
               <div class="sidebar-item-left">
                 <span class="sidebar-icon">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="7" height="7" />
+                    <rect x="14" y="3" width="7" height="7" />
+                    <rect x="14" y="14" width="7" height="7" />
+                    <rect x="3" y="14" width="7" height="7" />
+                  </svg>
                 </span>
                 <span>Dashboard</span>
               </div>
@@ -89,7 +99,12 @@ requireAuth('CRM');
             <a href="Leads.php" class="sidebar-nav-item">
               <div class="sidebar-item-left">
                 <span class="sidebar-icon">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                    <circle cx="9" cy="7" r="4" />
+                    <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                  </svg>
                 </span>
                 <span>Leads</span>
               </div>
@@ -99,7 +114,14 @@ requireAuth('CRM');
             <a href="Customers.php" class="sidebar-nav-item">
               <div class="sidebar-item-left">
                 <span class="sidebar-icon">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18"/><path d="M5 21V7l8-4v18"/><path d="M19 21V11l-6-4"/><path d="M9 9h1"/><path d="M9 13h1"/><path d="M9 17h1"/></svg>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 21h18" />
+                    <path d="M5 21V7l8-4v18" />
+                    <path d="M19 21V11l-6-4" />
+                    <path d="M9 9h1" />
+                    <path d="M9 13h1" />
+                    <path d="M9 17h1" />
+                  </svg>
                 </span>
                 <span>Customers</span>
               </div>
@@ -109,7 +131,10 @@ requireAuth('CRM');
             <a href="Opportunities.php" class="sidebar-nav-item">
               <div class="sidebar-item-left">
                 <span class="sidebar-icon">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 14 14"/></svg>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10" />
+                    <polyline points="12 6 12 12 14 14" />
+                  </svg>
                 </span>
                 <span>Opportunities</span>
               </div>
@@ -120,7 +145,12 @@ requireAuth('CRM');
             <a href="QuotesAndContracts.php" class="sidebar-nav-item active">
               <div class="sidebar-item-left">
                 <span class="sidebar-icon">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                    <polyline points="14 2 14 8 20 8" />
+                    <line x1="16" y1="13" x2="8" y2="13" />
+                    <line x1="16" y1="17" x2="8" y2="17" />
+                  </svg>
                 </span>
                 <span>Quotes &amp; Contracts</span>
               </div>
@@ -130,7 +160,11 @@ requireAuth('CRM');
             <a href="Projects.php" class="sidebar-nav-item">
               <div class="sidebar-item-left">
                 <span class="sidebar-icon">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon points="12 2 2 7 12 12 22 7 12 2" />
+                    <polyline points="2 17 12 22 22 17" />
+                    <polyline points="2 12 12 17 22 12" />
+                  </svg>
                 </span>
                 <span>Projects</span>
               </div>
@@ -140,7 +174,11 @@ requireAuth('CRM');
             <a href="SalesForecast.php" class="sidebar-nav-item">
               <div class="sidebar-item-left">
                 <span class="sidebar-icon">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="20" x2="18" y2="10" />
+                    <line x1="12" y1="20" x2="12" y2="4" />
+                    <line x1="6" y1="20" x2="6" y2="14" />
+                  </svg>
                 </span>
                 <span>Sales Forecast</span>
               </div>
@@ -149,38 +187,47 @@ requireAuth('CRM');
           </nav>
         </div>
 
-        
-                      <div class="sidebar-section-title" style="margin-top: 1rem;">Unified Ecosystem</div>
-          <nav class="sidebar-nav" style="margin-bottom: 0.5rem;">
-            <a href="../VOSTOKPRIBOR Corporate Web Platform/index.php" class="sidebar-nav-item">
-              <div class="sidebar-item-left">
-                <span class="sidebar-icon">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-                </span>
-                <span>Corporate Platform</span>
-              </div>
-              <span class="sidebar-badge" style="font-size: 10px;">SYS 01</span>
-            </a>
-            <a href="../Employee Intranet/index.php" class="sidebar-nav-item">
-              <div class="sidebar-item-left">
-                <span class="sidebar-icon">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-                </span>
-                <span>Employee Intranet</span>
-              </div>
-              <span class="sidebar-badge" style="font-size: 10px;">SYS 04</span>
-            </a>
-          </nav>
-            <!-- Log Out -->
-            
+
+        <div class="sidebar-section-title crm-mt-4" >Unified Ecosystem</div>
+        <nav class="sidebar-nav crm-mb-2" >
+          <a href="../VOSTOKPRIBOR Corporate Web Platform/index.php" class="sidebar-nav-item">
+            <div class="sidebar-item-left">
+              <span class="sidebar-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10" />
+                  <line x1="2" y1="12" x2="22" y2="12" />
+                  <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+                </svg>
+              </span>
+              <span>Corporate Platform</span>
+            </div>
+            <span class="sidebar-badge crm-text-xs" >SYS 01</span>
+          </a>
+          <a href="../Employee Intranet/index.php" class="sidebar-nav-item">
+            <div class="sidebar-item-left">
+              <span class="sidebar-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="3" width="7" height="7" />
+                  <rect x="14" y="3" width="7" height="7" />
+                  <rect x="14" y="14" width="7" height="7" />
+                  <rect x="3" y="14" width="7" height="7" />
+                </svg>
+              </span>
+              <span>Employee Intranet</span>
+            </div>
+            <span class="sidebar-badge crm-text-xs" >SYS 04</span>
+          </a>
+        </nav>
+        <!-- Log Out -->
+
         <div class="sidebar-footer">
           <div class="quota-widget-card">
             <div class="quota-widget-header">
               <span>FY2024 Q4 Quota Target</span>
-              <strong style="color: var(--crm-amber);">82%</strong>
+              <strong class="crm-text-amber" >82%</strong>
             </div>
             <div class="quota-progress-track">
-              <div class="quota-progress-bar" style="width: 82%;"></div>
+              <div class="quota-progress-bar crm-w-82" ></div>
             </div>
             <div class="quota-widget-footer">
               <span class="quota-val-current">$18.45M</span>
@@ -218,14 +265,14 @@ requireAuth('CRM');
 
           <!-- KPI Strip -->
           <div class="kpi-grid">
-            <div class="crm-card kpi-card" style="border-top-color: var(--crm-tag-confidential);">
+            <div class="crm-card kpi-card crm-border-t-confidential" >
               <div class="kpi-header">
                 <span class="kpi-title">Governed Contract Value</span>
-                <div class="kpi-icon-pill" style="background: var(--crm-tag-confidential-bg); color: var(--crm-tag-confidential);">🔒</div>
+                <div class="kpi-icon-pill crm-badge-confidential" >🔒</div>
               </div>
               <div class="kpi-value-row">
                 <span class="kpi-value kpi-value-mono">$32.4M</span>
-                <span style="font-size: 12px; color: var(--crm-text-muted);">TCV</span>
+                <span class="crm-text-muted-12" >TCV</span>
               </div>
               <div class="kpi-footer">
                 <span>19 Master Contracts</span>
@@ -240,7 +287,7 @@ requireAuth('CRM');
               </div>
               <div class="kpi-value-row">
                 <span class="kpi-value kpi-value-mono">100%</span>
-                <span style="font-size: 12px; color: var(--crm-text-muted);">GOST R 34.10</span>
+                <span class="crm-text-muted-12" >GOST R 34.10</span>
               </div>
               <div class="kpi-footer">
                 <span>All Electronic Seals Valid</span>
@@ -255,7 +302,7 @@ requireAuth('CRM');
               </div>
               <div class="kpi-value-row">
                 <span class="kpi-value kpi-value-mono">8</span>
-                <span style="font-size: 12px; color: var(--crm-text-muted);">Active Quotes</span>
+                <span class="crm-text-muted-12" >Active Quotes</span>
               </div>
               <div class="kpi-footer">
                 <span>Value: <strong>$6.12M</strong></span>
@@ -270,7 +317,7 @@ requireAuth('CRM');
               </div>
               <div class="kpi-value-row">
                 <span class="kpi-value kpi-value-mono">4</span>
-                <span style="font-size: 12px; color: var(--crm-text-muted);">Contracts</span>
+                <span class="crm-text-muted-12" >Contracts</span>
               </div>
               <div class="kpi-footer">
                 <span>Value: <strong>$8.9M</strong></span>
@@ -280,21 +327,21 @@ requireAuth('CRM');
           </div>
 
           <!-- Section 1: "Highly Confidential" Alert-Red (#B23A32) Tagged Master Contracts Registry -->
-          <div class="confidential-contract-card" style="margin-bottom: 1.5rem;">
+          <div class="confidential-contract-card crm-mb-6" >
             <div class="confidential-badge-banner">
-              <div style="display: flex; align-items: center; gap: 0.75rem;">
+              <div class="crm-flex-gap-md" >
                 <span class="confidential-pill">
                   <span>🔒</span>
                   <span>HIGHLY CONFIDENTIAL LEGAL REGISTRY</span>
                 </span>
-                <span style="font-size: 12px; color: var(--crm-text-secondary); font-weight: 600;">Tier-4 Commercial Governance (GOST Electronic Signature Verified)</span>
+                <span class="crm-text-secondary-12" >Tier-4 Commercial Governance (GOST Electronic Signature Verified)</span>
               </div>
-              <span style="font-family: var(--crm-font-mono); font-size: 11px; font-weight: 700; color: var(--crm-tag-confidential);">
+              <span class="crm-mono-bold-confidential" >
                 19 ACTIVE MASTER AGREEMENTS
               </span>
             </div>
 
-            <table class="accounts-table" style="background: transparent;">
+            <table class="accounts-table crm-bg-transparent" >
               <thead>
                 <tr>
                   <th>Contract ID &amp; Document</th>
@@ -308,16 +355,16 @@ requireAuth('CRM');
               <tbody>
                 <tr>
                   <td>
-                    <strong style="font-family: var(--crm-font-mono); color: var(--crm-tag-confidential);">MSA-2024-SVST-088</strong>
-                    <div style="font-size: 11.5px; color: var(--crm-navy);">Master Automation Equipment &amp; SCADA Services Agreement</div>
+                    <strong class="crm-mono-confidential" >MSA-2024-SVST-088</strong>
+                    <div class="crm-text-navy-11" >Master Automation Equipment &amp; SCADA Services Agreement</div>
                   </td>
                   <td>
                     <strong>Severstal Metallurgy PJSC</strong>
-                    <div style="font-size: 11px; color: var(--crm-text-muted);">Cherepovets Plant #4</div>
+                    <div class="crm-text-muted-sm" >Cherepovets Plant #4</div>
                   </td>
                   <td>Jan 01, 2024 – Dec 31, 2026</td>
-                  <td><strong style="font-family: var(--crm-font-mono); font-size: 14px; color: var(--crm-navy);">$14,250,000.00</strong></td>
-                  <td><span class="tier-badge" style="background-color: var(--crm-success-light); color: var(--crm-success);">✓ Counter-Signed</span></td>
+                  <td><strong class="crm-mono-navy-lg" >$14,250,000.00</strong></td>
+                  <td><span class="tier-badge crm-badge-success" >✓ Counter-Signed</span></td>
                   <td>
                     <button class="btn btn-outline btn-sm" onclick="window.crmApp.showToast('Secure Download', 'Decrypted document MSA-2024-SVST-088.pdf downloaded.')">Download 🔒</button>
                   </td>
@@ -325,16 +372,16 @@ requireAuth('CRM');
 
                 <tr>
                   <td>
-                    <strong style="font-family: var(--crm-font-mono); color: var(--crm-tag-confidential);">MSA-2023-NN-014</strong>
-                    <div style="font-size: 11.5px; color: var(--crm-navy);">Talnakh Concentrator Multi-Year Telemetry &amp; Field Sensor MSA</div>
+                    <strong class="crm-mono-confidential" >MSA-2023-NN-014</strong>
+                    <div class="crm-text-navy-11" >Talnakh Concentrator Multi-Year Telemetry &amp; Field Sensor MSA</div>
                   </td>
                   <td>
                     <strong>Norilsk Nickel Mining</strong>
-                    <div style="font-size: 11px; color: var(--crm-text-muted);">Polar Division</div>
+                    <div class="crm-text-muted-sm" >Polar Division</div>
                   </td>
                   <td>Nov 15, 2023 – Nov 14, 2025</td>
-                  <td><strong style="font-family: var(--crm-font-mono); font-size: 14px; color: var(--crm-navy);">$8,400,000.00</strong></td>
-                  <td><span class="tier-badge" style="background-color: var(--crm-success-light); color: var(--crm-success);">✓ Counter-Signed</span></td>
+                  <td><strong class="crm-mono-navy-lg" >$8,400,000.00</strong></td>
+                  <td><span class="tier-badge crm-badge-success" >✓ Counter-Signed</span></td>
                   <td>
                     <button class="btn btn-outline btn-sm" onclick="window.crmApp.showToast('Secure Download', 'Decrypted document MSA-2023-NN-014.pdf downloaded.')">Download 🔒</button>
                   </td>
@@ -342,16 +389,16 @@ requireAuth('CRM');
 
                 <tr>
                   <td>
-                    <strong style="font-family: var(--crm-font-mono); color: var(--crm-tag-confidential);">SLA-2024-TIER1</strong>
-                    <div style="font-size: 11.5px; color: var(--crm-navy);">24/7 Field Engineering Specialist &amp; Incident SLA Support Coverage</div>
+                    <strong class="crm-mono-confidential" >SLA-2024-TIER1</strong>
+                    <div class="crm-text-navy-11" >24/7 Field Engineering Specialist &amp; Incident SLA Support Coverage</div>
                   </td>
                   <td>
                     <strong>Severstal Metallurgy PJSC</strong>
-                    <div style="font-size: 11px; color: var(--crm-text-muted);">Enterprise Wide</div>
+                    <div class="crm-text-muted-sm" >Enterprise Wide</div>
                   </td>
                   <td>Jan 01, 2024 – Dec 31, 2025</td>
-                  <td><strong style="font-family: var(--crm-font-mono); font-size: 14px; color: var(--crm-navy);">$850,000.00 / yr</strong></td>
-                  <td><span class="tier-badge" style="background-color: var(--crm-success-light); color: var(--crm-success);">✓ Active SLA</span></td>
+                  <td><strong class="crm-mono-navy-lg" >$850,000.00 / yr</strong></td>
+                  <td><span class="tier-badge crm-badge-success" >✓ Active SLA</span></td>
                   <td>
                     <button class="btn btn-outline btn-sm" onclick="window.crmApp.showToast('Secure Download', 'Decrypted document SLA-2024-TIER1.pdf downloaded.')">Download 🔒</button>
                   </td>
@@ -359,16 +406,16 @@ requireAuth('CRM');
 
                 <tr>
                   <td>
-                    <strong style="font-family: var(--crm-font-mono); color: var(--crm-tag-confidential);">NDA-VP-SVR-90214</strong>
-                    <div style="font-size: 11.5px; color: var(--crm-navy);">Bilateral Non-Disclosure Agreement for Industrial Proprietary Telemetry</div>
+                    <strong class="crm-mono-confidential" >NDA-VP-SVR-90214</strong>
+                    <div class="crm-text-navy-11" >Bilateral Non-Disclosure Agreement for Industrial Proprietary Telemetry</div>
                   </td>
                   <td>
                     <strong>Severstal Metallurgy PJSC</strong>
-                    <div style="font-size: 11px; color: var(--crm-text-muted);">Legal Dept.</div>
+                    <div class="crm-text-muted-sm" >Legal Dept.</div>
                   </td>
                   <td>Dec 01, 2023 – Dec 01, 2028</td>
-                  <td><strong style="font-family: var(--crm-font-mono); font-size: 14px; color: var(--crm-navy);">Unlimited Scope</strong></td>
-                  <td><span class="tier-badge" style="background-color: var(--crm-indigo-light); color: var(--crm-indigo);">✓ Electronic Seal</span></td>
+                  <td><strong class="crm-mono-navy-lg" >Unlimited Scope</strong></td>
+                  <td><span class="tier-badge crm-badge-indigo" >✓ Electronic Seal</span></td>
                   <td>
                     <button class="btn btn-outline btn-sm" onclick="window.crmApp.showToast('Secure Download', 'Decrypted document NDA-VP-SVR-90214.pdf downloaded.')">Download 🔒</button>
                   </td>
@@ -382,7 +429,7 @@ requireAuth('CRM');
             <div class="card-header-row">
               <div>
                 <h3 class="card-title">Commercial Quotations (Pending &amp; Delivered)</h3>
-                <p style="font-size: 11.5px; color: var(--crm-text-secondary); margin-top: 2px;">
+                <p class="crm-meta-subtext" >
                   Engineering quotes marked with amber-orange left border classification tags
                 </p>
               </div>
@@ -402,19 +449,19 @@ requireAuth('CRM');
               </thead>
               <tbody>
                 <tr class="account-row account-row-tagged">
-                  <td><strong style="font-family: var(--crm-font-mono); color: var(--crm-indigo);">QUO-2024-9912</strong></td>
+                  <td><strong class="crm-mono-indigo" >QUO-2024-9912</strong></td>
                   <td><strong>NLMK Group Lipetsk</strong></td>
                   <td>16x High-Pressure Flowmeters HPF-900X with Hastelloy C Flanges</td>
-                  <td><strong style="font-family: var(--crm-font-mono);">$396,400.00</strong></td>
+                  <td><strong class="crm-mono" >$396,400.00</strong></td>
                   <td>Valid thru Dec 15, 2024</td>
                   <td><span class="tier-badge tier-1">Delivered</span></td>
                   <td><button class="btn btn-outline btn-sm" onclick="window.crmApp.showToast('Quote View', 'Opening Quote Spec QUO-2024-9912.')">View Spec →</button></td>
                 </tr>
                 <tr class="account-row account-row-tagged">
-                  <td><strong style="font-family: var(--crm-font-mono); color: var(--crm-indigo);">QUO-2024-9918</strong></td>
+                  <td><strong class="crm-mono-indigo" >QUO-2024-9918</strong></td>
                   <td><strong>Norilsk Nickel Mining</strong></td>
                   <td>Flotation Sensor Array &amp; SCADA Gateway Hardware</td>
-                  <td><strong style="font-family: var(--crm-font-mono);">$2,400,000.00</strong></td>
+                  <td><strong class="crm-mono" >$2,400,000.00</strong></td>
                   <td>Valid thru Jan 10, 2025</td>
                   <td><span class="tier-badge strategic">In Negotiation</span></td>
                   <td><button class="btn btn-outline btn-sm" onclick="window.crmApp.showToast('Quote View', 'Opening Quote Spec QUO-2024-9918.')">View Spec →</button></td>
@@ -448,7 +495,7 @@ requireAuth('CRM');
           <label class="form-label">Equipment Specification Item</label>
           <input type="text" class="form-input" placeholder="e.g. Optical Thickness Sensor Gauges Batch" required />
         </div>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+        <div class="crm-grid-2col" >
           <div class="form-group">
             <label class="form-label">Total Quotation Value (USD)</label>
             <input type="number" class="form-input" placeholder="450000" required />
@@ -472,4 +519,5 @@ requireAuth('CRM');
   <script src="../assets/js/api-client.js"></script>
   <script src="js/crm-data.js"></script>
 </body>
+
 </html>

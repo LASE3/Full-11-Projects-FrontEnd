@@ -4,41 +4,44 @@
  */
 
 (function () {
-    'use strict';
+  "use strict";
 
-    /**
-     * Export Facility Telemetry Report (.PDF)
-     */
-    window.exportTelemetryPDF = function () {
-        if (window.showToast) {
-            window.showToast('Telemetry Archive Exported', 'Severstal_BF5_Telemetry_Report_2024.pdf compiled & cryptographically stamped.', 'success');
-        }
-    };
-
-    /**
-     * Connect directly to Assigned Manager Viktor Morozov
-     */
-    window.contactManager = function () {
-        window.location.href = 'SupportTicketView.php?ticket=TCK-9482';
-    };
-
-    /**
-     * Simulate live SCADA micro-fluctuations on dashboard gauges
-     */
-    function initLiveMetricsTicker() {
-        const tempEl = document.getElementById('dash-bf5-temp');
-        if (tempEl) {
-            setInterval(() => {
-                const baseTemp = 1350;
-                const jitter = (Math.random() * 4 - 2).toFixed(1);
-                tempEl.textContent = `${(baseTemp + parseFloat(jitter)).toFixed(1)}°C`;
-            }, 3000);
-        }
+  /**
+   * Export Facility Telemetry Report (.PDF)
+   */
+  window.exportTelemetryPDF = function () {
+    if (window.showToast) {
+      window.showToast(
+        "Telemetry Archive Exported",
+        "Severstal_BF5_Telemetry_Report_2024.pdf compiled & cryptographically stamped.",
+        "success",
+      );
     }
+  };
 
-    // Initialize on DOM load
-    document.addEventListener('DOMContentLoaded', () => {
-        initLiveMetricsTicker();
-    });
+  /**
+   * Connect directly to Assigned Manager Viktor Morozov
+   */
+  window.contactManager = function () {
+    window.location.href = "SupportTicketView.php?ticket=TCK-9482";
+  };
 
+  /**
+   * Simulate live SCADA micro-fluctuations on dashboard gauges
+   */
+  function initLiveMetricsTicker() {
+    const tempEl = document.getElementById("dash-bf5-temp");
+    if (tempEl) {
+      setInterval(() => {
+        const baseTemp = 1350;
+        const jitter = (Math.random() * 4 - 2).toFixed(1);
+        tempEl.textContent = `${(baseTemp + parseFloat(jitter)).toFixed(1)}°C`;
+      }, 3000);
+    }
+  }
+
+  // Initialize on DOM load
+  document.addEventListener("DOMContentLoaded", () => {
+    initLiveMetricsTicker();
+  });
 })();

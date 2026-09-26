@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Class 5: CRM Platform - Leads API
  * Location: api/v1/crm/leads.php
@@ -69,10 +70,11 @@ if ($method === 'GET') {
             foreach ($leads as &$ld) {
                 $ld['status_display'] = I18n::translate($ld['status'], $lang);
             }
+            unset($ld);
 
             Response::success($leads, "Leads loaded");
         }
-    } catch (Exception $e) {
+    } catch (Throwable $e) {
         Response::error("Failed to load leads: " . $e->getMessage(), 500);
     }
 }
@@ -83,8 +85,7 @@ if ($method === 'POST') {
     $action = $_GET['action'] ?? 'create';
 
     if ($action === 'convert') {
-        // Convert Lead -> Customer & Opportunity
-        $leadId = (int)($data['lead_id'] ?? 0);
+        $leadId = (int)($data['lead_id'] ?? $_GET['lead_id'] ?? 0);
         $dealValue = (float)($data['estimated_value'] ?? 350000.00);
 
         try {
@@ -139,9 +140,15 @@ if ($method === 'POST') {
 
             // 4. Log Audit Event
             AuditLogger::logAction(
-                $salesRep, null, 'CRM Platform', 'CRM',
-                'CONVERT_COMMERCIAL_LEAD', 'opportunities', (string)$oppId,
-                ['cus_id' => $cusId, 'deal_value' => $dealValue], 'SUCCESS'
+                $salesRep,
+                null,
+                'CRM Platform',
+                'CRM',
+                'CONVERT_COMMERCIAL_LEAD',
+                'opportunities',
+                (string)$oppId,
+                ['cus_id' => $cusId, 'deal_value' => $dealValue],
+                'SUCCESS'
             );
 
             $pdo->commit();
@@ -153,7 +160,6 @@ if ($method === 'POST') {
                 'stage'   => 'Proposal',
                 'stage_display' => I18n::translate('Proposal', $lang)
             ], "Lead converted to Opportunity successfully", 201);
-
         } catch (Exception $e) {
             $pdo->rollBack();
             Response::error("Conversion failed: " . $e->getMessage(), 400);

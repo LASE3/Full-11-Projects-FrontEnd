@@ -4,52 +4,52 @@
  */
 
 (function () {
-    'use strict';
+  "use strict";
 
-    /**
-     * Filter orders table by search query, status, and facility sector
-     */
-    window.filterOrders = function () {
-        const searchInput = document.getElementById('tableSearch');
-        const statusSelect = document.getElementById('statusFilter');
-        const facilitySelect = document.getElementById('facilityFilter');
+  /**
+   * Filter orders table by search query, status, and facility sector
+   */
+  window.filterOrders = function () {
+    const searchInput = document.getElementById("tableSearch");
+    const statusSelect = document.getElementById("statusFilter");
+    const facilitySelect = document.getElementById("facilityFilter");
 
-        const searchVal = searchInput ? searchInput.value.toLowerCase() : '';
-        const statusVal = statusSelect ? statusSelect.value : 'ALL';
-        const facilityVal = facilitySelect ? facilitySelect.value : 'ALL';
-        const rows = document.querySelectorAll('#ordersTable tbody tr');
-        let visible = 0;
+    const searchVal = searchInput ? searchInput.value.toLowerCase() : "";
+    const statusVal = statusSelect ? statusSelect.value : "ALL";
+    const facilityVal = facilitySelect ? facilitySelect.value : "ALL";
+    const rows = document.querySelectorAll("#ordersTable tbody tr");
+    let visible = 0;
 
-        rows.forEach(row => {
-            const text = row.innerText.toLowerCase();
-            const status = row.getAttribute('data-status');
-            const facility = row.getAttribute('data-facility');
+    rows.forEach((row) => {
+      const text = row.innerText.toLowerCase();
+      const status = row.getAttribute("data-status");
+      const facility = row.getAttribute("data-facility");
 
-            const matchSearch = text.includes(searchVal);
-            const matchStatus = (statusVal === 'ALL' || status === statusVal);
-            const matchFacility = (facilityVal === 'ALL' || facility === facilityVal);
+      const matchSearch = text.includes(searchVal);
+      const matchStatus = statusVal === "ALL" || status === statusVal;
+      const matchFacility = facilityVal === "ALL" || facility === facilityVal;
 
-            if (matchSearch && matchStatus && matchFacility) {
-                row.style.display = '';
-                visible++;
-            } else {
-                row.style.display = 'none';
-            }
-        });
+      if (matchSearch && matchStatus && matchFacility) {
+        row.style.display = "";
+        visible++;
+      } else {
+        row.style.display = "none";
+      }
+    });
 
-        const recordCount = document.getElementById('recordCount');
-        if (recordCount) {
-            recordCount.innerText = `${visible} of 18`;
-        }
-    };
+    const recordCount = document.getElementById("recordCount");
+    if (recordCount) {
+      recordCount.innerText = `${visible} of 18`;
+    }
+  };
 
-    /**
-     * Display interactive live carrier telemetry stream modal
-     */
-    window.showLiveTelemetryModal = function (orderId = 'ORD-2024-8812') {
-        if (!window.openModal) return;
+  /**
+   * Display interactive live carrier telemetry stream modal
+   */
+  window.showLiveTelemetryModal = function (orderId = "ORD-2024-8812") {
+    if (!window.openModal) return;
 
-        window.openModal(`
+    window.openModal(`
             <div class="flex flex-col gap-4 text-left">
                 <div class="flex items-center justify-between pb-3 border-b border-outline/20">
                     <div class="flex items-center gap-3">
@@ -105,17 +105,16 @@
                 </div>
             </div>
         `);
-    };
+  };
 
-    /**
-     * Check query parameters for automatic modal triggers or order focus
-     */
-    document.addEventListener('DOMContentLoaded', () => {
-        const params = new URLSearchParams(window.location.search);
-        if (params.get('telemetry') === 'true') {
-            const orderRef = params.get('order') || 'ORD-2024-8812';
-            setTimeout(() => window.showLiveTelemetryModal(orderRef), 400);
-        }
-    });
-
+  /**
+   * Check query parameters for automatic modal triggers or order focus
+   */
+  document.addEventListener("DOMContentLoaded", () => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("telemetry") === "true") {
+      const orderRef = params.get("order") || "ORD-2024-8812";
+      setTimeout(() => window.showLiveTelemetryModal(orderRef), 400);
+    }
+  });
 })();

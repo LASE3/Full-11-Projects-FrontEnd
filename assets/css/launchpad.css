@@ -1,0 +1,23 @@
+/**
+ * VOSTOKPRIBOR Launchpad Styles
+ */
+
+body.vostok-launchpad {
+    background-color: #0B1520;
+    background-image:
+        radial-gradient(circle at 10% 20%, rgba(14, 124, 134, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 90% 80%, rgba(178, 58, 50, 0.06) 0%, transparent 40%),
+        linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+    background-size: 100% 100%, 100% 100%, 32px 32px, 32px 32px;
+}
+
+.system-card {
+    transition: all 0.25s ease;
+}
+
+.system-card:hover {
+    transform: translateY(-3px);
+    border-color: rgba(14, 124, 134, 0.6);
+    box-shadow: 0 12px 24px -10px rgba(0, 0, 0, 0.5);
+}

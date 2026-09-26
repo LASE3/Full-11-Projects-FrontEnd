@@ -7,47 +7,151 @@
  */
 
 (function () {
-
   const SYSTEM_PRESETS = {
-    'SYS-06':   { accent: '#7B2CBF', hover: '#5A189A', glow: 'rgba(123,44,191,0.45)', bg1: '#0D0914', bg2: '#07050B', label: '06 · HR OPERATIONS' },
-    'HR':       { accent: '#7B2CBF', hover: '#5A189A', glow: 'rgba(123,44,191,0.45)', bg1: '#0D0914', bg2: '#07050B', label: '06 · HR OPERATIONS' },
-    'SYS-01':   { accent: '#1B3A5C', hover: '#0F2438', glow: 'rgba(27,58,92,0.45)',   bg1: '#060D14', bg2: '#030810', label: '01 · CORPORATE' },
-    'SYS-02':   { accent: '#0E7C86', hover: '#095d65', glow: 'rgba(14,124,134,0.45)', bg1: '#04101A', bg2: '#020B0C', label: '02 · B2B SHOP'   },
-    'SYS-09':   { accent: '#10B981', hover: '#059669', glow: 'rgba(16,185,129,0.45)', bg1: '#0A1118', bg2: '#050B10', label: '03 · CUSTOMER'   },
-    'SYS-03':   { accent: '#5C7290', hover: '#47596f', glow: 'rgba(92,114,144,0.45)', bg1: '#0B0F13', bg2: '#06090C', label: '04 · INTRANET'   },
-    'SYS-05':   { accent: '#E8A33D', hover: '#D4902B', glow: 'rgba(232,163,61,0.45)', bg1: '#0C1017', bg2: '#070A0F', label: '05 · CRM'        },
-    'SYS-04':   { accent: '#2E6E4E', hover: '#22533B', glow: 'rgba(46,110,78,0.45)', bg1: '#060F09', bg2: '#030805', label: '07 · FINANCE'    },
-    'SYS-08':   { accent: '#C97A3D', hover: '#A65E2A', glow: 'rgba(201,122,61,0.45)', bg1: '#160C05', bg2: '#0D0703', label: '08 · HELPDESK'   },
-    'SYS-07':   { accent: '#5A6470', hover: '#434D57', glow: 'rgba(90,100,112,0.45)', bg1: '#0A0C0E', bg2: '#050607', label: '09 · FILE CENTER' },
-    'SYS-10':   { accent: '#1E8FA6', hover: '#156B7D', glow: 'rgba(30,143,166,0.45)', bg1: '#041014', bg2: '#02080D', label: '10 · DEVELOPER'  },
+    "SYS-06": {
+      accent: "#7B2CBF",
+      hover: "#5A189A",
+      glow: "rgba(123,44,191,0.45)",
+      bg1: "#0D0914",
+      bg2: "#07050B",
+      label: "06 · HR OPERATIONS",
+    },
+    HR: {
+      accent: "#7B2CBF",
+      hover: "#5A189A",
+      glow: "rgba(123,44,191,0.45)",
+      bg1: "#0D0914",
+      bg2: "#07050B",
+      label: "06 · HR OPERATIONS",
+    },
+    "SYS-01": {
+      accent: "#1B3A5C",
+      hover: "#0F2438",
+      glow: "rgba(27,58,92,0.45)",
+      bg1: "#060D14",
+      bg2: "#030810",
+      label: "01 · CORPORATE",
+    },
+    "SYS-02": {
+      accent: "#0E7C86",
+      hover: "#095d65",
+      glow: "rgba(14,124,134,0.45)",
+      bg1: "#04101A",
+      bg2: "#020B0C",
+      label: "02 · B2B SHOP",
+    },
+    "SYS-09": {
+      accent: "#10B981",
+      hover: "#059669",
+      glow: "rgba(16,185,129,0.45)",
+      bg1: "#0A1118",
+      bg2: "#050B10",
+      label: "03 · CUSTOMER",
+    },
+    "SYS-03": {
+      accent: "#5C7290",
+      hover: "#47596f",
+      glow: "rgba(92,114,144,0.45)",
+      bg1: "#0B0F13",
+      bg2: "#06090C",
+      label: "04 · INTRANET",
+    },
+    "SYS-05": {
+      accent: "#E8A33D",
+      hover: "#D4902B",
+      glow: "rgba(232,163,61,0.45)",
+      bg1: "#0C1017",
+      bg2: "#070A0F",
+      label: "05 · CRM",
+    },
+    "SYS-04": {
+      accent: "#2E6E4E",
+      hover: "#22533B",
+      glow: "rgba(46,110,78,0.45)",
+      bg1: "#060F09",
+      bg2: "#030805",
+      label: "07 · FINANCE",
+    },
+    "SYS-08": {
+      accent: "#C97A3D",
+      hover: "#A65E2A",
+      glow: "rgba(201,122,61,0.45)",
+      bg1: "#160C05",
+      bg2: "#0D0703",
+      label: "08 · HELPDESK",
+    },
+    "SYS-07": {
+      accent: "#5A6470",
+      hover: "#434D57",
+      glow: "rgba(90,100,112,0.45)",
+      bg1: "#0A0C0E",
+      bg2: "#050607",
+      label: "09 · FILE CENTER",
+    },
+    "SYS-10": {
+      accent: "#1E8FA6",
+      hover: "#156B7D",
+      glow: "rgba(30,143,166,0.45)",
+      bg1: "#041014",
+      bg2: "#02080D",
+      label: "10 · DEVELOPER",
+    },
   };
 
   const SENTIMENT = {
-    error:   { accent: '#B23A32', hover: '#8F2C25', glow: 'rgba(178,58,50,0.5)',  bg1: '#1C0808', bg2: '#0F0404' },
-    success: { accent: '#1E7E4E', hover: '#16623D', glow: 'rgba(30,126,78,0.45)', bg1: '#051209', bg2: '#030905' },
-    warning: { accent: '#E8A33D', hover: '#D9822B', glow: 'rgba(232,163,61,0.45)',bg1: '#1A1104', bg2: '#0D0A02' },
+    error: {
+      accent: "#B23A32",
+      hover: "#8F2C25",
+      glow: "rgba(178,58,50,0.5)",
+      bg1: "#1C0808",
+      bg2: "#0F0404",
+    },
+    success: {
+      accent: "#1E7E4E",
+      hover: "#16623D",
+      glow: "rgba(30,126,78,0.45)",
+      bg1: "#051209",
+      bg2: "#030905",
+    },
+    warning: {
+      accent: "#E8A33D",
+      hover: "#D9822B",
+      glow: "rgba(232,163,61,0.45)",
+      bg1: "#1A1104",
+      bg2: "#0D0A02",
+    },
   };
 
-  let _systemPreset = SYSTEM_PRESETS['SYS-06'];
-  let _originalHeading = 'HR Operations Login';
+  let _systemPreset = SYSTEM_PRESETS["SYS-06"];
+  let _originalHeading = "HR Operations Login";
 
   function applyTheme(preset) {
     const r = document.documentElement;
-    r.style.setProperty('--bg-color', preset.bg2);
-    r.style.setProperty('--button-color', preset.accent);
-    r.style.setProperty('--text-color', '#F8FAFC');
+    r.style.setProperty("--bg-color", preset.bg2);
+    r.style.setProperty("--button-color", preset.accent);
+    r.style.setProperty("--text-color", "#F8FAFC");
 
-    r.style.setProperty('--auth-accent', preset.accent);
-    r.style.setProperty('--auth-accent-hover', preset.hover);
-    r.style.setProperty('--auth-accent-glow', preset.glow);
-    r.style.setProperty('--auth-accent-subtle', preset.glow.replace(/[\d.]+\)$/, '0.14)'));
-    r.style.setProperty('--auth-accent-border', preset.glow.replace(/[\d.]+\)$/, '0.35)'));
+    r.style.setProperty("--auth-accent", preset.accent);
+    r.style.setProperty("--auth-accent-hover", preset.hover);
+    r.style.setProperty("--auth-accent-glow", preset.glow);
+    r.style.setProperty(
+      "--auth-accent-subtle",
+      preset.glow.replace(/[\d.]+\)$/, "0.14)"),
+    );
+    r.style.setProperty(
+      "--auth-accent-border",
+      preset.glow.replace(/[\d.]+\)$/, "0.35)"),
+    );
 
     document.body.style.background = [
-      'radial-gradient(ellipse 60% 40% at 50% 0%, ' + preset.glow.replace(/[\d.]+\)$/, '0.18)') + ' 0%, transparent 70%)',
-      'radial-gradient(circle at 85% 85%, ' + preset.glow.replace(/[\d.]+\)$/, '0.06)') + ' 0%, transparent 40%)',
-      'linear-gradient(180deg, ' + preset.bg1 + ' 0%, ' + preset.bg2 + ' 100%)'
-    ].join(', ');
+      "radial-gradient(ellipse 60% 40% at 50% 0%, " +
+        preset.glow.replace(/[\d.]+\)$/, "0.18)") +
+        " 0%, transparent 70%)",
+      "radial-gradient(circle at 85% 85%, " +
+        preset.glow.replace(/[\d.]+\)$/, "0.06)") +
+        " 0%, transparent 40%)",
+      "linear-gradient(180deg, " + preset.bg1 + " 0%, " + preset.bg2 + " 100%)",
+    ].join(", ");
   }
 
   function updateLoginTheme(text) {
@@ -58,63 +162,81 @@
       applyTheme(SENTIMENT.error);
     } else if (/success|granted|approved|verified|authorized/.test(t)) {
       applyTheme(SENTIMENT.success);
-    } else if (/warning|security|advisory|mfa|2fa|challenge|clearance/.test(t)) {
+    } else if (
+      /warning|security|advisory|mfa|2fa|challenge|clearance/.test(t)
+    ) {
       applyTheme(SENTIMENT.warning);
-    } else if (/welcome|hello|sign in|portal|login|ready|authenticated/.test(t)) {
+    } else if (
+      /welcome|hello|sign in|portal|login|ready|authenticated/.test(t)
+    ) {
       if (_systemPreset) applyTheme(_systemPreset);
     }
   }
 
   function setLoginThemePreset(preset) {
-    const heading = document.getElementById('login-heading');
-    const alertEl = document.getElementById('alert-message');
-    const authAlert = document.getElementById('auth-alert');
-    const simStatus = document.getElementById('sim-status-text');
+    const heading = document.getElementById("login-heading");
+    const alertEl = document.getElementById("alert-message");
+    const authAlert = document.getElementById("auth-alert");
+    const simStatus = document.getElementById("sim-status-text");
 
     switch (preset) {
-      case 'system':
+      case "system":
         if (_systemPreset) {
           applyTheme(_systemPreset);
           if (heading) heading.textContent = _originalHeading;
-          if (alertEl) alertEl.textContent = 'System default theme restored.';
-          if (authAlert) authAlert.className = 'auth-alert';
+          if (alertEl) alertEl.textContent = "System default theme restored.";
+          if (authAlert) authAlert.className = "auth-alert";
           if (simStatus) simStatus.textContent = _systemPreset.label;
         }
         break;
-      case 'blue':
-        applyTheme({ accent: '#7B2CBF', hover: '#5A189A', glow: 'rgba(123,44,191,0.45)', bg1: '#0D0914', bg2: '#07050B' });
-        if (heading) heading.textContent = 'HR Operations Login';
-        if (alertEl) alertEl.textContent = 'Ready. Please authenticate with Level 4 clearance credentials.';
-        if (authAlert) authAlert.className = 'auth-alert';
-        if (simStatus) simStatus.textContent = 'Plum (HR Default)';
+      case "blue":
+        applyTheme({
+          accent: "#7B2CBF",
+          hover: "#5A189A",
+          glow: "rgba(123,44,191,0.45)",
+          bg1: "#0D0914",
+          bg2: "#07050B",
+        });
+        if (heading) heading.textContent = "HR Operations Login";
+        if (alertEl)
+          alertEl.textContent =
+            "Ready. Please authenticate with Level 4 clearance credentials.";
+        if (authAlert) authAlert.className = "auth-alert";
+        if (simStatus) simStatus.textContent = "Plum (HR Default)";
         break;
-      case 'red':
+      case "red":
         applyTheme(SENTIMENT.error);
-        if (heading) heading.textContent = 'Authentication Error';
-        if (alertEl) alertEl.textContent = 'Error: Security clearance credentials rejected.';
-        if (authAlert) authAlert.className = 'auth-alert active-error';
-        if (simStatus) simStatus.textContent = 'Red (Error/Failed)';
+        if (heading) heading.textContent = "Authentication Error";
+        if (alertEl)
+          alertEl.textContent =
+            "Error: Security clearance credentials rejected.";
+        if (authAlert) authAlert.className = "auth-alert active-error";
+        if (simStatus) simStatus.textContent = "Red (Error/Failed)";
         break;
-      case 'green':
+      case "green":
         applyTheme(SENTIMENT.success);
-        if (heading) heading.textContent = 'Access Granted';
-        if (alertEl) alertEl.textContent = 'Success: Level 4 Personnel Clearance ratified.';
-        if (authAlert) authAlert.className = 'auth-alert active-success';
-        if (simStatus) simStatus.textContent = 'Green (Success)';
+        if (heading) heading.textContent = "Access Granted";
+        if (alertEl)
+          alertEl.textContent =
+            "Success: Level 4 Personnel Clearance ratified.";
+        if (authAlert) authAlert.className = "auth-alert active-success";
+        if (simStatus) simStatus.textContent = "Green (Success)";
         break;
-      case 'yellow':
+      case "yellow":
         applyTheme(SENTIMENT.warning);
-        if (heading) heading.textContent = 'Security Clearance Audit';
-        if (alertEl) alertEl.textContent = 'Warning: GOST 1G verification challenge active.';
-        if (authAlert) authAlert.className = 'auth-alert active-error';
-        if (simStatus) simStatus.textContent = 'Yellow (Security)';
+        if (heading) heading.textContent = "Security Clearance Audit";
+        if (alertEl)
+          alertEl.textContent =
+            "Warning: GOST 1G verification challenge active.";
+        if (authAlert) authAlert.className = "auth-alert active-error";
+        if (simStatus) simStatus.textContent = "Yellow (Security)";
         break;
     }
   }
 
   function detectSystem() {
-    const tagEl = document.querySelector('.auth-system-tag');
-    if (!tagEl) return SYSTEM_PRESETS['SYS-06'];
+    const tagEl = document.querySelector(".auth-system-tag");
+    if (!tagEl) return SYSTEM_PRESETS["SYS-06"];
     const tagText = tagEl.textContent.toUpperCase();
 
     for (const key of Object.keys(SYSTEM_PRESETS)) {
@@ -122,15 +244,15 @@
         return SYSTEM_PRESETS[key];
       }
     }
-    return SYSTEM_PRESETS['SYS-06'];
+    return SYSTEM_PRESETS["SYS-06"];
   }
 
   function injectSimBar() {
-    if (document.querySelector('.vp-sim-bar')) return;
-    const mainEl = document.querySelector('.auth-main') || document.body;
+    if (document.querySelector(".vp-sim-bar")) return;
+    const mainEl = document.querySelector(".auth-main") || document.body;
 
-    const bar = document.createElement('div');
-    bar.className = 'vp-sim-bar';
+    const bar = document.createElement("div");
+    bar.className = "vp-sim-bar";
     bar.innerHTML = [
       '<span class="vp-sim-label">Theme Preview:</span>',
       '<span class="vp-sim-status" id="sim-status-text">HR Default</span>',
@@ -139,11 +261,11 @@
       '<button type="button" class="vp-sim-btn vp-red"   onclick="setLoginThemePreset(\'red\')">● Error</button>',
       '<button type="button" class="vp-sim-btn vp-green" onclick="setLoginThemePreset(\'green\')">● Success</button>',
       '<button type="button" class="vp-sim-btn vp-amber" onclick="setLoginThemePreset(\'yellow\')">● Security</button>',
-    ].join('');
+    ].join("");
 
-    if (!document.getElementById('vp-sim-styles')) {
-      const style = document.createElement('style');
-      style.id = 'vp-sim-styles';
+    if (!document.getElementById("vp-sim-styles")) {
+      const style = document.createElement("style");
+      style.id = "vp-sim-styles";
       style.textContent = `
         .vp-sim-bar {
           display: flex;
@@ -203,7 +325,8 @@
       document.head.appendChild(style);
     }
 
-    const card = mainEl.querySelector('.auth-card') || mainEl.querySelector('section');
+    const card =
+      mainEl.querySelector(".auth-card") || mainEl.querySelector("section");
     if (card && card.parentNode) {
       card.parentNode.insertBefore(bar, card.nextSibling);
     } else {
@@ -212,8 +335,8 @@
   }
 
   function enforceCardCentering() {
-    const style = document.createElement('style');
-    style.id = 'vp-centering';
+    const style = document.createElement("style");
+    style.id = "vp-centering";
     style.textContent = `
       html, body {
         height: 100%;
@@ -249,17 +372,16 @@
   window.updateLoginTheme = updateLoginTheme;
   window.setLoginThemePreset = setLoginThemePreset;
 
-  document.addEventListener('DOMContentLoaded', () => {
+  document.addEventListener("DOMContentLoaded", () => {
     enforceCardCentering();
     const detected = detectSystem();
     if (detected) {
       _systemPreset = detected;
       applyTheme(detected);
     }
-    const h = document.getElementById('login-heading');
+    const h = document.getElementById("login-heading");
     if (h) _originalHeading = h.textContent;
 
     injectSimBar();
   });
-
 })();

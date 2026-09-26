@@ -1,4 +1,5 @@
 <?php
+
 /**
  * File Center - Entry Point
  * Directs unauthenticated visitors to login.php first.

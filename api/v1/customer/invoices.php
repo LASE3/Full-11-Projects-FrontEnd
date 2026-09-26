@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Class 3: Customer Portal - Invoices & Payments API
  * Location: api/v1/customer/invoices.php

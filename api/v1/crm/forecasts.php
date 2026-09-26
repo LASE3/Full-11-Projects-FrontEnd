@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Class 5: CRM Platform - Sales Forecasts API
  * Location: api/v1/crm/forecasts.php

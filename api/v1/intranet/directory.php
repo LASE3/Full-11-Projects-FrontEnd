@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Class 4: Employee Intranet - Staff Directory API
  * Location: api/v1/intranet/directory.php

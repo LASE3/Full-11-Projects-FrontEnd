@@ -1,4 +1,5 @@
 <?php
+
 /**
  * VOSTOKPRIBOR Employee Intranet (SYS05) - Inter-System Integrations & Data Bus
  * Features live data from MySQL vostokpribor:
@@ -24,6 +25,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -32,87 +34,28 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
-    <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body {
-            background-color: #08121e;
-            color: #E2E8F0;
-            font-family: 'IBM Plex Sans', sans-serif;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-        .vostok-top-bar {
-            height: 56px;
-            background: #0A1929;
-            border-bottom: 1px solid rgba(0, 229, 255, 0.15);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 1.5rem;
-        }
-        .vostok-brand-link {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            text-decoration: none;
-            color: #FFFFFF;
-        }
-        .vostok-brand-link img {
-            height: 28px;
-            width: auto;
-        }
-        .vostok-nav-actions {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-        .vostok-btn-back {
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            color: #FFFFFF;
-            padding: 0.4rem 0.85rem;
-            border-radius: 4px;
-            font-size: 0.8rem;
-            font-weight: 500;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.4rem;
-            transition: all 0.2s;
-        }
-        .vostok-btn-back:hover {
-            background: rgba(255, 255, 255, 0.15);
-            border-color: #00E5FF;
-        }
-        .vostok-main-content {
-            flex: 1;
-            max-width: 88rem;
-            width: 100%;
-            margin: 0 auto;
-            padding: 1.5rem;
-        }
-    </style>
+    <link rel="stylesheet" href="../assets/css/integration-panel.css">
 </head>
-<body>
+
+<body class="vostok-integrations-page">
 
     <!-- Header Bar -->
     <header class="vostok-top-bar">
         <a href="Dashboard.php" class="vostok-brand-link">
             <img src="../assets/logo.svg" alt="VOSTOKPRIBOR" onerror="this.src='../assets/images/logo.png'">
-            <div style="display: flex; flex-direction: column;">
-                <span style="font-weight: 700; font-size: 0.9rem; letter-spacing: 0.05em; color: #FFFFFF;">VOSTOKPRIBOR</span>
-                <span style="font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; color: #00E5FF;">Employee Intranet &bull; SYS05</span>
+            <div class="vostok-brand-title">
+                <span class="vostok-brand-name">VOSTOKPRIBOR</span>
+                <span class="vostok-brand-system">Employee Intranet &bull; SYS05</span>
             </div>
         </a>
 
         <div class="vostok-nav-actions">
             <a href="Dashboard.php" class="vostok-btn-back">
-                <span class="material-symbols-outlined" style="font-size: 1rem;">arrow_back</span>
+                <span class="material-symbols-outlined vostok-icon-sm">arrow_back</span>
                 <span>Back to Dashboard</span>
             </a>
-            <a href="../api/logout.php?redirect=../Employee Intranet/login.php" class="vostok-btn-back" style="color: #F87171; border-color: rgba(239,68,68,0.3);">
-                <span class="material-symbols-outlined" style="font-size: 1rem;">logout</span>
+            <a href="../api/logout.php?redirect=../Employee Intranet/login.php" class="vostok-btn-back vostok-btn-signout">
+                <span class="material-symbols-outlined vostok-icon-sm">logout</span>
                 <span>Sign Out</span>
             </a>
         </div>
@@ -124,4 +67,5 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
     </main>
 
 </body>
+
 </html>

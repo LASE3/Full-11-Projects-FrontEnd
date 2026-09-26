@@ -4,25 +4,27 @@
    ========================================================================== */
 
 .chamber-hazard-banner {
-    background: repeating-linear-gradient(
-        -45deg,
-        #ba1a1a,
-        #ba1a1a 16px,
-        #93000a 16px,
-        #93000a 32px
-    );
+  background: repeating-linear-gradient(
+    -45deg,
+    #ba1a1a,
+    #ba1a1a 16px,
+    #93000a 16px,
+    #93000a 32px
+  );
 }
 
 .custodian-card {
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .custodian-card:hover {
-    box-shadow: 0 4px 15px -3px rgba(186, 26, 26, 0.15);
+  box-shadow: 0 4px 15px -3px rgba(186, 26, 26, 0.15);
 }
 
 #hsmConsole {
-    background-color: #00172e;
-    color: #f7f9ff;
-    font-family: "JetBrains Mono", monospace;
+  background-color: #00172e;
+  color: #f7f9ff;
+  font-family: "JetBrains Mono", monospace;
 }

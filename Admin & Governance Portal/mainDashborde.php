@@ -58,7 +58,8 @@ $anomaly = gov_getCriticalAnomaly();
                 <div
                     class="hidden lg:flex items-center gap-space-xs px-space-sm py-space-2xs bg-surface-container-lowest/10 rounded font-telemetry-micro text-telemetry-micro text-on-primary">
                     <span class="material-symbols-outlined text-[14px] text-secondary-fixed">hub</span><span>10/10
-                        Ingestion Nodes Active</span></div><button
+                        Ingestion Nodes Active</span>
+                </div><button
                     class="relative p-space-xs text-on-primary hover:text-secondary-fixed transition-colors"><span
                         class="material-symbols-outlined text-[20px]">notifications</span><span
                         class="absolute top-0 right-0 w-4 h-4 bg-error text-on-error font-telemetry-micro text-[10px] leading-4 text-center font-bold rounded-full">3</span></button>
@@ -76,10 +77,10 @@ $anomaly = gov_getCriticalAnomaly();
                             class="material-symbols-outlined text-on-primary text-[18px]">person</span></div>
                 </div>
             </div>
-        
-<!-- Top Bar Sign Out -->
-<a href="../api/logout.php?system=Admin%20%26%20Governance%20Portal&redirect=../Admin%20%26%20Governance%20Portal/login.php" class="top-signout-btn" title="Sign Out of Admin &amp; Governance Portal" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" style="display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:4px;background:rgba(178,58,50,0.2);border:1px solid rgba(178,58,50,0.5);color:#FF8080;font-size:12px;font-weight:600;text-decoration:none;cursor:pointer;margin-left:8px;vertical-align:middle;transition:all 0.2s;" onmouseover="this.style.background='rgba(178,58,50,0.4)';this.style.color='#FFFFFF'" onmouseout="this.style.background='rgba(178,58,50,0.2)';this.style.color='#FF8080'"><span class="material-symbols-outlined" style="font-size:15px;line-height:1;">logout</span><span>Sign Out</span></a>
-</div>
+
+            <!-- Top Bar Sign Out -->
+            <a href="../api/logout.php?system=Admin%20%26%20Governance%20Portal&redirect=../Admin%20%26%20Governance%20Portal/login.php" class="top-signout-btn" title="Sign Out of Admin &amp; Governance Portal" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" ><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
+        </div>
     </header>
     <aside
         class="fixed left-0 top-[60px] h-[calc(100vh-60px)] w-[260px] bg-primary z-40 flex flex-col justify-between border-r border-outline/30 select-none overflow-y-auto">
@@ -112,7 +113,8 @@ $anomaly = gov_getCriticalAnomaly();
                             Accounts</span></div><span
                         class="font-telemetry-micro text-[10px] px-space-2xs bg-surface-variant/20 text-on-primary-container rounded">7
                         Active</span>
-                </a></nav>
+                </a>
+            </nav>
             <div class="px-space-md mb-space-xs"><span
                     class="font-label-uppercase text-label-uppercase text-on-primary-container tracking-wider">AUDIT
                     &amp; INTELLIGENCE</span></div>
@@ -138,7 +140,10 @@ $anomaly = gov_getCriticalAnomaly();
                             class="font-bold uppercase">Break-Glass Access</span></div><span
                         class="material-symbols-outlined text-[16px] text-error">lock_open</span>
                 </a>
-                <a class="flex items-center justify-between px-space-sm py-space-xs rounded text-error hover:bg-error-container hover:text-on-error-container transition-all font-body-compact text-body-compact" data-path="emergency-lockdown" href="EmergencyLockdown.php"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[18px] text-error">lock</span><span class="font-bold uppercase">Emergency Lockdown</span></div><span class="font-telemetry-micro text-[10px] px-space-2xs bg-error text-on-error font-bold rounded">DEFCON-1</span></a></nav>
+                <a class="flex items-center justify-between px-space-sm py-space-xs rounded text-error hover:bg-error-container hover:text-on-error-container transition-all font-body-compact text-body-compact" data-path="emergency-lockdown" href="EmergencyLockdown.php">
+                    <div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[18px] text-error">lock</span><span class="font-bold uppercase">Emergency Lockdown</span></div><span class="font-telemetry-micro text-[10px] px-space-2xs bg-error text-on-error font-bold rounded">DEFCON-1</span>
+                </a>
+            </nav>
             <div class="px-space-md mb-space-xs"><span
                     class="font-label-uppercase text-label-uppercase text-on-primary-container tracking-wider">REGULATORY
                     &amp; RISK</span></div>
@@ -162,10 +167,11 @@ $anomaly = gov_getCriticalAnomaly();
                     <div class="flex items-center gap-space-sm"><span
                             class="material-symbols-outlined text-[18px]">gavel</span><span>Compliance Oversight</span>
                     </div>
-                </a></nav>
+                </a>
+            </nav>
         </div>
-                    
-            <div class="p-space-md bg-primary-container/40 border-t border-outline/20 flex flex-col gap-space-2xs">
+
+        <div class="p-space-md bg-primary-container/40 border-t border-outline/20 flex flex-col gap-space-2xs">
             <div class="flex items-center justify-between"><span
                     class="font-security-stamp text-[10px] text-secondary-fixed-dim uppercase tracking-wider">SEC-OPS
                     FACILITY</span>
@@ -175,7 +181,8 @@ $anomaly = gov_getCriticalAnomaly();
             </div>
             <div
                 class="font-telemetry-data text-telemetry-data text-on-primary font-semibold tracking-wider pt-space-2xs">
-                <span class="station-live-clock">UTC+6 (ALMATY TIME)</span></div>
+                <span class="station-live-clock">UTC+6 (ALMATY TIME)</span>
+            </div>
         </div>
     </aside>
     <div class="pl-[260px]">
@@ -424,46 +431,46 @@ $anomaly = gov_getCriticalAnomaly();
                                     class="font-body-compact text-body-compact divide-y divide-surface-container-high"
                                     id="matrixTableBody">
                                     <?php foreach ($telemetryGrid as $emp): ?>
-                                    <tr class="hover:bg-surface-container-low transition-colors cursor-pointer matrix-row"
-                                        data-cat="<?= htmlspecialchars($emp['category']) ?>"
-                                        data-emp="<?= htmlspecialchars($emp['emp_id']) ?>"
-                                        data-name="<?= htmlspecialchars($emp['full_name']) ?>"
-                                        data-dept="<?= htmlspecialchars($emp['dept_name'] ?? $emp['department_code'] ?? '') ?>">
-                                        <td class="py-space-xs px-space-sm pl-space-base">
-                                            <span class="font-telemetry-data text-telemetry-data font-bold text-primary"><?= htmlspecialchars($emp['emp_id']) ?></span>
-                                        </td>
-                                        <td class="py-space-xs px-space-sm">
-                                            <div class="font-bold text-on-surface"><?= htmlspecialchars($emp['full_name']) ?></div>
-                                            <div class="font-telemetry-micro text-telemetry-micro text-on-surface-variant"><?= htmlspecialchars($emp['job_title']) ?></div>
-                                        </td>
-                                        <td class="py-space-xs px-space-sm font-telemetry-micro text-telemetry-micro text-on-surface">
-                                            <?= htmlspecialchars($emp['dept_name'] ?? $emp['department_code'] ?? 'GENERAL') ?>
-                                        </td>
-                                        <td class="py-space-xs px-space-sm text-center">
-                                            <span class="font-security-stamp text-security-stamp px-space-xs py-[2px] <?= ($emp['clearance_level'] === 'L4' || $emp['clearance_level'] === 'L5') ? 'bg-primary text-on-primary' : 'bg-surface-container-high text-on-surface' ?> font-bold">
-                                                <?= htmlspecialchars($emp['clearance_level']) ?>
-                                            </span>
-                                        </td>
-                                        <td class="py-space-xs px-space-sm">
-                                            <div class="flex items-center gap-[2px] font-telemetry-micro">
-                                                <?php foreach ($emp['permits'] as $num => $hasPermit): ?>
-                                                    <?php if ($hasPermit): ?>
-                                                        <span class="px-1 bg-primary text-on-primary font-bold" title="SYS-<?= $num ?> Authorized"><?= $num ?></span>
-                                                    <?php else: ?>
-                                                        <span class="px-1 bg-surface-container-high text-on-surface-variant">--</span>
-                                                    <?php endif; ?>
-                                                <?php endforeach; ?>
-                                            </div>
-                                        </td>
-                                        <td class="py-space-xs px-space-sm text-center">
-                                            <span class="status-badge inline-flex items-center gap-space-2xs px-space-xs py-[1px] font-telemetry-micro font-bold">
-                                                <?= $emp['role_status_html'] ?>
-                                            </span>
-                                        </td>
-                                        <td class="py-space-xs px-space-sm text-right pr-space-base">
-                                            <?= $emp['disposition_btn'] ?>
-                                        </td>
-                                    </tr>
+                                        <tr class="hover:bg-surface-container-low transition-colors cursor-pointer matrix-row"
+                                            data-cat="<?= htmlspecialchars($emp['category']) ?>"
+                                            data-emp="<?= htmlspecialchars($emp['emp_id']) ?>"
+                                            data-name="<?= htmlspecialchars($emp['full_name']) ?>"
+                                            data-dept="<?= htmlspecialchars($emp['dept_name'] ?? $emp['department_code'] ?? '') ?>">
+                                            <td class="py-space-xs px-space-sm pl-space-base">
+                                                <span class="font-telemetry-data text-telemetry-data font-bold text-primary"><?= htmlspecialchars($emp['emp_id']) ?></span>
+                                            </td>
+                                            <td class="py-space-xs px-space-sm">
+                                                <div class="font-bold text-on-surface"><?= htmlspecialchars($emp['full_name']) ?></div>
+                                                <div class="font-telemetry-micro text-telemetry-micro text-on-surface-variant"><?= htmlspecialchars($emp['job_title']) ?></div>
+                                            </td>
+                                            <td class="py-space-xs px-space-sm font-telemetry-micro text-telemetry-micro text-on-surface">
+                                                <?= htmlspecialchars($emp['dept_name'] ?? $emp['department_code'] ?? 'GENERAL') ?>
+                                            </td>
+                                            <td class="py-space-xs px-space-sm text-center">
+                                                <span class="font-security-stamp text-security-stamp px-space-xs py-[2px] <?= ($emp['clearance_level'] === 'L4' || $emp['clearance_level'] === 'L5') ? 'bg-primary text-on-primary' : 'bg-surface-container-high text-on-surface' ?> font-bold">
+                                                    <?= htmlspecialchars($emp['clearance_level']) ?>
+                                                </span>
+                                            </td>
+                                            <td class="py-space-xs px-space-sm">
+                                                <div class="flex items-center gap-[2px] font-telemetry-micro">
+                                                    <?php foreach ($emp['permits'] as $num => $hasPermit): ?>
+                                                        <?php if ($hasPermit): ?>
+                                                            <span class="px-1 bg-primary text-on-primary font-bold" title="SYS-<?= $num ?> Authorized"><?= $num ?></span>
+                                                        <?php else: ?>
+                                                            <span class="px-1 bg-surface-container-high text-on-surface-variant">--</span>
+                                                        <?php endif; ?>
+                                                    <?php endforeach; ?>
+                                                </div>
+                                            </td>
+                                            <td class="py-space-xs px-space-sm text-center">
+                                                <span class="status-badge inline-flex items-center gap-space-2xs px-space-xs py-[1px] font-telemetry-micro font-bold">
+                                                    <?= $emp['role_status_html'] ?>
+                                                </span>
+                                            </td>
+                                            <td class="py-space-xs px-space-sm text-right pr-space-base">
+                                                <?= $emp['disposition_btn'] ?>
+                                            </td>
+                                        </tr>
                                     <?php endforeach; ?>
                                 </tbody>
                             </table>
@@ -681,19 +688,21 @@ $anomaly = gov_getCriticalAnomaly();
                             <!-- Identities List Table Strip -->
                             <div
                                 class="mt-1 border border-[#1E293B] divide-y divide-[#1E293B] bg-[#0A101D] font-telemetry-micro text-[11px]">
-                                <?php 
-                                $pendingList = array_filter($telemetryGrid, function($e) { return $e['category'] === 'PENDING' || $e['category'] === 'ELEVATED'; });
+                                <?php
+                                $pendingList = array_filter($telemetryGrid, function ($e) {
+                                    return $e['category'] === 'PENDING' || $e['category'] === 'ELEVATED';
+                                });
                                 if (empty($pendingList)) {
                                     $pendingList = array_slice($telemetryGrid, 0, 3);
                                 }
-                                foreach (array_slice($pendingList, 0, 3) as $pe): 
+                                foreach (array_slice($pendingList, 0, 3) as $pe):
                                 ?>
-                                <div class="p-1.5 flex items-center justify-between text-slate-300">
-                                    <span class="font-bold text-[#00F0FF]"><?= htmlspecialchars($pe['emp_id']) ?></span>
-                                    <span><?= htmlspecialchars($pe['full_name']) ?> (<?= htmlspecialchars($pe['job_title']) ?>)</span>
-                                    <span class="text-slate-400 font-mono"><?= htmlspecialchars($pe['clearance_level']) ?></span>
-                                    <span class="text-amber-400 font-bold"><?= htmlspecialchars($pe['category']) ?></span>
-                                </div>
+                                    <div class="p-1.5 flex items-center justify-between text-slate-300">
+                                        <span class="font-bold text-[#00F0FF]"><?= htmlspecialchars($pe['emp_id']) ?></span>
+                                        <span><?= htmlspecialchars($pe['full_name']) ?> (<?= htmlspecialchars($pe['job_title']) ?>)</span>
+                                        <span class="text-slate-400 font-mono"><?= htmlspecialchars($pe['clearance_level']) ?></span>
+                                        <span class="text-amber-400 font-bold"><?= htmlspecialchars($pe['category']) ?></span>
+                                    </div>
                                 <?php endforeach; ?>
                             </div>
                         </div>
@@ -732,8 +741,8 @@ $anomaly = gov_getCriticalAnomaly();
                                 <span class="text-slate-300 font-mono" id="signingProgressPercent">45%</span>
                             </div>
                             <div class="w-full h-1.5 bg-[#1E293B] rounded-full overflow-hidden">
-                                <div class="h-full bg-gradient-to-r from-[#2563EB] to-[#00F0FF] transition-all duration-300"
-                                    id="signingProgressBar" style="width: 45%;"></div>
+                                <div class="h-full bg-gradient-to-r from-[#2563EB] to-[#00F0FF] transition-all duration-300 w-[45%]"
+                                    id="signingProgressBar"></div>
                             </div>
                         </div>
                     </div>
@@ -897,7 +906,7 @@ $anomaly = gov_getCriticalAnomaly();
             </div>
             <!-- 3. Global Cyber Toast Container -->
             <div class="fixed bottom-6 right-6 z-50 flex flex-col gap-2 pointer-events-none" id="toastHub"></div>
-            
+
         </main>
     </div>
     <script src="js/common.js"></script>

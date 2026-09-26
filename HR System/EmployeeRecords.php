@@ -1,4 +1,5 @@
 <?php
+
 /**
  * VOSTOKPRIBOR HR System - Employee Records & Clearance Registry
  * Database-driven employee ledger with live filtering, real-time modal dossier, and registration.
@@ -17,6 +18,7 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -24,6 +26,7 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 </head>
+
 <body>
 
   <div class="app-container">
@@ -45,7 +48,7 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
               <div class="brand-subline">
                 <span class="status-dot-pulse"></span>
                 <span>hr.vostokpribor.local</span>
-                <span style="opacity: 0.5;">|</span>
+                <span class="hr-opacity-50" >|</span>
                 <span>PERSONNEL OPERATIONS</span>
               </div>
             </div>
@@ -70,7 +73,7 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
 
           <!-- Dynamic Active User Profile -->
           <div class="top-user-profile" title="Active User: <?= htmlspecialchars($currUser['full_name']) ?> (<?= htmlspecialchars($currUser['clearance_level'] ?? 'L1') ?>)">
-            <div style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg, #7A284E 0%, #3D1427 100%);color:#FFFFFF;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12.5px;border:2px solid #FF8080;box-shadow:0 0 8px rgba(255,128,128,0.3);">
+            <div class="hr-avatar-circle-glow" >
               <?= $initials ?>
             </div>
             <div class="user-details-top">
@@ -80,8 +83,8 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
           </div>
 
           <!-- Sign Out -->
-          <a href="../api/logout.php?system=HR%20System&redirect=../HR%20System/login.php" class="top-signout-btn" title="Sign Out of HR System" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" style="display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:4px;background:rgba(178,58,50,0.2);border:1px solid rgba(178,58,50,0.5);color:#FF8080;font-size:12px;font-weight:600;text-decoration:none;cursor:pointer;margin-left:8px;vertical-align:middle;transition:all 0.2s;">
-            <span class="material-symbols-outlined" style="font-size:15px;line-height:1;">logout</span>
+          <a href="../api/logout.php?system=HR%20System&redirect=../HR%20System/login.php" class="top-signout-btn" title="Sign Out of HR System" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" >
+            <span class="material-symbols-outlined">logout</span>
             <span>Sign Out</span>
           </a>
         </div>
@@ -89,8 +92,7 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
     </header>
 
     <div class="main-layout">
-      <!-- SIDEBAR -->
-      <aside class="sidebar">
+            <aside class="sidebar">
         <div>
           <div class="sidebar-section-title">Human Resources</div>
           <nav class="sidebar-nav">
@@ -155,7 +157,7 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
               <span>Security Clearance Registry</span>
               <span class="security-badge-status">● GOST 1G</span>
             </div>
-            <div style="font-size: 11px; color: var(--hr-text-inverse-muted); margin-top: 2px;">
+            <div class="hr-text-inverse-muted-sm" >
               Active Level 4 Clearances: <strong><?= $metrics['clearance_counts']['L4'] ?> Vetted</strong>
             </div>
           </div>
@@ -189,61 +191,60 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
           </div>
 
           <!-- 4-Tier Security Clearance Quick Summary Strip (LIVE SQL DATA) -->
-          <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 1.5rem;">
-            <div class="hr-card" style="padding: 0.85rem 1rem; border-left: 3px solid var(--hr-clearance-l4); display: flex; align-items: center; justify-content: space-between;">
+          <div class="hr-grid-4col-mb" >
+            <div class="hr-card hr-card-clearance-l4" >
               <div>
-                <div style="font-size: 11px; color: var(--hr-text-muted); font-weight: 600; text-transform: uppercase;">Level 4 · Top Secret</div>
-                <div style="font-size: 18px; font-weight: 700; color: var(--hr-navy); font-family: var(--hr-font-mono);"><?= $metrics['clearance_counts']['L4'] ?> Staff</div>
+                <div class="hr-caption-muted" >Level 4 · Top Secret</div>
+                <div class="hr-mono-heading-18" ><?= $metrics['clearance_counts']['L4'] ?> Staff</div>
               </div>
               <span class="clearance-badge clearance-l4">L4</span>
             </div>
 
-            <div class="hr-card" style="padding: 0.85rem 1rem; border-left: 3px solid var(--hr-clearance-l3); display: flex; align-items: center; justify-content: space-between;">
+            <div class="hr-card hr-card-clearance-l3" >
               <div>
-                <div style="font-size: 11px; color: var(--hr-text-muted); font-weight: 600; text-transform: uppercase;">Level 3 · Secret SCADA</div>
-                <div style="font-size: 18px; font-weight: 700; color: var(--hr-navy); font-family: var(--hr-font-mono);"><?= $metrics['clearance_counts']['L3'] ?> Staff</div>
+                <div class="hr-caption-muted" >Level 3 · Secret SCADA</div>
+                <div class="hr-mono-heading-18" ><?= $metrics['clearance_counts']['L3'] ?> Staff</div>
               </div>
               <span class="clearance-badge clearance-l3">L3</span>
             </div>
 
-            <div class="hr-card" style="padding: 0.85rem 1rem; border-left: 3px solid var(--hr-clearance-l2); display: flex; align-items: center; justify-content: space-between;">
+            <div class="hr-card hr-card-clearance-l2" >
               <div>
-                <div style="font-size: 11px; color: var(--hr-text-muted); font-weight: 600; text-transform: uppercase;">Level 2 · Confidential</div>
-                <div style="font-size: 18px; font-weight: 700; color: var(--hr-navy); font-family: var(--hr-font-mono);"><?= $metrics['clearance_counts']['L2'] ?> Staff</div>
+                <div class="hr-caption-muted" >Level 2 · Confidential</div>
+                <div class="hr-mono-heading-18" ><?= $metrics['clearance_counts']['L2'] ?> Staff</div>
               </div>
               <span class="clearance-badge clearance-l2">L2</span>
             </div>
 
-            <div class="hr-card" style="padding: 0.85rem 1rem; border-left: 3px solid var(--hr-clearance-l1); display: flex; align-items: center; justify-content: space-between;">
+            <div class="hr-card hr-card-clearance-l1" >
               <div>
-                <div style="font-size: 11px; color: var(--hr-text-muted); font-weight: 600; text-transform: uppercase;">Level 1 · General</div>
-                <div style="font-size: 18px; font-weight: 700; color: var(--hr-navy); font-family: var(--hr-font-mono);"><?= $metrics['clearance_counts']['L1'] ?> Staff</div>
+                <div class="hr-caption-muted" >Level 1 · General</div>
+                <div class="hr-mono-heading-18" ><?= $metrics['clearance_counts']['L1'] ?> Staff</div>
               </div>
               <span class="clearance-badge clearance-l1">L1</span>
             </div>
           </div>
 
           <!-- Main Table Container -->
-          <div class="hr-card" style="padding: 0; overflow: hidden;">
+          <div class="hr-card hr-panel-flush" >
             <!-- Filter & Search Toolbar -->
-            <div style="padding: 1rem 1.25rem; background-color: #FFFFFF; border-bottom: 1px solid var(--hr-surface-border); display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap;">
+            <div class="hr-table-header-bar-wrap" >
               <!-- Search Bar -->
-              <div style="position: relative; flex: 1; max-width: 380px;">
-                <span style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--hr-text-muted); font-size: 13px;">🔍</span>
-                <input 
-                  type="text" 
-                  id="employee-table-search" 
-                  placeholder="Filter by name, EMP-ID, or role..." 
+              <div class="hr-search-container" >
+                <span class="hr-search-icon" >🔍</span>
+                <input class="hr-search-input"
+                  type="text"
+                  id="employee-table-search"
+                  placeholder="Filter by name, EMP-ID, or role..."
                   oninput="window.hrApp.filterEmployees()"
-                  style="width: 100%; padding: 0.5rem 0.75rem 0.5rem 2.2rem; border: 1px solid var(--hr-surface-border); border-radius: var(--hr-radius-md); font-size: 12.5px;" 
-                />
+                   />
               </div>
 
               <!-- Filter Dropdowns -->
-              <div style="display: flex; align-items: center; gap: 0.75rem;">
-                <div style="display: flex; align-items: center; gap: 0.4rem;">
-                  <span style="font-size: 11.5px; color: var(--hr-text-muted); font-weight: 600;">Department:</span>
-                  <select id="employee-dept-filter" onchange="window.hrApp.filterEmployees()" style="padding: 0.45rem 0.75rem; border: 1px solid var(--hr-surface-border); border-radius: var(--hr-radius-md); font-size: 12px; background: #FFFFFF;">
+              <div class="hr-flex-gap-md" >
+                <div class="hr-flex-gap-4" >
+                  <span class="hr-caption-muted-115" >Department:</span>
+                  <select class="hr-select-filter" id="employee-dept-filter" onchange="window.hrApp.filterEmployees()" >
                     <option value="all">All Departments (<?= count($departments) ?>)</option>
                     <?php foreach ($departments as $dept): ?>
                       <option value="<?= htmlspecialchars($dept['dept_code']) ?>"><?= htmlspecialchars($dept['dept_name']) ?> (<?= htmlspecialchars($dept['dept_code']) ?>)</option>
@@ -251,9 +252,9 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
                   </select>
                 </div>
 
-                <div style="display: flex; align-items: center; gap: 0.4rem;">
-                  <span style="font-size: 11.5px; color: var(--hr-text-muted); font-weight: 600;">Clearance:</span>
-                  <select id="employee-clearance-filter" onchange="window.hrApp.filterEmployees()" style="padding: 0.45rem 0.75rem; border: 1px solid var(--hr-surface-border); border-radius: var(--hr-radius-md); font-size: 12px; background: #FFFFFF;">
+                <div class="hr-flex-gap-4" >
+                  <span class="hr-caption-muted-115" >Clearance:</span>
+                  <select class="hr-select-filter" id="employee-clearance-filter" onchange="window.hrApp.filterEmployees()" >
                     <option value="all">All Clearance Tiers</option>
                     <option value="4">Level 4 · Top Secret</option>
                     <option value="3">Level 3 · Secret SCADA</option>
@@ -272,55 +273,55 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
             <table class="employee-table">
               <thead>
                 <tr>
-                  <th style="width: 140px;">Employee ID</th>
+                  <th class="hr-w-140" >Employee ID</th>
                   <th>Name &amp; Profile</th>
                   <th>Department</th>
                   <th>Official Title</th>
-                  <th style="width: 170px;">Clearance Level</th>
-                  <th style="width: 110px;">Status</th>
-                  <th style="width: 110px; text-align: right;">Action</th>
+                  <th class="hr-w-170" >Clearance Level</th>
+                  <th class="hr-w-110" >Status</th>
+                  <th class="hr-w-110-right" >Action</th>
                 </tr>
               </thead>
               <tbody class="employee-table-body">
-                <?php foreach ($employees as $emp): 
+                <?php foreach ($employees as $emp):
                   $cNum = substr($emp['clearance_level'], 1);
                   $nameParts = explode(' ', trim($emp['full_name']));
                   $rowInitials = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? substr($nameParts[1], 0, 1) : ''));
-                  
+
                   $statusPillClass = 'status-active';
                   if ($emp['employment_status'] === 'Suspended') $statusPillClass = 'status-offboarding';
                   if ($emp['employment_status'] === 'OnLeave') $statusPillClass = 'status-leave';
                   if ($emp['employment_status'] === 'Terminated') $statusPillClass = 'status-offboarding';
                 ?>
-                  <tr class="employee-row" 
-                      data-id="<?= htmlspecialchars($emp['emp_id']) ?>" 
-                      data-name="<?= htmlspecialchars($emp['full_name']) ?>" 
-                      data-dept="<?= htmlspecialchars($emp['department_code']) ?>" 
-                      data-clearance="<?= $cNum ?>" 
-                      onclick="window.hrApp.inspectEmployee('<?= htmlspecialchars($emp['emp_id']) ?>')">
+                  <tr class="employee-row"
+                    data-id="<?= htmlspecialchars($emp['emp_id']) ?>"
+                    data-name="<?= htmlspecialchars($emp['full_name']) ?>"
+                    data-dept="<?= htmlspecialchars($emp['department_code']) ?>"
+                    data-clearance="<?= $cNum ?>"
+                    onclick="window.hrApp.inspectEmployee('<?= htmlspecialchars($emp['emp_id']) ?>')">
                     <td>
-                      <span style="font-family: var(--hr-font-mono); font-weight: 700; color: var(--hr-plum); font-size: 12px;">
+                      <span class="hr-mono-bold-plum" >
                         <?= htmlspecialchars($emp['emp_id']) ?>
                       </span>
                     </td>
                     <td>
-                      <div style="display: flex; align-items: center; gap: 0.65rem;">
-                        <div style="width: 32px; height: 32px; border-radius: 50%; background: #1B3B5C; color: #FFF; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 11px; flex-shrink: 0; border: 1px solid var(--hr-plum);">
+                      <div class="hr-flex-gap-65" >
+                        <div class="hr-avatar-32" >
                           <?= $rowInitials ?>
                         </div>
                         <div>
-                          <div style="font-weight: 600; color: var(--hr-navy); font-size: 13px;"><?= htmlspecialchars($emp['full_name']) ?></div>
-                          <div style="font-size: 11px; color: var(--hr-text-muted);"><?= htmlspecialchars($emp['email']) ?></div>
+                          <div class="hr-font-semibold-navy-13" ><?= htmlspecialchars($emp['full_name']) ?></div>
+                          <div class="hr-text-muted-11" ><?= htmlspecialchars($emp['email']) ?></div>
                         </div>
                       </div>
                     </td>
                     <td>
-                      <span style="font-size: 12.5px; color: var(--hr-text-primary); font-weight: 500;">
+                      <span class="hr-font-medium-125" >
                         <?= htmlspecialchars($emp['dept_name'] ?? $emp['department_code']) ?>
                       </span>
                     </td>
                     <td>
-                      <span style="font-size: 12.5px; color: var(--hr-text-secondary);"><?= htmlspecialchars($emp['job_title']) ?></span>
+                      <span class="hr-text-secondary-125" ><?= htmlspecialchars($emp['job_title']) ?></span>
                     </td>
                     <td>
                       <span class="clearance-badge clearance-l<?= $cNum ?>">
@@ -331,15 +332,15 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
                     <td>
                       <span class="status-pill <?= $statusPillClass ?>"><?= htmlspecialchars($emp['employment_status']) ?></span>
                     </td>
-                    <td style="text-align: right;" onclick="event.stopPropagation()">
-                      <div style="display: inline-flex; gap: 0.35rem;">
+                    <td class="hr-text-right"  onclick="event.stopPropagation()">
+                      <div class="hr-inline-gap-xs" >
                         <button class="btn btn-outline btn-sm" onclick="window.hrApp.inspectEmployee('<?= htmlspecialchars($emp['emp_id']) ?>')">
                           Dossier 🔒
                         </button>
                         <?php if ($canManage): ?>
-                          <button class="btn btn-outline btn-sm" style="color: #B23A32; border-color: rgba(178,58,50,0.4);" 
-                                  title="Remove or terminate employee record"
-                                  onclick="window.hrApp.deleteEmployee('<?= htmlspecialchars($emp['emp_id']) ?>', '<?= addslashes($emp['full_name']) ?>')">
+                          <button class="btn btn-outline btn-sm hr-btn-border-red-40" 
+                            title="Remove or terminate employee record"
+                            onclick="window.hrApp.deleteEmployee('<?= htmlspecialchars($emp['emp_id']) ?>', '<?= addslashes($emp['full_name']) ?>')">
                             🗑
                           </button>
                         <?php endif; ?>
@@ -357,41 +358,41 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
 
   <!-- MODAL: EMPLOYEE RECORD DOSSIER (Detail View) -->
   <div id="modal-employee-detail" class="modal-backdrop">
-    <div class="modal-dialog" style="max-width: 680px;">
-      <div class="modal-header" style="background-color: var(--hr-navy); color: #FFFFFF; border-bottom: 3px solid var(--hr-plum);">
+    <div class="modal-dialog hr-modal-680" >
+      <div class="modal-header hr-modal-header-plum" >
         <div>
-          <div style="font-size: 10.5px; color: #FF8080; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 700;">
+          <div class="hr-tag-rose-bold" >
             CONFIDENTIAL PERSONNEL DOSSIER · GOST R 34.10
           </div>
-          <div style="font-size: 16px; font-weight: 700; margin-top: 2px;">
+          <div class="hr-title-16-bold" >
             <span id="drawer-emp-name">Employee Name</span>
           </div>
         </div>
-        <button class="modal-close" style="color: #FFFFFF;" onclick="window.hrApp.closeModal('modal-employee-detail')">✕</button>
+        <button class="modal-close hr-text-white"  onclick="window.hrApp.closeModal('modal-employee-detail')">✕</button>
       </div>
 
-      <div class="modal-body" style="padding: 1.5rem;">
-        <div style="display: flex; gap: 1.25rem; align-items: flex-start; margin-bottom: 1.25rem; padding-bottom: 1.25rem; border-bottom: 1px solid var(--hr-surface-border);">
-          <div id="drawer-emp-avatar-placeholder" style="width: 64px; height: 64px; border-radius: var(--hr-radius-md); background: #0F2438; color: #FFF; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 700; border: 2px solid var(--hr-plum); flex-shrink: 0;">
+      <div class="modal-body hr-p-6" >
+        <div class="hr-header-hero" >
+          <div class="hr-avatar-64" id="drawer-emp-avatar-placeholder" >
             VP
           </div>
-          <div style="flex: 1;">
-            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
-              <span id="drawer-emp-id" style="font-family: var(--hr-font-mono); font-size: 12px; font-weight: 700; color: var(--hr-plum);">EMP-xxxx</span>
+          <div class="hr-flex-1" >
+            <div class="hr-flex-gap-sm-mb" >
+              <span class="hr-mono-plum-12" id="drawer-emp-id" >EMP-xxxx</span>
               <span id="drawer-emp-status" class="status-pill status-active">Active</span>
             </div>
-            <div id="drawer-emp-title" style="font-weight: 600; font-size: 14px; color: var(--hr-navy);">Job Title</div>
-            <div id="drawer-emp-dept" style="font-size: 12px; color: var(--hr-text-muted); margin-top: 2px;">Department</div>
-            <div style="margin-top: 0.5rem;">
+            <div class="hr-title-14-navy" id="drawer-emp-title" >Job Title</div>
+            <div class="hr-meta-desc-muted" id="drawer-emp-dept" >Department</div>
+            <div class="hr-mt-2" >
               <span id="drawer-emp-clearance" class="clearance-badge clearance-l3">🔒 Level 3 Clearance</span>
             </div>
           </div>
         </div>
 
         <!-- Details Grid -->
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.85rem; font-size: 12px; background: var(--hr-surface-dim); padding: 1rem; border-radius: var(--hr-radius-md); border: 1px solid var(--hr-surface-border); margin-bottom: 1.25rem;">
-          <div><strong>Email:</strong> <span id="drawer-emp-email" style="font-family: var(--hr-font-mono);">email@vostokpribor.local</span></div>
-          <div><strong>Account Login:</strong> <span id="drawer-emp-username" style="font-family: var(--hr-font-mono); color: var(--hr-plum);">username</span></div>
+        <div class="hr-grid-details" >
+          <div><strong>Email:</strong> <span class="hr-mono" id="drawer-emp-email" >email@vostokpribor.local</span></div>
+          <div><strong>Account Login:</strong> <span class="hr-mono-plum" id="drawer-emp-username" >username</span></div>
           <div><strong>Hire Date:</strong> <span id="drawer-emp-hire">2026-01-01</span></div>
           <div><strong>Direct Supervisor:</strong> <span id="drawer-emp-sup">Manager</span></div>
           <div><strong>Assigned System Role:</strong> <span id="drawer-emp-role">Role</span></div>
@@ -400,18 +401,18 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
 
         <?php if ($canManage): ?>
           <!-- Management Actions (Clearance Elevation & Offboarding) -->
-          <div style="background: #FFF; border: 1px solid var(--hr-surface-border); border-radius: var(--hr-radius-md); padding: 1rem;">
-            <div style="font-size: 11.5px; font-weight: 700; color: var(--hr-navy); text-transform: uppercase; margin-bottom: 0.5rem;">
+          <div class="hr-card-white" >
+            <div class="hr-title-uppercase" >
               Executive Personnel Actions
             </div>
-            <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+            <div class="hr-flex-wrap-gap" >
               <button class="btn btn-outline btn-sm" onclick="window.hrApp.elevateClearancePrompt()">
                 <span>🛡️ Modify Clearance Tier</span>
               </button>
-              <button class="btn btn-outline btn-sm" style="color: var(--hr-confidential); border-color: var(--hr-confidential);" onclick="window.hrApp.triggerOffboardingFromDossier()">
+              <button class="btn btn-outline btn-sm hr-btn-confidential-action"  onclick="window.hrApp.triggerOffboardingFromDossier()">
                 <span>🔒 Initiate Offboarding</span>
               </button>
-              <button class="btn btn-outline btn-sm" style="color: #B23A32; border-color: rgba(178,58,50,0.5);" onclick="window.hrApp.deleteEmployee(currentDossierEmpId, document.getElementById('drawer-emp-name').textContent)">
+              <button class="btn btn-outline btn-sm hr-btn-danger-soft"  onclick="window.hrApp.deleteEmployee(currentDossierEmpId, document.getElementById('drawer-emp-name').textContent)">
                 <span>🗑️ Purge / Terminate Record</span>
               </button>
             </div>
@@ -419,109 +420,104 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
         <?php endif; ?>
       </div>
 
-      <div class="modal-footer" style="padding: 1rem 1.5rem; background: var(--hr-surface-dim); border-top: 1px solid var(--hr-surface-border); display: flex; align-items: center; justify-content: flex-end;">
+      <div class="modal-footer hr-modal-footer" >
         <button class="btn btn-outline" onclick="window.hrApp.closeModal('modal-employee-detail')">Close Dossier</button>
       </div>
     </div>
   </div>
 
   <?php if ($canManage): ?>
-  <!-- MODAL: REGISTER NEW EMPLOYEE (LIVE DATABASE INSERT) -->
-  <div id="modal-add-employee" class="modal-backdrop">
-    <div class="modal-dialog" style="max-width: 580px;">
-      <div class="modal-header" style="background-color: var(--hr-navy); color: #FFFFFF; border-bottom: 3px solid var(--hr-plum);">
-        <div>
-          <div style="font-weight: 700; font-size: 15px;">Register New Employee into VOSTOKPRIBOR</div>
-          <div style="font-size: 11px; color: #FF8080;">Saves to MySQL · Provisions Account Credentials · Enters Onboarding Pipeline</div>
-        </div>
-        <button class="modal-close" style="color: #FFFFFF;" onclick="window.hrApp.closeModal('modal-add-employee')">✕</button>
-      </div>
-      <div class="modal-body" style="padding: 1.5rem;">
-        <form id="form-register-employee" onsubmit="return window.hrApp.handleRegisterEmployee(event, this);">
-          <div style="display: flex; flex-direction: column; gap: 1rem;">
-            <div>
-              <label style="display: block; font-size: 11.5px; font-weight: 600; color: var(--hr-navy); margin-bottom: 0.25rem;">Full Legal Name *</label>
-              <input type="text" name="full_name" required placeholder="e.g. Dr. Viktor Alexandrov" style="width: 100%; padding: 0.55rem; border: 1px solid var(--hr-surface-border); border-radius: var(--hr-radius-md);" />
-            </div>
-
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
-              <div>
-                <label style="display: block; font-size: 11.5px; font-weight: 600; color: var(--hr-navy); margin-bottom: 0.25rem;">Operational Department *</label>
-                <select name="department_code" required style="width: 100%; padding: 0.55rem; border: 1px solid var(--hr-surface-border); border-radius: var(--hr-radius-md);">
-                  <?php foreach ($departments as $dept): ?>
-                    <option value="<?= htmlspecialchars($dept['dept_code']) ?>">
-                      <?= htmlspecialchars($dept['dept_name']) ?> (<?= htmlspecialchars($dept['dept_code']) ?>)
-                    </option>
-                  <?php endforeach; ?>
-                </select>
-              </div>
-
-              <div>
-                <label style="display: block; font-size: 11.5px; font-weight: 600; color: var(--hr-navy); margin-bottom: 0.25rem;">Security Clearance Tier *</label>
-                <select name="clearance_level" required style="width: 100%; padding: 0.55rem; border: 1px solid var(--hr-surface-border); border-radius: var(--hr-radius-md);">
-                  <option value="L1">Level 1 · General Public</option>
-                  <option value="L2">Level 2 · Confidential</option>
-                  <option value="L3" selected>Level 3 · Secret SCADA</option>
-                  <option value="L4">Level 4 · Top Secret Executive</option>
-                </select>
-              </div>
-            </div>
-
-            <div>
-              <label style="display: block; font-size: 11.5px; font-weight: 600; color: var(--hr-navy); margin-bottom: 0.25rem;">Job Title / Engineering Function *</label>
-              <input type="text" name="job_title" required placeholder="e.g. Senior Optical Systems Physicist" style="width: 100%; padding: 0.55rem; border: 1px solid var(--hr-surface-border); border-radius: var(--hr-radius-md);" />
-            </div>
-
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
-              <div>
-                <label style="display: block; font-size: 11.5px; font-weight: 600; color: var(--hr-navy); margin-bottom: 0.25rem;">Corporate Email (Optional)</label>
-                <input type="email" name="email" placeholder="Auto-generated if empty" style="width: 100%; padding: 0.55rem; border: 1px solid var(--hr-surface-border); border-radius: var(--hr-radius-md);" />
-              </div>
-
-              <div>
-                <label style="display: block; font-size: 11.5px; font-weight: 600; color: var(--hr-navy); margin-bottom: 0.25rem;">Direct Manager</label>
-                <select name="manager_emp_id" style="width: 100%; padding: 0.55rem; border: 1px solid var(--hr-surface-border); border-radius: var(--hr-radius-md);">
-                  <option value="">-- No Direct Manager --</option>
-                  <?php foreach ($employees as $mgr): ?>
-                    <option value="<?= htmlspecialchars($mgr['emp_id']) ?>">
-                      <?= htmlspecialchars($mgr['full_name']) ?> (<?= htmlspecialchars($mgr['emp_id']) ?>)
-                    </option>
-                  <?php endforeach; ?>
-                </select>
-              </div>
-            </div>
-
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
-              <div>
-                <label style="display: block; font-size: 11.5px; font-weight: 600; color: var(--hr-navy); margin-bottom: 0.25rem;">Initial Account Password</label>
-                <input type="text" name="password" value="Vostok2026!" style="width: 100%; padding: 0.55rem; border: 1px solid var(--hr-surface-border); border-radius: var(--hr-radius-md); font-family: var(--hr-font-mono);" />
-              </div>
-              <div>
-                <label style="display: block; font-size: 11.5px; font-weight: 600; color: var(--hr-navy); margin-bottom: 0.25rem;">Hire Date</label>
-                <input type="date" name="hire_date" value="<?= date('Y-m-d') ?>" style="width: 100%; padding: 0.55rem; border: 1px solid var(--hr-surface-border); border-radius: var(--hr-radius-md);" />
-              </div>
-            </div>
-
-            <div style="display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 0.75rem;">
-              <button type="button" class="btn btn-outline" onclick="window.hrApp.closeModal('modal-add-employee')">Cancel</button>
-              <button type="submit" id="btn-submit-employee" class="btn btn-primary-amber">
-                <span>Register &amp; Initialize Onboarding →</span>
-              </button>
-            </div>
+    <!-- MODAL: REGISTER NEW EMPLOYEE (LIVE DATABASE INSERT) -->
+    <div id="modal-add-employee" class="modal-backdrop">
+      <div class="modal-dialog hr-modal-580" >
+        <div class="modal-header hr-modal-header-plum" >
+          <div>
+            <div class="hr-title-15-bold" >Register New Employee into VOSTOKPRIBOR</div>
+            <div class="hr-text-rose" >Saves to MySQL · Provisions Account Credentials · Enters Onboarding Pipeline</div>
           </div>
-        </form>
+          <button class="modal-close hr-text-white"  onclick="window.hrApp.closeModal('modal-add-employee')">✕</button>
+        </div>
+        <div class="modal-body hr-p-6" >
+          <form id="form-register-employee" onsubmit="return window.hrApp.handleRegisterEmployee(event, this);">
+            <div class="hr-flex-col-gap-md" >
+              <div>
+                <label class="hr-field-label" >Full Legal Name *</label>
+                <input class="hr-form-control" type="text" name="full_name" required placeholder="e.g. Dr. Viktor Alexandrov"  />
+              </div>
+
+              <div class="hr-grid-2col-sm" >
+                <div>
+                  <label class="hr-field-label" >Operational Department *</label>
+                  <select class="hr-form-control" name="department_code" required >
+                    <?php foreach ($departments as $dept): ?>
+                      <option value="<?= htmlspecialchars($dept['dept_code']) ?>">
+                        <?= htmlspecialchars($dept['dept_name']) ?> (<?= htmlspecialchars($dept['dept_code']) ?>)
+                      </option>
+                    <?php endforeach; ?>
+                  </select>
+                </div>
+
+                <div>
+                  <label class="hr-field-label" >Security Clearance Tier *</label>
+                  <select class="hr-form-control" name="clearance_level" required >
+                    <option value="L1">Level 1 · General Public</option>
+                    <option value="L2">Level 2 · Confidential</option>
+                    <option value="L3" selected>Level 3 · Secret SCADA</option>
+                    <option value="L4">Level 4 · Top Secret Executive</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label class="hr-field-label" >Job Title / Engineering Function *</label>
+                <input class="hr-form-control" type="text" name="job_title" required placeholder="e.g. Senior Optical Systems Physicist"  />
+              </div>
+
+              <div class="hr-grid-2col-sm" >
+                <div>
+                  <label class="hr-field-label" >Corporate Email (Optional)</label>
+                  <input class="hr-form-control" type="email" name="email" placeholder="Auto-generated if empty"  />
+                </div>
+
+                <div>
+                  <label class="hr-field-label" >Direct Manager</label>
+                  <select class="hr-form-control" name="manager_emp_id" >
+                    <option value="">-- No Direct Manager --</option>
+                    <?php foreach ($employees as $mgr): ?>
+                      <option value="<?= htmlspecialchars($mgr['emp_id']) ?>">
+                        <?= htmlspecialchars($mgr['full_name']) ?> (<?= htmlspecialchars($mgr['emp_id']) ?>)
+                      </option>
+                    <?php endforeach; ?>
+                  </select>
+                </div>
+              </div>
+
+              <div class="hr-grid-2col-sm" >
+                <div>
+                  <label class="hr-field-label" >Initial Account Password</label>
+                  <input class="hr-form-control-mono" type="text" name="password" value="Vostok2026!"  />
+                </div>
+                <div>
+                  <label class="hr-field-label" >Hire Date</label>
+                  <input type="date" name="hire_date" value="<?= date('Y-m-d') ?>" class="hr-form-control" />
+                </div>
+              </div>
+
+              <div class="hr-flex-end-gap-75" >
+                <button type="button" class="btn btn-outline" onclick="window.hrApp.closeModal('modal-add-employee')">Cancel</button>
+                <button type="submit" id="btn-submit-employee" class="btn btn-primary-amber">
+                  <span>Register &amp; Initialize Onboarding →</span>
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
-  </div>
   <?php endif; ?>
 
   <div id="toast-container"></div>
   <script src="js/app.js"></script>
-  <script>
-    // Check if openAdd is passed in URL query
-    if (new URLSearchParams(window.location.search).get('openAdd') === '1') {
-      window.hrApp.openModal('modal-add-employee');
-    }
-  </script>
 </body>
+
 </html>

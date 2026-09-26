@@ -1,4 +1,5 @@
 <?php
+
 /**
  * VOSTOKPRIBOR HR System - Dashboard
  * Dynamic, database-driven Human Capital Operations overview.
@@ -16,6 +17,7 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -23,6 +25,7 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 </head>
+
 <body>
 
   <div class="app-container">
@@ -44,7 +47,7 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
               <div class="brand-subline">
                 <span class="status-dot-pulse"></span>
                 <span>hr.vostokpribor.local</span>
-                <span style="opacity: 0.5;">|</span>
+                <span class="hr-opacity-50" >|</span>
                 <span>PERSONNEL OPERATIONS</span>
               </div>
             </div>
@@ -68,15 +71,18 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
           </div>
 
           <button class="icon-button" title="Pending Leave Requests" onclick="window.location.href='LeaveManagement.php'">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+              <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+            </svg>
             <?php if ($metrics['pending_leaves'] > 0): ?>
-              <span class="badge-dot" style="background:#FF8080;"></span>
+              <span class="badge-dot hr-badge-dot-rose" ></span>
             <?php endif; ?>
           </button>
 
           <!-- Dynamic Active User Profile -->
           <div class="top-user-profile" title="Active Session: <?= htmlspecialchars($currUser['full_name']) ?> (Clearance: <?= htmlspecialchars($currUser['clearance_level'] ?? 'L1') ?>)">
-            <div style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg, #7A284E 0%, #3D1427 100%);color:#FFFFFF;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12.5px;border:2px solid #FF8080;box-shadow:0 0 8px rgba(255,128,128,0.3);">
+            <div class="hr-avatar-circle-glow" >
               <?= $initials ?>
             </div>
             <div class="user-details-top">
@@ -86,8 +92,8 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
           </div>
 
           <!-- Sign Out -->
-          <a href="../api/logout.php?system=HR%20System&redirect=../HR%20System/login.php" class="top-signout-btn" title="Sign Out of HR System" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" style="display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:4px;background:rgba(178,58,50,0.2);border:1px solid rgba(178,58,50,0.5);color:#FF8080;font-size:12px;font-weight:600;text-decoration:none;cursor:pointer;margin-left:8px;vertical-align:middle;transition:all 0.2s;">
-            <span class="material-symbols-outlined" style="font-size:15px;line-height:1;">logout</span>
+          <a href="../api/logout.php?system=HR%20System&redirect=../HR%20System/login.php" class="top-signout-btn" title="Sign Out of HR System" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" >
+            <span class="material-symbols-outlined">logout</span>
             <span>Sign Out</span>
           </a>
         </div>
@@ -103,7 +109,12 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
             <a href="Dashboard.php" class="sidebar-nav-item active">
               <div class="sidebar-item-left">
                 <span class="sidebar-icon">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="7" height="7" />
+                    <rect x="14" y="3" width="7" height="7" />
+                    <rect x="14" y="14" width="7" height="7" />
+                    <rect x="3" y="14" width="7" height="7" />
+                  </svg>
                 </span>
                 <span>Dashboard</span>
               </div>
@@ -112,7 +123,12 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
             <a href="EmployeeRecords.php" class="sidebar-nav-item">
               <div class="sidebar-item-left">
                 <span class="sidebar-icon">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                    <circle cx="9" cy="7" r="4" />
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                  </svg>
                 </span>
                 <span>Employee Records</span>
               </div>
@@ -122,7 +138,12 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
             <a href="OnboardingTracker.php" class="sidebar-nav-item">
               <div class="sidebar-item-left">
                 <span class="sidebar-icon">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                    <circle cx="9" cy="7" r="4" />
+                    <line x1="19" y1="8" x2="19" y2="14" />
+                    <line x1="22" y1="11" x2="16" y2="11" />
+                  </svg>
                 </span>
                 <span>Onboarding Pipeline</span>
               </div>
@@ -134,7 +155,11 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
             <a href="Offboarding.php" class="sidebar-nav-item">
               <div class="sidebar-item-left">
                 <span class="sidebar-icon">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="17" y1="11" x2="23" y2="11"/></svg>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                    <circle cx="9" cy="7" r="4" />
+                    <line x1="17" y1="11" x2="23" y2="11" />
+                  </svg>
                 </span>
                 <span>Offboarding &amp; Revocation</span>
               </div>
@@ -146,7 +171,12 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
             <a href="LeaveManagement.php" class="sidebar-nav-item">
               <div class="sidebar-item-left">
                 <span class="sidebar-icon">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                    <line x1="16" y1="2" x2="16" y2="6" />
+                    <line x1="8" y1="2" x2="8" y2="6" />
+                    <line x1="3" y1="10" x2="21" y2="10" />
+                  </svg>
                 </span>
                 <span>Leave Management</span>
               </div>
@@ -158,7 +188,15 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
             <a href="OrgStructure.php" class="sidebar-nav-item">
               <div class="sidebar-item-left">
                 <span class="sidebar-icon">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="8.5" y="14" width="7" height="7"/><line x1="6.5" y1="10" x2="6.5" y2="12"/><line x1="17.5" y1="10" x2="17.5" y2="12"/><line x1="6.5" y1="12" x2="17.5" y2="12"/><line x1="12" y1="12" x2="12" y2="14"/></svg>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="7" height="7" />
+                    <rect x="14" y="3" width="7" height="7" />
+                    <rect x="8.5" y="14" width="7" height="7" />
+                    <line x1="6.5" y1="10" x2="6.5" y2="12" />
+                    <line x1="17.5" y1="10" x2="17.5" y2="12" />
+                    <line x1="6.5" y1="12" x2="17.5" y2="12" />
+                    <line x1="12" y1="12" x2="12" y2="14" />
+                  </svg>
                 </span>
                 <span>Org Hierarchy</span>
               </div>
@@ -167,15 +205,23 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
             <a href="Training.php" class="sidebar-nav-item">
               <div class="sidebar-item-left">
                 <span class="sidebar-icon">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+                    <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+                  </svg>
                 </span>
                 <span>Training &amp; Certs</span>
               </div>
             </a>
-<a href="Integrations.php" class="sidebar-nav-item"><div class="sidebar-item-left"><span class="sidebar-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00E5FF" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></span><span style="color: #00E5FF; font-weight: 600;">System Integrations</span></div><span class="sidebar-badge" style="background: rgba(0,229,255,0.15); color: #00E5FF;">SYS08</span></a>
+            <a href="Integrations.php" class="sidebar-nav-item">
+              <div class="sidebar-item-left"><span class="sidebar-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00E5FF" stroke-width="2">
+                    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+                    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+                  </svg></span><span class="hr-nav-integrations" >System Integrations</span></div><span class="sidebar-badge hr-badge-integrations" >SYS08</span>
+            </a>
           </nav>
 
-          <div class="sidebar-section-title" style="margin-top: 1.5rem;">Ecosystem Gateways</div>
+          <div class="sidebar-section-title hr-mt-6" >Ecosystem Gateways</div>
           <nav class="sidebar-nav">
             <a href="../Admin & Governance Portal/index.php" class="sidebar-nav-item">
               <div class="sidebar-item-left">
@@ -205,7 +251,7 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
               <span>Security Clearance Registry</span>
               <span class="security-badge-status">● GOST 1G</span>
             </div>
-            <div style="font-size: 11px; color: var(--hr-text-inverse-muted); margin-top: 2px;">
+            <div class="hr-text-inverse-muted-sm" >
               Executive L4 Clearances: <strong><?= $metrics['clearance_counts']['L4'] ?> Vetted</strong>
             </div>
           </div>
@@ -250,7 +296,7 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
               </div>
               <div class="kpi-value-row">
                 <span class="kpi-value kpi-value-mono"><?= number_format($metrics['active_headcount']) ?></span>
-                <span style="font-size: 13px; color: var(--hr-text-muted); font-weight: 500;">Staff</span>
+                <span class="hr-text-muted-500" >Staff</span>
               </div>
               <div class="kpi-footer">
                 <span>Top Secret L4: <?= $metrics['clearance_counts']['L4'] ?></span>
@@ -265,9 +311,9 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
                 <div class="kpi-icon-pill steel">🔒</div>
               </div>
               <div class="kpi-value-row">
-                <span class="kpi-value kpi-value-mono" style="font-size: 20px;">
-                  <span style="color:#B23A32;">L4: <?= $metrics['clearance_counts']['L4'] ?></span> | 
-                  <span style="color:#7A284E;">L3: <?= $metrics['clearance_counts']['L3'] ?></span>
+                <span class="kpi-value kpi-value-mono hr-text-20" >
+                  <span class="hr-text-red" >L4: <?= $metrics['clearance_counts']['L4'] ?></span> |
+                  <span class="hr-text-plum" >L3: <?= $metrics['clearance_counts']['L3'] ?></span>
                 </span>
               </div>
               <div class="kpi-footer">
@@ -284,7 +330,7 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
               </div>
               <div class="kpi-value-row">
                 <span class="kpi-value kpi-value-mono"><?= $metrics['active_onboarding'] ?></span>
-                <span style="font-size: 13px; color: var(--hr-text-muted); font-weight: 500;">Pipelines</span>
+                <span class="hr-text-muted-500" >Pipelines</span>
               </div>
               <div class="kpi-footer">
                 <span>Sequential Stage Gating</span>
@@ -302,7 +348,7 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
               </div>
               <div class="kpi-value-row">
                 <span class="kpi-value kpi-value-mono"><?= $metrics['pending_leaves'] ?></span>
-                <span style="font-size: 13px; color: var(--hr-text-muted); font-weight: 500;">Requests</span>
+                <span class="hr-text-muted-500" >Requests</span>
               </div>
               <div class="kpi-footer">
                 <span>Offboarding Cases: <?= $metrics['active_offboarding'] ?></span>
@@ -312,11 +358,11 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
           </div>
 
           <!-- Horizontal Bar Chart: Headcount by Department (LIVE SQL DATA) -->
-          <div class="hr-card" style="margin-bottom: 1.5rem;">
+          <div class="hr-card hr-mb-6" >
             <div class="card-header-row">
               <div>
                 <h3 class="card-title">Live Headcount by Enterprise Department</h3>
-                <p style="font-size: 11.5px; color: var(--hr-text-secondary); margin-top: 2px;">
+                <p class="hr-meta-subtext" >
                   Active staff queried from MySQL across all registered operational divisions
                 </p>
               </div>
@@ -326,18 +372,24 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
             </div>
 
             <div class="dept-chart-container">
-              <?php 
+              <?php
               $maxStaff = 1;
               foreach ($metrics['dept_distribution'] as $dd) {
-                  if ($dd['current'] > $maxStaff) $maxStaff = $dd['current'];
+                if ($dd['current'] > $maxStaff) $maxStaff = $dd['current'];
               }
               $deptIcons = [
-                  'ENG' => '⚙️', 'EXE' => '🏛️', 'FIN' => '💳', 'GOV' => '⚖️',
-                  'HRA' => '👥', 'ITD' => '💻', 'OPS' => '📦', 'SAL' => '💼'
+                'ENG' => '⚙️',
+                'EXE' => '🏛️',
+                'FIN' => '💳',
+                'GOV' => '⚖️',
+                'HRA' => '👥',
+                'ITD' => '💻',
+                'OPS' => '📦',
+                'SAL' => '💼'
               ];
-              foreach ($metrics['dept_distribution'] as $d): 
-                  $pct = round(($d['current'] / $maxStaff) * 100);
-                  $icon = $deptIcons[$d['code']] ?? '🏢';
+              foreach ($metrics['dept_distribution'] as $d):
+                $pct = round(($d['current'] / $maxStaff) * 100);
+                $icon = $deptIcons[$d['code']] ?? '🏢';
               ?>
                 <div class="dept-bar-row">
                   <div class="dept-bar-label">
@@ -358,11 +410,11 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
             <div class="card-header-row">
               <div>
                 <h3 class="card-title">Priority Personnel Actions &amp; Security Compliance Queue</h3>
-                <p style="font-size: 11.5px; color: var(--hr-text-secondary); margin-top: 2px;">
+                <p class="hr-meta-subtext" >
                   Recent personnel records, pending onboarding clearances, and active offboarding revocations
                 </p>
               </div>
-              <span class="confidential-system-pill" style="font-size: 9.5px; padding: 2px 6px;">
+              <span class="confidential-system-pill hr-pill-mini" >
                 SECURITY SLA: MANDATORY 24H
               </span>
             </div>
@@ -371,13 +423,13 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
               <!-- Item 1: Active Onboarding Candidate -->
               <div class="action-item action-it">
                 <div class="action-item-left">
-                  <div class="action-badge-icon" style="background: var(--hr-warning-light); color: var(--hr-amber-hover);">💻</div>
+                  <div class="action-badge-icon hr-badge-warning" >💻</div>
                   <div>
                     <div class="action-item-title">Onboarding Pipeline Active · <?= $metrics['active_onboarding'] ?> Candidate(s)</div>
                     <div class="action-item-desc">Sequential provisioning, cryptographic token assignment, and security clearance gating.</div>
                   </div>
                 </div>
-                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                <div class="hr-flex-gap-md" >
                   <a href="OnboardingTracker.php" class="btn btn-primary-amber btn-sm">Open Onboarding Tracker →</a>
                 </div>
               </div>
@@ -385,13 +437,13 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
               <!-- Item 2: Offboarding Status -->
               <div class="action-item action-offboarding">
                 <div class="action-item-left">
-                  <div class="action-badge-icon" style="background: var(--hr-confidential-bg); color: var(--hr-confidential);">🔒</div>
+                  <div class="action-badge-icon hr-badge-confidential" >🔒</div>
                   <div>
                     <div class="action-item-title">Security Clearance Revocation &amp; IT Lock · <?= $metrics['active_offboarding'] ?> Case(s)</div>
                     <div class="action-item-desc">Revoke SCADA tokens, retrieve cryptographic smartcards, and archive NDA records.</div>
                   </div>
                 </div>
-                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                <div class="hr-flex-gap-md" >
                   <a href="Offboarding.php" class="btn btn-outline btn-sm">Process Revocation →</a>
                 </div>
               </div>
@@ -400,13 +452,13 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
               <?php if ($metrics['pending_leaves'] > 0): ?>
                 <div class="action-item">
                   <div class="action-item-left">
-                    <div class="action-badge-icon" style="background: var(--hr-plum-light); color: var(--hr-plum);">📅</div>
+                    <div class="action-badge-icon hr-badge-plum" >📅</div>
                     <div>
                       <div class="action-item-title">Pending Leave Requests · <?= $metrics['pending_leaves'] ?> Submitted</div>
                       <div class="action-item-desc">Operational personnel requests awaiting department director approval.</div>
                     </div>
                   </div>
-                  <div style="display: flex; align-items: center; gap: 0.75rem;">
+                  <div class="hr-flex-gap-md" >
                     <a href="LeaveManagement.php" class="btn btn-plum btn-sm">Review Leave Queue →</a>
                   </div>
                 </div>
@@ -421,4 +473,5 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
   <div id="toast-container"></div>
   <script src="js/app.js"></script>
 </body>
+
 </html>

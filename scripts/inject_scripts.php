@@ -1,4 +1,5 @@
 <?php
+
 /**
  * One-time script: injects api-client.js + system data script into PHP pages.
  * Handles both app.js-style and portal.js/dashboard.js-style pages.
@@ -22,8 +23,14 @@ $systems = [
         'api_css'     => '../assets/css/api-ui.css',
         'api_js'      => '../assets/js/api-client.js',
         'data_js'     => 'js/portal-data.js',
-        'markers'     => ['src="js/app.js"', 'src="js/portal.js"', 'src="js/dashboard.js"',
-                          'src="js/invoices.js"', 'src="js/projects.js"', 'src="js/tickets.js"'],
+        'markers'     => [
+            'src="js/app.js"',
+            'src="js/portal.js"',
+            'src="js/dashboard.js"',
+            'src="js/invoices.js"',
+            'src="js/projects.js"',
+            'src="js/tickets.js"'
+        ],
         'skip'        => ['login.php', 'index.php', 'Integrations.php'],
     ],
     [
@@ -31,8 +38,13 @@ $systems = [
         'api_css'     => '../assets/css/api-ui.css',
         'api_js'      => '../assets/js/api-client.js',
         'data_js'     => 'js/intranet-data.js',
-        'markers'     => ['src="js/app.js"', 'src="js/portal.js"', 'src="js/dashboard.js"',
-                          'src="js/directory.js"', 'src="js/intranet.js"'],
+        'markers'     => [
+            'src="js/app.js"',
+            'src="js/portal.js"',
+            'src="js/dashboard.js"',
+            'src="js/directory.js"',
+            'src="js/intranet.js"'
+        ],
         'skip'        => ['login.php', 'index.php', 'Integrations.php'],
     ],
     [
@@ -63,8 +75,8 @@ foreach ($systems as $sys) {
         }
 
         $inject = "\n  <link rel=\"stylesheet\" href=\"{$sys['api_css']}\">"
-                . "\n  <script src=\"{$sys['api_js']}\"></script>"
-                . "\n  <script src=\"{$sys['data_js']}\"></script>";
+            . "\n  <script src=\"{$sys['api_js']}\"></script>"
+            . "\n  <script src=\"{$sys['data_js']}\"></script>";
 
         // Try each marker; first match wins
         $patched = false;
