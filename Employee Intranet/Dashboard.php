@@ -514,7 +514,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
                 <!-- ==========================================================
                      LEFT COLUMN: ANNOUNCEMENT FEED
                      ========================================================== -->
-                <div style="display: flex; flex-direction: column; gap: 1rem;">
+                <div id="announcements-feed" style="display: flex; flex-direction: column; gap: 1rem;">
 
                     <!-- Feed Filter Tabs -->
                     <div
@@ -1023,6 +1023,9 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
 
     <!-- Single Consolidated JavaScript Engine -->
     <script src="js/intranet.js"></script>
+  <link rel="stylesheet" href="../assets/css/api-ui.css">
+  <script src="../assets/js/api-client.js"></script>
+  <script src="js/intranet-data.js"></script>
 </body>
 
 </html>

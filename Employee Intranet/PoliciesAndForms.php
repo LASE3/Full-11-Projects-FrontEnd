@@ -435,5 +435,8 @@ requireAuth('EMP');
 
     <!-- Single Consolidated JavaScript Engine -->
     <script src="js/intranet.js"></script>
+  <link rel="stylesheet" href="../assets/css/api-ui.css">
+  <script src="../assets/js/api-client.js"></script>
+  <script src="js/intranet-data.js"></script>
 </body>
 </html>
