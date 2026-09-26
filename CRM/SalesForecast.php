@@ -356,7 +356,7 @@ requireAuth('CRM');
                   <th>Status</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody id="forecast-tbody">
                 <tr class="account-row account-row-tagged">
                   <td>
                     <div style="display: flex; align-items: center; gap: 0.65rem;">
@@ -438,5 +438,8 @@ requireAuth('CRM');
 
   <div id="toast-container"></div>
   <script src="js/app.js"></script>
+  <link rel="stylesheet" href="../assets/css/api-ui.css">
+  <script src="../assets/js/api-client.js"></script>
+  <script src="js/crm-data.js"></script>
 </body>
 </html>

@@ -311,7 +311,7 @@ requireAuth('CRM');
                   <th>Action</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody id="customers-tbody">
                 <!-- Customer 1 -->
                 <tr class="account-row account-row-tagged" onclick="window.location.href='CustomerDetail.php'">
                   <td>
@@ -445,5 +445,8 @@ requireAuth('CRM');
 
   <div id="toast-container"></div>
   <script src="js/app.js"></script>
+  <link rel="stylesheet" href="../assets/css/api-ui.css">
+  <script src="../assets/js/api-client.js"></script>
+  <script src="js/crm-data.js"></script>
 </body>
 </html>

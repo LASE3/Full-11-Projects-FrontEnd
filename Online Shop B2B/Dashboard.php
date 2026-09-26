@@ -805,6 +805,9 @@ if (empty($_SESSION['vostok_authenticated']) || empty($_SESSION['vostok_system_S
 
   <!-- Consolidated JavaScript Application -->
   <script src="js/app.js"></script>
+  <link rel="stylesheet" href="../assets/css/api-ui.css">
+  <script src="../assets/js/api-client.js"></script>
+  <script src="js/shop-data.js"></script>
 </body>
 
 </html>
