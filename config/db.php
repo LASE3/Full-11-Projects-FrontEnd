@@ -137,7 +137,7 @@ function getDbConnection(): PDO
                 );
                 $pdo = new PDO($dsn, VP_DB_USER, VP_DB_PASS, $options);
 
-                $masterSql = __DIR__ . '/../DataBase/vostokpribor_master.sql';
+                $masterSql = __DIR__ . '/../DataBase/vostokpribor.sql';
                 if (file_exists($masterSql)) {
                     $pdo->exec((string)file_get_contents($masterSql));
                 }
