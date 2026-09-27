@@ -39,22 +39,49 @@ if ($method === 'GET') {
 }
 
 // 2. POST: Update Policy
-$action = trim((string)($payload['action'] ?? 'update'));
+$action = trim((string)($_GET['action'] ?? ($payload['action'] ?? 'update')));
 
-if ($action === 'update') {
-    $slaId = (int)($payload['sla_id'] ?? 0);
-    $respHours = (int)($payload['response_time_hours'] ?? 0);
-    $resHours = (int)($payload['resolution_time_hours'] ?? 0);
+if ($action === 'update' || $action === 'update_policy') {
+    $slaId = (int)($payload['sla_id'] ?? ($payload['policy_id'] ?? 0));
+    $respMinutes = (int)($payload['first_response_time_minutes'] ?? 0);
+    $resMinutes = (int)($payload['resolution_time_minutes'] ?? 0);
+    $esclMinutes = (int)($payload['escalation_threshold_minutes'] ?? 0);
+    $desc = trim((string)($payload['description'] ?? ''));
 
-    if ($slaId <= 0 || $respHours <= 0 || $resHours <= 0) {
-        sendJsonError("Valid SLA ID and positive hours are required.");
+    // Convert minutes to hours if hours not provided
+    $respHours = (int)($payload['response_time_hours'] ?? ($respMinutes > 0 ? max(1, (int)round($respMinutes / 60)) : 0));
+    $resHours = (int)($payload['resolution_time_hours'] ?? ($resMinutes > 0 ? max(1, (int)round($resMinutes / 60)) : 0));
+
+    if ($slaId <= 0) {
+        sendJsonError("Valid SLA policy ID is required.");
     }
 
-    $stmt = $pdo->prepare("UPDATE sla_policies SET response_time_hours = :resp, resolution_time_hours = :res WHERE sla_id = :id");
+    if ($respHours <= 0 && $respMinutes <= 0) {
+        sendJsonError("Positive response time target is required.");
+    }
+
+    if ($respMinutes <= 0) $respMinutes = $respHours * 60;
+    if ($resMinutes <= 0) $resMinutes = $resHours * 60;
+    if ($esclMinutes <= 0) $esclMinutes = (int)round($respMinutes * 0.5);
+
+    $stmt = $pdo->prepare("
+        UPDATE sla_policies 
+        SET response_time_hours = :resp_h,
+            resolution_time_hours = :res_h,
+            first_response_time_minutes = :resp_m,
+            resolution_time_minutes = :res_m,
+            escalation_threshold_minutes = :escl_m,
+            description = :desc
+        WHERE sla_id = :id
+    ");
     $stmt->execute([
-        ':id'   => $slaId,
-        ':resp' => $respHours,
-        ':res'  => $resHours,
+        ':id'     => $slaId,
+        ':resp_h' => $respHours,
+        ':res_h'  => $resHours,
+        ':resp_m' => $respMinutes,
+        ':res_m'  => $resMinutes,
+        ':escl_m' => $esclMinutes,
+        ':desc'   => $desc,
     ]);
 
     sendJsonSuccess(['sla_id' => $slaId], "SLA policy threshold updated.");

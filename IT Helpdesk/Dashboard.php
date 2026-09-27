@@ -6,31 +6,21 @@ require_once __DIR__ . '/api/db_helper.php';
 $pdo = getItDb();
 $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Alexey Ivanov', 'clearance_level' => 'L2'];
 
-// Dynamic Statistics
-$openCountStmt = $pdo->query("SELECT COUNT(*) FROM tickets WHERE status != 'Resolved'");
-$openCount = (int)$openCountStmt->fetchColumn();
+// Dynamic Statistics via centralized helper
+$sbStats = getItSidebarStats($pdo);
+$openCount = $sbStats['open_count'];
+$myTicketsCount = $sbStats['my_tickets_count'];
+$assetCount = $sbStats['asset_count'];
+$kbCount = $sbStats['kb_count'];
+$totalTickets = $sbStats['total_tickets'];
+$slaPct = $sbStats['sla_pct'];
+$compliantCount = $sbStats['compliant_count'];
 
-$unassignedStmt = $pdo->query("SELECT COUNT(*) FROM tickets WHERE (assigned_to IS NULL OR assigned_to = '' OR assigned_to = 'Unassigned') AND status != 'Resolved'");
+$unassignedStmt = $pdo->query("SELECT COUNT(*) FROM tickets WHERE assigned_emp_id IS NULL AND status != 'Resolved'");
 $unassignedCount = (int)$unassignedStmt->fetchColumn();
 
 $critStmt = $pdo->query("SELECT COUNT(*) FROM tickets WHERE priority IN ('Critical', 'High') AND status != 'Resolved'");
 $critCount = (int)$critStmt->fetchColumn();
-
-$totalTicketsStmt = $pdo->query("SELECT COUNT(*) FROM tickets");
-$totalTickets = (int)$totalTicketsStmt->fetchColumn();
-
-$compliantStmt = $pdo->query("SELECT COUNT(*) FROM tickets WHERE sla_status = 'Within SLA' OR sla_status IS NULL");
-$compliantCount = (int)$compliantStmt->fetchColumn();
-$slaPct = $totalTickets > 0 ? round(($compliantCount / $totalTickets) * 100, 1) : 98.4;
-
-$myTicketsStmt = $pdo->query("SELECT COUNT(*) FROM tickets WHERE (assigned_to LIKE '%Alexey%' OR assigned_emp_id = 'EMP-1018') AND status != 'Resolved'");
-$myTicketsCount = (int)$myTicketsStmt->fetchColumn();
-
-$assetCountStmt = $pdo->query("SELECT COUNT(*) FROM it_assets");
-$assetCount = (int)$assetCountStmt->fetchColumn();
-
-$kbCountStmt = $pdo->query("SELECT COUNT(*) FROM knowledge_base_articles");
-$kbCount = (int)$kbCountStmt->fetchColumn();
 
 // Immediate Attention List (Critical or High and not resolved)
 $attnStmt = $pdo->query("SELECT * FROM tickets WHERE priority IN ('Critical', 'High') AND status != 'Resolved' ORDER BY FIELD(priority, 'Critical', 'High'), created_at DESC LIMIT 6");
@@ -292,8 +282,8 @@ if (empty($attentionTickets)) {
                 <span>+ Create Incident</span>
               </button>
               <?php if (!empty($attentionTickets)): ?>
-              <a href="TicketDetail.php?id=<?= urlencode($attentionTickets[0]['ticket_code']) ?>" class="btn btn-primary-amber">
-                <span>⚡ Triage Active P1 (<?= htmlspecialchars($attentionTickets[0]['ticket_code']) ?>)</span>
+              <a href="TicketDetail.php?id=<?= urlencode($attentionTickets[0]['tkt_id']) ?>" class="btn btn-primary-amber">
+                <span>⚡ Triage Active P1 (<?= htmlspecialchars($attentionTickets[0]['tkt_id']) ?>)</span>
               </a>
               <?php else: ?>
               <a href="TicketQueue.php" class="btn btn-primary-amber">
@@ -521,25 +511,25 @@ if (empty($attentionTickets)) {
                     </div>
                     <div>
                       <div class="hd-flex-gap-sm">
-                        <a class="hd-title-link" href="TicketDetail.php?id=<?= urlencode($t['ticket_code']) ?>">
-                          <?= htmlspecialchars($t['ticket_code']) ?> · <?= htmlspecialchars($t['title']) ?>
+                        <a class="hd-title-link" href="TicketDetail.php?id=<?= urlencode((string)$t['tkt_id']) ?>">
+                          <?= htmlspecialchars((string)$t['tkt_id']) ?> · <?= htmlspecialchars((string)($t['title'] ?: ($t['description'] ?? 'General Incident'))) ?>
                         </a>
-                        <span class="status-pill status-<?= $statusSlug ?>"><?= htmlspecialchars($t['status']) ?></span>
+                        <span class="status-pill status-<?= $statusSlug ?>"><?= htmlspecialchars((string)($t['status'] ?? 'Open')) ?></span>
                       </div>
                       <div class="hd-meta-subtext">
-                        Requester: <strong><?= htmlspecialchars($t['requester_name']) ?></strong> (<?= htmlspecialchars($t['requester_dept'] ?? 'Plant Operations') ?>) · System: <strong><?= htmlspecialchars($t['affected_system'] ?? 'General') ?></strong>
+                        Requester: <strong><?= htmlspecialchars((string)($t['requester_name'] ?? 'Authorized Personnel')) ?></strong> (<?= htmlspecialchars((string)($t['requester_dept'] ?? 'Plant Operations')) ?>) · System: <strong><?= htmlspecialchars((string)($t['affected_system'] ?? ($t['source_system'] ?? 'General'))) ?></strong>
                       </div>
                     </div>
                   </div>
                   <div class="hd-flex-gap-md">
                     <div class="hd-text-right-11">
                       <div class="hd-text-muted">Assigned Tech</div>
-                      <div class="hd-bold-navy"><?= htmlspecialchars($t['assigned_to'] ?: 'Unassigned') ?></div>
+                      <div class="hd-bold-navy"><?= htmlspecialchars((string)($t['assigned_emp_id'] ?: 'Unassigned')) ?></div>
                     </div>
                     <div style="display: flex; gap: 6px; align-items: center;">
-                      <a href="TicketDetail.php?id=<?= urlencode($t['ticket_code']) ?>" class="btn btn-primary-amber btn-sm">Triage →</a>
+                      <a href="TicketDetail.php?id=<?= urlencode((string)$t['tkt_id']) ?>" class="btn btn-primary-amber btn-sm">Triage →</a>
                       <button class="btn-crud-edit" onclick="window.hdApp.openEditTicketModal(<?= htmlspecialchars(json_encode($t), ENT_QUOTES, 'UTF-8') ?>)" title="Edit Ticket">✎</button>
-                      <button class="btn-crud-delete" onclick="window.hdApp.deleteTicket(<?= (int)$t['ticket_id'] ?>, '<?= htmlspecialchars($t['ticket_code'], ENT_QUOTES) ?>')" title="Delete Ticket">🗑</button>
+                      <button class="btn-crud-delete" onclick="window.hdApp.deleteTicket('<?= htmlspecialchars((string)$t['tkt_id'], ENT_QUOTES) ?>', '<?= htmlspecialchars((string)$t['tkt_id'], ENT_QUOTES) ?>')" title="Delete Ticket">🗑</button>
                     </div>
                   </div>
                 </div>
@@ -593,7 +583,7 @@ if (empty($attentionTickets)) {
           <div class="hd-form-row">
             <div class="hd-form-group">
               <label class="hd-form-label">Assigned Lead Tech</label>
-              <select name="assigned_to" class="hd-form-select">
+              <select name="assigned_emp_id" class="hd-form-select">
                 <option value="Alexey Ivanov" selected>Alexey Ivanov (Tier 3)</option>
                 <option value="Dmitry Popov">Dmitry Popov (Tier 2)</option>
                 <option value="Sofia Volkova">Sofia Volkova (Tier 1)</option>
@@ -630,7 +620,7 @@ if (empty($attentionTickets)) {
         <button type="button" class="hd-modal-close" onclick="window.hdApp.closeModal('modal-edit-ticket')">✕</button>
       </div>
       <form id="form-edit-ticket" onsubmit="window.hdApp.submitEditTicket(event)">
-        <input type="hidden" name="ticket_id" id="edit-ticket-id" />
+        <input type="hidden" name="tkt_id" id="edit-ticket-id" />
         <div class="hd-modal-body">
           <div class="hd-form-group">
             <label class="hd-form-label">Incident Title *</label>
@@ -663,7 +653,7 @@ if (empty($attentionTickets)) {
             </div>
             <div class="hd-form-group">
               <label class="hd-form-label">Assigned Tech</label>
-              <input type="text" name="assigned_to" id="edit-ticket-assigned" class="hd-form-input" />
+              <input type="text" name="assigned_emp_id" id="edit-ticket-assigned" class="hd-form-input" />
             </div>
           </div>
           <div class="hd-form-group">

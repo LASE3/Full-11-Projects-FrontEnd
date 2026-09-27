@@ -10,11 +10,11 @@ $techFilter = $_GET['tech'] ?? 'Alexey Ivanov';
 
 // Query tickets for this tech or all assigned
 if ($techFilter === 'all') {
-    $stmt = $pdo->prepare("SELECT * FROM tickets WHERE (assigned_to IS NOT NULL AND assigned_to != '' AND assigned_to != 'Unassigned') ORDER BY FIELD(priority, 'Critical', 'High', 'Medium', 'Low'), created_at DESC");
+    $stmt = $pdo->prepare("SELECT * FROM tickets WHERE assigned_emp_id IS NOT NULL ORDER BY FIELD(priority, 'Critical', 'High', 'Medium', 'Low'), created_at DESC");
     $stmt->execute();
 } else {
-    $stmt = $pdo->prepare("SELECT * FROM tickets WHERE assigned_to LIKE :tech OR assigned_emp_id = 'EMP-1018' ORDER BY FIELD(priority, 'Critical', 'High', 'Medium', 'Low'), created_at DESC");
-    $stmt->execute([':tech' => '%' . $techFilter . '%']);
+    $stmt = $pdo->prepare("SELECT * FROM tickets WHERE assigned_emp_id IS NOT NULL ORDER BY FIELD(priority, 'Critical', 'High', 'Medium', 'Low'), created_at DESC");
+    $stmt->execute();
 }
 $myTickets = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -33,15 +33,13 @@ foreach ($myTickets as $t) {
     }
 }
 
-// Global badges
-$openCountStmt = $pdo->query("SELECT COUNT(*) FROM tickets WHERE status != 'Resolved'");
-$openCount = (int)$openCountStmt->fetchColumn();
-
-$assetCountStmt = $pdo->query("SELECT COUNT(*) FROM it_assets");
-$assetCount = (int)$assetCountStmt->fetchColumn();
-
-$kbCountStmt = $pdo->query("SELECT COUNT(*) FROM knowledge_base_articles");
-$kbCount = (int)$kbCountStmt->fetchColumn();
+// Global dynamic sidebar counts
+$sbStats = getItSidebarStats($pdo);
+$openCount = $sbStats['open_count'];
+$myTicketsCount = $sbStats['my_tickets_count'];
+$assetCount = $sbStats['asset_count'];
+$kbCount = $sbStats['kb_count'];
+$slaPct = $sbStats['sla_pct'];
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -149,7 +147,7 @@ $kbCount = (int)$kbCountStmt->fetchColumn();
                   </svg></span>
                 <span>My Tickets</span>
               </div>
-              <span class="sidebar-badge badge-red"><?= $totalCount ?></span>
+              <span class="sidebar-badge badge-red"><?= $myTicketsCount ?></span>
             </a>
             <a href="KnowledgeBase.php" class="sidebar-nav-item">
               <div class="sidebar-item-left">
@@ -181,7 +179,20 @@ $kbCount = (int)$kbCountStmt->fetchColumn();
                   </svg></span>
                 <span>SLA Reports</span>
               </div>
-              <span class="sidebar-badge badge-green">98.4%</span>
+              <span class="sidebar-badge badge-green"><?= $slaPct ?>%</span>
+            </a>
+
+            <a href="Integrations.php" class="sidebar-nav-item">
+              <div class="sidebar-item-left">
+                <span class="sidebar-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00E5FF" stroke-width="2">
+                    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+                    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+                  </svg>
+                </span>
+                <span class="hd-nav-integrations">System Integrations</span>
+              </div>
+              <span class="sidebar-badge hd-badge-integrations">SYS09</span>
             </a>
           </nav>
         </div>
@@ -256,8 +267,8 @@ $kbCount = (int)$kbCountStmt->fetchColumn();
                 <span>+ Create Incident</span>
               </button>
               <?php if (!empty($myTickets)): ?>
-              <a href="TicketDetail.php?id=<?= urlencode($myTickets[0]['ticket_code']) ?>" class="btn btn-primary-amber">
-                <span>⚡ Resume Top Incident (<?= htmlspecialchars($myTickets[0]['ticket_code']) ?>)</span>
+              <a href="TicketDetail.php?id=<?= urlencode($myTickets[0]['tkt_id']) ?>" class="btn btn-primary-amber">
+                <span>⚡ Resume Top Incident (<?= htmlspecialchars($myTickets[0]['tkt_id']) ?>)</span>
               </a>
               <?php endif; ?>
             </div>
@@ -304,26 +315,26 @@ $kbCount = (int)$kbCountStmt->fetchColumn();
                   ?>
                   <tr class="hd-table-row">
                     <td>
-                      <a href="TicketDetail.php?id=<?= urlencode($t['ticket_code']) ?>" style="text-decoration: none;">
-                        <strong class="hd-mono-navy"><?= htmlspecialchars($t['ticket_code']) ?></strong>
+                      <a href="TicketDetail.php?id=<?= urlencode($t['tkt_id']) ?>" style="text-decoration: none;">
+                        <strong class="hd-mono-navy"><?= htmlspecialchars($t['tkt_id']) ?></strong>
                       </a>
                     </td>
                     <td>
-                      <div class="hd-font-semibold-navy"><?= htmlspecialchars($t['requester_name']) ?></div>
-                      <div class="hd-text-muted-11"><?= htmlspecialchars($t['requester_dept'] ?? 'Plant Operations') ?></div>
+                      <div class="hd-font-semibold-navy"><?= htmlspecialchars((string)($t['requester_name'] ?? 'Authorized Personnel')) ?></div>
+                      <div class="hd-text-muted-11"><?= htmlspecialchars((string)($t['requester_dept'] ?? 'Plant Operations')) ?></div>
                     </td>
                     <td>
-                      <div class="hd-font-semibold"><?= htmlspecialchars($t['affected_system'] ?? 'General Subsystem') ?></div>
-                      <div class="hd-text-muted-11"><?= htmlspecialchars($t['title'] ?: $t['description']) ?></div>
+                      <div class="hd-font-semibold"><?= htmlspecialchars((string)($t['affected_system'] ?? ($t['source_system'] ?? 'General Subsystem'))) ?></div>
+                      <div class="hd-text-muted-11"><?= htmlspecialchars((string)($t['title'] ?: ($t['description'] ?? 'General Support Incident'))) ?></div>
                     </td>
-                    <td><span class="priority-badge <?= $prioClass ?>"><?= strtoupper(htmlspecialchars($t['priority'])) ?></span></td>
-                    <td><strong class="<?= $t['priority'] === 'Critical' ? 'hd-mono-critical' : 'hd-mono-navy' ?>"><?= htmlspecialchars($t['sla_deadline'] ?? 'Active') ?></strong></td>
-                    <td><span class="status-pill status-<?= $statusSlug ?>"><?= htmlspecialchars($t['status']) ?></span></td>
+                    <td><span class="priority-badge <?= $prioClass ?>"><?= strtoupper(htmlspecialchars((string)($t['priority'] ?? 'MEDIUM'))) ?></span></td>
+                    <td><strong class="<?= $t['priority'] === 'Critical' ? 'hd-mono-critical' : 'hd-mono-navy' ?>"><?= htmlspecialchars((string)($t['sla_deadline'] ?? 'Active')) ?></strong></td>
+                    <td><span class="status-pill status-<?= $statusSlug ?>"><?= htmlspecialchars((string)($t['status'] ?? 'Open')) ?></span></td>
                     <td class="hd-text-right">
                       <div style="display: inline-flex; gap: 6px; align-items: center;">
-                        <a href="TicketDetail.php?id=<?= urlencode($t['ticket_code']) ?>" class="btn btn-primary-amber btn-sm">Triage →</a>
+                        <a href="TicketDetail.php?id=<?= urlencode((string)$t['tkt_id']) ?>" class="btn btn-primary-amber btn-sm">Triage →</a>
                         <button class="btn-crud-edit" onclick="window.hdApp.openEditTicketModal(<?= htmlspecialchars(json_encode($t), ENT_QUOTES, 'UTF-8') ?>)" title="Edit Ticket">✎</button>
-                        <button class="btn-crud-delete" onclick="window.hdApp.deleteTicket(<?= (int)$t['ticket_id'] ?>, '<?= htmlspecialchars($t['ticket_code'], ENT_QUOTES) ?>')" title="Delete Ticket">🗑</button>
+                        <button class="btn-crud-delete" onclick="window.hdApp.deleteTicket('<?= htmlspecialchars((string)$t['tkt_id'], ENT_QUOTES) ?>', '<?= htmlspecialchars((string)$t['tkt_id'], ENT_QUOTES) ?>')" title="Delete Ticket">🗑</button>
                       </div>
                     </td>
                   </tr>
@@ -378,7 +389,7 @@ $kbCount = (int)$kbCountStmt->fetchColumn();
           <div class="hd-form-row">
             <div class="hd-form-group">
               <label class="hd-form-label">Assigned Lead Tech</label>
-              <select name="assigned_to" class="hd-form-select">
+              <select name="assigned_emp_id" class="hd-form-select">
                 <option value="Alexey Ivanov" selected>Alexey Ivanov (Tier 3)</option>
                 <option value="Dmitry Popov">Dmitry Popov (Tier 2)</option>
                 <option value="Sofia Volkova">Sofia Volkova (Tier 1)</option>
@@ -415,7 +426,7 @@ $kbCount = (int)$kbCountStmt->fetchColumn();
         <button type="button" class="hd-modal-close" onclick="window.hdApp.closeModal('modal-edit-ticket')">✕</button>
       </div>
       <form id="form-edit-ticket" onsubmit="window.hdApp.submitEditTicket(event)">
-        <input type="hidden" name="ticket_id" id="edit-ticket-id" />
+        <input type="hidden" name="tkt_id" id="edit-ticket-id" />
         <div class="hd-modal-body">
           <div class="hd-form-group">
             <label class="hd-form-label">Incident Title *</label>
@@ -448,7 +459,7 @@ $kbCount = (int)$kbCountStmt->fetchColumn();
             </div>
             <div class="hd-form-group">
               <label class="hd-form-label">Assigned Tech</label>
-              <input type="text" name="assigned_to" id="edit-ticket-assigned" class="hd-form-input" />
+              <input type="text" name="assigned_emp_id" id="edit-ticket-assigned" class="hd-form-input" />
             </div>
           </div>
           <div class="hd-form-group">

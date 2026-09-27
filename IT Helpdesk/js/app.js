@@ -48,7 +48,7 @@
     openModal: function (modalId) {
       const el = document.getElementById(modalId);
       if (el) {
-        el.classList.add("show");
+        el.classList.add("active");
         document.body.style.overflow = "hidden";
       }
     },
@@ -56,7 +56,7 @@
     closeModal: function (modalId) {
       const el = document.getElementById(modalId);
       if (el) {
-        el.classList.remove("show");
+        el.classList.remove("active");
         document.body.style.overflow = "";
       }
     },
@@ -77,6 +77,7 @@
 
       const fd = new FormData(form);
       const payload = Object.fromEntries(fd.entries());
+      payload.action = "create";
 
       try {
         const res = await fetch("api/tickets.php?action=create", {
@@ -86,7 +87,8 @@
         });
         const data = await res.json();
         if (data.success) {
-          this.showToast("Ticket Created", `Incident ${data.ticket_code} created successfully in database.`, "green");
+          const code = data.data?.tkt_id || data.ticket_code || "Incident";
+          this.showToast("Ticket Created", `${code} created successfully in database.`, "green");
           this.closeModal("modal-create-ticket");
           setTimeout(() => window.location.reload(), 800);
         } else {
@@ -108,12 +110,12 @@
       const desc = document.getElementById("edit-ticket-desc");
       const notes = document.getElementById("edit-ticket-notes");
 
-      if (tid) tid.value = ticket.ticket_id || ticket.id || "";
-      if (title) title.value = ticket.title || "";
+      if (tid) tid.value = ticket.tkt_id || ticket.ticket_id || ticket.id || "";
+      if (title) title.value = ticket.title || ticket.source_system || "";
       if (prio) prio.value = ticket.priority || "Medium";
       if (stat) stat.value = ticket.status || "Open";
-      if (sys) sys.value = ticket.affected_system || ticket.source_system || "";
-      if (ass) ass.value = ticket.assigned_to || ticket.assigned_tech_name || "";
+      if (sys) sys.value = ticket.source_system || ticket.affected_system || "";
+      if (ass) ass.value = ticket.assigned_to || ticket.assigned_tech_name || ticket.assigned_emp_id || "";
       if (desc) desc.value = ticket.description || "";
       if (notes) notes.value = ticket.resolution_notes || "";
 
@@ -127,6 +129,9 @@
 
       const fd = new FormData(form);
       const payload = Object.fromEntries(fd.entries());
+      payload.action = "update";
+      if (!payload.tkt_id && payload.ticket_id) payload.tkt_id = payload.ticket_id;
+      if (!payload.ticket_id && payload.tkt_id) payload.ticket_id = payload.tkt_id;
 
       try {
         const res = await fetch("api/tickets.php?action=update", {
@@ -315,6 +320,7 @@
 
       const fd = new FormData(form);
       const payload = Object.fromEntries(fd.entries());
+      payload.action = "create";
 
       try {
         const res = await fetch("api/assets.php?action=create", {
@@ -324,7 +330,8 @@
         });
         const data = await res.json();
         if (data.success) {
-          this.showToast("Asset Registered", `Device ${data.asset_tag} added to database.`, "green");
+          const tag = (data.data && data.data.asset_tag) || data.asset_tag || payload.asset_tag || "New Device";
+          this.showToast("Asset Registered", `Device ${tag} added to database.`, "green");
           this.closeModal("modal-create-asset");
           setTimeout(() => window.location.reload(), 700);
         } else {
@@ -333,6 +340,33 @@
       } catch (err) {
         this.showToast("Network Error", err.message, "critical");
       }
+    },
+
+    openInspectModal: function (asset) {
+      if (!asset) return;
+      this._inspectAsset = asset;
+      const f = (id, val) => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = val || "—";
+      };
+      f("ins-tag", asset.asset_tag || ("VP-NODE-" + asset.asset_id));
+      f("ins-model", asset.device_model || asset.asset_type || "Industrial Edge Node");
+      f("ins-type", asset.asset_type || "Hardware Node");
+      f("ins-loc", asset.location || "Central Datacenter Bay");
+      f("ins-ip", asset.ip_address || "DHCP");
+      f("ins-mac", asset.mac_address || "N/A");
+      f("ins-fw", asset.firmware_version || "N/A");
+      f("ins-os", ((asset.operating_system || "") + (asset.os_version ? " " + asset.os_version : "")) || "Embedded Linux");
+      f("ins-serial", asset.serial_number || "N/A");
+      f("ins-host", asset.hostname || "N/A");
+      f("ins-crit", asset.criticality || "High");
+      f("ins-env", asset.environment || "Production");
+      f("ins-health", asset.health_status || "Online (Active)");
+      f("ins-status", asset.status || "Active");
+      f("ins-date", asset.assigned_date || "2026-01-01");
+      f("ins-seen", asset.last_seen_at || "Just now");
+      f("ins-notes", asset.notes || "No specialized subsystem notes recorded for this edge hardware.");
+      this.openModal("modal-inspect-asset");
     },
 
     openEditAssetModal: function (asset) {
@@ -350,14 +384,32 @@
 
       if (aid) aid.value = asset.asset_id || "";
       if (tag) tag.value = asset.asset_tag || "";
-      if (model) model.value = asset.device_model || asset.asset_name || "";
+      if (model) model.value = asset.device_model || "";
       if (type) type.value = asset.asset_type || "";
       if (loc) loc.value = asset.location || "";
       if (ip) ip.value = asset.ip_address || "";
       if (mac) mac.value = asset.mac_address || "";
       if (fw) fw.value = asset.firmware_version || "";
-      if (health) health.value = asset.health_status || "Online (Active)";
       if (notes) notes.value = asset.notes || "";
+
+      if (health) {
+        const dbHealth = (asset.health_status || "Online (Active)").trim();
+        let matched = false;
+        for (let i = 0; i < health.options.length; i++) {
+          if (health.options[i].value.toLowerCase() === dbHealth.toLowerCase()) {
+            health.selectedIndex = i;
+            matched = true;
+            break;
+          }
+        }
+        if (!matched) {
+          const opt = document.createElement("option");
+          opt.value = dbHealth;
+          opt.text = dbHealth;
+          opt.selected = true;
+          health.appendChild(opt);
+        }
+      }
 
       this.openModal("modal-edit-asset");
     },
@@ -369,6 +421,7 @@
 
       const fd = new FormData(form);
       const payload = Object.fromEntries(fd.entries());
+      payload.action = "update";
 
       try {
         const res = await fetch("api/assets.php?action=update", {
@@ -398,7 +451,7 @@
         const res = await fetch("api/assets.php?action=delete", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ asset_id: assetId })
+          body: JSON.stringify({ action: "delete", asset_id: assetId })
         });
         const data = await res.json();
         if (data.success) {
@@ -428,6 +481,7 @@
 
       const fd = new FormData(form);
       const payload = Object.fromEntries(fd.entries());
+      payload.action = "create";
 
       try {
         const res = await fetch("api/knowledge.php?action=create", {
@@ -437,7 +491,8 @@
         });
         const data = await res.json();
         if (data.success) {
-          this.showToast("Article Published", `SOP ${data.article_code} saved to database.`, "green");
+          const code = (data.data && data.data.article_code) || data.article_code || payload.article_code || "New Article";
+          this.showToast("Article Published", `SOP ${code} saved to database.`, "green");
           this.closeModal("modal-create-kb");
           setTimeout(() => window.location.reload(), 700);
         } else {
@@ -458,7 +513,7 @@
       const content = document.getElementById("edit-kb-content");
       const tags = document.getElementById("edit-kb-tags");
 
-      if (kid) kid.value = art.article_id || "";
+      if (kid) kid.value = art.kb_id || art.id || "";
       if (code) code.value = art.article_code || "";
       if (cat) cat.value = art.category || "";
       if (title) title.value = art.title || "";
@@ -476,6 +531,7 @@
 
       const fd = new FormData(form);
       const payload = Object.fromEntries(fd.entries());
+      payload.action = "update";
 
       try {
         const res = await fetch("api/knowledge.php?action=update", {
@@ -505,7 +561,7 @@
         const res = await fetch("api/knowledge.php?action=delete", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ article_id: articleId })
+          body: JSON.stringify({ action: "delete", article_id: articleId, kb_id: articleId })
         });
         const data = await res.json();
         if (data.success) {
@@ -526,8 +582,10 @@
       const summaryEl = document.getElementById("view-kb-summary");
       const contentEl = document.getElementById("view-kb-content");
 
-      if (codeEl) codeEl.textContent = `${art.article_code} · ${art.category.toUpperCase()}`;
-      if (titleEl) titleEl.textContent = art.title;
+      const code = art.article_code || ('KB-' + (art.kb_id || ''));
+      const cat = (art.category || 'GENERAL').toUpperCase();
+      if (codeEl) codeEl.textContent = `${code} · ${cat}`;
+      if (titleEl) titleEl.textContent = art.title || "Procedure Runbook";
       if (summaryEl) summaryEl.textContent = art.summary || "No executive summary provided.";
       if (contentEl) contentEl.textContent = art.content || "Procedure content pending.";
 
@@ -546,11 +604,15 @@
       const escl = document.getElementById("edit-sla-escl");
       const desc = document.getElementById("edit-sla-desc");
 
-      if (pid) pid.value = pol.policy_id || "";
-      if (prio) prio.value = pol.priority_level || "";
-      if (resp) resp.value = pol.first_response_time_minutes || "";
-      if (resol) resol.value = pol.resolution_time_minutes || "";
-      if (escl) escl.value = pol.escalation_threshold_minutes || "";
+      const respMinutes = pol.first_response_time_minutes || (pol.response_time_hours ? pol.response_time_hours * 60 : 60);
+      const resolMinutes = pol.resolution_time_minutes || (pol.resolution_time_hours ? pol.resolution_time_hours * 60 : 120);
+      const esclMinutes = pol.escalation_threshold_minutes || Math.round(respMinutes * 0.5);
+
+      if (pid) pid.value = pol.sla_id || pol.policy_id || "";
+      if (prio) prio.value = pol.priority || pol.priority_level || "";
+      if (resp) resp.value = respMinutes;
+      if (resol) resol.value = resolMinutes;
+      if (escl) escl.value = esclMinutes;
       if (desc) desc.value = pol.description || "";
 
       this.openModal("modal-edit-sla");
@@ -563,6 +625,7 @@
 
       const fd = new FormData(form);
       const payload = Object.fromEntries(fd.entries());
+      payload.action = "update_policy";
 
       try {
         const res = await fetch("api/sla.php?action=update_policy", {
@@ -680,7 +743,7 @@
       document.querySelectorAll(".hd-modal-overlay").forEach((modal) => {
         modal.addEventListener("click", (e) => {
           if (e.target === modal) {
-            modal.classList.remove("show");
+            modal.classList.remove("active");
             document.body.style.overflow = "";
           }
         });
@@ -720,10 +783,97 @@
         });
       }
 
+      // TicketDetail page event bindings
       const btnEditCurrent = document.getElementById("btn-edit-current-ticket");
       if (btnEditCurrent) {
         btnEditCurrent.addEventListener("click", () => {
-          this.openModal("modal-edit-ticket");
+          const m = document.getElementById("editTicketModal");
+          if (m) {
+            m.classList.add("active");
+            m.classList.add("show");
+            document.body.style.overflow = "hidden";
+          } else {
+            this.openModal("modal-edit-ticket");
+          }
+        });
+      }
+
+      const btnCloseEditModal = document.getElementById("btnCloseEditTicketModal");
+      if (btnCloseEditModal) {
+        btnCloseEditModal.addEventListener("click", () => {
+          const m = document.getElementById("editTicketModal");
+          if (m) {
+            m.classList.remove("active");
+            m.classList.remove("show");
+            document.body.style.overflow = "";
+          }
+        });
+      }
+
+      const btnCancelEditModal = document.getElementById("btnCancelEditTicketModal");
+      if (btnCancelEditModal) {
+        btnCancelEditModal.addEventListener("click", () => {
+          const m = document.getElementById("editTicketModal");
+          if (m) {
+            m.classList.remove("active");
+            m.classList.remove("show");
+            document.body.style.overflow = "";
+          }
+        });
+      }
+
+      const btnSaveEditTicket = document.getElementById("btnSaveEditTicket");
+      if (btnSaveEditTicket) {
+        btnSaveEditTicket.addEventListener("click", async () => {
+          const tid = (document.getElementById("editTktId")?.value || "").trim();
+          const title = (document.getElementById("editTktTitle")?.value || "").trim();
+          const sys = (document.getElementById("editTktSystem")?.value || "").trim();
+          const prio = (document.getElementById("editTktPriority")?.value || "Medium");
+          const stat = (document.getElementById("editTktStatus")?.value || "Open");
+          const techSelect = document.getElementById("editTktTech");
+          const techEmpId = techSelect ? techSelect.value : "";
+          const desc = (document.getElementById("editTktDesc")?.value || "").trim();
+
+          if (!title || !sys) {
+            this.showToast("Validation Error", "Incident title and affected system are required.", "critical");
+            return;
+          }
+
+          const payload = {
+            action: "update",
+            ticket_id: tid,
+            tkt_id: tid,
+            title: title,
+            source_system: sys,
+            affected_system: sys,
+            priority: prio,
+            status: stat,
+            assigned_emp_id: techEmpId,
+            description: desc
+          };
+
+          try {
+            const res = await fetch("api/tickets.php?action=update", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(payload)
+            });
+            const data = await res.json();
+            if (data.success) {
+              this.showToast("Success", `Ticket [${tid}] updated.`, "green");
+              const m = document.getElementById("editTicketModal");
+              if (m) {
+                m.classList.remove("active");
+                m.classList.remove("show");
+                document.body.style.overflow = "";
+              }
+              setTimeout(() => window.location.reload(), 700);
+            } else {
+              this.showToast("Update Failed", data.error || "Could not update ticket.", "critical");
+            }
+          } catch (err) {
+            this.showToast("Network Error", err.message, "critical");
+          }
         });
       }
 
@@ -735,7 +885,8 @@
       // TicketQueue.php specific element handlers
       const btnOpenQueueCreate = document.getElementById("btn-open-create-ticket");
       if (btnOpenQueueCreate) {
-        btnOpenQueueCreate.addEventListener("click", () => {
+        btnOpenQueueCreate.addEventListener("click", (e) => {
+          e.preventDefault();
           const modal = document.getElementById("ticketModal");
           if (modal) {
             const act = document.getElementById("modalTktAction");
@@ -743,11 +894,28 @@
             const title = document.getElementById("modalTktTitle");
             const sys = document.getElementById("modalTktSystem");
             const desc = document.getElementById("modalTktDesc");
+            const prio = document.getElementById("modalTktPriority");
+            const stat = document.getElementById("modalTktStatus");
+            const tech = document.getElementById("modalTktTech");
+            const reqName = document.getElementById("modalTktReqName");
+            const reqRole = document.getElementById("modalTktReqRole");
+            const mTitle = document.getElementById("ticketModalTitle");
+
+            if (mTitle) {
+              mTitle.innerHTML = `<span class="material-symbols-outlined">confirmation_number</span> Create New Support Incident`;
+            }
             if (act) act.value = "create";
             if (mid) mid.value = "";
             if (title) title.value = "";
             if (sys) sys.value = "";
             if (desc) desc.value = "";
+            if (prio) prio.value = "Medium";
+            if (stat) stat.value = "Open";
+            if (tech) tech.value = "EMP-1018";
+            if (reqName) reqName.value = "Authorized Personnel";
+            if (reqRole) reqRole.value = "Operations Staff";
+
+            modal.classList.add("active");
             modal.classList.add("show");
             document.body.style.overflow = "hidden";
           } else {
@@ -761,6 +929,7 @@
         btnCloseTicketModal.addEventListener("click", () => {
           const modal = document.getElementById("ticketModal");
           if (modal) {
+            modal.classList.remove("active");
             modal.classList.remove("show");
             document.body.style.overflow = "";
           }
@@ -772,6 +941,7 @@
         btnCancelTicketModal.addEventListener("click", () => {
           const modal = document.getElementById("ticketModal");
           if (modal) {
+            modal.classList.remove("active");
             modal.classList.remove("show");
             document.body.style.overflow = "";
           }
@@ -783,17 +953,17 @@
       if (btnSaveTicket) {
         btnSaveTicket.addEventListener("click", async () => {
           const action = (document.getElementById("modalTktAction")?.value || "create");
-          const ticketId = (document.getElementById("modalTktId")?.value || "");
-          const title = (document.getElementById("modalTktTitle")?.value || "");
-          const sys = (document.getElementById("modalTktSystem")?.value || "");
+          const ticketId = (document.getElementById("modalTktId")?.value || "").trim();
+          const title = (document.getElementById("modalTktTitle")?.value || "").trim();
+          const sys = (document.getElementById("modalTktSystem")?.value || "").trim();
           const prio = (document.getElementById("modalTktPriority")?.value || "Medium");
           const stat = (document.getElementById("modalTktStatus")?.value || "Open");
           const techSelect = document.getElementById("modalTktTech");
           const techEmpId = techSelect ? techSelect.value : "";
-          const techName = techSelect && techSelect.selectedIndex >= 0 ? techSelect.options[techSelect.selectedIndex].text.split("(")[0].trim() : "Alexey Ivanov";
-          const reqName = (document.getElementById("modalTktReqName")?.value || "Authorized Personnel");
-          const reqRole = (document.getElementById("modalTktReqRole")?.value || "Operations Staff");
-          const desc = (document.getElementById("modalTktDesc")?.value || "");
+          const techName = techSelect && techSelect.selectedIndex >= 0 && techSelect.value ? techSelect.options[techSelect.selectedIndex].text.split("(")[0].trim() : "Unassigned";
+          const reqName = (document.getElementById("modalTktReqName")?.value || "Authorized Personnel").trim();
+          const reqRole = (document.getElementById("modalTktReqRole")?.value || "Operations Staff").trim();
+          const desc = (document.getElementById("modalTktDesc")?.value || "").trim();
 
           if (!title || !sys) {
             this.showToast("Validation Error", "Please provide incident title and affected system.", "critical");
@@ -801,9 +971,13 @@
           }
 
           const payload = {
+            action: action === "edit" ? "update" : "create",
             ticket_id: ticketId,
+            tkt_id: ticketId,
             title: title,
             affected_system: sys,
+            source_system: sys,
+            system: sys,
             priority: prio,
             status: stat,
             assigned_to: techName,
@@ -822,9 +996,13 @@
             });
             const data = await res.json();
             if (data.success) {
-              this.showToast("Success", "Incident saved to database.", "green");
+              this.showToast("Success", action === "edit" ? `Incident ${ticketId} updated successfully.` : "Incident saved to database.", "green");
               const modal = document.getElementById("ticketModal");
-              if (modal) modal.classList.remove("show");
+              if (modal) {
+                modal.classList.remove("active");
+                modal.classList.remove("show");
+                document.body.style.overflow = "";
+              }
               setTimeout(() => window.location.reload(), 700);
             } else {
               this.showToast("Save Failed", data.error || "Could not save incident.", "critical");
@@ -835,43 +1013,61 @@
         });
       }
 
-      // Edit buttons on TicketQueue.php
-      document.querySelectorAll(".btn-edit-ticket").forEach((btn) => {
-        btn.addEventListener("click", (e) => {
+      // Edit and Delete buttons on TicketQueue.php (event delegation for 100% reliability)
+      document.addEventListener("click", (e) => {
+        const editBtn = e.target.closest(".btn-edit-ticket");
+        if (editBtn) {
+          e.preventDefault();
           e.stopPropagation();
-          const tData = btn.getAttribute("data-ticket");
+          const tData = editBtn.getAttribute("data-ticket");
           if (!tData) return;
           try {
             const t = JSON.parse(tData);
             const modal = document.getElementById("ticketModal");
             if (modal) {
+              const tid = t.tkt_id || t.ticket_id || t.id || "";
               document.getElementById("modalTktAction").value = "edit";
-              document.getElementById("modalTktId").value = t.ticket_id || t.id || "";
-              document.getElementById("modalTktTitle").value = t.title || "";
-              document.getElementById("modalTktSystem").value = t.affected_system || t.source_system || "";
+              document.getElementById("modalTktId").value = tid;
+              document.getElementById("modalTktTitle").value = t.title || t.source_system || "";
+              document.getElementById("modalTktSystem").value = t.source_system || t.affected_system || "";
               document.getElementById("modalTktPriority").value = t.priority || "Medium";
               document.getElementById("modalTktStatus").value = t.status || "Open";
-              document.getElementById("modalTktReqName").value = t.requester_name || "";
-              document.getElementById("modalTktReqRole").value = t.requester_role || "";
+              document.getElementById("modalTktReqName").value = t.requester_name || "Authorized Personnel";
+              document.getElementById("modalTktReqRole").value = t.requester_role || "Operations Staff";
               document.getElementById("modalTktDesc").value = t.description || "";
+
+              const techSelect = document.getElementById("modalTktTech");
+              if (techSelect) {
+                if (t.assigned_emp_id) {
+                  techSelect.value = t.assigned_emp_id;
+                } else {
+                  techSelect.value = "";
+                }
+              }
+
+              const mTitle = document.getElementById("ticketModalTitle");
+              if (mTitle) {
+                mTitle.innerHTML = `<span class="material-symbols-outlined">edit_document</span> Edit Support Incident: ${tid}`;
+              }
+
+              modal.classList.add("active");
               modal.classList.add("show");
               document.body.style.overflow = "hidden";
             } else {
               this.openEditTicketModal(t);
             }
           } catch (err) {
-            console.error(err);
+            console.error("Error opening edit ticket modal:", err);
           }
-        });
-      });
+        }
 
-      // Delete buttons on TicketQueue.php
-      document.querySelectorAll(".btn-delete-ticket").forEach((btn) => {
-        btn.addEventListener("click", (e) => {
+        const delBtn = e.target.closest(".btn-delete-ticket");
+        if (delBtn) {
+          e.preventDefault();
           e.stopPropagation();
-          const tid = btn.getAttribute("data-id");
-          this.deleteTicket(tid, tid);
-        });
+          const tid = delBtn.getAttribute("data-id");
+          if (tid) this.deleteTicket(tid, tid);
+        }
       });
 
       // Queue search and filters

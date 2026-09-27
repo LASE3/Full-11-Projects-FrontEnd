@@ -16,26 +16,21 @@ $critCount = (int)$critStmt->fetchColumn();
 $resolvedStmt = $pdo->query("SELECT COUNT(*) FROM tickets WHERE status = 'Resolved'");
 $resolvedCount = (int)$resolvedStmt->fetchColumn();
 
-$withinSlaStmt = $pdo->query("SELECT COUNT(*) FROM tickets WHERE sla_status = 'Within SLA' OR sla_status IS NULL");
+$withinSlaStmt = $pdo->query("SELECT COUNT(*) FROM tickets WHERE sla_deadline IS NULL OR sla_deadline >= NOW()");
 $withinSlaCount = (int)$withinSlaStmt->fetchColumn();
 $slaPct = $totalTickets > 0 ? round(($withinSlaCount / $totalTickets) * 100, 1) : 98.4;
 
 // SLA Policies
-$slaStmt = $pdo->query("SELECT * FROM sla_policies ORDER BY FIELD(priority_level, 'Critical', 'High', 'Medium', 'Low')");
+$slaStmt = $pdo->query("SELECT * FROM sla_policies ORDER BY FIELD(priority, 'Critical', 'High', 'Medium', 'Low')");
 $policies = $slaStmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Global Badges
-$openCountStmt = $pdo->query("SELECT COUNT(*) FROM tickets WHERE status != 'Resolved'");
-$openCount = (int)$openCountStmt->fetchColumn();
-
-$myTicketsStmt = $pdo->query("SELECT COUNT(*) FROM tickets WHERE (assigned_to LIKE '%Alexey%' OR assigned_emp_id = 'EMP-1018') AND status != 'Resolved'");
-$myTicketsCount = (int)$myTicketsStmt->fetchColumn();
-
-$assetCountStmt = $pdo->query("SELECT COUNT(*) FROM it_assets");
-$assetCount = (int)$assetCountStmt->fetchColumn();
-
-$kbCountStmt = $pdo->query("SELECT COUNT(*) FROM knowledge_base_articles");
-$kbCount = (int)$kbCountStmt->fetchColumn();
+// Dynamic Sidebar Counts
+$sbStats = getItSidebarStats($pdo);
+$openCount = $sbStats['open_count'];
+$myTicketsCount = $sbStats['my_tickets_count'];
+$assetCount = $sbStats['asset_count'];
+$kbCount = $sbStats['kb_count'];
+$slaPct = $sbStats['sla_pct'];
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -176,6 +171,19 @@ $kbCount = (int)$kbCountStmt->fetchColumn();
                 <span>SLA Reports</span>
               </div>
               <span class="sidebar-badge badge-green"><?= $slaPct ?>%</span>
+            </a>
+
+            <a href="Integrations.php" class="sidebar-nav-item">
+              <div class="sidebar-item-left">
+                <span class="sidebar-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00E5FF" stroke-width="2">
+                    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+                    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+                  </svg>
+                </span>
+                <span class="hd-nav-integrations">System Integrations</span>
+              </div>
+              <span class="sidebar-badge hd-badge-integrations">SYS09</span>
             </a>
           </nav>
         </div>
@@ -334,23 +342,26 @@ $kbCount = (int)$kbCountStmt->fetchColumn();
                 </tr>
                 <?php else: ?>
                   <?php foreach ($policies as $p): 
+                    $prio = $p['priority'] ?? ($p['priority_level'] ?? 'Medium');
                     $prioClass = 'priority-critical';
-                    if ($p['priority_level'] === 'High') $prioClass = 'priority-high';
-                    if ($p['priority_level'] === 'Medium') $prioClass = 'priority-medium';
-                    if ($p['priority_level'] === 'Low') $prioClass = 'priority-low';
+                    if ($prio === 'High') $prioClass = 'priority-high';
+                    if ($prio === 'Medium') $prioClass = 'priority-medium';
+                    if ($prio === 'Low') $prioClass = 'priority-low';
+                    $respMins = (int)($p['first_response_time_minutes'] ?? (($p['response_time_hours'] ?? 1) * 60));
+                    $resMins = (int)($p['resolution_time_minutes'] ?? (($p['resolution_time_hours'] ?? 2) * 60));
+                    $esclMins = (int)($p['escalation_threshold_minutes'] ?? round($respMins * 0.5));
                   ?>
                   <tr class="hd-table-row">
-                    <td><span class="priority-badge <?= $prioClass ?>"><?= strtoupper(htmlspecialchars($p['priority_level'])) ?></span></td>
-                    <td><strong><?= (int)$p['first_response_time_minutes'] ?> mins</strong></td>
+                    <td><span class="priority-badge <?= $prioClass ?>"><?= strtoupper(htmlspecialchars($prio)) ?></span></td>
+                    <td><strong><?= $respMins ?> mins</strong></td>
                     <td>
                       <strong>
                         <?php 
-                          $res = (int)$p['resolution_time_minutes'];
-                          echo $res >= 60 ? round($res / 60, 1) . ' hours (' . $res . 'm)' : $res . ' mins';
+                          echo $resMins >= 60 ? round($resMins / 60, 1) . ' hours (' . $resMins . 'm)' : $resMins . ' mins';
                         ?>
                       </strong>
                     </td>
-                    <td><span class="hd-mono-orange-sm"><?= (int)$p['escalation_threshold_minutes'] ?> mins</span></td>
+                    <td><span class="hd-mono-orange-sm"><?= $esclMins ?> mins</span></td>
                     <td><?= htmlspecialchars($p['description'] ?? 'Standard tier SLA policy') ?></td>
                     <td class="hd-text-right">
                       <button class="btn btn-outline btn-sm" onclick="window.hdApp.openEditSlaModal(<?= htmlspecialchars(json_encode($p), ENT_QUOTES, 'UTF-8') ?>)">Edit Policy</button>
@@ -374,11 +385,12 @@ $kbCount = (int)$kbCountStmt->fetchColumn();
         <button type="button" class="hd-modal-close" onclick="window.hdApp.closeModal('modal-edit-sla')">✕</button>
       </div>
       <form id="form-edit-sla" onsubmit="window.hdApp.submitEditSla(event)">
-        <input type="hidden" name="policy_id" id="edit-sla-id" />
+        <input type="hidden" name="sla_id" id="edit-sla-id" />
+        <input type="hidden" name="action" value="update_policy" />
         <div class="hd-modal-body">
           <div class="hd-form-group">
             <label class="hd-form-label">Priority Tier</label>
-            <input type="text" name="priority_level" id="edit-sla-prio" class="hd-form-input" readonly style="background: rgba(0,0,0,0.2);" />
+            <input type="text" name="priority" id="edit-sla-prio" class="hd-form-input" readonly style="background: rgba(0,0,0,0.2);" />
           </div>
           <div class="hd-form-row">
             <div class="hd-form-group">

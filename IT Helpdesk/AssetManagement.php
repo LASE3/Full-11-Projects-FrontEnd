@@ -7,19 +7,16 @@ $pdo = getItDb();
 $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Alexey Ivanov', 'clearance_level' => 'L2'];
 
 // Query all assets
-$stmt = $pdo->query("SELECT * FROM it_assets ORDER BY created_at DESC");
+$stmt = $pdo->query("SELECT * FROM it_assets ORDER BY last_seen_at DESC");
 $assets = $stmt->fetchAll(PDO::FETCH_ASSOC);
 $totalAssets = count($assets);
 
-// Badges
-$openCountStmt = $pdo->query("SELECT COUNT(*) FROM tickets WHERE status != 'Resolved'");
-$openCount = (int)$openCountStmt->fetchColumn();
-
-$myTicketsStmt = $pdo->query("SELECT COUNT(*) FROM tickets WHERE (assigned_to LIKE '%Alexey%' OR assigned_emp_id = 'EMP-1018') AND status != 'Resolved'");
-$myTicketsCount = (int)$myTicketsStmt->fetchColumn();
-
-$kbCountStmt = $pdo->query("SELECT COUNT(*) FROM knowledge_base_articles");
-$kbCount = (int)$kbCountStmt->fetchColumn();
+// Dynamic Sidebar Counts
+$sbStats = getItSidebarStats($pdo);
+$openCount = $sbStats['open_count'];
+$myTicketsCount = $sbStats['my_tickets_count'];
+$kbCount = $sbStats['kb_count'];
+$slaPct = $sbStats['sla_pct'];
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -159,7 +156,20 @@ $kbCount = (int)$kbCountStmt->fetchColumn();
                   </svg></span>
                 <span>SLA Reports</span>
               </div>
-              <span class="sidebar-badge badge-green">98.4%</span>
+              <span class="sidebar-badge badge-green"><?= $slaPct ?>%</span>
+            </a>
+
+            <a href="Integrations.php" class="sidebar-nav-item">
+              <div class="sidebar-item-left">
+                <span class="sidebar-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00E5FF" stroke-width="2">
+                    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+                    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+                  </svg>
+                </span>
+                <span class="hd-nav-integrations">System Integrations</span>
+              </div>
+              <span class="sidebar-badge hd-badge-integrations">SYS09</span>
             </a>
           </nav>
         </div>
@@ -264,25 +274,25 @@ $kbCount = (int)$kbCountStmt->fetchColumn();
                     }
                   ?>
                   <tr class="hd-table-row">
-                    <td><strong class="hd-mono-navy"><?= htmlspecialchars($a['asset_tag']) ?></strong></td>
+                    <td><strong class="hd-mono-navy"><?= htmlspecialchars((string)($a['asset_tag'] ?? ('VP-NODE-' . $a['asset_id']))) ?></strong></td>
                     <td>
-                      <div class="hd-font-semibold-navy"><?= htmlspecialchars($a['device_model'] ?: $a['asset_name']) ?></div>
-                      <div class="hd-text-muted-11"><?= htmlspecialchars($a['asset_type'] ?? 'Industrial Node') ?></div>
+                      <div class="hd-font-semibold-navy"><?= htmlspecialchars((string)($a['device_model'] ?: ($a['asset_type'] ?? 'Unknown Device'))) ?></div>
+                      <div class="hd-text-muted-11"><?= htmlspecialchars((string)($a['asset_type'] ?? 'Industrial Node')) ?></div>
                     </td>
-                    <td><?= htmlspecialchars($a['location'] ?? 'Plant Bay') ?></td>
+                    <td><?= htmlspecialchars((string)($a['location'] ?? 'Plant Bay')) ?></td>
                     <td>
-                      <code class="hd-mono-navy-11"><?= htmlspecialchars($a['ip_address'] ?? 'DHCP') ?></code>
+                      <code class="hd-mono-navy-11"><?= htmlspecialchars((string)($a['ip_address'] ?? 'DHCP')) ?></code>
                       <?php if (!empty($a['mac_address'])): ?>
-                      <div class="hd-text-muted-11" style="font-family: monospace; font-size: 10px;"><?= htmlspecialchars($a['mac_address']) ?></div>
+                      <div class="hd-text-muted-11" style="font-family: monospace; font-size: 10px;"><?= htmlspecialchars((string)$a['mac_address']) ?></div>
                       <?php endif; ?>
                     </td>
-                    <td><?= htmlspecialchars($a['firmware_version'] ?? 'N/A') ?></td>
-                    <td><span class="<?= $healthClass ?>"><?= htmlspecialchars($health) ?></span></td>
+                    <td><?= htmlspecialchars((string)($a['firmware_version'] ?? 'N/A')) ?></td>
+                    <td><span class="<?= $healthClass ?>"><?= htmlspecialchars((string)$health) ?></span></td>
                     <td class="hd-text-right">
                       <div style="display: inline-flex; gap: 6px; align-items: center;">
-                        <button class="btn btn-outline btn-sm" onclick="window.hdApp.showToast('Telemetry', 'Device <?= htmlspecialchars($a['asset_tag']) ?>: CPU 14%, Ping: 0.8ms, Memory: 32% OK.')">Inspect</button>
+                        <button class="btn btn-outline btn-sm" onclick="window.hdApp.openInspectModal(<?= htmlspecialchars(json_encode($a), ENT_QUOTES, 'UTF-8') ?>)">Inspect</button>
                         <button class="btn-crud-edit" onclick="window.hdApp.openEditAssetModal(<?= htmlspecialchars(json_encode($a), ENT_QUOTES, 'UTF-8') ?>)" title="Edit Asset">✎</button>
-                        <button class="btn-crud-delete" onclick="window.hdApp.deleteAsset(<?= (int)$a['asset_id'] ?>, '<?= htmlspecialchars($a['asset_tag'], ENT_QUOTES) ?>')" title="Delete Asset">🗑</button>
+                        <button class="btn-crud-delete" onclick="window.hdApp.deleteAsset(<?= (int)$a['asset_id'] ?>, '<?= htmlspecialchars((string)($a['asset_tag'] ?? ('Node #' . $a['asset_id'])), ENT_QUOTES) ?>')" title="Delete Asset">🗑</button>
                       </div>
                     </td>
                   </tr>
@@ -304,6 +314,7 @@ $kbCount = (int)$kbCountStmt->fetchColumn();
         <button type="button" class="hd-modal-close" onclick="window.hdApp.closeModal('modal-create-asset')">✕</button>
       </div>
       <form id="form-create-asset" onsubmit="window.hdApp.submitCreateAsset(event)">
+        <input type="hidden" name="action" value="create" />
         <div class="hd-modal-body">
           <div class="hd-form-row">
             <div class="hd-form-group">
@@ -344,6 +355,9 @@ $kbCount = (int)$kbCountStmt->fetchColumn();
               <label class="hd-form-label">Health Status</label>
               <select name="health_status" class="hd-form-select">
                 <option value="Online (Active)" selected>Online (Active)</option>
+                <option value="Nominal">Nominal</option>
+                <option value="Calibrated (Nominal)">Calibrated (Nominal)</option>
+                <option value="Degraded (14% Loss)">Degraded (14% Loss)</option>
                 <option value="Degraded (Packet Loss)">Degraded (Packet Loss)</option>
                 <option value="Interlock Fault">Interlock Fault</option>
                 <option value="Offline">Offline</option>
@@ -372,6 +386,7 @@ $kbCount = (int)$kbCountStmt->fetchColumn();
       </div>
       <form id="form-edit-asset" onsubmit="window.hdApp.submitEditAsset(event)">
         <input type="hidden" name="asset_id" id="edit-asset-id" />
+        <input type="hidden" name="action" value="update" />
         <div class="hd-modal-body">
           <div class="hd-form-row">
             <div class="hd-form-group">
@@ -412,6 +427,9 @@ $kbCount = (int)$kbCountStmt->fetchColumn();
               <label class="hd-form-label">Health Status</label>
               <select name="health_status" id="edit-asset-health" class="hd-form-select">
                 <option value="Online (Active)">Online (Active)</option>
+                <option value="Nominal">Nominal</option>
+                <option value="Calibrated (Nominal)">Calibrated (Nominal)</option>
+                <option value="Degraded (14% Loss)">Degraded (14% Loss)</option>
                 <option value="Degraded (Packet Loss)">Degraded (Packet Loss)</option>
                 <option value="Interlock Fault">Interlock Fault</option>
                 <option value="Offline">Offline</option>
@@ -431,8 +449,72 @@ $kbCount = (int)$kbCountStmt->fetchColumn();
     </div>
   </div>
 
+
+  <!-- Inspect Asset Modal -->
+  <div id="modal-inspect-asset" class="hd-modal-overlay">
+    <div class="hd-modal-dialog" style="max-width:680px;">
+      <div class="hd-modal-header">
+        <h3 class="hd-modal-title">🔍 Asset Inspection Report</h3>
+        <button type="button" class="hd-modal-close" onclick="window.hdApp.closeModal('modal-inspect-asset')">✕</button>
+      </div>
+      <div class="hd-modal-body" id="inspect-modal-body" style="padding:20px;">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+          <div><div style="font-size:11px;color:var(--hd-text-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">Asset Tag</div><div id="ins-tag" style="font-family:monospace;font-weight:700;font-size:15px;color:var(--hd-navy);"></div></div>
+          <div><div style="font-size:11px;color:var(--hd-text-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">Device Model</div><div id="ins-model" style="font-weight:600;"></div></div>
+          <div><div style="font-size:11px;color:var(--hd-text-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">Asset Type</div><div id="ins-type"></div></div>
+          <div><div style="font-size:11px;color:var(--hd-text-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">Location / Plant Bay</div><div id="ins-loc"></div></div>
+          <div><div style="font-size:11px;color:var(--hd-text-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">IP Address</div><div id="ins-ip" style="font-family:monospace;"></div></div>
+          <div><div style="font-size:11px;color:var(--hd-text-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">MAC Address</div><div id="ins-mac" style="font-family:monospace;font-size:12px;"></div></div>
+          <div><div style="font-size:11px;color:var(--hd-text-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">Firmware Version</div><div id="ins-fw" style="font-family:monospace;"></div></div>
+          <div><div style="font-size:11px;color:var(--hd-text-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">OS / Version</div><div id="ins-os"></div></div>
+          <div><div style="font-size:11px;color:var(--hd-text-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">Serial Number</div><div id="ins-serial" style="font-family:monospace;font-size:12px;"></div></div>
+          <div><div style="font-size:11px;color:var(--hd-text-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">Hostname</div><div id="ins-host" style="font-family:monospace;"></div></div>
+          <div><div style="font-size:11px;color:var(--hd-text-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">Criticality</div><div id="ins-crit"></div></div>
+          <div><div style="font-size:11px;color:var(--hd-text-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">Environment</div><div id="ins-env"></div></div>
+          <div><div style="font-size:11px;color:var(--hd-text-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">Health Status</div><div id="ins-health"></div></div>
+          <div><div style="font-size:11px;color:var(--hd-text-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">Status</div><div id="ins-status"></div></div>
+          <div><div style="font-size:11px;color:var(--hd-text-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">Assigned Date</div><div id="ins-date"></div></div>
+          <div><div style="font-size:11px;color:var(--hd-text-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">Last Seen</div><div id="ins-seen" style="font-family:monospace;font-size:12px;"></div></div>
+        </div>
+        <div style="margin-top:16px;">
+          <div style="font-size:11px;color:var(--hd-text-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;">Configuration &amp; Notes</div>
+          <div id="ins-notes" style="background:var(--hd-bg-muted,#f5f6fa);border-radius:6px;padding:10px 14px;font-size:13px;line-height:1.6;min-height:40px;"></div>
+        </div>
+      </div>
+      <div class="hd-modal-footer">
+        <button type="button" class="btn btn-outline" onclick="window.hdApp.closeModal('modal-inspect-asset')">Close</button>
+        <button type="button" class="btn btn-primary-amber" onclick="window.hdApp.closeModal('modal-inspect-asset');window.hdApp.openEditAssetModal(window.hdApp._inspectAsset)">Edit Asset</button>
+      </div>
+    </div>
+  </div>
+
   <div id="toast-container"></div>
   <script src="js/app.js"></script>
+  <script>
+  window.hdApp.openInspectModal = function(asset) {
+    if (!asset) return;
+    window.hdApp._inspectAsset = asset;
+    var f = function(id, val) { var el = document.getElementById(id); if (el) el.textContent = val || '—'; };
+    f('ins-tag',    asset.asset_tag || ('VP-NODE-' + asset.asset_id));
+    f('ins-model',  asset.device_model || asset.asset_type || 'Industrial Edge Node');
+    f('ins-type',   asset.asset_type || 'Hardware Asset');
+    f('ins-loc',    asset.location || 'Central Datacenter Bay');
+    f('ins-ip',     asset.ip_address || 'DHCP');
+    f('ins-mac',    asset.mac_address || 'N/A');
+    f('ins-fw',     asset.firmware_version || 'N/A');
+    f('ins-os',     ((asset.operating_system || '') + (asset.os_version ? ' ' + asset.os_version : '')) || 'Embedded Linux');
+    f('ins-serial', asset.serial_number || 'N/A');
+    f('ins-host',   asset.hostname || 'N/A');
+    f('ins-crit',   asset.criticality || 'High');
+    f('ins-env',    asset.environment || 'Production');
+    f('ins-health', asset.health_status || 'Online (Active)');
+    f('ins-status', asset.status || 'Active');
+    f('ins-date',   asset.assigned_date || '2026-01-01');
+    f('ins-seen',   asset.last_seen_at || 'Just now');
+    f('ins-notes',  asset.notes || 'No specialized subsystem notes recorded.');
+    window.hdApp.openModal('modal-inspect-asset');
+  };
+  </script>
 </body>
 
 </html>

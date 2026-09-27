@@ -47,7 +47,7 @@ if ($method === 'GET') {
 }
 
 // 2. POST: Create, Update, Delete
-$action = trim((string)($payload['action'] ?? 'create'));
+$action = trim((string)($_GET['action'] ?? ($payload['action'] ?? 'create')));
 
 if ($action === 'create') {
     $tag = trim((string)($payload['asset_tag'] ?? ''));
@@ -58,9 +58,10 @@ if ($action === 'create') {
     $mac = trim((string)($payload['mac_address'] ?? ''));
     $firmware = trim((string)($payload['firmware_version'] ?? 'v1.0.0'));
     $os = trim((string)($payload['operating_system'] ?? 'Embedded Linux'));
-    $health = trim((string)($payload['health_status'] ?? 'Nominal (Active)'));
+    $health = trim((string)($payload['health_status'] ?? 'Online (Active)'));
     $status = trim((string)($payload['status'] ?? 'Active'));
     $criticality = trim((string)($payload['criticality'] ?? 'High'));
+    $notes = trim((string)($payload['notes'] ?? ''));
 
     if ($tag === '' && $model === '') {
         sendJsonError("Asset tag or device model is required.");
@@ -74,9 +75,9 @@ if ($action === 'create') {
 
     $stmt = $pdo->prepare("
         INSERT INTO it_assets 
-        (asset_tag, device_model, asset_type, location, ip_address, mac_address, firmware_version, operating_system, serial_number, health_status, status, criticality, assigned_date, last_seen_at)
+        (asset_tag, device_model, asset_type, location, ip_address, mac_address, firmware_version, operating_system, serial_number, health_status, status, criticality, notes, assigned_date, last_seen_at)
         VALUES 
-        (:tag, :model, :type, :loc, :ip, :mac, :fw, :os, :sn, :health, :status, :crit, CURDATE(), NOW())
+        (:tag, :model, :type, :loc, :ip, :mac, :fw, :os, :sn, :health, :status, :crit, :notes, CURDATE(), NOW())
     ");
 
     $stmt->execute([
@@ -92,6 +93,7 @@ if ($action === 'create') {
         ':health' => $health,
         ':status' => $status,
         ':crit'   => $criticality,
+        ':notes'  => $notes,
     ]);
 
     $id = (int)$pdo->lastInsertId();
@@ -109,8 +111,10 @@ if ($action === 'update') {
     $type = trim((string)($payload['asset_type'] ?? ''));
     $location = trim((string)($payload['location'] ?? ''));
     $ip = trim((string)($payload['ip_address'] ?? ''));
+    $mac = trim((string)($payload['mac_address'] ?? ''));
     $firmware = trim((string)($payload['firmware_version'] ?? ''));
-    $health = trim((string)($payload['health_status'] ?? ''));
+    $health = trim((string)($payload['health_status'] ?? 'Online (Active)'));
+    $notes = trim((string)($payload['notes'] ?? ''));
 
     $stmt = $pdo->prepare("
         UPDATE it_assets 
@@ -119,8 +123,10 @@ if ($action === 'update') {
             asset_type = :type,
             location = :loc,
             ip_address = :ip,
+            mac_address = :mac,
             firmware_version = :fw,
             health_status = :health,
+            notes = :notes,
             last_seen_at = NOW()
         WHERE asset_id = :id
     ");
@@ -132,11 +138,13 @@ if ($action === 'update') {
         ':type'   => $type,
         ':loc'    => $location,
         ':ip'     => $ip,
+        ':mac'    => $mac,
         ':fw'     => $firmware,
         ':health' => $health,
+        ':notes'  => $notes,
     ]);
 
-    sendJsonSuccess(['asset_id' => $id], "Asset updated successfully.");
+    sendJsonSuccess(['asset_id' => $id, 'asset_tag' => $tag], "Asset updated successfully.");
 }
 
 if ($action === 'delete') {
