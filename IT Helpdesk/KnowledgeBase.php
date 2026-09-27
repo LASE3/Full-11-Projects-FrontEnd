@@ -7,19 +7,17 @@ $pdo = getItDb();
 $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Alexey Ivanov', 'clearance_level' => 'L2'];
 
 // Query KB articles
-$stmt = $pdo->query("SELECT * FROM knowledge_base_articles ORDER BY created_at DESC");
+$stmt = $pdo->query("SELECT * FROM knowledge_base_articles ORDER BY updated_at DESC");
 $articles = $stmt->fetchAll(PDO::FETCH_ASSOC);
 $totalArticles = count($articles);
 
-// Global Badges
-$openCountStmt = $pdo->query("SELECT COUNT(*) FROM tickets WHERE status != 'Resolved'");
-$openCount = (int)$openCountStmt->fetchColumn();
-
-$myTicketsStmt = $pdo->query("SELECT COUNT(*) FROM tickets WHERE (assigned_to LIKE '%Alexey%' OR assigned_emp_id = 'EMP-1018') AND status != 'Resolved'");
-$myTicketsCount = (int)$myTicketsStmt->fetchColumn();
-
-$assetCountStmt = $pdo->query("SELECT COUNT(*) FROM it_assets");
-$assetCount = (int)$assetCountStmt->fetchColumn();
+// Global Dynamic Badges
+$sbStats = getItSidebarStats($pdo);
+$openCount = $sbStats['open_count'];
+$myTicketsCount = $sbStats['my_tickets_count'];
+$assetCount = $sbStats['asset_count'];
+$kbCount = $sbStats['kb_count'];
+$slaPct = $sbStats['sla_pct'];
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -159,7 +157,20 @@ $assetCount = (int)$assetCountStmt->fetchColumn();
                   </svg></span>
                 <span>SLA Reports</span>
               </div>
-              <span class="sidebar-badge badge-green">98.4%</span>
+              <span class="sidebar-badge badge-green"><?= $slaPct ?>%</span>
+            </a>
+
+            <a href="Integrations.php" class="sidebar-nav-item">
+              <div class="sidebar-item-left">
+                <span class="sidebar-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00E5FF" stroke-width="2">
+                    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+                    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+                  </svg>
+                </span>
+                <span class="hd-nav-integrations">System Integrations</span>
+              </div>
+              <span class="sidebar-badge hd-badge-integrations">SYS09</span>
             </a>
           </nav>
         </div>
@@ -247,27 +258,27 @@ $assetCount = (int)$assetCountStmt->fetchColumn();
               <div class="hd-card <?= $cardClass ?>" style="display: flex; flex-direction: column; justify-content: space-between;">
                 <div>
                   <div class="<?= $catClass ?>">
-                    <?= htmlspecialchars($art['article_code']) ?> · <?= strtoupper(htmlspecialchars($art['category'])) ?>
+                    <?= htmlspecialchars((string)($art['article_code'] ?? ('KB-' . $art['kb_id']))) ?> · <?= strtoupper(htmlspecialchars((string)($art['category'] ?? 'GENERAL'))) ?>
                   </div>
-                  <h3 class="hd-kb-title" style="margin-top: 6px;"><?= htmlspecialchars($art['title']) ?></h3>
+                  <h3 class="hd-kb-title" style="margin-top: 6px;"><?= htmlspecialchars((string)($art['title'] ?? 'Technical SOP')) ?></h3>
                   <p class="hd-kb-desc">
-                    <?= htmlspecialchars($art['summary'] ?: substr($art['content'], 0, 160) . '...') ?>
+                    <?= htmlspecialchars((string)($art['summary'] ?: substr((string)($art['content'] ?? ''), 0, 160) . '...')) ?>
                   </p>
                 </div>
                 <div>
                   <?php if (!empty($art['tags'])): ?>
                   <div style="margin-bottom: 12px; display: flex; gap: 4px; flex-wrap: wrap;">
-                    <?php foreach (explode(',', $art['tags']) as $tag): ?>
+                    <?php foreach (explode(',', (string)$art['tags']) as $tag): ?>
                       <span style="font-size: 10px; background: rgba(255,255,255,0.06); padding: 2px 6px; border-radius: 4px; color: var(--hd-text-muted);"><?= htmlspecialchars(trim($tag)) ?></span>
                     <?php endforeach; ?>
                   </div>
                   <?php endif; ?>
                   <div class="hd-kb-footer-meta" style="padding-top: 10px; border-top: 1px solid var(--hd-navy-border); display: flex; justify-content: space-between; align-items: center;">
-                    <span style="font-size: 11px; color: var(--hd-text-muted);">Views: <?= (int)$art['views_count'] ?></span>
+                    <span style="font-size: 11px; color: var(--hd-text-muted);">Views: <?= (int)($art['views_count'] ?? 0) ?></span>
                     <div style="display: flex; gap: 6px; align-items: center;">
                       <button class="btn btn-outline btn-sm" onclick="window.hdApp.viewKbArticle(<?= htmlspecialchars(json_encode($art), ENT_QUOTES, 'UTF-8') ?>)">Read SOP →</button>
                       <button class="btn-crud-edit" onclick="window.hdApp.openEditKbModal(<?= htmlspecialchars(json_encode($art), ENT_QUOTES, 'UTF-8') ?>)" title="Edit Article">✎</button>
-                      <button class="btn-crud-delete" onclick="window.hdApp.deleteKbArticle(<?= (int)$art['article_id'] ?>, '<?= htmlspecialchars($art['article_code'], ENT_QUOTES) ?>')" title="Delete Article">🗑</button>
+                      <button class="btn-crud-delete" onclick="window.hdApp.deleteKbArticle(<?= (int)$art['kb_id'] ?>, '<?= htmlspecialchars((string)($art['article_code'] ?? ('KB-' . $art['kb_id'])), ENT_QUOTES) ?>')" title="Delete Article">🗑</button>
                     </div>
                   </div>
                 </div>

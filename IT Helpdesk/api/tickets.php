@@ -135,7 +135,7 @@ if ($method === 'GET') {
 // ---------------------------------------------------------------------
 // 2. POST: Create, Update, Resolve, Escalate, Bulk-Assign, Delete
 // ---------------------------------------------------------------------
-$action = trim((string)($payload['action'] ?? ''));
+$action = trim((string)($_GET['action'] ?? ($payload['action'] ?? '')));
 
 // ACTION: CREATE TICKET
 if ($action === 'create') {

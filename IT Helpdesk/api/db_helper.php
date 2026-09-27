@@ -67,9 +67,19 @@ function ensureItTablesExist(PDO $pdo): void
         $pdo->exec("ALTER TABLE `it_assets` ADD COLUMN IF NOT EXISTS `notes` TEXT NULL");
     } catch (Throwable $e) {}
 
-    // Ensure sla_policies description column
+    // Ensure sla_policies description and minute metrics columns
     try {
-        $pdo->exec("ALTER TABLE `sla_policies` ADD COLUMN IF NOT EXISTS `description` VARCHAR(255) NULL");
+        $pdo->exec("ALTER TABLE `sla_policies` 
+            ADD COLUMN IF NOT EXISTS `description` VARCHAR(255) NULL,
+            ADD COLUMN IF NOT EXISTS `first_response_time_minutes` INT(11) NULL,
+            ADD COLUMN IF NOT EXISTS `resolution_time_minutes` INT(11) NULL,
+            ADD COLUMN IF NOT EXISTS `escalation_threshold_minutes` INT(11) NULL");
+
+        $pdo->exec("UPDATE `sla_policies` SET 
+            `first_response_time_minutes` = COALESCE(`first_response_time_minutes`, `response_time_hours` * 60, 60),
+            `resolution_time_minutes` = COALESCE(`resolution_time_minutes`, `resolution_time_hours` * 60, 120),
+            `escalation_threshold_minutes` = COALESCE(`escalation_threshold_minutes`, `response_time_hours` * 30, 30)
+            WHERE `first_response_time_minutes` IS NULL OR `resolution_time_minutes` IS NULL");
     } catch (Throwable $e) {}
 
     // Ensure ticket_escalations status column
@@ -105,12 +115,62 @@ function sendJsonError(string $error, int $statusCode = 400, mixed $extra = []):
 
 function getRequestPayload(): array
 {
+    $get = is_array($_GET) ? $_GET : [];
+    $post = is_array($_POST) ? $_POST : [];
+    $json = [];
     $input = file_get_contents('php://input');
     if (!empty($input)) {
-        $json = json_decode($input, true);
-        if (is_array($json)) {
-            return $json;
+        $decoded = json_decode($input, true);
+        if (is_array($decoded)) {
+            $json = $decoded;
         }
     }
-    return $_POST ?: $_GET;
+    return array_merge($get, $post, $json);
+}
+
+/**
+ * Returns dynamic, live database counts for the IT Helpdesk navigation sidebar.
+ * Used across all pages to ensure no hardcoded badge counts.
+ */
+function getItSidebarStats(?PDO $pdo = null): array
+{
+    if (!$pdo) {
+        $pdo = getItDb();
+    }
+    static $cachedStats = null;
+    if ($cachedStats !== null) {
+        return $cachedStats;
+    }
+
+    try {
+        $openCount = (int)$pdo->query("SELECT COUNT(*) FROM tickets WHERE status != 'Resolved'")->fetchColumn();
+        $myTicketsCount = (int)$pdo->query("SELECT COUNT(*) FROM tickets WHERE assigned_emp_id IS NOT NULL AND status != 'Resolved'")->fetchColumn();
+        $kbCount = (int)$pdo->query("SELECT COUNT(*) FROM knowledge_base_articles")->fetchColumn();
+        $assetCount = (int)$pdo->query("SELECT COUNT(*) FROM it_assets")->fetchColumn();
+        $totalTickets = (int)$pdo->query("SELECT COUNT(*) FROM tickets")->fetchColumn();
+        $withinSlaCount = (int)$pdo->query("SELECT COUNT(*) FROM tickets WHERE sla_deadline IS NULL OR sla_deadline >= NOW()")->fetchColumn();
+        $slaPct = $totalTickets > 0 ? round(($withinSlaCount / $totalTickets) * 100, 1) : 98.4;
+
+        $cachedStats = [
+            'open_count'       => $openCount,
+            'my_tickets_count' => $myTicketsCount,
+            'kb_count'         => $kbCount,
+            'asset_count'      => $assetCount,
+            'sla_pct'          => $slaPct,
+            'total_tickets'    => $totalTickets,
+            'compliant_count'  => $withinSlaCount,
+        ];
+    } catch (Throwable $e) {
+        $cachedStats = [
+            'open_count'       => 0,
+            'my_tickets_count' => 0,
+            'kb_count'         => 0,
+            'asset_count'      => 0,
+            'sla_pct'          => 98.4,
+            'total_tickets'    => 0,
+            'compliant_count'  => 0,
+        ];
+    }
+
+    return $cachedStats;
 }

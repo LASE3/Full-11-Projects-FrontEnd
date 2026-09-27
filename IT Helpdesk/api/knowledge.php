@@ -57,7 +57,7 @@ if ($method === 'GET') {
 }
 
 // 2. POST: Create, Update, Delete
-$action = trim((string)($payload['action'] ?? 'create'));
+$action = trim((string)($_GET['action'] ?? ($payload['action'] ?? 'create')));
 
 if ($action === 'create') {
     $title = trim((string)($payload['title'] ?? ''));

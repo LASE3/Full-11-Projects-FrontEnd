@@ -36,7 +36,7 @@ if ($method === 'GET') {
 }
 
 // 2. POST: Add or Delete Comment
-$action = trim((string)($payload['action'] ?? 'create'));
+$action = trim((string)($_GET['action'] ?? ($payload['action'] ?? 'create')));
 
 if ($action === 'create') {
     $tktId = trim((string)($payload['tkt_id'] ?? ($payload['ticket_id'] ?? ($payload['id'] ?? ''))));

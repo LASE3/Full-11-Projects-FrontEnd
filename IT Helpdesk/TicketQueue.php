@@ -48,6 +48,13 @@ foreach ($tickets as $t) {
     $unassignedCount++;
   }
 }
+
+// Dynamic Sidebar Counts
+$sbStats = getItSidebarStats($pdo);
+$myTicketsCount = $sbStats['my_tickets_count'];
+$kbCount = $sbStats['kb_count'];
+$assetCount = $sbStats['asset_count'];
+$slaPct = $sbStats['sla_pct'];
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -171,7 +178,7 @@ foreach ($tickets as $t) {
                 </span>
                 <span>My Tickets</span>
               </div>
-              <span class="sidebar-badge badge-red">8</span>
+              <span class="sidebar-badge badge-red"><?= $myTicketsCount ?></span>
             </a>
 
             <a href="KnowledgeBase.php" class="sidebar-nav-item">
@@ -184,7 +191,7 @@ foreach ($tickets as $t) {
                 </span>
                 <span>Knowledge Base</span>
               </div>
-              <span class="sidebar-badge">142</span>
+              <span class="sidebar-badge"><?= $kbCount ?></span>
             </a>
 
             <a href="AssetManagement.php" class="sidebar-nav-item">
@@ -199,7 +206,7 @@ foreach ($tickets as $t) {
                 </span>
                 <span>Asset Management</span>
               </div>
-              <span class="sidebar-badge">1,820</span>
+              <span class="sidebar-badge"><?= $assetCount ?></span>
             </a>
 
             <a href="SLAReports.php" class="sidebar-nav-item">
@@ -212,7 +219,7 @@ foreach ($tickets as $t) {
                 </span>
                 <span>SLA Reports</span>
               </div>
-              <span class="sidebar-badge badge-green">98.4%</span>
+              <span class="sidebar-badge badge-green"><?= $slaPct ?>%</span>
             </a>
 
             <a href="Integrations.php" class="sidebar-nav-item">

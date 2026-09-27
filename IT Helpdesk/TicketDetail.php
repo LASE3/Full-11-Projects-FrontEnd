@@ -65,6 +65,14 @@ $statusClass = match($status) {
     'Resolved' => 'badge-green',
     default => 'status-open'
 };
+
+// Dynamic Sidebar Counts
+$sbStats = getItSidebarStats($pdo);
+$openCount = $sbStats['open_count'];
+$myTicketsCount = $sbStats['my_tickets_count'];
+$assetCount = $sbStats['asset_count'];
+$kbCount = $sbStats['kb_count'];
+$slaPct = $sbStats['sla_pct'];
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -172,7 +180,7 @@ $statusClass = match($status) {
                 </span>
                 <span>Ticket Queue</span>
               </div>
-              <span class="sidebar-badge badge-orange">34</span>
+              <span class="sidebar-badge badge-orange"><?= $openCount ?></span>
             </a>
 
             <a href="MyTickets.php" class="sidebar-nav-item">
@@ -185,7 +193,7 @@ $statusClass = match($status) {
                 </span>
                 <span>My Tickets</span>
               </div>
-              <span class="sidebar-badge badge-red">8</span>
+              <span class="sidebar-badge badge-red"><?= $myTicketsCount ?></span>
             </a>
 
             <a href="KnowledgeBase.php" class="sidebar-nav-item">
@@ -198,7 +206,7 @@ $statusClass = match($status) {
                 </span>
                 <span>Knowledge Base</span>
               </div>
-              <span class="sidebar-badge">142</span>
+              <span class="sidebar-badge"><?= $kbCount ?></span>
             </a>
 
             <a href="AssetManagement.php" class="sidebar-nav-item">
@@ -213,7 +221,7 @@ $statusClass = match($status) {
                 </span>
                 <span>Asset Management</span>
               </div>
-              <span class="sidebar-badge">1,820</span>
+              <span class="sidebar-badge"><?= $assetCount ?></span>
             </a>
 
             <a href="SLAReports.php" class="sidebar-nav-item">
@@ -226,7 +234,20 @@ $statusClass = match($status) {
                 </span>
                 <span>SLA Reports</span>
               </div>
-              <span class="sidebar-badge badge-green">98.4%</span>
+              <span class="sidebar-badge badge-green"><?= $slaPct ?>%</span>
+            </a>
+
+            <a href="Integrations.php" class="sidebar-nav-item">
+              <div class="sidebar-item-left">
+                <span class="sidebar-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00E5FF" stroke-width="2">
+                    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+                    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+                  </svg>
+                </span>
+                <span class="hd-nav-integrations">System Integrations</span>
+              </div>
+              <span class="sidebar-badge hd-badge-integrations">SYS09</span>
             </a>
           </nav>
         </div>
