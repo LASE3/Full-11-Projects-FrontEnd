@@ -2,6 +2,52 @@
 require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/../includes/auth_guard.php';
 requireAuth('IT');
+require_once __DIR__ . '/api/db_helper.php';
+
+$pdo = getItDb();
+
+// Query all tickets with assigned employee details
+$stmt = $pdo->query("
+    SELECT 
+        t.*,
+        COALESCE(e.full_name, t.assigned_emp_id, 'Unassigned') AS assigned_tech_name,
+        e.job_title AS assigned_tech_role
+    FROM tickets t
+    LEFT JOIN employees e ON t.assigned_emp_id = e.emp_id
+    ORDER BY 
+        CASE t.priority 
+            WHEN 'Critical' THEN 1 
+            WHEN 'High' THEN 2 
+            WHEN 'Medium' THEN 3 
+            WHEN 'Low' THEN 4 
+            ELSE 5 
+        END ASC,
+        t.created_at DESC
+");
+$tickets = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Compute quick stats
+$critCount = 0;
+$highCount = 0;
+$medCount = 0;
+$lowCount = 0;
+$unassignedCount = 0;
+$openCount = 0;
+foreach ($tickets as $t) {
+  if ($t['status'] !== 'Resolved') {
+    $openCount++;
+    match ($t['priority']) {
+      'Critical' => $critCount++,
+      'High' => $highCount++,
+      'Medium' => $medCount++,
+      'Low' => $lowCount++,
+      default => null
+    };
+  }
+  if (empty($t['assigned_emp_id'])) {
+    $unassignedCount++;
+  }
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -11,14 +57,13 @@ requireAuth('IT');
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>VOSTOKPRIBOR IT Helpdesk · Incident &amp; Ticket Queue</title>
   <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 </head>
 
 <body>
 
   <div class="app-container">
-    <!-- ========================================================================
-         TOP NAVIGATION BAR
-         ======================================================================== -->
+    <!-- TOP NAVIGATION BAR -->
     <header class="top-nav">
       <div class="top-nav__accent-stripe"></div>
 
@@ -36,7 +81,7 @@ requireAuth('IT');
               <div class="brand-subline">
                 <span class="status-dot-pulse"></span>
                 <span>helpdesk.vostokpribor.local</span>
-                <span class="hd-opacity-50" >|</span>
+                <span class="hd-opacity-50">|</span>
                 <span>SUPPORT OPERATIONS</span>
               </div>
             </div>
@@ -54,8 +99,8 @@ requireAuth('IT');
 
         <!-- Right System Metrics & Profile -->
         <div class="top-nav__actions">
-          <div class="pipeline-sync-badge hd-badge-telemetry" >
-            <span class="hd-status-success" >●</span>
+          <div class="pipeline-sync-badge hd-badge-telemetry">
+            <span class="hd-status-success">●</span>
             <span>SLA: <strong>98.4% Compliant</strong></span>
           </div>
 
@@ -77,19 +122,16 @@ requireAuth('IT');
         </div>
 
         <!-- Top Bar Sign Out -->
-        <a href="../api/logout.php?system=IT%20Helpdesk&redirect=../IT%20Helpdesk/login.php" class="top-signout-btn" title="Sign Out of IT Helpdesk" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" ><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
+        <a href="../api/logout.php?system=IT%20Helpdesk&redirect=../IT%20Helpdesk/login.php" class="top-signout-btn" title="Sign Out of IT Helpdesk" onclick="(function(){sessionStorage.clear();localStorage.clear();})()"><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
       </div>
     </header>
 
     <div class="main-layout">
-      <!-- ========================================================================
-           LEFT SIDEBAR NAVIGATION (Ticket Queue Active)
-           ======================================================================== -->
+      <!-- LEFT SIDEBAR NAVIGATION -->
       <aside class="sidebar">
         <div>
           <div class="sidebar-section-title">IT Support Operations</div>
           <nav class="sidebar-nav">
-            <!-- Screen 1: Dashboard -->
             <a href="Dashboard.php" class="sidebar-nav-item">
               <div class="sidebar-item-left">
                 <span class="sidebar-icon">
@@ -104,7 +146,6 @@ requireAuth('IT');
               </div>
             </a>
 
-            <!-- Screen 2: Ticket Queue (Active) -->
             <a href="TicketQueue.php" class="sidebar-nav-item active">
               <div class="sidebar-item-left">
                 <span class="sidebar-icon">
@@ -117,10 +158,9 @@ requireAuth('IT');
                 </span>
                 <span>Ticket Queue</span>
               </div>
-              <span class="sidebar-badge badge-orange">34</span>
+              <span class="sidebar-badge badge-orange" id="sidebar-queue-count"><?= $openCount ?></span>
             </a>
 
-            <!-- My Tickets -->
             <a href="MyTickets.php" class="sidebar-nav-item">
               <div class="sidebar-item-left">
                 <span class="sidebar-icon">
@@ -134,7 +174,6 @@ requireAuth('IT');
               <span class="sidebar-badge badge-red">8</span>
             </a>
 
-            <!-- Knowledge Base -->
             <a href="KnowledgeBase.php" class="sidebar-nav-item">
               <div class="sidebar-item-left">
                 <span class="sidebar-icon">
@@ -148,7 +187,6 @@ requireAuth('IT');
               <span class="sidebar-badge">142</span>
             </a>
 
-            <!-- Asset Management -->
             <a href="AssetManagement.php" class="sidebar-nav-item">
               <div class="sidebar-item-left">
                 <span class="sidebar-icon">
@@ -164,7 +202,6 @@ requireAuth('IT');
               <span class="sidebar-badge">1,820</span>
             </a>
 
-            <!-- SLA Reports -->
             <a href="SLAReports.php" class="sidebar-nav-item">
               <div class="sidebar-item-left">
                 <span class="sidebar-icon">
@@ -177,12 +214,24 @@ requireAuth('IT');
               </div>
               <span class="sidebar-badge badge-green">98.4%</span>
             </a>
+
+            <a href="Integrations.php" class="sidebar-nav-item">
+              <div class="sidebar-item-left">
+                <span class="sidebar-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00E5FF" stroke-width="2">
+                    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+                    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+                  </svg>
+                </span>
+                <span class="hd-nav-integrations">System Integrations</span>
+              </div>
+              <span class="sidebar-badge hd-badge-integrations">SYS09</span>
+            </a>
           </nav>
         </div>
 
-
-        <div class="sidebar-section-title hd-mt-4" >Unified Ecosystem</div>
-        <nav class="sidebar-nav hd-mb-2" >
+        <div class="sidebar-section-title hd-mt-4">Unified Ecosystem</div>
+        <nav class="sidebar-nav hd-mb-2">
           <a href="../VOSTOKPRIBOR Corporate Web Platform/index.php" class="sidebar-nav-item">
             <div class="sidebar-item-left">
               <span class="sidebar-icon">
@@ -194,7 +243,7 @@ requireAuth('IT');
               </span>
               <span>Corporate Platform</span>
             </div>
-            <span class="sidebar-badge hd-text-xs" >SYS 01</span>
+            <span class="sidebar-badge hd-text-xs">SYS 01</span>
           </a>
           <a href="../Employee Intranet/index.php" class="sidebar-nav-item">
             <div class="sidebar-item-left">
@@ -208,10 +257,9 @@ requireAuth('IT');
               </span>
               <span>Employee Intranet</span>
             </div>
-            <span class="sidebar-badge hd-text-xs" >SYS 04</span>
+            <span class="sidebar-badge hd-text-xs">SYS 04</span>
           </a>
         </nav>
-        <!-- Log Out -->
 
         <div class="sidebar-footer">
           <div class="security-widget-card">
@@ -219,16 +267,14 @@ requireAuth('IT');
               <span>Incident Response Gateway</span>
               <span class="security-badge-status">● LIVE</span>
             </div>
-            <div class="hd-text-inverse-muted-sm" >
-              Active Escalations: <strong>3 P1 Incidents</strong>
+            <div class="hd-text-inverse-muted-sm">
+              Active Escalations: <strong><?= $critCount ?> P1 Incidents</strong>
             </div>
           </div>
         </div>
       </aside>
 
-      <!-- ========================================================================
-           MAIN CONTENT AREA: SCREEN 2 TICKET QUEUE TABLE
-           ======================================================================== -->
+      <!-- MAIN CONTENT AREA -->
       <main class="content-wrapper">
         <div class="portal-container">
           <!-- Page Header -->
@@ -245,62 +291,62 @@ requireAuth('IT');
               <p class="page-subtitle">Real-time ticketing queue with multi-field classification filters, heat-scale priorities, and bulk dispatch controls</p>
             </div>
             <div class="page-header-actions">
-              <button class="btn btn-outline" onclick="window.hdApp.showToast('Queue Sync', 'Ticket queue refreshed from central message broker (0 new incidents).')">
+              <button class="btn btn-outline" id="btn-sync-queue">
                 <span>🔄 Sync Queue</span>
               </button>
-              <button class="btn btn-primary-amber" onclick="window.hdApp.bulkAssign()">
-                <span>⚡ Bulk Assign</span>
+              <button class="btn btn-primary-amber" id="btn-open-create-ticket">
+                <span>+ Create Ticket</span>
               </button>
             </div>
           </div>
 
-          <!-- Queue Quick Stats Bar -->
-          <div class="hd-grid-4col-mb" >
-            <div class="hd-card hd-metric-card-crit" >
+          <!-- Queue Quick Stats Bar (Dynamic from Database) -->
+          <div class="hd-grid-4col-mb">
+            <div class="hd-card hd-metric-card-crit">
               <div>
-                <div class="hd-caption-muted-11" >Critical P1</div>
-                <div class="hd-mono-stat-crit" >3 Open</div>
+                <div class="hd-caption-muted-11">Critical P1</div>
+                <div class="hd-mono-stat-crit" id="stat-crit-count"><?= $critCount ?> Open</div>
               </div>
               <span class="priority-badge priority-critical">SLA &lt; 2h</span>
             </div>
-            <div class="hd-card hd-metric-card-orange" >
+            <div class="hd-card hd-metric-card-orange">
               <div>
-                <div class="hd-caption-muted-11" >High P2</div>
-                <div class="hd-mono-stat-orange" >8 Open</div>
+                <div class="hd-caption-muted-11">High P2</div>
+                <div class="hd-mono-stat-orange" id="stat-high-count"><?= $highCount ?> Open</div>
               </div>
               <span class="priority-badge priority-high">SLA &lt; 4h</span>
             </div>
-            <div class="hd-card hd-metric-card-amber" >
+            <div class="hd-card hd-metric-card-amber">
               <div>
-                <div class="hd-caption-muted-11" >Medium P3</div>
-                <div class="hd-mono-stat-amber" >15 Open</div>
+                <div class="hd-caption-muted-11">Medium P3</div>
+                <div class="hd-mono-stat-amber" id="stat-med-count"><?= $medCount ?> Open</div>
               </div>
               <span class="priority-badge priority-medium">SLA &lt; 8h</span>
             </div>
-            <div class="hd-card hd-metric-card-low" >
+            <div class="hd-card hd-metric-card-low">
               <div>
-                <div class="hd-caption-muted-11" >Low P4</div>
-                <div class="hd-mono-stat-secondary" >8 Open</div>
+                <div class="hd-caption-muted-11">Low P4</div>
+                <div class="hd-mono-stat-secondary" id="stat-low-count"><?= $lowCount ?> Open</div>
               </div>
               <span class="priority-badge priority-low">SLA &lt; 24h</span>
             </div>
           </div>
 
           <!-- Main Table Card with Filter Bar -->
-          <div class="hd-card hd-panel-flush" >
+          <div class="hd-card hd-panel-flush">
             <!-- Filter Bar -->
-            <div class="hd-toolbar-card" >
-              <div class="hd-toolbar-controls" >
+            <div class="hd-toolbar-card">
+              <div class="hd-toolbar-controls">
                 <!-- Search Input in Filter Bar -->
-                <div class="hd-search-box-wrap" >
-                  <span class="hd-search-box-icon" >🔍</span>
-                  <input class="hd-search-box-input" type="text" id="ticket-search" oninput="window.hdApp.filterTickets()" placeholder="Search ID, requester, keyword..."  />
+                <div class="hd-search-box-wrap">
+                  <span class="hd-search-box-icon">🔍</span>
+                  <input class="hd-search-box-input" type="text" id="ticket-search" placeholder="Search ID, requester, title, system..." />
                 </div>
 
                 <!-- Priority Dropdown -->
-                <div class="hd-flex-gap-xs" >
-                  <label class="hd-meta-semibold-115" for="filter-priority" >Priority:</label>
-                  <select class="hd-btn-filter-select" id="filter-priority" onchange="window.hdApp.filterTickets()" >
+                <div class="hd-flex-gap-xs">
+                  <label class="hd-meta-semibold-115" for="filter-priority">Priority:</label>
+                  <select class="hd-btn-filter-select" id="filter-priority">
                     <option value="all">All Priorities</option>
                     <option value="Critical">Critical (P1)</option>
                     <option value="High">High (P2)</option>
@@ -310,34 +356,34 @@ requireAuth('IT');
                 </div>
 
                 <!-- System Affected Dropdown -->
-                <div class="hd-flex-gap-xs" >
-                  <label class="hd-meta-semibold-115" for="filter-system" >System:</label>
-                  <select class="hd-btn-filter-select" id="filter-system" onchange="window.hdApp.filterTickets()" >
+                <div class="hd-flex-gap-xs">
+                  <label class="hd-meta-semibold-115" for="filter-system">System:</label>
+                  <select class="hd-btn-filter-select" id="filter-system">
                     <option value="all">All Systems</option>
                     <option value="SCADA">SCADA &amp; Gateway Nodes</option>
                     <option value="Cleanroom">Cleanroom Access Systems</option>
                     <option value="Calibration">Calibration &amp; FAT Testing</option>
                     <option value="PKI">PKI &amp; Security Tokens</option>
-                    <option value="ERP">ERP Procurement &amp; Sign-off</option>
+                    <option value="ERP">ERP Procurement</option>
                   </select>
                 </div>
 
                 <!-- Status Dropdown -->
-                <div class="hd-flex-gap-xs" >
-                  <label class="hd-meta-semibold-115" for="filter-status" >Status:</label>
-                  <select class="hd-btn-filter-select" id="filter-status" onchange="window.hdApp.filterTickets()" >
+                <div class="hd-flex-gap-xs">
+                  <label class="hd-meta-semibold-115" for="filter-status">Status:</label>
+                  <select class="hd-btn-filter-select" id="filter-status">
                     <option value="all">All Statuses</option>
                     <option value="Open">Open</option>
-                    <option value="In Progress">In Progress</option>
+                    <option value="InProgress">In Progress</option>
                     <option value="Escalated">Escalated</option>
                     <option value="Resolved">Resolved</option>
                   </select>
                 </div>
 
                 <!-- Assigned Tech Dropdown -->
-                <div class="hd-flex-gap-xs" >
-                  <label class="hd-meta-semibold-115" for="filter-tech" >Assigned Tech:</label>
-                  <select class="hd-btn-filter-select" id="filter-tech" onchange="window.hdApp.filterTickets()" >
+                <div class="hd-flex-gap-xs">
+                  <label class="hd-meta-semibold-115" for="filter-tech">Assigned Tech:</label>
+                  <select class="hd-btn-filter-select" id="filter-tech">
                     <option value="all">All Technicians</option>
                     <option value="Alexey Ivanov">Alexey Ivanov (Tier 3)</option>
                     <option value="Dmitry Popov">Dmitry Popov (Tier 2)</option>
@@ -348,240 +394,196 @@ requireAuth('IT');
               </div>
 
               <!-- Bulk Assign Button & Queue Count -->
-              <div class="hd-flex-gap-md" >
-                <span class="hd-mono-muted-115" >Showing <strong>5 of 34</strong> Active</span>
-                <button class="btn btn-orange btn-sm" onclick="window.hdApp.bulkAssign()" title="Assign pending unassigned tickets to active shift engineers">
+              <div class="hd-flex-gap-md">
+                <span class="hd-mono-muted-115">Total <strong><?= count($tickets) ?></strong> in Database</span>
+                <button class="btn btn-orange btn-sm" id="btn-bulk-assign" title="Assign pending unassigned tickets to active shift engineers">
                   <span>⚡ Bulk Assign</span>
                 </button>
               </div>
             </div>
 
-            <!-- Data Table -->
-            <div class="overflow-x-auto" >
+            <!-- Data Table (100% Dynamic from Database with CRUD) -->
+            <div class="overflow-x-auto">
               <table class="hd-table">
                 <thead>
                   <tr>
-                    <th class="hd-w-120" >Ticket ID</th>
-                    <th class="hd-min-w-220" >Requester</th>
-                    <th class="hd-min-w-260" >System Affected</th>
-                    <th class="hd-w-120" >Priority</th>
-                    <th class="hd-min-w-200" >Assigned Tech</th>
-                    <th class="hd-w-120" >Status</th>
-                    <th class="hd-w-110-right" >Action</th>
+                    <th class="hd-w-120">Ticket ID</th>
+                    <th class="hd-min-w-200">Requester</th>
+                    <th class="hd-min-w-260">System Affected / Title</th>
+                    <th class="hd-w-120">Priority</th>
+                    <th class="hd-min-w-180">Assigned Tech</th>
+                    <th class="hd-w-120">Status</th>
+                    <th style="width: 140px; text-align: right;">Action</th>
                   </tr>
                 </thead>
-                <tbody class="ticket-table-body">
-                  <!-- Row 1: TICK-8819 (Critical) -->
-                  <tr class="hd-table-row" data-id="TICK-8819" data-requester="Dr. Elena Rostova" data-system="SCADA" data-priority="Critical" data-status="In Progress" data-tech="Alexey Ivanov" onclick="window.location.href='TicketDetail.php'">
-                    <td>
-                      <span class="hd-mono-bold-navy-125" >TICK-8819</span>
-                      <div class="hd-mono-muted-xs" >08:30 MSK</div>
-                    </td>
-                    <td>
-                      <div class="hd-flex-gap-65" >
-                        <img class="hd-avatar-28-orange" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDZ9P2QbrRU2xObdFOu9aNA-iyUeUZ6UvBFT0l0KnTu1MKDRX0c84gVy9VkzAjtaXzw0JcEGYWbxd3RDqaIh7AyD6h4njnD-XTgLNnu6wa-UaOplKQCaWIDACINffaFufLMrEaDfvX7J3bqgPCT5b9oY66PI4s0dfAwRgA_V8p0oKzRnCAU0tihwWPq8xzU4FbT1iUoh0cBzt9pq7gPkXJVjA32ZA7kWXQvcLq090IXW-8Ihh_efhmM" alt="Elena Rostova"  />
-                        <div>
-                          <div class="hd-font-semibold-navy" >Dr. Elena Rostova</div>
-                          <div class="hd-text-secondary-11" >Chief Optical Calibration Architect</div>
-                        </div>
-                      </div>
-                    </td>
-                    <td>
-                      <div class="hd-font-semibold-primary" >SCADA Modbus Gateway #3</div>
-                      <div class="hd-text-muted-11" >Lipetsk Hot Blast Furnace #5 Gateway · Telemetry packet drop &gt; 14.8%</div>
-                    </td>
-                    <td>
-                      <span class="priority-badge priority-critical">CRITICAL</span>
-                    </td>
-                    <td>
-                      <div class="hd-flex-gap-sm" >
-                        <img class="hd-avatar-24" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDoVYMImYMOrFG-GImEjxCUij3YIwCjbxiUVg9-84NgNQUnx44rwhCbh4EVKLngwn6R5_hzNhRQkfTglEUz1jtP83GRGR8WbDdiIQblwg1fLV0mqc04y19GGKO27NGBpanqADz4vwO3ANY9KcZiOXBusZHAE_PU_FuuwKqChSLXXJsGo289bHOL3MFrKWoXXMoxnqoUIglg-NYsM99jg8cA3e1CeWhqlY0x7isLHdQfGbcFE_XiNNJg" alt="Alexey Ivanov"  />
-                        <div>
-                          <div class="hd-font-semibold-navy-12" >Alexey Ivanov</div>
-                          <div class="hd-mono-muted-xs" >Tier 3 SCADA Eng</div>
-                        </div>
-                      </div>
-                    </td>
-                    <td>
-                      <span class="status-pill status-in-progress">In Progress</span>
-                    </td>
-                    <td class="hd-text-right" >
-                      <a href="TicketDetail.php" class="btn btn-outline btn-sm" onclick="event.stopPropagation();">Triage →</a>
-                    </td>
-                  </tr>
-
-                  <!-- Row 2: TICK-8820 (Critical) -->
-                  <tr class="hd-table-row" data-id="TICK-8820" data-requester="Dr. Mikhail Abramov" data-system="Cleanroom" data-priority="Critical" data-status="In Progress" data-tech="Alexey Ivanov" onclick="window.location.href='TicketDetail.php'">
-                    <td>
-                      <span class="hd-mono-bold-navy-125" >TICK-8820</span>
-                      <div class="hd-mono-muted-xs" >09:12 MSK</div>
-                    </td>
-                    <td>
-                      <div class="hd-flex-gap-65" >
-                        <img class="hd-avatar-28-orange" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDoVYMImYMOrFG-GImEjxCUij3YIwCjbxiUVg9-84NgNQUnx44rwhCbh4EVKLngwn6R5_hzNhRQkfTglEUz1jtP83GRGR8WbDdiIQblwg1fLV0mqc04y19GGKO27NGBpanqADz4vwO3ANY9KcZiOXBusZHAE_PU_FuuwKqChSLXXJsGo289bHOL3MFrKWoXXMoxnqoUIglg-NYsM99jg8cA3e1CeWhqlY0x7isLHdQfGbcFE_XiNNJg" alt="Mikhail Abramov"  />
-                        <div>
-                          <div class="hd-font-semibold-navy" >Dr. Mikhail Abramov</div>
-                          <div class="hd-text-secondary-11" >Principal Semiconductor Physicist</div>
-                        </div>
-                      </div>
-                    </td>
-                    <td>
-                      <div class="hd-font-semibold-primary" >Cleanroom Biometric Scanner Bay B</div>
-                      <div class="hd-text-muted-11" >Nanofabrication Facility Bay B · RFID airlock interlock rejecting Level 3 credentials</div>
-                    </td>
-                    <td>
-                      <span class="priority-badge priority-critical">CRITICAL</span>
-                    </td>
-                    <td>
-                      <div class="hd-flex-gap-sm" >
-                        <img class="hd-avatar-24" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDoVYMImYMOrFG-GImEjxCUij3YIwCjbxiUVg9-84NgNQUnx44rwhCbh4EVKLngwn6R5_hzNhRQkfTglEUz1jtP83GRGR8WbDdiIQblwg1fLV0mqc04y19GGKO27NGBpanqADz4vwO3ANY9KcZiOXBusZHAE_PU_FuuwKqChSLXXJsGo289bHOL3MFrKWoXXMoxnqoUIglg-NYsM99jg8cA3e1CeWhqlY0x7isLHdQfGbcFE_XiNNJg" alt="Alexey Ivanov"  />
-                        <div>
-                          <div class="hd-font-semibold-navy-12" >Alexey Ivanov</div>
-                          <div class="hd-mono-muted-xs" >Tier 3 SCADA Eng</div>
-                        </div>
-                      </div>
-                    </td>
-                    <td>
-                      <span class="status-pill status-in-progress">In Progress</span>
-                    </td>
-                    <td class="hd-text-right" >
-                      <a href="TicketDetail.php" class="btn btn-outline btn-sm" onclick="event.stopPropagation();">Triage →</a>
-                    </td>
-                  </tr>
-
-                  <!-- Row 3: TICK-8821 (High) -->
-                  <tr class="hd-table-row" data-id="TICK-8821" data-requester="Viktor Morozov" data-system="Calibration" data-priority="High" data-status="Open" data-tech="Dmitry Popov" onclick="window.location.href='TicketDetail.php'">
-                    <td>
-                      <span class="hd-mono-bold-navy-125" >TICK-8821</span>
-                      <div class="hd-mono-muted-xs" >10:05 MSK</div>
-                    </td>
-                    <td>
-                      <div class="hd-flex-gap-65" >
-                        <img class="hd-avatar-28" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDoVYMImYMOrFG-GImEjxCUij3YIwCjbxiUVg9-84NgNQUnx44rwhCbh4EVKLngwn6R5_hzNhRQkfTglEUz1jtP83GRGR8WbDdiIQblwg1fLV0mqc04y19GGKO27NGBpanqADz4vwO3ANY9KcZiOXBusZHAE_PU_FuuwKqChSLXXJsGo289bHOL3MFrKWoXXMoxnqoUIglg-NYsM99jg8cA3e1CeWhqlY0x7isLHdQfGbcFE_XiNNJg" alt="Viktor Morozov"  />
-                        <div>
-                          <div class="hd-font-semibold-navy" >Viktor Morozov</div>
-                          <div class="hd-text-secondary-11" >Lead SCADA Gateway Specialist</div>
-                        </div>
-                      </div>
-                    </td>
-                    <td>
-                      <div class="hd-font-semibold-primary" >FAT Laser Calibration Server</div>
-                      <div class="hd-text-muted-11" >FAT Testing Bay #2 · Floating-point matrix overflow during 1000 Hz profile pass</div>
-                    </td>
-                    <td>
-                      <span class="priority-badge priority-high">HIGH</span>
-                    </td>
-                    <td>
-                      <div class="hd-flex-gap-sm" >
-                        <img class="hd-avatar-24" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBxrM-O7aJYHYCDtkoA3WwbiOe6BxJ0vK7AcnogxwZN9MACsknTlpyGKyy-lWl2Hwn9IEZLPDCvVGrmxN2kvPEfzbJ5E4u5x6-38EP2exwXW8Dmm-7oMTzMG07_rmRLbT0xvZwQMFEwa4qJO5LcWbn58eWx3fSkVjAmSI3UWO8dCTgRg6GBgrY_MTUl-JF-JUf4K5CGPp0o4tvKoxbSqSysGT8r3j8de3w_sfk4F8p9ysiXXfbUkWPV" alt="Dmitry Popov"  />
-                        <div>
-                          <div class="hd-font-semibold-navy-12" >Dmitry Popov</div>
-                          <div class="hd-mono-muted-xs" >Tier 2 Infrastructure</div>
-                        </div>
-                      </div>
-                    </td>
-                    <td>
-                      <span class="status-pill status-open">Open</span>
-                    </td>
-                    <td class="hd-text-right" >
-                      <a href="TicketDetail.php" class="btn btn-outline btn-sm" onclick="event.stopPropagation();">Triage →</a>
-                    </td>
-                  </tr>
-
-                  <!-- Row 4: TICK-8822 (Medium) -->
-                  <tr class="hd-table-row" data-id="TICK-8822" data-requester="Anna Belova" data-system="PKI" data-priority="Medium" data-status="In Progress" data-tech="Sofia Volkova" onclick="window.location.href='TicketDetail.php'">
-                    <td>
-                      <span class="hd-mono-bold-navy-125" >TICK-8822</span>
-                      <div class="hd-mono-muted-xs" >Yesterday · 16:40</div>
-                    </td>
-                    <td>
-                      <div class="hd-flex-gap-65" >
-                        <img class="hd-avatar-28" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDZ9P2QbrRU2xObdFOu9aNA-iyUeUZ6UvBFT0l0KnTu1MKDRX0c84gVy9VkzAjtaXzw0JcEGYWbxd3RDqaIh7AyD6h4njnD-XTgLNnu6wa-UaOplKQCaWIDACINffaFufLMrEaDfvX7J3bqgPCT5b9oY66PI4s0dfAwRgA_V8p0oKzRnCAU0tihwWPq8xzU4FbT1iUoh0cBzt9pq7gPkXJVjA32ZA7kWXQvcLq090IXW-8Ihh_efhmM" alt="Anna Belova"  />
-                        <div>
-                          <div class="hd-font-semibold-navy" >Anna Belova</div>
-                          <div class="hd-text-secondary-11" >Head of Quality Assurance</div>
-                        </div>
-                      </div>
-                    </td>
-                    <td>
-                      <div class="hd-font-semibold-primary" >ISO 9001 Certificate Signer</div>
-                      <div class="hd-text-muted-11" >Cryptographic smartcard PKI token renewal required for electronic FAT signing</div>
-                    </td>
-                    <td>
-                      <span class="priority-badge priority-medium">MEDIUM</span>
-                    </td>
-                    <td>
-                      <div class="hd-flex-gap-sm" >
-                        <img class="hd-avatar-24" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDZ9P2QbrRU2xObdFOu9aNA-iyUeUZ6UvBFT0l0KnTu1MKDRX0c84gVy9VkzAjtaXzw0JcEGYWbxd3RDqaIh7AyD6h4njnD-XTgLNnu6wa-UaOplKQCaWIDACINffaFufLMrEaDfvX7J3bqgPCT5b9oY66PI4s0dfAwRgA_V8p0oKzRnCAU0tihwWPq8xzU4FbT1iUoh0cBzt9pq7gPkXJVjA32ZA7kWXQvcLq090IXW-8Ihh_efhmM" alt="Sofia Volkova"  />
-                        <div>
-                          <div class="hd-font-semibold-navy-12" >Sofia Volkova</div>
-                          <div class="hd-mono-muted-xs" >Tier 1 Support</div>
-                        </div>
-                      </div>
-                    </td>
-                    <td>
-                      <span class="status-pill status-in-progress">In Progress</span>
-                    </td>
-                    <td class="hd-text-right" >
-                      <a href="TicketDetail.php" class="btn btn-outline btn-sm" onclick="event.stopPropagation();">Triage →</a>
-                    </td>
-                  </tr>
-
-                  <!-- Row 5: TICK-8823 (Low) -->
-                  <tr class="hd-table-row" data-id="TICK-8823" data-requester="Svetlana Petrova" data-system="ERP" data-priority="Low" data-status="Open" data-tech="Sofia Volkova" onclick="window.location.href='TicketDetail.php'">
-                    <td>
-                      <span class="hd-mono-bold-navy-125" >TICK-8823</span>
-                      <div class="hd-mono-muted-xs" >Yesterday · 14:15</div>
-                    </td>
-                    <td>
-                      <div class="hd-flex-gap-65" >
-                        <img class="hd-avatar-28" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDZ9P2QbrRU2xObdFOu9aNA-iyUeUZ6UvBFT0l0KnTu1MKDRX0c84gVy9VkzAjtaXzw0JcEGYWbxd3RDqaIh7AyD6h4njnD-XTgLNnu6wa-UaOplKQCaWIDACINffaFufLMrEaDfvX7J3bqgPCT5b9oY66PI4s0dfAwRgA_V8p0oKzRnCAU0tihwWPq8xzU4FbT1iUoh0cBzt9pq7gPkXJVjA32ZA7kWXQvcLq090IXW-8Ihh_efhmM" alt="Svetlana Petrova"  />
-                        <div>
-                          <div class="hd-font-semibold-navy" >Svetlana Petrova</div>
-                          <div class="hd-text-secondary-11" >Strategic Component Buyer</div>
-                        </div>
-                      </div>
-                    </td>
-                    <td>
-                      <div class="hd-font-semibold-primary" >ERP Procurement Signing Authority</div>
-                      <div class="hd-text-muted-11" >Enterprise ERP Module · Temporary delegation setup for scheduled leave window</div>
-                    </td>
-                    <td>
-                      <span class="priority-badge priority-low">LOW</span>
-                    </td>
-                    <td>
-                      <div class="hd-flex-gap-sm" >
-                        <img class="hd-avatar-24" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDZ9P2QbrRU2xObdFOu9aNA-iyUeUZ6UvBFT0l0KnTu1MKDRX0c84gVy9VkzAjtaXzw0JcEGYWbxd3RDqaIh7AyD6h4njnD-XTgLNnu6wa-UaOplKQCaWIDACINffaFufLMrEaDfvX7J3bqgPCT5b9oY66PI4s0dfAwRgA_V8p0oKzRnCAU0tihwWPq8xzU4FbT1iUoh0cBzt9pq7gPkXJVjA32ZA7kWXQvcLq090IXW-8Ihh_efhmM" alt="Sofia Volkova"  />
-                        <div>
-                          <div class="hd-font-semibold-navy-12" >Sofia Volkova</div>
-                          <div class="hd-mono-muted-xs" >Tier 1 Support</div>
-                        </div>
-                      </div>
-                    </td>
-                    <td>
-                      <span class="status-pill status-open">Open</span>
-                    </td>
-                    <td class="hd-text-right" >
-                      <a href="TicketDetail.php" class="btn btn-outline btn-sm" onclick="event.stopPropagation();">Triage →</a>
-                    </td>
-                  </tr>
+                <tbody class="ticket-table-body" id="tickets-table-body">
+                  <?php if (empty($tickets)): ?>
+                    <tr>
+                      <td colspan="7" style="text-align: center; padding: 30px; color: var(--hd-text-muted);">No incidents recorded in database.</td>
+                    </tr>
+                  <?php else: ?>
+                    <?php foreach ($tickets as $t):
+                      $prioClass = match ($t['priority']) {
+                        'Critical' => 'priority-critical',
+                        'High' => 'priority-high',
+                        'Medium' => 'priority-medium',
+                        'Low' => 'priority-low',
+                        default => 'priority-medium'
+                      };
+                      $statusClass = match ($t['status']) {
+                        'Open' => 'status-open',
+                        'InProgress' => 'status-in-progress',
+                        'Escalated' => 'priority-critical',
+                        'Resolved' => 'badge-green',
+                        default => 'status-open'
+                      };
+                      $tJson = htmlspecialchars(json_encode($t), ENT_QUOTES, 'UTF-8');
+                    ?>
+                      <tr class="hd-table-row" id="tkt-row-<?= htmlspecialchars($t['tkt_id']) ?>"
+                        data-id="<?= htmlspecialchars($t['tkt_id']) ?>"
+                        data-requester="<?= htmlspecialchars($t['requester_name'] ?? 'Authorized Staff') ?>"
+                        data-system="<?= htmlspecialchars($t['source_system']) ?>"
+                        data-priority="<?= htmlspecialchars($t['priority']) ?>"
+                        data-status="<?= htmlspecialchars($t['status']) ?>"
+                        data-tech="<?= htmlspecialchars($t['assigned_tech_name']) ?>">
+                        <td>
+                          <span class="hd-mono-bold-navy-125"><?= htmlspecialchars($t['tkt_id']) ?></span>
+                          <div class="hd-mono-muted-xs"><?= date('H:i MSK', strtotime($t['created_at'])) ?></div>
+                        </td>
+                        <td>
+                          <div class="hd-flex-gap-65">
+                            <div class="hd-stat-column-box" style="width: 32px; height: 32px; border-radius: 50%; background: #0f2438; color: #fff; font-size: 11px; font-weight: bold;">
+                              <?= strtoupper(substr($t['requester_name'] ?: 'EP', 0, 2)) ?>
+                            </div>
+                            <div>
+                              <div class="hd-font-semibold-navy"><?= htmlspecialchars($t['requester_name'] ?: 'Authorized Staff') ?></div>
+                              <div class="hd-text-secondary-11"><?= htmlspecialchars($t['requester_role'] ?: 'Operations') ?></div>
+                            </div>
+                          </div>
+                        </td>
+                        <td>
+                          <div class="hd-font-semibold-primary"><?= htmlspecialchars($t['title'] ?: $t['source_system']) ?></div>
+                          <div class="hd-text-muted-11"><?= htmlspecialchars($t['source_system']) ?> &bull; <?= htmlspecialchars(substr($t['description'] ?: 'No details provided.', 0, 75)) ?>...</div>
+                        </td>
+                        <td>
+                          <span class="priority-badge <?= $prioClass ?>"><?= strtoupper(htmlspecialchars($t['priority'])) ?></span>
+                        </td>
+                        <td>
+                          <div class="hd-font-semibold-navy-12"><?= htmlspecialchars($t['assigned_tech_name']) ?></div>
+                          <div class="hd-mono-muted-xs"><?= htmlspecialchars($t['assigned_tech_role'] ?: 'Support') ?></div>
+                        </td>
+                        <td>
+                          <span class="status-pill <?= $statusClass ?>"><?= htmlspecialchars($t['status']) ?></span>
+                        </td>
+                        <td style="text-align: right; white-space: nowrap;">
+                          <a href="TicketDetail.php?id=<?= urlencode($t['tkt_id']) ?>" class="btn btn-outline btn-sm" style="padding: 3px 8px;">Triage &rarr;</a>
+                          <button class="btn-crud-action btn-crud-edit btn-edit-ticket" data-ticket='<?= $tJson ?>' title="Edit Ticket">
+                            <span class="material-symbols-outlined">edit</span>
+                          </button>
+                          <button class="btn-crud-action btn-crud-delete btn-delete-ticket" data-id="<?= htmlspecialchars($t['tkt_id']) ?>" title="Delete Ticket">
+                            <span class="material-symbols-outlined">delete</span>
+                          </button>
+                        </td>
+                      </tr>
+                    <?php endforeach; ?>
+                  <?php endif; ?>
                 </tbody>
               </table>
             </div>
 
             <!-- Table Pagination / Footer -->
-            <div class="hd-footer-pagination" >
-              <div class="hd-mono" >
-                Page <strong>1</strong> of <strong>7</strong> · Total <strong>34 Tickets</strong>
+            <div class="hd-footer-pagination">
+              <div class="hd-mono">
+                Total <strong><?= count($tickets) ?> Incidents</strong> Active in Database
               </div>
-              <div class="hd-gap-sm" >
-                <button class="btn btn-outline btn-sm hd-pill-pad-sm"  disabled>← Previous</button>
-                <button class="btn btn-outline btn-sm hd-pill-pad-sm"  onclick="window.hdApp.showToast('Pagination', 'Loaded page 2 of ticket queue.')">Next →</button>
+              <div class="hd-gap-sm">
+                <button class="btn btn-outline btn-sm hd-pill-pad-sm" onclick="window.hdApp.showToast('Queue Sync', 'All tickets up to date.')">Refresh View</button>
               </div>
             </div>
           </div>
         </div>
       </main>
+    </div>
+  </div>
+
+  <!-- CREATE / EDIT TICKET MODAL -->
+  <div class="hd-modal-overlay" id="ticketModal">
+    <div class="hd-modal-dialog">
+      <div class="hd-modal-header">
+        <h3 id="ticketModalTitle">
+          <span class="material-symbols-outlined">confirmation_number</span>
+          Create New Support Incident
+        </h3>
+        <button class="hd-modal-close" id="btnCloseTicketModal">&times;</button>
+      </div>
+      <div class="hd-modal-body">
+        <input type="hidden" id="modalTktAction" value="create">
+        <input type="hidden" id="modalTktId" value="">
+
+        <div class="hd-form-group">
+          <label for="modalTktTitle">Incident Title *</label>
+          <input class="hd-form-input" id="modalTktTitle" type="text" placeholder="e.g. SCADA Gateway Modbus Telemetry Packet Drop" required>
+        </div>
+
+        <div class="hd-form-grid-2">
+          <div class="hd-form-group">
+            <label for="modalTktSystem">System Affected *</label>
+            <input class="hd-form-input" id="modalTktSystem" type="text" placeholder="e.g. SCADA Modbus Gateway #3" required>
+          </div>
+          <div class="hd-form-group">
+            <label for="modalTktPriority">Priority Level</label>
+            <select class="hd-form-select" id="modalTktPriority">
+              <option value="Critical">Critical (P1 &lt; 2h SLA)</option>
+              <option value="High">High (P2 &lt; 4h SLA)</option>
+              <option value="Medium" selected>Medium (P3 &lt; 8h SLA)</option>
+              <option value="Low">Low (P4 &lt; 24h SLA)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="hd-form-grid-2">
+          <div class="hd-form-group">
+            <label for="modalTktStatus">Incident Status</label>
+            <select class="hd-form-select" id="modalTktStatus">
+              <option value="Open">Open</option>
+              <option value="InProgress">In Progress</option>
+              <option value="Escalated">Escalated</option>
+              <option value="Resolved">Resolved</option>
+            </select>
+          </div>
+          <div class="hd-form-group">
+            <label for="modalTktTech">Assign Technician</label>
+            <select class="hd-form-select" id="modalTktTech">
+              <option value="EMP-1018">Alexey Ivanov (Lead Tier 3)</option>
+              <option value="EMP-1004">Dmitry Popov (Tier 2)</option>
+              <option value="EMP-1002">Sofia Volkova (Tier 1)</option>
+              <option value="">Unassigned</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="hd-form-grid-2">
+          <div class="hd-form-group">
+            <label for="modalTktReqName">Requester Full Name</label>
+            <input class="hd-form-input" id="modalTktReqName" type="text" placeholder="e.g. Dr. Elena Rostova" value="Authorized Personnel">
+          </div>
+          <div class="hd-form-group">
+            <label for="modalTktReqRole">Requester Department / Role</label>
+            <input class="hd-form-input" id="modalTktReqRole" type="text" placeholder="e.g. Chief Optical Calibration Architect" value="Operations Staff">
+          </div>
+        </div>
+
+        <div class="hd-form-group">
+          <label for="modalTktDesc">Problem Description &amp; Symptoms</label>
+          <textarea class="hd-form-textarea" id="modalTktDesc" rows="3" placeholder="Describe telemetry symptoms, error codes, hardware registers, or impacted processes..."></textarea>
+        </div>
+      </div>
+      <div class="hd-modal-footer">
+        <button class="btn btn-outline" id="btnCancelTicketModal">Cancel</button>
+        <button class="btn btn-primary-amber" id="btnSaveTicket">
+          <span>Save Incident</span>
+        </button>
+      </div>
     </div>
   </div>
 

@@ -1,10 +1,75 @@
 /**
  * VOSTOKPRIBOR Administration & Governance Portal - System 11
  * Main Dashboard & Attestation Review Module
+ * Live Database API Integration
  */
 
 (function () {
   "use strict";
+
+  // Global actions called from table buttons rendered by gov_service.php
+  window.purgeOrphanToken = async function (empId) {
+    if (
+      !confirm(
+        `Permanently purge and revoke orphan access token for [${empId}]?`,
+      )
+    )
+      return;
+    try {
+      const res = await fetch("api/privileged.php?action=purge_orphan", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ emp_id: empId }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        window.showToast?.(
+          "ORPHAN PURGED",
+          `Token for ${empId} revoked and session scrubbed from database.`,
+          "error",
+          "delete_forever",
+        );
+        setTimeout(() => location.reload(), 800);
+      } else {
+        window.showToast?.("ERROR", data.error || "Purge failed", "error");
+      }
+    } catch (err) {
+      window.showToast?.("NETWORK ERROR", err.message, "error");
+    }
+  };
+
+  window.attestRole = async function (empId) {
+    try {
+      const res = await fetch("api/privileged.php?action=attest_role", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ emp_id: empId }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        window.showToast?.(
+          "ROLE ATTESTED",
+          `Privileged access for ${empId} cryptographically signed and confirmed.`,
+          "success",
+          "verified",
+        );
+        setTimeout(() => location.reload(), 800);
+      } else {
+        window.showToast?.("ERROR", data.error || "Attestation failed", "error");
+      }
+    } catch (err) {
+      window.showToast?.("NETWORK ERROR", err.message, "error");
+    }
+  };
+
+  window.reviewRole = function (empId) {
+    window.showToast?.(
+      "ROLE REVIEW",
+      `Reviewing access entitlement ledger for employee ${empId}.`,
+      "info",
+      "fact_check",
+    );
+  };
 
   document.addEventListener("DOMContentLoaded", () => {
     // ==========================================
@@ -99,7 +164,7 @@
 
     // Save & Launch Window Action
     if (saveReCertBtn) {
-      saveReCertBtn.addEventListener("click", function () {
+      saveReCertBtn.addEventListener("click", async function () {
         const start =
           document.getElementById("recertStartDate")?.value || "2026-04-01";
         const end =
@@ -112,13 +177,33 @@
             : "SCHEDULED";
         }
 
+        try {
+          const res = await fetch("api/recert.php?action=create", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              title: "Q2-2026 Statutory Re-Certification Window",
+              start_date: start,
+              end_date: end,
+              status: isWindowActive ? "ACTIVE" : "SCHEDULED",
+              scope_departments: "ALL",
+              created_by_emp_id: "EMP-1005",
+            }),
+          });
+          const data = await res.json();
+          if (data.success) {
+            window.showToast?.(
+              "RE-CERTIFICATION COMMITTED",
+              `Quarterly Window ${data.window_id} recorded in database (${start} to ${end}).`,
+              "success",
+              "schedule",
+            );
+          }
+        } catch (e) {
+          console.warn("Recert API call error:", e);
+        }
+
         closeReCertDrawer();
-        window.showToast(
-          "RE-CERTIFICATION COMMITTED",
-          `Quarterly Re-Cert Window active (${start} to ${end}). Automated notifications anchored to EMP-1005 (T. Akhmetov) & EMP-1018 (L. Volkov).`,
-          "success",
-          "schedule",
-        );
       });
     }
 
@@ -190,7 +275,7 @@
         if (severBtn) {
           severBtn.disabled = false;
           severBtn.className =
-            "w-full h-11 bg-error hover:bg-on-error-container text-on-error font-title-sm text-[13px] font-bold tracking-wider flex items-center justify-center gap-space-xs transition-colors shadow";
+            "w-full h-11 bg-error hover:bg-on-error-container text-on-error font-title-sm text-[13px] font-bold tracking-wider flex items-center justify-center gap-space-xs transition-colors shadow cursor-pointer";
           severBtn.innerHTML =
             '<span class="material-symbols-outlined text-[18px]">lock_reset</span><span>SEVER ALL ENTITLEMENTS</span>';
         }
@@ -201,10 +286,10 @@
     // 4. SEVER CREDENTIALS (REVOCATION WORKFLOW)
     // ==========================================
     if (severBtn) {
-      severBtn.addEventListener("click", function () {
+      severBtn.addEventListener("click", async function () {
         const ackCheck = document.getElementById("operatorAckCheck");
         if (ackCheck && !ackCheck.checked) {
-          window.showToast(
+          window.showToast?.(
             "INTERLOCK BLOCKED",
             "Mandatory Security Requirement: Please acknowledge the operator declaration checkbox prior to executing credential sever.",
             "warn",
@@ -222,7 +307,17 @@
           ? drawerEmpId.textContent
           : "Target Account";
 
-        setTimeout(() => {
+        try {
+          const res = await fetch(
+            "api/privileged.php?action=sever_credentials",
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ emp_id: targetEmp }),
+            },
+          );
+          const data = await res.json();
+
           severBtn.innerHTML =
             '<span class="material-symbols-outlined text-[18px]">check_circle</span><span>CREDENTIALS SEVERED &amp; PURGED</span>';
           severBtn.className =
@@ -241,21 +336,17 @@
             }
           }
 
-          // Decrement Orphaned count
-          const orphanCard = document.querySelector(
-            ".text-headline-md.text-error",
-          );
-          if (orphanCard && orphanCard.textContent.includes("ORPHANED")) {
-            orphanCard.textContent = "01 ORPHANED ACCOUNT";
-          }
-
-          window.showToast(
+          window.showToast?.(
             "CREDENTIAL REVOCATION COMMITTED",
-            `Security Notice: Credentials for ${targetEmp} successfully invalidated across SYS-01 through SYS-11 nodes. Logged to immutable audit chain.`,
+            `Security Notice: Credentials for ${targetEmp} successfully invalidated in database across SYS-01 through SYS-11 nodes.`,
             "success",
             "lock_reset",
           );
-        }, 900);
+          setTimeout(() => location.reload(), 900);
+        } catch (err) {
+          window.showToast?.("NETWORK ERROR", err.message, "error");
+          severBtn.disabled = false;
+        }
       });
     }
   });

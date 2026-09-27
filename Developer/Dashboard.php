@@ -3,7 +3,13 @@ require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/../includes/auth_guard.php';
 requireAuth('Developer');
 $pdo = getDbConnection();
+require_once __DIR__ . '/api/db_helper.php';
+ensureDeveloperTables($pdo);
 $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clearance_level' => 'L2'];
+
+// Fetch all dynamic endpoints from database
+$stmt = $pdo->query("SELECT * FROM `developer_endpoints` ORDER BY `id` ASC");
+$endpoints = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -201,10 +207,13 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
                 </p>
             </div>
             <div class="dev-display-flex-gap-10px-0ed0" >
+                <button class="vk-btn vk-btn-accent" id="btnOpenCreateEndpoint">
+                    <span class="material-symbols-outlined text-[16px]">add_circle</span> Register New Endpoint
+                </button>
                 <a class="vk-btn vk-btn-outline" href="guides.php">
                     <span class="material-symbols-outlined text-[16px]">menu_book</span> Quickstart Guide
                 </a>
-                <a class="vk-btn vk-btn-accent" href="sandbox.php">
+                <a class="vk-btn vk-btn-outline" href="sandbox.php">
                     <span class="material-symbols-outlined text-[16px]">play_arrow</span> Open Sandbox
                 </a>
             </div>
@@ -237,252 +246,196 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
             </div>
         </div>
 
-        <!-- ENDPOINTS SECTION -->
-        <div class="endpoint-container">
-            <!-- ENDPOINT 1: PROD-1001 Optical Sensor Package Telemetry -->
-            <div class="endpoint-card tag-internal" id="endpoint-optical">
-                <div class="endpoint-header">
-                    <div class="dev-display-flex-align-items-1c20" >
-                        <span class="endpoint-badge-get">GET</span>
-                        <span class="endpoint-path">/v1/sensors/optical/telemetry</span>
-                        <span class="badge-classification badge-internal">Internal • PROD-1001</span>
-                    </div>
-                    <div class="dev-flex-center-gap-10" >
-                        <span class="dev-mono-muted-11" >Rate
-                            Limit: 10k/min</span>
-                        <button class="vk-btn vk-btn-outline btn-try-sandbox" data-method="GET"
-                            data-url="/v1/sensors/optical/telemetry">
-                            <span class="material-symbols-outlined text-[14px]">tune</span> Test in Sandbox
-                        </button>
-                    </div>
+        <!-- ENDPOINTS SECTION (100% Dynamic from Database) -->
+        <div class="endpoint-container" id="endpointCardsContainer">
+            <?php if (empty($endpoints)): ?>
+                <div class="vk-card tag-internal" style="padding: 40px; text-align: center;">
+                    <span class="material-symbols-outlined" style="font-size: 48px; color: var(--vk-neutral-400);">terminal</span>
+                    <h3 style="margin-top: 12px; color: var(--vk-neutral-800);">No API Endpoints Registered</h3>
+                    <p style="color: var(--vk-neutral-500); margin-top: 6px;">Register your first industrial endpoint to populate developer documentation.</p>
+                    <button class="vk-btn vk-btn-accent" style="margin-top: 16px;" onclick="document.getElementById('endpointModal').style.display='flex'">
+                        <span class="material-symbols-outlined text-[16px]">add_circle</span> Register Endpoint
+                    </button>
                 </div>
-                <div class="endpoint-body">
-                    <div class="endpoint-docs-col">
-                        <div class="dev-font-weight-600-font-94c0"
-                            >
-                            Fetch Industrial Optical Sensor Package Real-time Telemetry
+            <?php else: ?>
+                <?php foreach ($endpoints as $ep): 
+                    $methodClass = 'endpoint-badge-' . strtolower($ep['method']);
+                    $cardClass = str_contains(strtolower($ep['classification']), 'confidential') ? 'tag-confidential' : 'tag-internal';
+                    $badgeClass = str_contains(strtolower($ep['classification']), 'confidential') ? 'badge-confidential' : 'badge-internal';
+                    $params = !empty($ep['parameters_json']) ? json_decode($ep['parameters_json'], true) : [];
+                    $epJson = htmlspecialchars(json_encode($ep), ENT_QUOTES, 'UTF-8');
+                ?>
+                <div class="endpoint-card <?= $cardClass ?>" id="<?= htmlspecialchars($ep['endpoint_slug']) ?>" data-endpoint-id="<?= $ep['id'] ?>">
+                    <div class="endpoint-header">
+                        <div class="dev-display-flex-align-items-1c20" style="gap: 10px;">
+                            <span class="<?= $methodClass ?>"><?= htmlspecialchars($ep['method']) ?></span>
+                            <span class="endpoint-path"><?= htmlspecialchars($ep['path']) ?></span>
+                            <span class="badge-classification <?= $badgeClass ?>"><?= htmlspecialchars($ep['classification']) ?></span>
                         </div>
-                        <p class="dev-font-size-13px-color-78fc" >
-                            Retrieves high-frequency telemetry streams from field-deployed optical inspection and sensor
-                            apparatus (PROD-1001), including spectral resolution peak, focal plane operating
-                            temperature, and signal-to-noise ratio.
-                        </p>
+                        <div class="dev-flex-center-gap-10" style="gap: 8px;">
+                            <span class="dev-mono-muted-11">Rate Limit: <?= htmlspecialchars($ep['rate_limit']) ?></span>
+                            
+                            <button class="vk-btn vk-btn-outline btn-try-sandbox" 
+                                data-method="<?= htmlspecialchars($ep['method']) ?>"
+                                data-url="<?= htmlspecialchars($ep['path']) ?>"
+                                title="Run this endpoint in the interactive test sandbox">
+                                <span class="material-symbols-outlined text-[14px]">tune</span> Test
+                            </button>
 
-                        <div class="dev-margin-top-16px-font-dc1f"
-                            >
-                            Query Parameters</div>
-                        <table class="param-table">
-                            <thead>
-                                <tr>
-                                    <th>Parameter</th>
-                                    <th>Type</th>
-                                    <th>Requirement</th>
-                                    <th>Description</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td class="param-name">device_id</td>
-                                    <td class="param-type">string</td>
-                                    <td><span class="param-required">REQUIRED</span></td>
-                                    <td>Assigned hardware serial or ID (e.g. <code>PROD-1001-KZ</code>)</td>
-                                </tr>
-                                <tr>
-                                    <td class="param-name">sample_window_sec</td>
-                                    <td class="param-type">integer</td>
-                                    <td><span class="dev-font-size-10px-color-f312" >Optional</span>
-                                    </td>
-                                    <td>Window for rolling average (1 to 60, default: 5)</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="endpoint-code-col">
-                        <div class="code-tabs-nav">
-                            <div class="dev-display-flex-gap-6px-4a5d" >
-                                <button class="code-tab-btn active" data-endpoint="endpoint-optical"
-                                    data-lang="curl">cURL</button>
-                                <button class="code-tab-btn" data-endpoint="endpoint-optical"
-                                    data-lang="python">Python</button>
-                                <button class="code-tab-btn" data-endpoint="endpoint-optical"
-                                    data-lang="node">Node.js</button>
-                                <button class="code-tab-btn" data-endpoint="endpoint-optical" data-lang="go">Go</button>
-                            </div>
-                            <button class="vk-btn-outline copy-code-btn dev-padding-2px-8px-font-bd20">
-                                <span class="material-symbols-outlined text-[14px]">content_copy</span> Copy
+                            <button class="btn-crud-action btn-crud-edit btn-edit-endpoint" 
+                                data-endpoint='<?= $epJson ?>'
+                                title="Edit this endpoint specification">
+                                <span class="material-symbols-outlined text-[14px]">edit</span> Edit
+                            </button>
+
+                            <button class="btn-crud-action btn-crud-delete btn-delete-endpoint" 
+                                data-id="<?= $ep['id'] ?>"
+                                data-title="<?= htmlspecialchars($ep['title']) ?>"
+                                title="Remove this endpoint from database">
+                                <span class="material-symbols-outlined text-[14px]">delete</span>
                             </button>
                         </div>
-                        <pre class="code-block-box"><code>curl -X GET "https://developer.vostokpribor.local/v1/sensors/optical/telemetry?device_id=PROD-1001-KZ" \
-  -H "Authorization: Bearer vk_live_9a41c2e8f10b" \
-  -H "Accept: application/json"</code></pre>
                     </div>
-                </div>
-            </div>
-
-            <!-- ENDPOINT 2: PROD-1002 Precision Geodetic Measurement Kit -->
-            <div class="endpoint-card tag-internal" id="endpoint-geodetic">
-                <div class="endpoint-header">
-                    <div class="dev-display-flex-align-items-1c20" >
-                        <span class="endpoint-badge-get">GET</span>
-                        <span class="endpoint-path">/v1/devices/geodetic/measurements</span>
-                        <span class="badge-classification badge-internal">Internal • PROD-1002</span>
-                    </div>
-                    <div class="dev-flex-center-gap-10" >
-                        <span class="dev-mono-muted-11" >Rate
-                            Limit: 5k/min</span>
-                        <button class="vk-btn vk-btn-outline btn-try-sandbox" data-method="GET"
-                            data-url="/v1/devices/geodetic/measurements">
-                            <span class="material-symbols-outlined text-[14px]">tune</span> Test in Sandbox
-                        </button>
-                    </div>
-                </div>
-                <div class="endpoint-body">
-                    <div class="endpoint-docs-col">
-                        <div class="dev-font-weight-600-font-94c0"
-                            >
-                            Precision Geodetic Measurement Kit (PROD-1002) Calibration Vectors
-                        </div>
-                        <p class="dev-font-size-13px-color-78fc" >
-                            Provides distance vectors, laser interferometer precision readings, and atmospheric
-                            refraction indices for geodetic surveying instrumentation deployed with CUS-1001 (Aral
-                            Geomatics) and CUS-1002 (BaltNord).
-                        </p>
-
-                        <div class="dev-margin-top-16px-font-1eeb"
-                            >
-                            Parameters</div>
-                        <table class="param-table">
-                            <thead>
-                                <tr>
-                                    <th>Parameter</th>
-                                    <th>Type</th>
-                                    <th>Requirement</th>
-                                    <th>Description</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td class="param-name">unit</td>
-                                    <td class="param-type">string</td>
-                                    <td><span class="param-required">REQUIRED</span></td>
-                                    <td>Hardware device identifier (e.g. <code>PROD-1002</code>)</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="endpoint-code-col">
-                        <div class="code-tabs-nav">
-                            <div class="dev-display-flex-gap-6px-4a5d" >
-                                <button class="code-tab-btn active" data-endpoint="endpoint-geodetic"
-                                    data-lang="curl">cURL</button>
-                                <button class="code-tab-btn" data-endpoint="endpoint-geodetic"
-                                    data-lang="python">Python</button>
-                                <button class="code-tab-btn" data-endpoint="endpoint-geodetic"
-                                    data-lang="node">Node.js</button>
-                                <button class="code-tab-btn" data-endpoint="endpoint-geodetic"
-                                    data-lang="go">Go</button>
+                    <div class="endpoint-body">
+                        <div class="endpoint-docs-col">
+                            <div class="dev-font-weight-600-font-94c0">
+                                <?= htmlspecialchars($ep['title']) ?>
                             </div>
-                            <button class="vk-btn-outline copy-code-btn dev-padding-2px-8px-font-bd20">
-                                <span class="material-symbols-outlined text-[14px]">content_copy</span> Copy
-                            </button>
-                        </div>
-                        <pre class="code-block-box"><code>curl -X GET "https://developer.vostokpribor.local/v1/devices/geodetic/measurements?unit=PROD-1002" \
-  -H "Authorization: Bearer vk_live_9a41c2e8f10b"</code></pre>
-                    </div>
-                </div>
-            </div>
+                            <p class="dev-font-size-13px-color-78fc">
+                                <?= nl2br(htmlspecialchars($ep['description'])) ?>
+                            </p>
 
-            <!-- ENDPOINT 3: PROD-1004 SCADA Frame Ingestion -->
-            <div class="endpoint-card tag-confidential" id="endpoint-scada">
-                <div class="endpoint-header">
-                    <div class="dev-display-flex-align-items-1c20" >
-                        <span class="endpoint-badge-post">POST</span>
-                        <span class="endpoint-path">/v1/scada/ingest/frames</span>
-                        <span class="badge-classification badge-confidential">Confidential • PROD-1004</span>
-                    </div>
-                    <div class="dev-flex-center-gap-10" >
-                        <span class="dev-mono-muted-11" >Rate
-                            Limit: 50k/min</span>
-                        <button class="vk-btn vk-btn-outline btn-try-sandbox" data-method="POST"
-                            data-url="/v1/scada/ingest/frames"
-                            data-body='{"facility_id":"ALMATY-CENTRAL-01","protocol":"MODBUS-TCP","plc_register":"40001","payload_hex":"0A2B4C"}'>
-                            <span class="material-symbols-outlined text-[14px]">tune</span> Test in Sandbox
-                        </button>
-                    </div>
-                </div>
-                <div class="endpoint-body">
-                    <div class="endpoint-docs-col">
-                        <div class="dev-font-weight-600-font-94c0"
-                            >
-                            Industrial PLC Integration (PROD-1004) High-Speed Ingestion
+                            <?php if (!empty($params)): ?>
+                            <div class="dev-margin-top-16px-font-dc1f">Parameters</div>
+                            <table class="param-table">
+                                <thead>
+                                    <tr>
+                                        <th>Parameter</th>
+                                        <th>Type</th>
+                                        <th>Requirement</th>
+                                        <th>Description</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php foreach ($params as $param): ?>
+                                    <tr>
+                                        <td class="param-name"><?= htmlspecialchars($param['name'] ?? '') ?></td>
+                                        <td class="param-type"><?= htmlspecialchars($param['type'] ?? 'string') ?></td>
+                                        <td>
+                                            <?php if (!empty($param['required'])): ?>
+                                                <span class="param-required">REQUIRED</span>
+                                            <?php else: ?>
+                                                <span class="dev-font-size-10px-color-f312">Optional</span>
+                                            <?php endif; ?>
+                                        </td>
+                                        <td><?= htmlspecialchars($param['description'] ?? '') ?></td>
+                                    </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                            <?php endif; ?>
                         </div>
-                        <p class="dev-font-size-13px-color-78fc" >
-                            Ingests Modbus-TCP, OPC-UA, and telemetry frames directly into System 11 Ingestion Bridges
-                            with microsecond timestamp validation.
-                        </p>
-                        <div class="dev-margin-top-16px-font-1eeb"
-                            >
-                            Body Parameters (JSON)</div>
-                        <table class="param-table">
-                            <thead>
-                                <tr>
-                                    <th>Key</th>
-                                    <th>Type</th>
-                                    <th>Requirement</th>
-                                    <th>Description</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td class="param-name">facility_id</td>
-                                    <td class="param-type">string</td>
-                                    <td><span class="param-required">REQUIRED</span></td>
-                                    <td>Enclave node code (e.g. <code>ALMATY-CENTRAL-01</code>)</td>
-                                </tr>
-                                <tr>
-                                    <td class="param-name">protocol</td>
-                                    <td class="param-type">string</td>
-                                    <td><span class="param-required">REQUIRED</span></td>
-                                    <td><code>MODBUS-TCP</code>, <code>OPC-UA</code>, or <code>PROFINET</code></td>
-                                </tr>
-                                <tr>
-                                    <td class="param-name">payload_hex</td>
-                                    <td class="param-type">hex-string</td>
-                                    <td><span class="param-required">REQUIRED</span></td>
-                                    <td>Raw industrial telemetry frame</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="endpoint-code-col">
-                        <div class="code-tabs-nav">
-                            <div class="dev-display-flex-gap-6px-4a5d" >
-                                <button class="code-tab-btn active" data-endpoint="endpoint-scada"
-                                    data-lang="curl">cURL</button>
-                                <button class="code-tab-btn" data-endpoint="endpoint-scada"
-                                    data-lang="python">Python</button>
-                                <button class="code-tab-btn" data-endpoint="endpoint-scada"
-                                    data-lang="node">Node.js</button>
-                                <button class="code-tab-btn" data-endpoint="endpoint-scada" data-lang="go">Go</button>
+                        <div class="endpoint-code-col">
+                            <div class="code-tabs-nav">
+                                <div class="dev-display-flex-gap-6px-4a5d">
+                                    <button class="code-tab-btn active" data-endpoint="<?= htmlspecialchars($ep['endpoint_slug']) ?>" data-lang="curl">cURL</button>
+                                    <button class="code-tab-btn" data-endpoint="<?= htmlspecialchars($ep['endpoint_slug']) ?>" data-lang="python">Python</button>
+                                    <button class="code-tab-btn" data-endpoint="<?= htmlspecialchars($ep['endpoint_slug']) ?>" data-lang="node">Node.js</button>
+                                    <button class="code-tab-btn" data-endpoint="<?= htmlspecialchars($ep['endpoint_slug']) ?>" data-lang="go">Go</button>
+                                </div>
+                                <button class="vk-btn-outline copy-code-btn dev-padding-2px-8px-font-bd20">
+                                    <span class="material-symbols-outlined text-[14px]">content_copy</span> Copy
+                                </button>
                             </div>
-                            <button class="vk-btn-outline copy-code-btn dev-padding-2px-8px-font-bd20">
-                                <span class="material-symbols-outlined text-[14px]">content_copy</span> Copy
-                            </button>
+                            <pre class="code-block-box"><code id="code-<?= htmlspecialchars($ep['endpoint_slug']) ?>"><?= htmlspecialchars($ep['curl_snippet'] ?: '') ?></code></pre>
                         </div>
-                        <pre class="code-block-box"><code>curl -X POST "https://developer.vostokpribor.local/v1/scada/ingest/frames" \
-  -H "Authorization: Bearer vk_live_9a41c2e8f10b" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "facility_id": "ALMATY-CENTRAL-01",
-    "protocol": "MODBUS-TCP",
-    "plc_register": "40001",
-    "payload_hex": "0A2B4C"
-  }'</code></pre>
                     </div>
                 </div>
-            </div>
+                <?php endforeach; ?>
+            <?php endif; ?>
         </div>
     </main>
+
+    <!-- REGISTER / EDIT ENDPOINT MODAL (Universal Database CRUD) -->
+    <div class="vk-modal-overlay" id="endpointModal">
+        <div class="vk-modal-dialog" style="max-width: 680px;">
+            <div class="vk-modal-header">
+                <div class="dev-flex-center-gap-8">
+                    <span class="material-symbols-outlined text-[20px] dev-color-accent">terminal</span>
+                    <h3 id="endpointModalTitle" class="dev-font-size-15px-font-29ad">Register New API Endpoint</h3>
+                </div>
+                <button class="dev-background-transparent-border-none-aba8" id="btnCloseEndpointModal" style="color: #94a3b8; cursor: pointer;">
+                    <span class="material-symbols-outlined text-[18px]">close</span>
+                </button>
+            </div>
+            <form id="endpointForm" class="vk-modal-body">
+                <input type="hidden" id="epId" name="id" value="" />
+                <input type="hidden" id="epSlug" name="endpoint_slug" value="" />
+
+                <div class="crud-form-group">
+                    <label class="crud-form-label" for="epTitle">Endpoint Title / Equipment Name *</label>
+                    <input type="text" id="epTitle" class="crud-form-input" placeholder="e.g. PROD-1005 Laser Vibrometer High-Speed Stream" required />
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 12px;">
+                    <div class="crud-form-group">
+                        <label class="crud-form-label" for="epMethod">HTTP Method *</label>
+                        <select id="epMethod" class="crud-form-select">
+                            <option value="GET">GET</option>
+                            <option value="POST">POST</option>
+                            <option value="PUT">PUT</option>
+                            <option value="DELETE">DELETE</option>
+                        </select>
+                    </div>
+                    <div class="crud-form-group">
+                        <label class="crud-form-label" for="epPath">URI Path *</label>
+                        <input type="text" id="epPath" class="crud-form-input" placeholder="/v1/sensors/vibrometer/stream" required />
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px;">
+                    <div class="crud-form-group">
+                        <label class="crud-form-label" for="epClassification">Classification</label>
+                        <select id="epClassification" class="crud-form-select">
+                            <option value="Internal • PROD-1001">Internal</option>
+                            <option value="Confidential • PROD-1004">Confidential</option>
+                            <option value="Public API">Public API</option>
+                            <option value="Restricted • L3">Restricted L3</option>
+                        </select>
+                    </div>
+                    <div class="crud-form-group">
+                        <label class="crud-form-label" for="epRateLimit">Rate Limit</label>
+                        <input type="text" id="epRateLimit" class="crud-form-input" value="10k/min" placeholder="10k/min" />
+                    </div>
+                    <div class="crud-form-group">
+                        <label class="crud-form-label" for="epTargetHardware">Target Hardware</label>
+                        <input type="text" id="epTargetHardware" class="crud-form-input" value="PROD-1001" placeholder="PROD-1001" />
+                    </div>
+                </div>
+
+                <div class="crud-form-group">
+                    <label class="crud-form-label" for="epDescription">Specification Description *</label>
+                    <textarea id="epDescription" class="crud-form-textarea" placeholder="Detailed description of telemetric attributes, operational ranges, and safety boundaries..." required></textarea>
+                </div>
+
+                <div class="crud-form-group">
+                    <label class="crud-form-label" for="epParamsJson">Query / Body Parameters (JSON Array format)</label>
+                    <textarea id="epParamsJson" class="crud-form-textarea" style="font-family: var(--font-mono); font-size: 11px;" placeholder='[{"name":"device_id","type":"string","required":true,"description":"Hardware Serial ID"}]'></textarea>
+                </div>
+
+                <div class="crud-form-group">
+                    <label class="crud-form-label" for="epCurl">cURL Code Snippet (Optional - Auto-generated if left blank)</label>
+                    <textarea id="epCurl" class="crud-form-textarea" style="font-family: var(--font-mono); font-size: 11px;" placeholder="curl -X GET ..."></textarea>
+                </div>
+            </form>
+            <div class="vk-modal-footer">
+                <button type="button" class="vk-btn vk-btn-outline" id="btnCancelEndpointModal">Cancel</button>
+                <button type="button" class="vk-btn vk-btn-accent" id="btnSaveEndpoint">
+                    <span class="material-symbols-outlined text-[16px]">save</span> Save to Database
+                </button>
+            </div>
+        </div>
+    </div>
 
     <!-- PUBLIC/PARTNER ENTERPRISE FOOTER -->
     <footer class="vk-footer">

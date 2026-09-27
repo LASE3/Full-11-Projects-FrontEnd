@@ -1,82 +1,11 @@
 /**
  * VOSTOKPRIBOR ENTERPRISE DESIGN SYSTEM
  * System 10: Interactive API Sandbox & Testing Console Module
+ * Full Database Integration with Live Dispatch, Presets & History
  */
 
 (function () {
   "use strict";
-
-  const MOCK_RESPONSES = {
-    "/v1/sensors/optical/telemetry": {
-      status: 200,
-      statusText: "OK",
-      time: "24ms",
-      size: "842 B",
-      data: {
-        device_id: "PROD-1001-KZ",
-        sensor_series: "Industrial Optical Sensor Package",
-        calibration_epoch: 1789128000,
-        station: "ALMATY-CENTRAL",
-        telemetry: {
-          spectral_resolution_nm: 0.04,
-          focal_plane_temp_c: 18.2,
-          dispersion_coefficient: 1.0024,
-          optical_throughput_percent: 99.82,
-          snr_db: 68.4,
-        },
-        status: "NOMINAL_OPERATIONAL",
-        jurisdiction_merkle_root: "0x4a8c911f...c892",
-      },
-    },
-    "/v1/devices/geodetic/measurements": {
-      status: 200,
-      statusText: "OK",
-      time: "31ms",
-      size: "710 B",
-      data: {
-        unit_id: "PROD-1002-UST-04",
-        apparatus: "Precision Geodetic Measurement Kit",
-        laser_interferometer: "STABLE",
-        azimuth_arcsec: 142.8812,
-        zenith_angle_deg: 44.1029,
-        distance_vector_meters: 1840.4502,
-        refraction_index: 1.000277,
-        calibration_valid: true,
-      },
-    },
-    "/v1/scada/ingest/frames": {
-      status: 201,
-      statusText: "Created",
-      time: "18ms",
-      size: "412 B",
-      data: {
-        frame_ack: "ACK-SCADA-89102",
-        facility_id: "ALMATY-CENTRAL-01",
-        protocol: "MODBUS-TCP",
-        buffered_lines: 1,
-        ring_buffer_utilization: "14%",
-        audit_escrow_timestamp: 1789128842,
-      },
-    },
-    "/v1/b2b/orders/create": {
-      status: 200,
-      statusText: "OK",
-      time: "42ms",
-      size: "620 B",
-      data: {
-        order_id: "ORD-2026-9904",
-        customer_id: "CUS-1002",
-        customer_name: "BaltNord Process Systems",
-        total_eur: 240000.0,
-        items: [
-          { prod_id: "PROD-1001", qty: 4, desc: "Optical Sensor Package" },
-          { prod_id: "PROD-1004", qty: 2, desc: "Industrial PLC Integration" },
-        ],
-        invoice_ref: "INV-2026-002",
-        fulfillment_status: "PROCESSING_OPS",
-      },
-    },
-  };
 
   document.addEventListener("DOMContentLoaded", () => {
     const methodSelect = document.getElementById("sandboxMethod");
@@ -95,84 +24,235 @@
 
     if (savedMethod && methodSelect) methodSelect.value = savedMethod;
     if (savedUrl && urlInput) urlInput.value = savedUrl;
-    if (savedBody && bodyEditor && savedBody.trim())
-      bodyEditor.value = savedBody;
+    if (savedBody && bodyEditor && savedBody.trim()) bodyEditor.value = savedBody;
 
     sessionStorage.removeItem("vk_sandbox_method");
     sessionStorage.removeItem("vk_sandbox_url");
     sessionStorage.removeItem("vk_sandbox_body");
 
-    // Quick Preset Buttons
-    document.querySelectorAll(".btn-preset").forEach((btn) => {
-      btn.addEventListener("click", function () {
-        const method = this.getAttribute("data-method");
-        const url = this.getAttribute("data-url");
-        const sampleBody = this.getAttribute("data-body") || "";
+    // Quick Preset Buttons Click
+    document.addEventListener("click", (e) => {
+      const btn = e.target.closest(".btn-preset");
+      if (btn) {
+        const method = btn.getAttribute("data-method") || "GET";
+        const url = btn.getAttribute("data-url") || "";
+        const sampleBody = btn.getAttribute("data-body") || "";
 
         if (methodSelect) methodSelect.value = method;
         if (urlInput) urlInput.value = url;
         if (bodyEditor) bodyEditor.value = sampleBody;
 
-        window.showToast("PRESET LOADED", `Loaded endpoint: ${url}`, "info");
-      });
+        window.showToast("PRESET LOADED", `Loaded endpoint: ${url}`, "info", "bookmark");
+      }
     });
 
-    // Send Request Simulation
-    if (sendBtn) {
-      sendBtn.addEventListener("click", () => {
+    // Delete Preset
+    document.addEventListener("click", async (e) => {
+      const delBtn = e.target.closest(".btn-delete-preset");
+      if (delBtn) {
+        const id = delBtn.getAttribute("data-id");
+        if (!confirm("Delete this sandbox preset from database?")) return;
+
+        try {
+          const res = await fetch("api/sandbox.php", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ action: "delete_preset", id: id })
+          });
+          const result = await res.json();
+          if (result.success) {
+            delBtn.parentElement.remove();
+            window.showToast("PRESET DELETED", "Preset removed from database.", "warn", "delete");
+          }
+        } catch (err) {
+          window.showToast("ERROR", err.message, "error");
+        }
+      }
+    });
+
+    // Save Preset Modal Handlers
+    const savePresetModal = document.getElementById("savePresetModal");
+    const btnOpenSavePreset = document.getElementById("btnOpenSavePreset");
+    const btnClosePresetModal = document.getElementById("btnClosePresetModal");
+    const btnCancelPresetModal = document.getElementById("btnCancelPresetModal");
+    const btnConfirmSavePreset = document.getElementById("btnConfirmSavePreset");
+
+    if (btnOpenSavePreset && savePresetModal) {
+      btnOpenSavePreset.addEventListener("click", () => {
+        document.getElementById("presetTitleInput").value = "";
+        document.getElementById("presetDescInput").value = "";
+        savePresetModal.style.display = "flex";
+      });
+    }
+
+    const closePresetModal = () => {
+      if (savePresetModal) savePresetModal.style.display = "none";
+    };
+    if (btnClosePresetModal) btnClosePresetModal.addEventListener("click", closePresetModal);
+    if (btnCancelPresetModal) btnCancelPresetModal.addEventListener("click", closePresetModal);
+
+    if (btnConfirmSavePreset) {
+      btnConfirmSavePreset.addEventListener("click", async () => {
+        const title = document.getElementById("presetTitleInput").value.trim();
+        const desc = document.getElementById("presetDescInput").value.trim();
+        const method = methodSelect ? methodSelect.value : "GET";
         const url = urlInput ? urlInput.value.trim() : "";
-        const origText = sendBtn.innerHTML;
+        const body = bodyEditor ? bodyEditor.value : "";
 
-        sendBtn.disabled = true;
-        sendBtn.innerHTML =
-          '<span class="material-symbols-outlined text-[16px] animate-spin">sync</span><span>Sending...</span>';
+        if (!title || !url) {
+          window.showToast("VALIDATION ERROR", "Title and URL are required.", "error");
+          return;
+        }
 
-        setTimeout(() => {
-          sendBtn.disabled = false;
-          sendBtn.innerHTML = origText;
-
-          let matched = null;
-          for (const key in MOCK_RESPONSES) {
-            if (url.includes(key)) {
-              matched = MOCK_RESPONSES[key];
-              break;
-            }
+        try {
+          const res = await fetch("api/sandbox.php", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              action: "create_preset",
+              title: title,
+              method: method,
+              url: url,
+              sample_body: body,
+              description: desc
+            })
+          });
+          const result = await res.json();
+          if (result.success) {
+            window.showToast("PRESET SAVED", `Saved preset "${title}" to database.`, "success", "bookmark_added");
+            closePresetModal();
+            setTimeout(() => window.location.reload(), 600);
+          } else {
+            window.showToast("ERROR", result.error || "Failed to save preset.", "error");
           }
+        } catch (err) {
+          window.showToast("ERROR", err.message, "error");
+        }
+      });
+    }
 
-          if (!matched) {
-            matched = {
-              status: 200,
-              statusText: "OK",
-              time: `${Math.floor(20 + Math.random() * 25)}ms`,
-              size: "512 B",
-              data: {
-                request_uri: url,
-                method: methodSelect ? methodSelect.value : "GET",
-                gateway: "developer.vostokpribor.local",
-                authenticated_as: "CUS-1002 (BaltNord Process Systems)",
-                response: "GENERIC_MOCK_SUCCESS",
-                timestamp_utc: Math.floor(Date.now() / 1000),
-              },
-            };
-          }
+    // Live Request Dispatch Simulation with Real Database Persistence
+    const executeDispatch = async () => {
+      const url = urlInput ? urlInput.value.trim() : "";
+      const method = methodSelect ? methodSelect.value : "GET";
+      const body = bodyEditor ? bodyEditor.value : "";
 
+      if (!url) {
+        window.showToast("INPUT ERROR", "Request URL is required.", "error");
+        return;
+      }
+
+      const origText = sendBtn.innerHTML;
+      sendBtn.disabled = true;
+      sendBtn.innerHTML = '<span class="material-symbols-outlined text-[16px] animate-spin">sync</span><span>Sending...</span>';
+
+      try {
+        const res = await fetch("api/sandbox.php", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            action: "dispatch",
+            method: method,
+            url: url,
+            body: body
+          })
+        });
+
+        const result = await res.json();
+        if (result.success) {
+          const d = result.data;
           if (respCode) {
-            respCode.textContent = `${matched.status} ${matched.statusText}`;
-            respCode.className = `vk-status-badge ${matched.status >= 200 && matched.status < 300 ? "status-active" : "status-revoked"}`;
+            respCode.textContent = `${d.status} ${d.statusText}`;
+            respCode.className = `vk-status-badge ${d.status >= 200 && d.status < 300 ? "status-active" : "status-revoked"}`;
           }
-          if (respTime) respTime.textContent = matched.time;
-          if (respSize) respSize.textContent = matched.size;
+          if (respTime) respTime.textContent = d.time;
+          if (respSize) respSize.textContent = d.size;
           if (respBody) {
-            respBody.textContent = JSON.stringify(matched.data, null, 2);
+            respBody.textContent = JSON.stringify(d.data, null, 2);
           }
 
           window.showToast(
             "HTTP DISPATCH COMPLETED",
-            `Response received: ${matched.status} ${matched.statusText} (${matched.time})`,
+            `Gateway response: ${d.status} ${d.statusText} (${d.time}) logged to database.`,
             "success",
-            "cloud_done",
+            "cloud_done"
           );
-        }, 450);
+
+          // Prepend row to history table
+          const tbody = document.getElementById("sandboxLogsBody");
+          if (tbody) {
+            const tr = document.createElement("tr");
+            const nowStr = new Date().toISOString().replace("T", " ").substring(0, 19);
+            tr.innerHTML = `
+              <td><span class="endpoint-badge-${method.toLowerCase()}">${method}</span></td>
+              <td><code style="font-family: var(--font-mono); font-size: 12px;">${url}</code></td>
+              <td><span class="vk-status-badge ${d.status >= 200 && d.status < 300 ? "status-active" : "status-revoked"}">${d.status}</span></td>
+              <td style="font-family: var(--font-mono); font-size: 12px;">${d.time}</td>
+              <td style="font-family: var(--font-mono); font-size: 11px; color: var(--vk-neutral-500);">${d.size}</td>
+              <td style="font-size: 11px; color: var(--vk-neutral-500);">${nowStr}</td>
+              <td style="text-align: right;">
+                <button class="btn-crud-action btn-rerun-log" data-method="${method}" data-url="${url}" data-body="${encodeURIComponent(body)}">
+                  <span class="material-symbols-outlined text-[13px]">replay</span>
+                </button>
+              </td>
+            `;
+            tbody.insertBefore(tr, tbody.firstChild);
+          }
+        } else {
+          window.showToast("DISPATCH ERROR", result.error || "Gateway dispatch failed.", "error");
+        }
+      } catch (err) {
+        window.showToast("NETWORK ERROR", err.message, "error");
+      } finally {
+        sendBtn.disabled = false;
+        sendBtn.innerHTML = origText;
+      }
+    };
+
+    if (sendBtn) {
+      sendBtn.addEventListener("click", executeDispatch);
+    }
+
+    // Re-run from Log
+    document.addEventListener("click", (e) => {
+      const rerunBtn = e.target.closest(".btn-rerun-log");
+      if (rerunBtn) {
+        const method = rerunBtn.getAttribute("data-method") || "GET";
+        const url = rerunBtn.getAttribute("data-url") || "";
+        let body = rerunBtn.getAttribute("data-body") || "";
+        try {
+          body = decodeURIComponent(body);
+        } catch (e) {}
+
+        if (methodSelect) methodSelect.value = method;
+        if (urlInput) urlInput.value = url;
+        if (bodyEditor) bodyEditor.value = body;
+
+        executeDispatch();
+      }
+    });
+
+    // Clear Sandbox Logs
+    const clearLogsBtn = document.getElementById("btnClearSandboxLogs");
+    if (clearLogsBtn) {
+      clearLogsBtn.addEventListener("click", async () => {
+        if (!confirm("Clear all sandbox dispatch logs from database?")) return;
+
+        try {
+          const res = await fetch("api/sandbox.php", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ action: "clear_logs" })
+          });
+          const result = await res.json();
+          if (result.success) {
+            const tbody = document.getElementById("sandboxLogsBody");
+            if (tbody) tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--vk-neutral-500); padding: 20px;">No requests dispatched yet.</td></tr>';
+            window.showToast("HISTORY CLEARED", "Database sandbox execution ledger cleared.", "info", "delete_sweep");
+          }
+        } catch (err) {
+          window.showToast("ERROR", err.message, "error");
+        }
       });
     }
   });

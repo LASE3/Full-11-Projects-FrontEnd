@@ -1,131 +1,13 @@
 /**
- * VOSTOKPRIBOR IT Helpdesk & Support Operations System (System 09)
- * Subdomain: helpdesk.vostokpribor.local
+ * VOSTOKPRIBOR IT Helpdesk & Support Operations System (SYS 08)
+ * Real-time API Client & CRUD Engine
  */
 
 (function () {
   "use strict";
 
   const hdApp = {
-    // Ticket Dataset
-    tickets: [
-      {
-        id: "TICK-8819",
-        requester: {
-          name: "Dr. Elena Rostova",
-          avatar:
-            "https://lh3.googleusercontent.com/aida-public/AB6AXuDZ9P2QbrRU2xObdFOu9aNA-iyUeUZ6UvBFT0l0KnTu1MKDRX0c84gVy9VkzAjtaXzw0JcEGYWbxd3RDqaIh7AyD6h4njnD-XTgLNnu6wa-UaOplKQCaWIDACINffaFufLMrEaDfvX7J3bqgPCT5b9oY66PI4s0dfAwRgA_V8p0oKzRnCAU0tihwWPq8xzU4FbT1iUoh0cBzt9pq7gPkXJVjA32ZA7kWXQvcLq090IXW-8Ihh_efhmM",
-          role: "Chief Optical Calibration Architect",
-        },
-        system: "SCADA Modbus Gateway #3 (Lipetsk Bay)",
-        priority: "Critical", // Critical | High | Medium | Low
-        tech: {
-          name: "Alexey Ivanov",
-          avatar:
-            "https://lh3.googleusercontent.com/aida-public/AB6AXuDoVYMImYMOrFG-GImEjxCUij3YIwCjbxiUVg9-84NgNQUnx44rwhCbh4EVKLngwn6R5_hzNhRQkfTglEUz1jtP83GRGR8WbDdiIQblwg1fLV0mqc04y19GGKO27NGBpanqADz4vwO3ANY9KcZiOXBusZHAE_PU_FuuwKqChSLXXJsGo289bHOL3MFrKWoXXMoxnqoUIglg-NYsM99jg8cA3e1CeWhqlY0x7isLHdQfGbcFE_XiNNJg",
-          tier: "Tier 3 SCADA Engineer",
-        },
-        status: "In Progress", // Open | In Progress | Escalated | Resolved
-        created: "Today · 08:30 MSK",
-        slaRemaining: "01:42:15",
-        slaPercent: 78,
-        description:
-          "Telemetry frame drop on RS-485 bus #3 connecting high-temp pyrometer array. Packet loss exceeding 14.8% during hot blast cycle.",
-      },
-      {
-        id: "TICK-8820",
-        requester: {
-          name: "Dr. Mikhail Abramov",
-          avatar:
-            "https://lh3.googleusercontent.com/aida-public/AB6AXuDoVYMImYMOrFG-GImEjxCUij3YIwCjbxiUVg9-84NgNQUnx44rwhCbh4EVKLngwn6R5_hzNhRQkfTglEUz1jtP83GRGR8WbDdiIQblwg1fLV0mqc04y19GGKO27NGBpanqADz4vwO3ANY9KcZiOXBusZHAE_PU_FuuwKqChSLXXJsGo289bHOL3MFrKWoXXMoxnqoUIglg-NYsM99jg8cA3e1CeWhqlY0x7isLHdQfGbcFE_XiNNJg",
-          role: "Principal Semiconductor Physicist",
-        },
-        system: "Cleanroom Biometric Scanner Bay B",
-        priority: "Critical",
-        tech: {
-          name: "Alexey Ivanov",
-          avatar:
-            "https://lh3.googleusercontent.com/aida-public/AB6AXuDoVYMImYMOrFG-GImEjxCUij3YIwCjbxiUVg9-84NgNQUnx44rwhCbh4EVKLngwn6R5_hzNhRQkfTglEUz1jtP83GRGR8WbDdiIQblwg1fLV0mqc04y19GGKO27NGBpanqADz4vwO3ANY9KcZiOXBusZHAE_PU_FuuwKqChSLXXJsGo289bHOL3MFrKWoXXMoxnqoUIglg-NYsM99jg8cA3e1CeWhqlY0x7isLHdQfGbcFE_XiNNJg",
-          tier: "Tier 3 SCADA Engineer",
-        },
-        status: "In Progress",
-        created: "Today · 09:12 MSK",
-        slaRemaining: "00:48:30",
-        slaPercent: 90,
-        description:
-          "Class 4 Cleanroom airlock interlock rejecting authenticated Level 3 smartcard RFID credentials.",
-      },
-      {
-        id: "TICK-8821",
-        requester: {
-          name: "Viktor Morozov",
-          avatar:
-            "https://lh3.googleusercontent.com/aida-public/AB6AXuDoVYMImYMOrFG-GImEjxCUij3YIwCjbxiUVg9-84NgNQUnx44rwhCbh4EVKLngwn6R5_hzNhRQkfTglEUz1jtP83GRGR8WbDdiIQblwg1fLV0mqc04y19GGKO27NGBpanqADz4vwO3ANY9KcZiOXBusZHAE_PU_FuuwKqChSLXXJsGo289bHOL3MFrKWoXXMoxnqoUIglg-NYsM99jg8cA3e1CeWhqlY0x7isLHdQfGbcFE_XiNNJg",
-          role: "Lead SCADA Gateway Specialist",
-        },
-        system: "FAT Triangulation Laser Calibration Server",
-        priority: "High",
-        tech: {
-          name: "Dmitry Popov",
-          avatar:
-            "https://lh3.googleusercontent.com/aida-public/AB6AXuBxrM-O7aJYHYCDtkoA3WwbiOe6BxJ0vK7AcnogxwZN9MACsknTlpyGKyy-lWl2Hwn9IEZLPDCvVGrmxN2kvPEfzbJ5E4u5x6-38EP2exwXW8Dmm-7oMTzMG07_rmRLbT0xvZwQMFEwa4qJO5LcWbn58eWx3fSkVjAmSI3UWO8dCTgRg6GBgrY_MTUl-JF-JUf4K5CGPp0o4tvKoxbSqSysGT8r3j8de3w_sfk4F8p9ysiXXfbUkWPV",
-          tier: "Tier 2 Infrastructure",
-        },
-        status: "Open",
-        created: "Today · 10:05 MSK",
-        slaRemaining: "02:15:00",
-        slaPercent: 55,
-        description:
-          "Automated calibration routine crashing on 64-bit floating point matrix overflow during high-speed profile tests.",
-      },
-      {
-        id: "TICK-8822",
-        requester: {
-          name: "Anna Belova",
-          avatar:
-            "https://lh3.googleusercontent.com/aida-public/AB6AXuDZ9P2QbrRU2xObdFOu9aNA-iyUeUZ6UvBFT0l0KnTu1MKDRX0c84gVy9VkzAjtaXzw0JcEGYWbxd3RDqaIh7AyD6h4njnD-XTgLNnu6wa-UaOplKQCaWIDACINffaFufLMrEaDfvX7J3bqgPCT5b9oY66PI4s0dfAwRgA_V8p0oKzRnCAU0tihwWPq8xzU4FbT1iUoh0cBzt9pq7gPkXJVjA32ZA7kWXQvcLq090IXW-8Ihh_efhmM",
-          role: "Head of Quality Assurance",
-        },
-        system: "ISO 9001 Electronic Certificate Signer",
-        priority: "Medium",
-        tech: {
-          name: "Sofia Volkova",
-          avatar:
-            "https://lh3.googleusercontent.com/aida-public/AB6AXuDZ9P2QbrRU2xObdFOu9aNA-iyUeUZ6UvBFT0l0KnTu1MKDRX0c84gVy9VkzAjtaXzw0JcEGYWbxd3RDqaIh7AyD6h4njnD-XTgLNnu6wa-UaOplKQCaWIDACINffaFufLMrEaDfvX7J3bqgPCT5b9oY66PI4s0dfAwRgA_V8p0oKzRnCAU0tihwWPq8xzU4FbT1iUoh0cBzt9pq7gPkXJVjA32ZA7kWXQvcLq090IXW-8Ihh_efhmM",
-          tier: "Tier 1 Support",
-        },
-        status: "In Progress",
-        created: "Yesterday · 16:40 MSK",
-        slaRemaining: "05:30:00",
-        slaPercent: 40,
-        description:
-          "Cryptographic smartcard PKI token renewal required for electronic FAT test report signing.",
-      },
-      {
-        id: "TICK-8823",
-        requester: {
-          name: "Svetlana Petrova",
-          avatar:
-            "https://lh3.googleusercontent.com/aida-public/AB6AXuDZ9P2QbrRU2xObdFOu9aNA-iyUeUZ6UvBFT0l0KnTu1MKDRX0c84gVy9VkzAjtaXzw0JcEGYWbxd3RDqaIh7AyD6h4njnD-XTgLNnu6wa-UaOplKQCaWIDACINffaFufLMrEaDfvX7J3bqgPCT5b9oY66PI4s0dfAwRgA_V8p0oKzRnCAU0tihwWPq8xzU4FbT1iUoh0cBzt9pq7gPkXJVjA32ZA7kWXQvcLq090IXW-8Ihh_efhmM",
-          role: "Strategic Component Buyer",
-        },
-        system: "ERP Procurement Signing Authority Module",
-        priority: "Low",
-        tech: {
-          name: "Sofia Volkova",
-          avatar:
-            "https://lh3.googleusercontent.com/aida-public/AB6AXuDZ9P2QbrRU2xObdFOu9aNA-iyUeUZ6UvBFT0l0KnTu1MKDRX0c84gVy9VkzAjtaXzw0JcEGYWbxd3RDqaIh7AyD6h4njnD-XTgLNnu6wa-UaOplKQCaWIDACINffaFufLMrEaDfvX7J3bqgPCT5b9oY66PI4s0dfAwRgA_V8p0oKzRnCAU0tihwWPq8xzU4FbT1iUoh0cBzt9pq7gPkXJVjA32ZA7kWXQvcLq090IXW-8Ihh_efhmM",
-          tier: "Tier 1 Support",
-        },
-        status: "Open",
-        created: "Yesterday · 14:15 MSK",
-        slaRemaining: "18:45:00",
-        slaPercent: 20,
-        description:
-          "Request for secondary approval delegation during scheduled annual leave.",
-      },
-    ],
-
+    // Show Toast Notification
     showToast: function (title, message, type = "orange") {
       const container = document.getElementById("toast-container");
       if (!container) return;
@@ -149,7 +31,7 @@
           <div style="font-weight: 700; font-size: 12.5px; color: #FFFFFF;">${title}</div>
           <div style="font-size: 11px; color: rgba(255,255,255,0.8); margin-top: 2px;">${message}</div>
         </div>
-        <button style="color: rgba(255,255,255,0.5); font-size: 14px;" onclick="this.parentElement.remove()">✕</button>
+        <button style="color: rgba(255,255,255,0.5); font-size: 14px; background: none; border: none; cursor: pointer;" onclick="this.parentElement.remove()">✕</button>
       `;
 
       container.appendChild(toast);
@@ -162,7 +44,548 @@
       }, 4200);
     },
 
-    // Filter Ticket Queue Table
+    // Universal Modal Helpers
+    openModal: function (modalId) {
+      const el = document.getElementById(modalId);
+      if (el) {
+        el.classList.add("show");
+        document.body.style.overflow = "hidden";
+      }
+    },
+
+    closeModal: function (modalId) {
+      const el = document.getElementById(modalId);
+      if (el) {
+        el.classList.remove("show");
+        document.body.style.overflow = "";
+      }
+    },
+
+    // =========================================================================
+    // TICKET CRUD
+    // =========================================================================
+    openCreateTicketModal: function () {
+      const form = document.getElementById("form-create-ticket");
+      if (form) form.reset();
+      this.openModal("modal-create-ticket");
+    },
+
+    submitCreateTicket: async function (e) {
+      if (e) e.preventDefault();
+      const form = document.getElementById("form-create-ticket");
+      if (!form) return;
+
+      const fd = new FormData(form);
+      const payload = Object.fromEntries(fd.entries());
+
+      try {
+        const res = await fetch("api/tickets.php?action=create", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (data.success) {
+          this.showToast("Ticket Created", `Incident ${data.ticket_code} created successfully in database.`, "green");
+          this.closeModal("modal-create-ticket");
+          setTimeout(() => window.location.reload(), 800);
+        } else {
+          this.showToast("Creation Failed", data.error || "Could not register ticket.", "critical");
+        }
+      } catch (err) {
+        this.showToast("Network Error", err.message, "critical");
+      }
+    },
+
+    openEditTicketModal: function (ticket) {
+      if (!ticket) return;
+      const tid = document.getElementById("edit-ticket-id");
+      const title = document.getElementById("edit-ticket-title");
+      const prio = document.getElementById("edit-ticket-priority");
+      const stat = document.getElementById("edit-ticket-status");
+      const sys = document.getElementById("edit-ticket-system");
+      const ass = document.getElementById("edit-ticket-assigned");
+      const desc = document.getElementById("edit-ticket-desc");
+      const notes = document.getElementById("edit-ticket-notes");
+
+      if (tid) tid.value = ticket.ticket_id || ticket.id || "";
+      if (title) title.value = ticket.title || "";
+      if (prio) prio.value = ticket.priority || "Medium";
+      if (stat) stat.value = ticket.status || "Open";
+      if (sys) sys.value = ticket.affected_system || ticket.source_system || "";
+      if (ass) ass.value = ticket.assigned_to || ticket.assigned_tech_name || "";
+      if (desc) desc.value = ticket.description || "";
+      if (notes) notes.value = ticket.resolution_notes || "";
+
+      this.openModal("modal-edit-ticket");
+    },
+
+    submitEditTicket: async function (e) {
+      if (e) e.preventDefault();
+      const form = document.getElementById("form-edit-ticket");
+      if (!form) return;
+
+      const fd = new FormData(form);
+      const payload = Object.fromEntries(fd.entries());
+
+      try {
+        const res = await fetch("api/tickets.php?action=update", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (data.success) {
+          this.showToast("Ticket Updated", "Incident details saved to database.", "green");
+          this.closeModal("modal-edit-ticket");
+          setTimeout(() => window.location.reload(), 700);
+        } else {
+          this.showToast("Update Error", data.error || "Could not save incident changes.", "critical");
+        }
+      } catch (err) {
+        this.showToast("Network Error", err.message, "critical");
+      }
+    },
+
+    deleteTicket: async function (ticketId, code) {
+      if (!confirm(`Are you sure you want to permanently delete incident ${code || '#' + ticketId} from the database?`)) {
+        return;
+      }
+
+      try {
+        const res = await fetch("api/tickets.php?action=delete", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ticket_id: ticketId })
+        });
+        const data = await res.json();
+        if (data.success) {
+          this.showToast("Ticket Deleted", `Incident ${code} removed from database.`, "green");
+          setTimeout(() => window.location.reload(), 700);
+        } else {
+          this.showToast("Deletion Failed", data.error || "Could not delete ticket.", "critical");
+        }
+      } catch (err) {
+        this.showToast("Network Error", err.message, "critical");
+      }
+    },
+
+    resolveTicket: async function (ticketIdOrCode, resolutionNotes) {
+      try {
+        const res = await fetch("api/tickets.php?action=resolve", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            ticket_id: ticketIdOrCode,
+            resolution_notes: resolutionNotes
+          })
+        });
+        const data = await res.json();
+        if (data.success) {
+          this.showToast("Incident Resolved", "Ticket marked Resolved and SLA clock stopped.", "green");
+          const pill = document.getElementById("ticket-detail-status-pill");
+          if (pill) {
+            pill.className = "status-pill status-resolved";
+            pill.textContent = "Resolved";
+          }
+          setTimeout(() => window.location.reload(), 900);
+        } else {
+          this.showToast("Resolution Error", data.error || "Could not mark resolved.", "critical");
+        }
+      } catch (err) {
+        this.showToast("Network Error", err.message, "critical");
+      }
+    },
+
+    escalateTicket: async function (ticketIdOrCode) {
+      try {
+        const res = await fetch("api/tickets.php?action=escalate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            ticket_id: ticketIdOrCode,
+            escalation_tier: "Tier 3 Operations & Industrial Security Lead",
+            reason: "Telemetry instability exceeding standard L2 remediation horizon"
+          })
+        });
+        const data = await res.json();
+        if (data.success) {
+          this.showToast("Incident Escalated", "High-priority governance audit and tier-3 lead summoned.", "critical");
+          const pill = document.getElementById("ticket-detail-status-pill");
+          if (pill) {
+            pill.className = "status-pill status-escalated";
+            pill.textContent = "Escalated";
+          }
+          setTimeout(() => window.location.reload(), 900);
+        } else {
+          this.showToast("Escalation Error", data.error || "Could not escalate incident.", "critical");
+        }
+      } catch (err) {
+        this.showToast("Network Error", err.message, "critical");
+      }
+    },
+
+    bulkAssign: async function () {
+      try {
+        const res = await fetch("api/tickets.php?action=bulk_assign", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            assigned_to: "Alexey Ivanov",
+            assigned_emp_id: "EMP-1018"
+          })
+        });
+        const data = await res.json();
+        if (data.success) {
+          this.showToast("Bulk Triage Done", `${data.affected_rows} unassigned tickets dispatched to active engineer.`, "green");
+          setTimeout(() => window.location.reload(), 900);
+        } else {
+          this.showToast("Triage Error", data.error || "Could not bulk assign.", "critical");
+        }
+      } catch (err) {
+        this.showToast("Network Error", err.message, "critical");
+      }
+    },
+
+    // =========================================================================
+    // COMMENT THREAD IN TICKET DETAIL
+    // =========================================================================
+    sendMessage: async function () {
+      const input = document.getElementById("chat-reply-input");
+      const btn = document.getElementById("btn-send-message");
+      const thread = document.getElementById("chat-conversation-thread");
+      if (!input || !input.value.trim()) return;
+
+      const text = input.value.trim();
+      const ticketId = btn ? btn.getAttribute("data-tid") : "";
+
+      try {
+        const res = await fetch("api/comments.php?action=create", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            ticket_id: ticketId,
+            comment_text: text,
+            author_type: "tech"
+          })
+        });
+        const data = await res.json();
+        if (data.success) {
+          const msgRow = document.createElement("div");
+          msgRow.className = "chat-msg-row tech-msg";
+          msgRow.innerHTML = `
+            <div class="hd-stat-column-box" style="width: 36px; height: 36px; border-radius: 50%; background: #C97A3D; color: #fff; font-size: 13px; font-weight: bold;">
+              AI
+            </div>
+            <div class="chat-bubble">
+              <div class="chat-msg-header">
+                <strong>Alexey Ivanov (Tier 3 IT Tech)</strong>
+                <span>Just now</span>
+              </div>
+              <p>${text.replace(/\n/g, '<br>')}</p>
+            </div>
+          `;
+          if (thread) {
+            thread.appendChild(msgRow);
+            thread.scrollTop = thread.scrollHeight;
+          }
+          input.value = "";
+          this.showToast("Message Dispatched", "Remediation note committed to database and logged in audit trail.", "green");
+        } else {
+          this.showToast("Send Failed", data.error || "Could not transmit note.", "critical");
+        }
+      } catch (err) {
+        this.showToast("Network Error", err.message, "critical");
+      }
+    },
+
+    // =========================================================================
+    // ASSET CRUD
+    // =========================================================================
+    openCreateAssetModal: function () {
+      const form = document.getElementById("form-create-asset");
+      if (form) form.reset();
+      this.openModal("modal-create-asset");
+    },
+
+    submitCreateAsset: async function (e) {
+      if (e) e.preventDefault();
+      const form = document.getElementById("form-create-asset");
+      if (!form) return;
+
+      const fd = new FormData(form);
+      const payload = Object.fromEntries(fd.entries());
+
+      try {
+        const res = await fetch("api/assets.php?action=create", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (data.success) {
+          this.showToast("Asset Registered", `Device ${data.asset_tag} added to database.`, "green");
+          this.closeModal("modal-create-asset");
+          setTimeout(() => window.location.reload(), 700);
+        } else {
+          this.showToast("Registration Failed", data.error || "Could not register asset.", "critical");
+        }
+      } catch (err) {
+        this.showToast("Network Error", err.message, "critical");
+      }
+    },
+
+    openEditAssetModal: function (asset) {
+      if (!asset) return;
+      const aid = document.getElementById("edit-asset-id");
+      const tag = document.getElementById("edit-asset-tag");
+      const model = document.getElementById("edit-asset-model");
+      const type = document.getElementById("edit-asset-type");
+      const loc = document.getElementById("edit-asset-loc");
+      const ip = document.getElementById("edit-asset-ip");
+      const mac = document.getElementById("edit-asset-mac");
+      const fw = document.getElementById("edit-asset-fw");
+      const health = document.getElementById("edit-asset-health");
+      const notes = document.getElementById("edit-asset-notes");
+
+      if (aid) aid.value = asset.asset_id || "";
+      if (tag) tag.value = asset.asset_tag || "";
+      if (model) model.value = asset.device_model || asset.asset_name || "";
+      if (type) type.value = asset.asset_type || "";
+      if (loc) loc.value = asset.location || "";
+      if (ip) ip.value = asset.ip_address || "";
+      if (mac) mac.value = asset.mac_address || "";
+      if (fw) fw.value = asset.firmware_version || "";
+      if (health) health.value = asset.health_status || "Online (Active)";
+      if (notes) notes.value = asset.notes || "";
+
+      this.openModal("modal-edit-asset");
+    },
+
+    submitEditAsset: async function (e) {
+      if (e) e.preventDefault();
+      const form = document.getElementById("form-edit-asset");
+      if (!form) return;
+
+      const fd = new FormData(form);
+      const payload = Object.fromEntries(fd.entries());
+
+      try {
+        const res = await fetch("api/assets.php?action=update", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (data.success) {
+          this.showToast("Asset Updated", "Device configuration saved to database.", "green");
+          this.closeModal("modal-edit-asset");
+          setTimeout(() => window.location.reload(), 700);
+        } else {
+          this.showToast("Update Failed", data.error || "Could not update asset.", "critical");
+        }
+      } catch (err) {
+        this.showToast("Network Error", err.message, "critical");
+      }
+    },
+
+    deleteAsset: async function (assetId, tag) {
+      if (!confirm(`Are you sure you want to delete hardware asset ${tag || '#' + assetId}?`)) {
+        return;
+      }
+
+      try {
+        const res = await fetch("api/assets.php?action=delete", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ asset_id: assetId })
+        });
+        const data = await res.json();
+        if (data.success) {
+          this.showToast("Asset Deleted", `Device ${tag} removed from database.`, "green");
+          setTimeout(() => window.location.reload(), 700);
+        } else {
+          this.showToast("Deletion Failed", data.error || "Could not delete device.", "critical");
+        }
+      } catch (err) {
+        this.showToast("Network Error", err.message, "critical");
+      }
+    },
+
+    // =========================================================================
+    // KNOWLEDGE BASE CRUD
+    // =========================================================================
+    openCreateKbModal: function () {
+      const form = document.getElementById("form-create-kb");
+      if (form) form.reset();
+      this.openModal("modal-create-kb");
+    },
+
+    submitCreateKb: async function (e) {
+      if (e) e.preventDefault();
+      const form = document.getElementById("form-create-kb");
+      if (!form) return;
+
+      const fd = new FormData(form);
+      const payload = Object.fromEntries(fd.entries());
+
+      try {
+        const res = await fetch("api/knowledge.php?action=create", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (data.success) {
+          this.showToast("Article Published", `SOP ${data.article_code} saved to database.`, "green");
+          this.closeModal("modal-create-kb");
+          setTimeout(() => window.location.reload(), 700);
+        } else {
+          this.showToast("Publish Failed", data.error || "Could not publish article.", "critical");
+        }
+      } catch (err) {
+        this.showToast("Network Error", err.message, "critical");
+      }
+    },
+
+    openEditKbModal: function (art) {
+      if (!art) return;
+      const kid = document.getElementById("edit-kb-id");
+      const code = document.getElementById("edit-kb-code");
+      const cat = document.getElementById("edit-kb-cat");
+      const title = document.getElementById("edit-kb-title");
+      const summary = document.getElementById("edit-kb-summary");
+      const content = document.getElementById("edit-kb-content");
+      const tags = document.getElementById("edit-kb-tags");
+
+      if (kid) kid.value = art.article_id || "";
+      if (code) code.value = art.article_code || "";
+      if (cat) cat.value = art.category || "";
+      if (title) title.value = art.title || "";
+      if (summary) summary.value = art.summary || "";
+      if (content) content.value = art.content || "";
+      if (tags) tags.value = art.tags || "";
+
+      this.openModal("modal-edit-kb");
+    },
+
+    submitEditKb: async function (e) {
+      if (e) e.preventDefault();
+      const form = document.getElementById("form-edit-kb");
+      if (!form) return;
+
+      const fd = new FormData(form);
+      const payload = Object.fromEntries(fd.entries());
+
+      try {
+        const res = await fetch("api/knowledge.php?action=update", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (data.success) {
+          this.showToast("Article Saved", "SOP updates saved to database.", "green");
+          this.closeModal("modal-edit-kb");
+          setTimeout(() => window.location.reload(), 700);
+        } else {
+          this.showToast("Update Failed", data.error || "Could not save article.", "critical");
+        }
+      } catch (err) {
+        this.showToast("Network Error", err.message, "critical");
+      }
+    },
+
+    deleteKbArticle: async function (articleId, code) {
+      if (!confirm(`Are you sure you want to delete SOP runbook ${code || '#' + articleId}?`)) {
+        return;
+      }
+
+      try {
+        const res = await fetch("api/knowledge.php?action=delete", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ article_id: articleId })
+        });
+        const data = await res.json();
+        if (data.success) {
+          this.showToast("Article Removed", `Runbook ${code} deleted from database.`, "green");
+          setTimeout(() => window.location.reload(), 700);
+        } else {
+          this.showToast("Deletion Failed", data.error || "Could not delete article.", "critical");
+        }
+      } catch (err) {
+        this.showToast("Network Error", err.message, "critical");
+      }
+    },
+
+    viewKbArticle: function (art) {
+      if (!art) return;
+      const codeEl = document.getElementById("view-kb-code");
+      const titleEl = document.getElementById("view-kb-title");
+      const summaryEl = document.getElementById("view-kb-summary");
+      const contentEl = document.getElementById("view-kb-content");
+
+      if (codeEl) codeEl.textContent = `${art.article_code} · ${art.category.toUpperCase()}`;
+      if (titleEl) titleEl.textContent = art.title;
+      if (summaryEl) summaryEl.textContent = art.summary || "No executive summary provided.";
+      if (contentEl) contentEl.textContent = art.content || "Procedure content pending.";
+
+      this.openModal("modal-view-kb");
+    },
+
+    // =========================================================================
+    // SLA POLICIES CRUD
+    // =========================================================================
+    openEditSlaModal: function (pol) {
+      if (!pol) return;
+      const pid = document.getElementById("edit-sla-id");
+      const prio = document.getElementById("edit-sla-prio");
+      const resp = document.getElementById("edit-sla-resp");
+      const resol = document.getElementById("edit-sla-resol");
+      const escl = document.getElementById("edit-sla-escl");
+      const desc = document.getElementById("edit-sla-desc");
+
+      if (pid) pid.value = pol.policy_id || "";
+      if (prio) prio.value = pol.priority_level || "";
+      if (resp) resp.value = pol.first_response_time_minutes || "";
+      if (resol) resol.value = pol.resolution_time_minutes || "";
+      if (escl) escl.value = pol.escalation_threshold_minutes || "";
+      if (desc) desc.value = pol.description || "";
+
+      this.openModal("modal-edit-sla");
+    },
+
+    submitEditSla: async function (e) {
+      if (e) e.preventDefault();
+      const form = document.getElementById("form-edit-sla");
+      if (!form) return;
+
+      const fd = new FormData(form);
+      const payload = Object.fromEntries(fd.entries());
+
+      try {
+        const res = await fetch("api/sla.php?action=update_policy", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (data.success) {
+          this.showToast("SLA Policy Updated", "New operational response targets saved to database.", "green");
+          this.closeModal("modal-edit-sla");
+          setTimeout(() => window.location.reload(), 700);
+        } else {
+          this.showToast("Update Failed", data.error || "Could not save policy.", "critical");
+        }
+      } catch (err) {
+        this.showToast("Network Error", err.message, "critical");
+      }
+    },
+
+    // =========================================================================
+    // SEARCH & TABLE FILTERS
+    // =========================================================================
     filterTickets: function () {
       const search = document.getElementById("ticket-search");
       const priority = document.getElementById("filter-priority");
@@ -180,7 +603,7 @@
       rows.forEach((row) => {
         const rowId = (row.getAttribute("data-id") || "").toLowerCase();
         const rowReq = (row.getAttribute("data-requester") || "").toLowerCase();
-        const rowSys = row.getAttribute("data-system") || "";
+        const rowSys = (row.getAttribute("data-system") || "").toLowerCase();
         const rowPrio = row.getAttribute("data-priority") || "";
         const rowStat = row.getAttribute("data-status") || "";
         const rowTech = row.getAttribute("data-tech") || "";
@@ -189,11 +612,11 @@
           !q ||
           rowId.includes(q) ||
           rowReq.includes(q) ||
-          rowSys.toLowerCase().includes(q);
-        const matchPrio = p === "all" || rowPrio === p;
-        const matchSys = s === "all" || rowSys === s;
-        const matchStat = st === "all" || rowStat === st;
-        const matchTech = t === "all" || rowTech === t;
+          rowSys.includes(q);
+        const matchPrio = p === "all" || rowPrio.toLowerCase() === p.toLowerCase();
+        const matchSys = s === "all" || rowSys.includes(s.toLowerCase());
+        const matchStat = st === "all" || rowStat.toLowerCase() === st.toLowerCase();
+        const matchTech = t === "all" || rowTech.toLowerCase().includes(t.toLowerCase());
 
         if (matchSearch && matchPrio && matchSys && matchStat && matchTech) {
           row.style.display = "";
@@ -203,16 +626,7 @@
       });
     },
 
-    // Bulk Assign Action
-    bulkAssign: function () {
-      this.showToast(
-        "Bulk Triage",
-        "4 unassigned tickets assigned to On-Duty Tier 2 Techs.",
-        "orange",
-      );
-    },
-
-    // Live SLA Timer Ticker
+    // SLA Countdown Ticker
     startSLATimer: function () {
       const timerEl = document.getElementById("live-sla-timer");
       if (!timerEl) return;
@@ -223,45 +637,14 @@
         if (totalSeconds > 0) {
           totalSeconds--;
           const hrs = String(Math.floor(totalSeconds / 3600)).padStart(2, "0");
-          const mins = String(Math.floor((totalSeconds % 3600) / 60)).padStart(
-            2,
-            "0",
-          );
+          const mins = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, "0");
           const secs = String(totalSeconds % 60).padStart(2, "0");
           timerEl.textContent = `${hrs}:${mins}:${secs}`;
         }
       }, 1000);
     },
 
-    // Send Message in Ticket Conversation
-    sendMessage: function () {
-      const input = document.getElementById("chat-reply-input");
-      const thread = document.getElementById("chat-conversation-thread");
-      if (!input || !thread || !input.value.trim()) return;
-
-      const text = input.value.trim();
-      const msgRow = document.createElement("div");
-      msgRow.className = "chat-msg-row tech-msg";
-      msgRow.innerHTML = `
-        <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDoVYMImYMOrFG-GImEjxCUij3YIwCjbxiUVg9-84NgNQUnx44rwhCbh4EVKLngwn6R5_hzNhRQkfTglEUz1jtP83GRGR8WbDdiIQblwg1fLV0mqc04y19GGKO27NGBpanqADz4vwO3ANY9KcZiOXBusZHAE_PU_FuuwKqChSLXXJsGo289bHOL3MFrKWoXXMoxnqoUIglg-NYsM99jg8cA3e1CeWhqlY0x7isLHdQfGbcFE_XiNNJg" alt="Alexey" class="chat-avatar" />
-        <div class="chat-bubble">
-          <div class="chat-msg-header">
-            <strong>Alexey Ivanov (Tier 3 IT Tech)</strong>
-            <span>Just now</span>
-          </div>
-          <p>${text}</p>
-        </div>
-      `;
-
-      thread.appendChild(msgRow);
-      input.value = "";
-      this.showToast(
-        "Message Dispatched",
-        "Response transmitted to requester and logged in ticket audit ledger.",
-        "green",
-      );
-    },
-
+    // App Initialization
     init: function () {
       const currentPath = window.location.pathname.toLowerCase();
       const sidebarLinks = document.querySelectorAll(".sidebar-nav-item");
@@ -280,27 +663,236 @@
         }
       });
 
+      // Global Omni Search
       const omniSearch = document.getElementById("global-omni-search");
       if (omniSearch) {
         omniSearch.addEventListener("keydown", (e) => {
           if (e.key === "Enter") {
             const val = omniSearch.value.trim();
             if (val) {
-              hdApp.showToast(
-                "Helpdesk Search",
-                `Searching tickets and knowledge base for "${val}"...`,
-              );
-              setTimeout(() => {
-                window.location.href = "TicketQueue.php";
-              }, 600);
+              window.location.href = `TicketQueue.php?q=${encodeURIComponent(val)}`;
             }
           }
         });
       }
 
-      this.startSLATimer();
+      // Close modal when clicking backdrop
+      document.querySelectorAll(".hd-modal-overlay").forEach((modal) => {
+        modal.addEventListener("click", (e) => {
+          if (e.target === modal) {
+            modal.classList.remove("show");
+            document.body.style.overflow = "";
+          }
+        });
+      });
 
-      // Initialize responsive multi-device layout controls
+      // TicketDetail page event bindings
+      const btnSend = document.getElementById("btn-send-message");
+      if (btnSend) {
+        btnSend.addEventListener("click", () => this.sendMessage());
+      }
+
+      const replyInput = document.getElementById("chat-reply-input");
+      if (replyInput) {
+        replyInput.addEventListener("keydown", (e) => {
+          if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
+            e.preventDefault();
+            this.sendMessage();
+          }
+        });
+      }
+
+      const btnResolve = document.getElementById("btn-resolve-ticket");
+      if (btnResolve) {
+        btnResolve.addEventListener("click", () => {
+          const tid = btnResolve.getAttribute("data-tid");
+          const notesEl = document.getElementById("resolution-notes");
+          const notes = notesEl ? notesEl.value : "";
+          this.resolveTicket(tid, notes);
+        });
+      }
+
+      const btnEscalate = document.getElementById("btn-escalate-ticket");
+      if (btnEscalate) {
+        btnEscalate.addEventListener("click", () => {
+          const tid = btnEscalate.getAttribute("data-tid");
+          this.escalateTicket(tid);
+        });
+      }
+
+      const btnEditCurrent = document.getElementById("btn-edit-current-ticket");
+      if (btnEditCurrent) {
+        btnEditCurrent.addEventListener("click", () => {
+          this.openModal("modal-edit-ticket");
+        });
+      }
+
+      const btnBulkAssign = document.getElementById("btn-bulk-assign");
+      if (btnBulkAssign) {
+        btnBulkAssign.addEventListener("click", () => this.bulkAssign());
+      }
+
+      // TicketQueue.php specific element handlers
+      const btnOpenQueueCreate = document.getElementById("btn-open-create-ticket");
+      if (btnOpenQueueCreate) {
+        btnOpenQueueCreate.addEventListener("click", () => {
+          const modal = document.getElementById("ticketModal");
+          if (modal) {
+            const act = document.getElementById("modalTktAction");
+            const mid = document.getElementById("modalTktId");
+            const title = document.getElementById("modalTktTitle");
+            const sys = document.getElementById("modalTktSystem");
+            const desc = document.getElementById("modalTktDesc");
+            if (act) act.value = "create";
+            if (mid) mid.value = "";
+            if (title) title.value = "";
+            if (sys) sys.value = "";
+            if (desc) desc.value = "";
+            modal.classList.add("show");
+            document.body.style.overflow = "hidden";
+          } else {
+            this.openCreateTicketModal();
+          }
+        });
+      }
+
+      const btnCloseTicketModal = document.getElementById("btnCloseTicketModal");
+      if (btnCloseTicketModal) {
+        btnCloseTicketModal.addEventListener("click", () => {
+          const modal = document.getElementById("ticketModal");
+          if (modal) {
+            modal.classList.remove("show");
+            document.body.style.overflow = "";
+          }
+        });
+      }
+
+      const btnCancelTicketModal = document.getElementById("btnCancelTicketModal");
+      if (btnCancelTicketModal) {
+        btnCancelTicketModal.addEventListener("click", () => {
+          const modal = document.getElementById("ticketModal");
+          if (modal) {
+            modal.classList.remove("show");
+            document.body.style.overflow = "";
+          }
+        });
+      }
+
+      // Save ticket from TicketQueue.php modal
+      const btnSaveTicket = document.getElementById("btnSaveTicket");
+      if (btnSaveTicket) {
+        btnSaveTicket.addEventListener("click", async () => {
+          const action = (document.getElementById("modalTktAction")?.value || "create");
+          const ticketId = (document.getElementById("modalTktId")?.value || "");
+          const title = (document.getElementById("modalTktTitle")?.value || "");
+          const sys = (document.getElementById("modalTktSystem")?.value || "");
+          const prio = (document.getElementById("modalTktPriority")?.value || "Medium");
+          const stat = (document.getElementById("modalTktStatus")?.value || "Open");
+          const techSelect = document.getElementById("modalTktTech");
+          const techEmpId = techSelect ? techSelect.value : "";
+          const techName = techSelect && techSelect.selectedIndex >= 0 ? techSelect.options[techSelect.selectedIndex].text.split("(")[0].trim() : "Alexey Ivanov";
+          const reqName = (document.getElementById("modalTktReqName")?.value || "Authorized Personnel");
+          const reqRole = (document.getElementById("modalTktReqRole")?.value || "Operations Staff");
+          const desc = (document.getElementById("modalTktDesc")?.value || "");
+
+          if (!title || !sys) {
+            this.showToast("Validation Error", "Please provide incident title and affected system.", "critical");
+            return;
+          }
+
+          const payload = {
+            ticket_id: ticketId,
+            title: title,
+            affected_system: sys,
+            priority: prio,
+            status: stat,
+            assigned_to: techName,
+            assigned_emp_id: techEmpId,
+            requester_name: reqName,
+            requester_role: reqRole,
+            description: desc
+          };
+
+          const endpoint = action === "edit" ? "api/tickets.php?action=update" : "api/tickets.php?action=create";
+          try {
+            const res = await fetch(endpoint, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(payload)
+            });
+            const data = await res.json();
+            if (data.success) {
+              this.showToast("Success", "Incident saved to database.", "green");
+              const modal = document.getElementById("ticketModal");
+              if (modal) modal.classList.remove("show");
+              setTimeout(() => window.location.reload(), 700);
+            } else {
+              this.showToast("Save Failed", data.error || "Could not save incident.", "critical");
+            }
+          } catch (err) {
+            this.showToast("Network Error", err.message, "critical");
+          }
+        });
+      }
+
+      // Edit buttons on TicketQueue.php
+      document.querySelectorAll(".btn-edit-ticket").forEach((btn) => {
+        btn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          const tData = btn.getAttribute("data-ticket");
+          if (!tData) return;
+          try {
+            const t = JSON.parse(tData);
+            const modal = document.getElementById("ticketModal");
+            if (modal) {
+              document.getElementById("modalTktAction").value = "edit";
+              document.getElementById("modalTktId").value = t.ticket_id || t.id || "";
+              document.getElementById("modalTktTitle").value = t.title || "";
+              document.getElementById("modalTktSystem").value = t.affected_system || t.source_system || "";
+              document.getElementById("modalTktPriority").value = t.priority || "Medium";
+              document.getElementById("modalTktStatus").value = t.status || "Open";
+              document.getElementById("modalTktReqName").value = t.requester_name || "";
+              document.getElementById("modalTktReqRole").value = t.requester_role || "";
+              document.getElementById("modalTktDesc").value = t.description || "";
+              modal.classList.add("show");
+              document.body.style.overflow = "hidden";
+            } else {
+              this.openEditTicketModal(t);
+            }
+          } catch (err) {
+            console.error(err);
+          }
+        });
+      });
+
+      // Delete buttons on TicketQueue.php
+      document.querySelectorAll(".btn-delete-ticket").forEach((btn) => {
+        btn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          const tid = btn.getAttribute("data-id");
+          this.deleteTicket(tid, tid);
+        });
+      });
+
+      // Queue search and filters
+      const ticketSearch = document.getElementById("ticket-search");
+      if (ticketSearch) {
+        ticketSearch.addEventListener("input", () => this.filterTickets());
+      }
+      ["filter-priority", "filter-system", "filter-status", "filter-tech"].forEach((id) => {
+        const sel = document.getElementById(id);
+        if (sel) sel.addEventListener("change", () => this.filterTickets());
+      });
+
+      const btnSyncQueue = document.getElementById("btn-sync-queue");
+      if (btnSyncQueue) {
+        btnSyncQueue.addEventListener("click", () => {
+          this.showToast("Queue Synced", "Refreshing live telemetry from database...", "green");
+          setTimeout(() => window.location.reload(), 600);
+        });
+      }
+
+      this.startSLATimer();
       this.initResponsiveLayout();
     },
 
@@ -329,9 +921,7 @@
         toggleBtn.addEventListener("click", (e) => {
           e.stopPropagation();
           document.body.classList.toggle("sidebar-open");
-          toggleBtn.innerHTML = document.body.classList.contains("sidebar-open")
-            ? "✕"
-            : "☰";
+          toggleBtn.innerHTML = document.body.classList.contains("sidebar-open") ? "✕" : "☰";
         });
       }
 
@@ -340,36 +930,29 @@
         if (toggleBtn) toggleBtn.innerHTML = "☰";
       });
 
-      document
-        .querySelectorAll(".sidebar-nav-item, .sidebar a")
-        .forEach((link) => {
-          link.addEventListener("click", () => {
-            if (window.innerWidth <= 1024) {
-              document.body.classList.remove("sidebar-open");
-              if (toggleBtn) toggleBtn.innerHTML = "☰";
-            }
-          });
-        });
-
-      document
-        .querySelectorAll("table.hd-table, table.data-table, table")
-        .forEach((table) => {
-          if (
-            !table.parentElement.classList.contains("table-responsive") &&
-            !table.parentElement.classList.contains("hd-table-container")
-          ) {
-            const wrapper = document.createElement("div");
-            wrapper.className = "table-responsive";
-            table.parentNode.insertBefore(wrapper, table);
-            wrapper.appendChild(table);
+      document.querySelectorAll(".sidebar-nav-item, .sidebar a").forEach((link) => {
+        link.addEventListener("click", () => {
+          if (window.innerWidth <= 1024) {
+            document.body.classList.remove("sidebar-open");
+            if (toggleBtn) toggleBtn.innerHTML = "☰";
           }
         });
+      });
+
+      document.querySelectorAll("table.hd-table, table.data-table, table").forEach((table) => {
+        if (
+          !table.parentElement.classList.contains("table-responsive") &&
+          !table.parentElement.classList.contains("hd-table-container")
+        ) {
+          const wrapper = document.createElement("div");
+          wrapper.className = "table-responsive";
+          table.parentNode.insertBefore(wrapper, table);
+          wrapper.appendChild(table);
+        }
+      });
 
       window.addEventListener("resize", () => {
-        if (
-          window.innerWidth > 1024 &&
-          document.body.classList.contains("sidebar-open")
-        ) {
+        if (window.innerWidth > 1024 && document.body.classList.contains("sidebar-open")) {
           document.body.classList.remove("sidebar-open");
           if (toggleBtn) toggleBtn.innerHTML = "☰";
         }

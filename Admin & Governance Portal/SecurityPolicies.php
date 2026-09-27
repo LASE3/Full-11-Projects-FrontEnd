@@ -90,7 +90,7 @@ $metrics = gov_getGovernanceMetrics();
             <nav class="flex flex-col gap-[2px] px-space-xs mb-space-md"
                 data-active-classes="bg-primary-container text-on-primary font-semibold border-l-4 border-secondary-fixed">
                 <a class="flex items-center justify-between px-space-sm py-space-xs rounded text-on-primary-container hover:bg-primary-container hover:text-on-primary transition-all font-body-compact text-body-compact"
-                    data-path="dashboard" href="mainDashborde.php">
+                    data-path="dashboard" href="mainDashboard.php">
                     <div class="flex items-center gap-space-sm"><span
                             class="material-symbols-outlined text-[18px]">dashboard</span><span>Main Dashboard</span>
                     </div><span
@@ -238,8 +238,9 @@ $metrics = gov_getGovernanceMetrics();
                             </p>
                         </div>
                         <!-- Action Button Group -->
-                        <div class="flex items-center gap-space-xs flex-wrap self-start lg:self-center">
                             <button
+                                id="btnNewPolicy"
+                                onclick="openNewPolicyModal()"
                                 class="h-control-height-md px-space-sm bg-primary hover:bg-primary-container text-on-primary font-title-sm text-telemetry-data flex items-center gap-space-xs transition-colors shadow-sm"
                                 type="button">
                                 <span class="material-symbols-outlined text-[16px]">add_moderator</span>
@@ -462,35 +463,51 @@ $metrics = gov_getGovernanceMetrics();
                                         $colorClass = $isCrit ? 'border-error' : 'border-secondary';
                                         $badgeClass = $isCrit ? 'bg-error text-on-error' : 'bg-primary-fixed text-on-primary-fixed-variant';
                                     ?>
-                                        <tr class="bg-surface-container-lowest hover:bg-surface-container-low transition-colors border-l-[4px] <?= $colorClass ?> cursor-pointer">
+                                        <tr class="policy-row bg-surface-container-lowest hover:bg-surface-container-low transition-colors border-l-[4px] <?= $colorClass ?>"
+                                            data-id="<?= (int)$p['policy_id'] ?>"
+                                            data-doc="<?= htmlspecialchars($policyCode) ?>"
+                                            data-title="<?= htmlspecialchars($policyName) ?>"
+                                            data-severity="<?= htmlspecialchars($severity) ?>"
+                                            data-mode="<?= htmlspecialchars($enforceMode) ?>"
+                                            data-desc="<?= htmlspecialchars($desc) ?>"
+                                            data-system="<?= htmlspecialchars($sysTarget) ?>"
+                                            data-date="<?= htmlspecialchars($policyDate) ?>">
                                             <td class="py-space-xs px-space-sm text-center">
-                                                <span class="px-space-2xs py-[1px] <?= $badgeClass ?> font-security-stamp text-[9px] font-bold"><?= htmlspecialchars($severity) ?></span>
+                                                 <span class="px-space-2xs py-[1px] <?= $badgeClass ?> font-security-stamp text-[9px] font-bold"><?= htmlspecialchars($severity) ?></span>
                                             </td>
                                             <td class="py-space-xs px-space-sm font-telemetry-data text-telemetry-data font-bold text-primary">
-                                                <?= htmlspecialchars($policyCode) ?>
+                                                 <?= htmlspecialchars($policyCode) ?>
                                             </td>
                                             <td class="py-space-xs px-space-sm">
-                                                <div class="flex flex-col">
-                                                    <span class="font-semibold text-primary"><?= htmlspecialchars($policyName) ?></span>
-                                                    <span class="font-telemetry-micro text-telemetry-micro text-on-surface-variant"><?= htmlspecialchars($desc) ?></span>
-                                                </div>
+                                                 <div class="flex flex-col">
+                                                     <span class="font-semibold text-primary"><?= htmlspecialchars($policyName) ?></span>
+                                                     <span class="font-telemetry-micro text-telemetry-micro text-on-surface-variant"><?= htmlspecialchars($desc) ?></span>
+                                                 </div>
                                             </td>
                                             <td class="py-space-xs px-space-sm">
-                                                <span class="px-space-xs py-[1px] bg-primary text-on-primary font-telemetry-micro text-[10px] font-semibold"><?= htmlspecialchars($sysTarget) ?></span>
+                                                 <span class="px-space-xs py-[1px] bg-primary text-on-primary font-telemetry-micro text-[10px] font-semibold"><?= htmlspecialchars($sysTarget) ?></span>
                                             </td>
                                             <td class="py-space-xs px-space-sm text-center">
-                                                <span class="px-space-xs py-[2px] <?= $isCrit ? 'bg-error-container text-on-error-container' : 'bg-secondary-container text-on-secondary-container' ?> font-security-stamp text-[9px] font-bold uppercase"><?= htmlspecialchars($enforceMode) ?></span>
+                                                 <span class="px-space-xs py-[2px] <?= $isCrit ? 'bg-error-container text-on-error-container' : 'bg-secondary-container text-on-secondary-container' ?> font-security-stamp text-[9px] font-bold uppercase"><?= htmlspecialchars($enforceMode) ?></span>
                                             </td>
                                             <td class="py-space-xs px-space-sm font-telemetry-micro text-telemetry-micro">
-                                                <div class="flex flex-col">
-                                                    <span class="text-primary font-semibold">ALMATY-HQ</span>
-                                                    <span class="text-on-surface-variant text-[10px]"><?= htmlspecialchars($policyDate) ?></span>
-                                                </div>
+                                                 <div class="flex flex-col">
+                                                     <span class="text-primary font-semibold">ALMATY-HQ</span>
+                                                     <span class="text-on-surface-variant text-[10px]"><?= htmlspecialchars($policyDate) ?></span>
+                                                 </div>
                                             </td>
-                                            <td class="py-space-xs px-space-sm text-right">
-                                                <button class="h-control-height-sm px-space-xs bg-primary text-on-primary font-telemetry-micro text-[10px] uppercase hover:bg-primary-container" type="button">
-                                                    INSPECT
-                                                </button>
+                                            <td class="py-space-xs px-space-sm text-right whitespace-nowrap">
+                                                 <div class="flex items-center justify-end gap-1">
+                                                     <button class="h-control-height-sm px-space-xs bg-primary text-on-primary font-telemetry-micro text-[10px] uppercase hover:bg-primary-container" type="button" onclick="inspectPolicy(<?= (int)$p['policy_id'] ?>)">
+                                                         INSPECT
+                                                     </button>
+                                                     <button class="h-control-height-sm px-space-xs bg-surface-container-high hover:bg-secondary hover:text-white text-primary font-telemetry-micro text-[10px] uppercase transition-colors" type="button" onclick="editPolicy(<?= (int)$p['policy_id'] ?>)">
+                                                         EDIT
+                                                     </button>
+                                                     <button class="h-control-height-sm px-space-xs bg-error/10 hover:bg-error hover:text-white text-error font-telemetry-micro text-[10px] uppercase transition-colors" type="button" onclick="deletePolicy(<?= (int)$p['policy_id'] ?>)">
+                                                         DELETE
+                                                     </button>
+                                                 </div>
                                             </td>
                                         </tr>
                                     <?php endforeach; ?>
@@ -706,8 +723,86 @@ $metrics = gov_getGovernanceMetrics();
                     </div>
                 </div>
             </div>
-        </main>
+    <!-- MODAL: STATUTORY POLICY REGISTER / AMENDMENT -->
+    <div id="policyModal" class="fixed inset-0 bg-primary/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-surface-container-lowest border-l-4 border-primary p-space-md max-w-lg w-full shadow-2xl flex flex-col gap-space-sm">
+            <div class="flex items-center justify-between pb-space-xs border-b border-surface-container-high">
+                <div class="flex items-center gap-space-xs">
+                    <span class="material-symbols-outlined text-primary text-[20px]">add_moderator</span>
+                    <h3 id="policyModalTitle" class="font-headline-md text-[16px] font-bold text-primary uppercase">Draft Statutory Amendment</h3>
+                </div>
+                <button type="button" onclick="closePolicyModal()" class="text-on-surface-variant hover:text-error">
+                    <span class="material-symbols-outlined text-[20px]">close</span>
+                </button>
+            </div>
+            <form id="policyForm" onsubmit="savePolicyForm(event)" class="flex flex-col gap-space-sm font-telemetry-micro text-telemetry-micro">
+                <input type="hidden" id="modalPolicyId" name="policy_id" value="">
+                <input type="hidden" id="modalAction" name="action" value="create">
+                
+                <div class="grid grid-cols-2 gap-space-xs">
+                    <div>
+                        <label class="block font-bold text-on-surface mb-1">POLICY CODE</label>
+                        <input type="text" id="modalDocId" name="doc_id" placeholder="e.g. DOC-2026-018"
+                            class="w-full bg-surface-container h-control-height-sm px-space-xs text-primary font-bold focus:outline-none focus:ring-1 focus:ring-primary">
+                    </div>
+                    <div>
+                        <label class="block font-bold text-on-surface mb-1">TARGET NODES</label>
+                        <input type="text" id="modalSystemId" name="system_id" value="SYS-01..11" placeholder="e.g. SYS-03 SCADA"
+                            class="w-full bg-surface-container h-control-height-sm px-space-xs text-on-surface focus:outline-none focus:ring-1 focus:ring-primary">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block font-bold text-on-surface mb-1">DIRECTIVE TITLE *</label>
+                    <input type="text" id="modalTitle" name="title" required placeholder="Full statutory policy title"
+                        class="w-full bg-surface-container h-control-height-sm px-space-xs text-on-surface focus:outline-none focus:ring-1 focus:ring-primary">
+                </div>
+
+                <div class="grid grid-cols-3 gap-space-xs">
+                    <div>
+                        <label class="block font-bold text-on-surface mb-1">SEVERITY</label>
+                        <select id="modalSeverity" name="severity" class="w-full bg-surface-container h-control-height-sm px-space-xs text-on-surface focus:outline-none focus:ring-1 focus:ring-primary">
+                            <option value="Critical">Critical</option>
+                            <option value="High" selected>High</option>
+                            <option value="Medium">Medium</option>
+                            <option value="Low">Low</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block font-bold text-on-surface mb-1">ENFORCEMENT</label>
+                        <select id="modalEnforceMode" name="enforcement_mode" class="w-full bg-surface-container h-control-height-sm px-space-xs text-on-surface focus:outline-none focus:ring-1 focus:ring-primary">
+                            <option value="MANDATORY" selected>MANDATORY</option>
+                            <option value="HARD-BLOCK">HARD-BLOCK</option>
+                            <option value="AUDIT-LOG">AUDIT-LOG</option>
+                            <option value="DRY-RUN">DRY-RUN</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block font-bold text-on-surface mb-1">EFFECTIVE DATE</label>
+                        <input type="date" id="modalEffectiveDate" name="effective_date" value="<?= date('Y-m-d') ?>"
+                            class="w-full bg-surface-container h-control-height-sm px-space-xs text-on-surface focus:outline-none focus:ring-1 focus:ring-primary">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block font-bold text-on-surface mb-1">SPECIFICATION / INTERLOCK LOGIC</label>
+                    <textarea id="modalDescription" name="description" rows="3" placeholder="Enter technical specification and enforcement rationale..."
+                        class="w-full bg-surface-container p-space-xs text-on-surface focus:outline-none focus:ring-1 focus:ring-primary"></textarea>
+                </div>
+
+                <div class="flex items-center justify-end gap-space-xs pt-space-xs border-t border-surface-container-high mt-space-xs">
+                    <button type="button" onclick="closePolicyModal()" class="h-control-height-sm px-space-sm bg-surface-container hover:bg-surface-container-high text-on-surface font-label-uppercase text-[10px] uppercase font-bold">
+                        Cancel
+                    </button>
+                    <button type="submit" id="btnSavePolicy" class="h-control-height-sm px-space-md bg-primary hover:bg-primary-container text-on-primary font-label-uppercase text-[10px] uppercase font-bold flex items-center gap-1 shadow">
+                        <span class="material-symbols-outlined text-[14px]">save</span>
+                        <span>Commit to Database</span>
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
+
     <script src="js/common.js"></script>
     <script src="js/securityPolicies.js"></script>
 </body>

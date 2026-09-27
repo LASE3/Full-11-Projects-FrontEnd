@@ -2,6 +2,24 @@
 require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/../includes/auth_guard.php';
 requireAuth('IT');
+require_once __DIR__ . '/api/db_helper.php';
+$pdo = getItDb();
+$currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Alexey Ivanov', 'clearance_level' => 'L2'];
+
+// Query all assets
+$stmt = $pdo->query("SELECT * FROM it_assets ORDER BY created_at DESC");
+$assets = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$totalAssets = count($assets);
+
+// Badges
+$openCountStmt = $pdo->query("SELECT COUNT(*) FROM tickets WHERE status != 'Resolved'");
+$openCount = (int)$openCountStmt->fetchColumn();
+
+$myTicketsStmt = $pdo->query("SELECT COUNT(*) FROM tickets WHERE (assigned_to LIKE '%Alexey%' OR assigned_emp_id = 'EMP-1018') AND status != 'Resolved'");
+$myTicketsCount = (int)$myTicketsStmt->fetchColumn();
+
+$kbCountStmt = $pdo->query("SELECT COUNT(*) FROM knowledge_base_articles");
+$kbCount = (int)$kbCountStmt->fetchColumn();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -32,7 +50,7 @@ requireAuth('IT');
               <div class="brand-subline">
                 <span class="status-dot-pulse"></span>
                 <span>helpdesk.vostokpribor.local</span>
-                <span class="hd-opacity-50" >|</span>
+                <span class="hd-opacity-50">|</span>
                 <span>SUPPORT OPERATIONS</span>
               </div>
             </div>
@@ -48,8 +66,8 @@ requireAuth('IT');
         </div>
 
         <div class="top-nav__actions">
-          <div class="pipeline-sync-badge hd-badge-telemetry" >
-            <span class="hd-status-success" >●</span>
+          <div class="pipeline-sync-badge hd-badge-telemetry">
+            <span class="hd-status-success">●</span>
             <span>SLA: <strong>98.4% Compliant</strong></span>
           </div>
           <button class="icon-button" title="Incident Telemetry Notifications" onclick="window.hdApp.showToast('Critical Alert', 'SCADA Gateway Node #3 packet loss detected in Lipetsk Bay.', 'critical')">
@@ -59,22 +77,22 @@ requireAuth('IT');
             </svg>
             <span class="badge-dot"></span>
           </button>
-          <div class="top-user-profile" onclick="window.hdApp.showToast('Active Tech Session', 'Alexey Ivanov · Tier 3 IT Operations Engineer')">
+          <div class="top-user-profile" onclick="window.hdApp.showToast('Active Tech Session', '<?= htmlspecialchars($currUser['full_name']) ?> · Lead IT Engineer')">
             <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDoVYMImYMOrFG-GImEjxCUij3YIwCjbxiUVg9-84NgNQUnx44rwhCbh4EVKLngwn6R5_hzNhRQkfTglEUz1jtP83GRGR8WbDdiIQblwg1fLV0mqc04y19GGKO27NGBpanqADz4vwO3ANY9KcZiOXBusZHAE_PU_FuuwKqChSLXXJsGo289bHOL3MFrKWoXXMoxnqoUIglg-NYsM99jg8cA3e1CeWhqlY0x7isLHdQfGbcFE_XiNNJg" alt="Alexey Ivanov" class="user-avatar-top" />
             <div class="user-details-top">
-              <span class="user-name-top">Alexey Ivanov</span>
+              <span class="user-name-top"><?= htmlspecialchars($currUser['full_name']) ?></span>
               <span class="user-role-top">Lead IT Tech · Tier 3</span>
             </div>
           </div>
         </div>
 
         <!-- Top Bar Sign Out -->
-        <a href="../api/logout.php?system=IT%20Helpdesk&redirect=../IT%20Helpdesk/login.php" class="top-signout-btn" title="Sign Out of IT Helpdesk" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" ><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
+        <a href="../api/logout.php?system=IT%20Helpdesk&redirect=../IT%20Helpdesk/login.php" class="top-signout-btn" title="Sign Out of IT Helpdesk" onclick="(function(){sessionStorage.clear();localStorage.clear();})()"><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
       </div>
     </header>
 
     <div class="main-layout">
-            <aside class="sidebar">
+      <aside class="sidebar">
         <div>
           <div class="sidebar-section-title">IT Support Operations</div>
           <nav class="sidebar-nav">
@@ -99,7 +117,7 @@ requireAuth('IT');
                   </svg></span>
                 <span>Ticket Queue</span>
               </div>
-              <span class="sidebar-badge badge-orange">34</span>
+              <span class="sidebar-badge badge-orange"><?= $openCount ?></span>
             </a>
             <a href="MyTickets.php" class="sidebar-nav-item">
               <div class="sidebar-item-left">
@@ -109,7 +127,7 @@ requireAuth('IT');
                   </svg></span>
                 <span>My Tickets</span>
               </div>
-              <span class="sidebar-badge badge-red">8</span>
+              <span class="sidebar-badge badge-red"><?= $myTicketsCount ?></span>
             </a>
             <a href="KnowledgeBase.php" class="sidebar-nav-item">
               <div class="sidebar-item-left">
@@ -119,7 +137,7 @@ requireAuth('IT');
                   </svg></span>
                 <span>Knowledge Base</span>
               </div>
-              <span class="sidebar-badge">142</span>
+              <span class="sidebar-badge"><?= $kbCount ?></span>
             </a>
             <a href="AssetManagement.php" class="sidebar-nav-item active">
               <div class="sidebar-item-left">
@@ -131,7 +149,7 @@ requireAuth('IT');
                   </svg></span>
                 <span>Asset Management</span>
               </div>
-              <span class="sidebar-badge">1,820</span>
+              <span class="sidebar-badge"><?= $totalAssets ?></span>
             </a>
             <a href="SLAReports.php" class="sidebar-nav-item">
               <div class="sidebar-item-left">
@@ -146,8 +164,8 @@ requireAuth('IT');
           </nav>
         </div>
 
-        <div class="sidebar-section-title hd-mt-4" >Unified Ecosystem</div>
-        <nav class="sidebar-nav hd-mb-2" >
+        <div class="sidebar-section-title hd-mt-4">Unified Ecosystem</div>
+        <nav class="sidebar-nav hd-mb-2">
           <a href="../VOSTOKPRIBOR Corporate Web Platform/index.php" class="sidebar-nav-item">
             <div class="sidebar-item-left">
               <span class="sidebar-icon">
@@ -159,7 +177,7 @@ requireAuth('IT');
               </span>
               <span>Corporate Platform</span>
             </div>
-            <span class="sidebar-badge hd-text-xs" >SYS 01</span>
+            <span class="sidebar-badge hd-text-xs">SYS 01</span>
           </a>
           <a href="../Employee Intranet/index.php" class="sidebar-nav-item">
             <div class="sidebar-item-left">
@@ -173,19 +191,18 @@ requireAuth('IT');
               </span>
               <span>Employee Intranet</span>
             </div>
-            <span class="sidebar-badge hd-text-xs" >SYS 04</span>
+            <span class="sidebar-badge hd-text-xs">SYS 04</span>
           </a>
         </nav>
-        <!-- Log Out -->
 
         <div class="sidebar-footer">
           <div class="security-widget-card">
             <div class="security-widget-header">
-              <span>Incident Response Gateway</span>
+              <span>Industrial OT Registry</span>
               <span class="security-badge-status">● LIVE</span>
             </div>
-            <div class="hd-text-inverse-muted-sm" >
-              Active Escalations: <strong>3 P1 Incidents</strong>
+            <div class="hd-text-inverse-muted-sm">
+              Registered Devices: <strong><?= $totalAssets ?> Edge Nodes</strong>
             </div>
           </div>
         </div>
@@ -204,75 +221,213 @@ requireAuth('IT');
                 <span class="breadcrumb-current">Hardware &amp; Network Nodes</span>
               </div>
               <h1 class="page-title">Industrial IT Asset &amp; Edge Hardware Registry</h1>
-              <p class="page-subtitle">1,820 managed edge nodes, industrial gateways, optical pyrometers, and biometric interlocks</p>
+              <p class="page-subtitle"><?= $totalAssets ?> managed edge nodes, industrial gateways, optical pyrometers, and biometric interlocks</p>
             </div>
             <div class="page-header-actions">
               <button class="btn btn-outline" onclick="window.hdApp.showToast('Asset Discovery', 'Triggering ARP scan on industrial OT subnets (10.240.0.0/16)...')">
                 <span>🔍 Scan OT Network</span>
               </button>
-              <button class="btn btn-primary-amber" onclick="window.hdApp.showToast('Add Asset', 'Registering new hardware device to IT asset database.')">
+              <button class="btn btn-primary-amber" onclick="window.hdApp.openCreateAssetModal()">
                 <span>+ Register Device</span>
               </button>
             </div>
           </div>
 
-          <div class="hd-card hd-panel-flush" >
+          <div class="hd-card hd-panel-flush">
             <table class="hd-table">
               <thead>
                 <tr>
-                  <th class="hd-w-140" >Asset Tag</th>
+                  <th class="hd-w-140">Asset Tag</th>
                   <th>Device Model &amp; Type</th>
                   <th>Location / Bay</th>
                   <th>IP Address &amp; MAC</th>
                   <th>Firmware</th>
                   <th>Health Status</th>
-                  <th class="hd-text-right" >Action</th>
+                  <th class="hd-text-right">Action</th>
                 </tr>
               </thead>
               <tbody>
-                <tr class="hd-table-row">
-                  <td><strong class="hd-mono-navy" >VP-GW-LIP-03</strong></td>
-                  <td>
-                    <div class="hd-font-semibold-navy" >Moxa MGate MB3170</div>
-                    <div class="hd-text-muted-11" >Modbus TCP/IP to RS-485 Gateway</div>
+                <?php if (empty($assets)): ?>
+                <tr>
+                  <td colspan="7" style="text-align: center; padding: 24px; color: var(--hd-text-muted);">
+                    No hardware assets registered in database. Click "+ Register Device" to add one.
                   </td>
-                  <td>Lipetsk Furnace #5 Bay</td>
-                  <td><code class="hd-mono-navy-11" >10.240.48.12</code></td>
-                  <td>v4.2.1-sec</td>
-                  <td><span class="priority-badge priority-critical">Degraded (14% Loss)</span></td>
-                  <td class="hd-text-right" ><a href="TicketDetail.php" class="btn btn-outline btn-sm">Triage →</a></td>
                 </tr>
-
-                <tr class="hd-table-row">
-                  <td><strong class="hd-mono-navy" >VP-BIO-FAB-02</strong></td>
-                  <td>
-                    <div class="hd-font-semibold-navy" >Suprema BioEntry W2</div>
-                    <div class="hd-text-muted-11" >Cleanroom RFID/Biometric Airlock</div>
-                  </td>
-                  <td>Nanofabrication Bay B</td>
-                  <td><code class="hd-mono-navy-11" >10.240.90.05</code></td>
-                  <td>v2.18.0</td>
-                  <td><span class="priority-badge priority-critical">Interlock Fault</span></td>
-                  <td class="hd-text-right" ><a href="TicketDetail.php" class="btn btn-outline btn-sm">Triage →</a></td>
-                </tr>
-
-                <tr class="hd-table-row">
-                  <td><strong class="hd-mono-navy" >VP-SRV-FAT-01</strong></td>
-                  <td>
-                    <div class="hd-font-semibold-navy" >Advantech MIC-7700</div>
-                    <div class="hd-text-muted-11" >Industrial Rugged Xeon Server</div>
-                  </td>
-                  <td>FAT Acceptance Bay #2</td>
-                  <td><code class="hd-mono-navy-11" >10.240.12.80</code></td>
-                  <td>Ubuntu 22.04 RT</td>
-                  <td><span class="status-pill status-in-progress">Online (Active)</span></td>
-                  <td class="hd-text-right" ><button class="btn btn-outline btn-sm" onclick="window.hdApp.showToast('Telemetry', 'Advantech MIC-7700 CPU Load: 18%, Temp: 44°C.')">Inspect</button></td>
-                </tr>
+                <?php else: ?>
+                  <?php foreach ($assets as $a): 
+                    $health = $a['health_status'] ?? 'Online';
+                    $healthClass = 'status-pill status-in-progress';
+                    if (stripos($health, 'Degraded') !== false || stripos($health, 'Fault') !== false) {
+                      $healthClass = 'priority-badge priority-critical';
+                    } elseif (stripos($health, 'Warning') !== false) {
+                      $healthClass = 'priority-badge priority-high';
+                    }
+                  ?>
+                  <tr class="hd-table-row">
+                    <td><strong class="hd-mono-navy"><?= htmlspecialchars($a['asset_tag']) ?></strong></td>
+                    <td>
+                      <div class="hd-font-semibold-navy"><?= htmlspecialchars($a['device_model'] ?: $a['asset_name']) ?></div>
+                      <div class="hd-text-muted-11"><?= htmlspecialchars($a['asset_type'] ?? 'Industrial Node') ?></div>
+                    </td>
+                    <td><?= htmlspecialchars($a['location'] ?? 'Plant Bay') ?></td>
+                    <td>
+                      <code class="hd-mono-navy-11"><?= htmlspecialchars($a['ip_address'] ?? 'DHCP') ?></code>
+                      <?php if (!empty($a['mac_address'])): ?>
+                      <div class="hd-text-muted-11" style="font-family: monospace; font-size: 10px;"><?= htmlspecialchars($a['mac_address']) ?></div>
+                      <?php endif; ?>
+                    </td>
+                    <td><?= htmlspecialchars($a['firmware_version'] ?? 'N/A') ?></td>
+                    <td><span class="<?= $healthClass ?>"><?= htmlspecialchars($health) ?></span></td>
+                    <td class="hd-text-right">
+                      <div style="display: inline-flex; gap: 6px; align-items: center;">
+                        <button class="btn btn-outline btn-sm" onclick="window.hdApp.showToast('Telemetry', 'Device <?= htmlspecialchars($a['asset_tag']) ?>: CPU 14%, Ping: 0.8ms, Memory: 32% OK.')">Inspect</button>
+                        <button class="btn-crud-edit" onclick="window.hdApp.openEditAssetModal(<?= htmlspecialchars(json_encode($a), ENT_QUOTES, 'UTF-8') ?>)" title="Edit Asset">✎</button>
+                        <button class="btn-crud-delete" onclick="window.hdApp.deleteAsset(<?= (int)$a['asset_id'] ?>, '<?= htmlspecialchars($a['asset_tag'], ENT_QUOTES) ?>')" title="Delete Asset">🗑</button>
+                      </div>
+                    </td>
+                  </tr>
+                  <?php endforeach; ?>
+                <?php endif; ?>
               </tbody>
             </table>
           </div>
         </div>
       </main>
+    </div>
+  </div>
+
+  <!-- Register Device Modal -->
+  <div id="modal-create-asset" class="hd-modal-overlay">
+    <div class="hd-modal-dialog">
+      <div class="hd-modal-header">
+        <h3 class="hd-modal-title">⚡ Register Industrial IT Asset</h3>
+        <button type="button" class="hd-modal-close" onclick="window.hdApp.closeModal('modal-create-asset')">✕</button>
+      </div>
+      <form id="form-create-asset" onsubmit="window.hdApp.submitCreateAsset(event)">
+        <div class="hd-modal-body">
+          <div class="hd-form-row">
+            <div class="hd-form-group">
+              <label class="hd-form-label">Asset Tag *</label>
+              <input type="text" name="asset_tag" class="hd-form-input" required placeholder="e.g. VP-GW-LIP-04" />
+            </div>
+            <div class="hd-form-group">
+              <label class="hd-form-label">Device Model *</label>
+              <input type="text" name="device_model" class="hd-form-input" required placeholder="e.g. Moxa MGate MB3170" />
+            </div>
+          </div>
+          <div class="hd-form-row">
+            <div class="hd-form-group">
+              <label class="hd-form-label">Asset Type *</label>
+              <input type="text" name="asset_type" class="hd-form-input" required placeholder="e.g. Modbus Gateway, Edge Server, Biometric RFID" />
+            </div>
+            <div class="hd-form-group">
+              <label class="hd-form-label">Location / Plant Bay *</label>
+              <input type="text" name="location" class="hd-form-input" required placeholder="e.g. Lipetsk Furnace #5 Bay" />
+            </div>
+          </div>
+          <div class="hd-form-row">
+            <div class="hd-form-group">
+              <label class="hd-form-label">IP Address</label>
+              <input type="text" name="ip_address" class="hd-form-input" placeholder="e.g. 10.240.48.15" />
+            </div>
+            <div class="hd-form-group">
+              <label class="hd-form-label">MAC Address</label>
+              <input type="text" name="mac_address" class="hd-form-input" placeholder="e.g. 00:90:E8:4A:2B:12" />
+            </div>
+          </div>
+          <div class="hd-form-row">
+            <div class="hd-form-group">
+              <label class="hd-form-label">Firmware Version</label>
+              <input type="text" name="firmware_version" class="hd-form-input" placeholder="e.g. v4.2.2-sec" />
+            </div>
+            <div class="hd-form-group">
+              <label class="hd-form-label">Health Status</label>
+              <select name="health_status" class="hd-form-select">
+                <option value="Online (Active)" selected>Online (Active)</option>
+                <option value="Degraded (Packet Loss)">Degraded (Packet Loss)</option>
+                <option value="Interlock Fault">Interlock Fault</option>
+                <option value="Offline">Offline</option>
+              </select>
+            </div>
+          </div>
+          <div class="hd-form-group">
+            <label class="hd-form-label">Configuration &amp; Subsystem Notes</label>
+            <textarea name="notes" class="hd-form-textarea" placeholder="Enter rack details, port assignments, and calibration history..."></textarea>
+          </div>
+        </div>
+        <div class="hd-modal-footer">
+          <button type="button" class="btn btn-outline" onclick="window.hdApp.closeModal('modal-create-asset')">Cancel</button>
+          <button type="submit" class="btn btn-primary-amber">Save Asset to DB</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Edit Asset Modal -->
+  <div id="modal-edit-asset" class="hd-modal-overlay">
+    <div class="hd-modal-dialog">
+      <div class="hd-modal-header">
+        <h3 class="hd-modal-title">✎ Edit Industrial Hardware Asset</h3>
+        <button type="button" class="hd-modal-close" onclick="window.hdApp.closeModal('modal-edit-asset')">✕</button>
+      </div>
+      <form id="form-edit-asset" onsubmit="window.hdApp.submitEditAsset(event)">
+        <input type="hidden" name="asset_id" id="edit-asset-id" />
+        <div class="hd-modal-body">
+          <div class="hd-form-row">
+            <div class="hd-form-group">
+              <label class="hd-form-label">Asset Tag *</label>
+              <input type="text" name="asset_tag" id="edit-asset-tag" class="hd-form-input" required />
+            </div>
+            <div class="hd-form-group">
+              <label class="hd-form-label">Device Model *</label>
+              <input type="text" name="device_model" id="edit-asset-model" class="hd-form-input" required />
+            </div>
+          </div>
+          <div class="hd-form-row">
+            <div class="hd-form-group">
+              <label class="hd-form-label">Asset Type</label>
+              <input type="text" name="asset_type" id="edit-asset-type" class="hd-form-input" />
+            </div>
+            <div class="hd-form-group">
+              <label class="hd-form-label">Location / Plant Bay</label>
+              <input type="text" name="location" id="edit-asset-loc" class="hd-form-input" />
+            </div>
+          </div>
+          <div class="hd-form-row">
+            <div class="hd-form-group">
+              <label class="hd-form-label">IP Address</label>
+              <input type="text" name="ip_address" id="edit-asset-ip" class="hd-form-input" />
+            </div>
+            <div class="hd-form-group">
+              <label class="hd-form-label">MAC Address</label>
+              <input type="text" name="mac_address" id="edit-asset-mac" class="hd-form-input" />
+            </div>
+          </div>
+          <div class="hd-form-row">
+            <div class="hd-form-group">
+              <label class="hd-form-label">Firmware Version</label>
+              <input type="text" name="firmware_version" id="edit-asset-fw" class="hd-form-input" />
+            </div>
+            <div class="hd-form-group">
+              <label class="hd-form-label">Health Status</label>
+              <select name="health_status" id="edit-asset-health" class="hd-form-select">
+                <option value="Online (Active)">Online (Active)</option>
+                <option value="Degraded (Packet Loss)">Degraded (Packet Loss)</option>
+                <option value="Interlock Fault">Interlock Fault</option>
+                <option value="Offline">Offline</option>
+              </select>
+            </div>
+          </div>
+          <div class="hd-form-group">
+            <label class="hd-form-label">Configuration &amp; Subsystem Notes</label>
+            <textarea name="notes" id="edit-asset-notes" class="hd-form-textarea"></textarea>
+          </div>
+        </div>
+        <div class="hd-modal-footer">
+          <button type="button" class="btn btn-outline" onclick="window.hdApp.closeModal('modal-edit-asset')">Cancel</button>
+          <button type="submit" class="btn btn-primary-amber">Save Asset Changes</button>
+        </div>
+      </form>
     </div>
   </div>
 

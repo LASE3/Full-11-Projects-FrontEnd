@@ -2,6 +2,24 @@
 require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/../includes/auth_guard.php';
 requireAuth('IT');
+require_once __DIR__ . '/api/db_helper.php';
+$pdo = getItDb();
+$currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Alexey Ivanov', 'clearance_level' => 'L2'];
+
+// Query KB articles
+$stmt = $pdo->query("SELECT * FROM knowledge_base_articles ORDER BY created_at DESC");
+$articles = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$totalArticles = count($articles);
+
+// Global Badges
+$openCountStmt = $pdo->query("SELECT COUNT(*) FROM tickets WHERE status != 'Resolved'");
+$openCount = (int)$openCountStmt->fetchColumn();
+
+$myTicketsStmt = $pdo->query("SELECT COUNT(*) FROM tickets WHERE (assigned_to LIKE '%Alexey%' OR assigned_emp_id = 'EMP-1018') AND status != 'Resolved'");
+$myTicketsCount = (int)$myTicketsStmt->fetchColumn();
+
+$assetCountStmt = $pdo->query("SELECT COUNT(*) FROM it_assets");
+$assetCount = (int)$assetCountStmt->fetchColumn();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -32,7 +50,7 @@ requireAuth('IT');
               <div class="brand-subline">
                 <span class="status-dot-pulse"></span>
                 <span>helpdesk.vostokpribor.local</span>
-                <span class="hd-opacity-50" >|</span>
+                <span class="hd-opacity-50">|</span>
                 <span>SUPPORT OPERATIONS</span>
               </div>
             </div>
@@ -48,8 +66,8 @@ requireAuth('IT');
         </div>
 
         <div class="top-nav__actions">
-          <div class="pipeline-sync-badge hd-badge-telemetry" >
-            <span class="hd-status-success" >●</span>
+          <div class="pipeline-sync-badge hd-badge-telemetry">
+            <span class="hd-status-success">●</span>
             <span>SLA: <strong>98.4% Compliant</strong></span>
           </div>
           <button class="icon-button" title="Incident Telemetry Notifications" onclick="window.hdApp.showToast('Critical Alert', 'SCADA Gateway Node #3 packet loss detected in Lipetsk Bay.', 'critical')">
@@ -59,22 +77,22 @@ requireAuth('IT');
             </svg>
             <span class="badge-dot"></span>
           </button>
-          <div class="top-user-profile" onclick="window.hdApp.showToast('Active Tech Session', 'Alexey Ivanov · Tier 3 IT Operations Engineer')">
+          <div class="top-user-profile" onclick="window.hdApp.showToast('Active Tech Session', '<?= htmlspecialchars($currUser['full_name']) ?> · Lead IT Engineer')">
             <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDoVYMImYMOrFG-GImEjxCUij3YIwCjbxiUVg9-84NgNQUnx44rwhCbh4EVKLngwn6R5_hzNhRQkfTglEUz1jtP83GRGR8WbDdiIQblwg1fLV0mqc04y19GGKO27NGBpanqADz4vwO3ANY9KcZiOXBusZHAE_PU_FuuwKqChSLXXJsGo289bHOL3MFrKWoXXMoxnqoUIglg-NYsM99jg8cA3e1CeWhqlY0x7isLHdQfGbcFE_XiNNJg" alt="Alexey Ivanov" class="user-avatar-top" />
             <div class="user-details-top">
-              <span class="user-name-top">Alexey Ivanov</span>
+              <span class="user-name-top"><?= htmlspecialchars($currUser['full_name']) ?></span>
               <span class="user-role-top">Lead IT Tech · Tier 3</span>
             </div>
           </div>
         </div>
 
         <!-- Top Bar Sign Out -->
-        <a href="../api/logout.php?system=IT%20Helpdesk&redirect=../IT%20Helpdesk/login.php" class="top-signout-btn" title="Sign Out of IT Helpdesk" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" ><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
+        <a href="../api/logout.php?system=IT%20Helpdesk&redirect=../IT%20Helpdesk/login.php" class="top-signout-btn" title="Sign Out of IT Helpdesk" onclick="(function(){sessionStorage.clear();localStorage.clear();})()"><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
       </div>
     </header>
 
     <div class="main-layout">
-            <aside class="sidebar">
+      <aside class="sidebar">
         <div>
           <div class="sidebar-section-title">IT Support Operations</div>
           <nav class="sidebar-nav">
@@ -99,7 +117,7 @@ requireAuth('IT');
                   </svg></span>
                 <span>Ticket Queue</span>
               </div>
-              <span class="sidebar-badge badge-orange">34</span>
+              <span class="sidebar-badge badge-orange"><?= $openCount ?></span>
             </a>
             <a href="MyTickets.php" class="sidebar-nav-item">
               <div class="sidebar-item-left">
@@ -109,7 +127,7 @@ requireAuth('IT');
                   </svg></span>
                 <span>My Tickets</span>
               </div>
-              <span class="sidebar-badge badge-red">8</span>
+              <span class="sidebar-badge badge-red"><?= $myTicketsCount ?></span>
             </a>
             <a href="KnowledgeBase.php" class="sidebar-nav-item active">
               <div class="sidebar-item-left">
@@ -119,7 +137,7 @@ requireAuth('IT');
                   </svg></span>
                 <span>Knowledge Base</span>
               </div>
-              <span class="sidebar-badge">142</span>
+              <span class="sidebar-badge"><?= $totalArticles ?></span>
             </a>
             <a href="AssetManagement.php" class="sidebar-nav-item">
               <div class="sidebar-item-left">
@@ -131,7 +149,7 @@ requireAuth('IT');
                   </svg></span>
                 <span>Asset Management</span>
               </div>
-              <span class="sidebar-badge">1,820</span>
+              <span class="sidebar-badge"><?= $assetCount ?></span>
             </a>
             <a href="SLAReports.php" class="sidebar-nav-item">
               <div class="sidebar-item-left">
@@ -146,8 +164,8 @@ requireAuth('IT');
           </nav>
         </div>
 
-        <div class="sidebar-section-title hd-mt-4" >Unified Ecosystem</div>
-        <nav class="sidebar-nav hd-mb-2" >
+        <div class="sidebar-section-title hd-mt-4">Unified Ecosystem</div>
+        <nav class="sidebar-nav hd-mb-2">
           <a href="../VOSTOKPRIBOR Corporate Web Platform/index.php" class="sidebar-nav-item">
             <div class="sidebar-item-left">
               <span class="sidebar-icon">
@@ -159,7 +177,7 @@ requireAuth('IT');
               </span>
               <span>Corporate Platform</span>
             </div>
-            <span class="sidebar-badge hd-text-xs" >SYS 01</span>
+            <span class="sidebar-badge hd-text-xs">SYS 01</span>
           </a>
           <a href="../Employee Intranet/index.php" class="sidebar-nav-item">
             <div class="sidebar-item-left">
@@ -173,19 +191,18 @@ requireAuth('IT');
               </span>
               <span>Employee Intranet</span>
             </div>
-            <span class="sidebar-badge hd-text-xs" >SYS 04</span>
+            <span class="sidebar-badge hd-text-xs">SYS 04</span>
           </a>
         </nav>
-        <!-- Log Out -->
 
         <div class="sidebar-footer">
           <div class="security-widget-card">
             <div class="security-widget-header">
-              <span>Incident Response Gateway</span>
+              <span>SOP Knowledge Library</span>
               <span class="security-badge-status">● LIVE</span>
             </div>
-            <div class="hd-text-inverse-muted-sm" >
-              Active Escalations: <strong>3 P1 Incidents</strong>
+            <div class="hd-text-inverse-muted-sm">
+              Standard Runbooks: <strong><?= $totalArticles ?> Articles</strong>
             </div>
           </div>
         </div>
@@ -204,58 +221,172 @@ requireAuth('IT');
                 <span class="breadcrumb-current">Standard Operating Procedures</span>
               </div>
               <h1 class="page-title">Technical Knowledge Base &amp; Field Runbooks</h1>
-              <p class="page-subtitle">142 verified technical articles, PLC debugging guides, cleanroom protocols, and hardware pinouts</p>
+              <p class="page-subtitle"><?= $totalArticles ?> verified technical articles, PLC debugging guides, cleanroom protocols, and hardware pinouts</p>
             </div>
             <div class="page-header-actions">
-              <button class="btn btn-outline" onclick="window.hdApp.showToast('KB Editor', 'Authoring new standard operating procedure.')">
+              <button class="btn btn-primary-amber" onclick="window.hdApp.openCreateKbModal()">
                 <span>+ Create Article</span>
               </button>
             </div>
           </div>
 
-          <!-- Knowledge Cards Grid -->
-          <div class="hd-grid-kb" >
-            <!-- Article 1 -->
-            <div class="hd-card hd-card-kb-orange"  onclick="window.hdApp.showToast('Article Opened', 'KB-4091: SCADA Modbus RS-485 Optical Isolation SOP.')">
-              <div class="hd-kb-cat-orange" >KB-4091 · SCADA NETWORKING</div>
-              <h3 class="hd-kb-title" >RS-485 Modbus Serial EMI Troubleshooting</h3>
-              <p class="hd-kb-desc" >
-                Step-by-step failover procedure for Moxa MB3170 gateways when induction furnace interference degrades copper bus signal-to-noise ratio.
-              </p>
-              <div class="hd-kb-footer-meta" >
-                <span>Updated 3 days ago</span>
-                <span class="hd-font-semibold-navy" >Read Runbook →</span>
-              </div>
+          <!-- Knowledge Cards Grid (Dynamic from DB) -->
+          <div class="hd-grid-kb">
+            <?php if (empty($articles)): ?>
+            <div style="grid-column: 1 / -1; padding: 32px; text-align: center; color: var(--hd-text-muted); background: var(--hd-navy-surface); border-radius: 8px;">
+              No knowledge base articles found. Click "+ Create Article" to add one.
             </div>
-
-            <!-- Article 2 -->
-            <div class="hd-card hd-card-kb-steel"  onclick="window.hdApp.showToast('Article Opened', 'KB-3184: Cleanroom Airlock Interlock Recovery.')">
-              <div class="hd-kb-cat-steel" >KB-3184 · ACCESS CONTROL</div>
-              <h3 class="hd-kb-title" >Cleanroom ISO Class 4 Airlock Interlock Recovery</h3>
-              <p class="hd-kb-desc" >
-                Emergency bypass protocols, RFID reader recalibration, and pressure differential sensor zeroing for cleanroom bays A through D.
-              </p>
-              <div class="hd-kb-footer-meta" >
-                <span>Updated 1 week ago</span>
-                <span class="hd-font-semibold-navy" >Read Runbook →</span>
+            <?php else: ?>
+              <?php foreach ($articles as $index => $art): 
+                $cardStyles = ['hd-card-kb-orange', 'hd-card-kb-steel', 'hd-card-kb-success'];
+                $catStyles = ['hd-kb-cat-orange', 'hd-kb-cat-steel', 'hd-kb-cat-success'];
+                $styleIdx = $index % 3;
+                $cardClass = $cardStyles[$styleIdx];
+                $catClass = $catStyles[$styleIdx];
+              ?>
+              <div class="hd-card <?= $cardClass ?>" style="display: flex; flex-direction: column; justify-content: space-between;">
+                <div>
+                  <div class="<?= $catClass ?>">
+                    <?= htmlspecialchars($art['article_code']) ?> · <?= strtoupper(htmlspecialchars($art['category'])) ?>
+                  </div>
+                  <h3 class="hd-kb-title" style="margin-top: 6px;"><?= htmlspecialchars($art['title']) ?></h3>
+                  <p class="hd-kb-desc">
+                    <?= htmlspecialchars($art['summary'] ?: substr($art['content'], 0, 160) . '...') ?>
+                  </p>
+                </div>
+                <div>
+                  <?php if (!empty($art['tags'])): ?>
+                  <div style="margin-bottom: 12px; display: flex; gap: 4px; flex-wrap: wrap;">
+                    <?php foreach (explode(',', $art['tags']) as $tag): ?>
+                      <span style="font-size: 10px; background: rgba(255,255,255,0.06); padding: 2px 6px; border-radius: 4px; color: var(--hd-text-muted);"><?= htmlspecialchars(trim($tag)) ?></span>
+                    <?php endforeach; ?>
+                  </div>
+                  <?php endif; ?>
+                  <div class="hd-kb-footer-meta" style="padding-top: 10px; border-top: 1px solid var(--hd-navy-border); display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-size: 11px; color: var(--hd-text-muted);">Views: <?= (int)$art['views_count'] ?></span>
+                    <div style="display: flex; gap: 6px; align-items: center;">
+                      <button class="btn btn-outline btn-sm" onclick="window.hdApp.viewKbArticle(<?= htmlspecialchars(json_encode($art), ENT_QUOTES, 'UTF-8') ?>)">Read SOP →</button>
+                      <button class="btn-crud-edit" onclick="window.hdApp.openEditKbModal(<?= htmlspecialchars(json_encode($art), ENT_QUOTES, 'UTF-8') ?>)" title="Edit Article">✎</button>
+                      <button class="btn-crud-delete" onclick="window.hdApp.deleteKbArticle(<?= (int)$art['article_id'] ?>, '<?= htmlspecialchars($art['article_code'], ENT_QUOTES) ?>')" title="Delete Article">🗑</button>
+                    </div>
+                  </div>
+                </div>
               </div>
-            </div>
-
-            <!-- Article 3 -->
-            <div class="hd-card hd-card-kb-success"  onclick="window.hdApp.showToast('Article Opened', 'KB-2015: ISO 9001 PKI Certificate Renewal.')">
-              <div class="hd-kb-cat-success" >KB-2015 · PKI INFRASTRUCTURE</div>
-              <h3 class="hd-kb-title" >Hardware Security Module (HSM) Token Renewal</h3>
-              <p class="hd-kb-desc" >
-                Cryptographic key issuance and CSR generation for automated test sign-off compliant with GOST R 34.12-2015 algorithms.
-              </p>
-              <div class="hd-kb-footer-meta" >
-                <span>Updated 2 weeks ago</span>
-                <span class="hd-font-semibold-navy" >Read Runbook →</span>
-              </div>
-            </div>
+              <?php endforeach; ?>
+            <?php endif; ?>
           </div>
         </div>
       </main>
+    </div>
+  </div>
+
+  <!-- Create Article Modal -->
+  <div id="modal-create-kb" class="hd-modal-overlay">
+    <div class="hd-modal-dialog">
+      <div class="hd-modal-header">
+        <h3 class="hd-modal-title">⚡ Author New SOP Runbook</h3>
+        <button type="button" class="hd-modal-close" onclick="window.hdApp.closeModal('modal-create-kb')">✕</button>
+      </div>
+      <form id="form-create-kb" onsubmit="window.hdApp.submitCreateKb(event)">
+        <div class="hd-modal-body">
+          <div class="hd-form-row">
+            <div class="hd-form-group">
+              <label class="hd-form-label">Article Code</label>
+              <input type="text" name="article_code" class="hd-form-input" placeholder="e.g. KB-5020 (auto-generated if blank)" />
+            </div>
+            <div class="hd-form-group">
+              <label class="hd-form-label">Category *</label>
+              <input type="text" name="category" class="hd-form-input" required placeholder="e.g. SCADA NETWORKING, ACCESS CONTROL, PKI" />
+            </div>
+          </div>
+          <div class="hd-form-group">
+            <label class="hd-form-label">Title *</label>
+            <input type="text" name="title" class="hd-form-input" required placeholder="e.g. Moxa MB3170 RS-485 Termination Resistor Balancing" />
+          </div>
+          <div class="hd-form-group">
+            <label class="hd-form-label">Executive Summary</label>
+            <input type="text" name="summary" class="hd-form-input" placeholder="Brief summary of symptoms, failure mode, and resolution step..." />
+          </div>
+          <div class="hd-form-group">
+            <label class="hd-form-label">Full SOP Runbook Content *</label>
+            <textarea name="content" class="hd-form-textarea" rows="6" required placeholder="Enter numbered step-by-step remediation procedures, jumper settings, and verify commands..."></textarea>
+          </div>
+          <div class="hd-form-group">
+            <label class="hd-form-label">Tags (comma-separated)</label>
+            <input type="text" name="tags" class="hd-form-input" placeholder="e.g. SCADA, RS485, Moxa, Hardware" />
+          </div>
+        </div>
+        <div class="hd-modal-footer">
+          <button type="button" class="btn btn-outline" onclick="window.hdApp.closeModal('modal-create-kb')">Cancel</button>
+          <button type="submit" class="btn btn-primary-amber">Publish Runbook to DB</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Edit Article Modal -->
+  <div id="modal-edit-kb" class="hd-modal-overlay">
+    <div class="hd-modal-dialog">
+      <div class="hd-modal-header">
+        <h3 class="hd-modal-title">✎ Edit Knowledge Base SOP</h3>
+        <button type="button" class="hd-modal-close" onclick="window.hdApp.closeModal('modal-edit-kb')">✕</button>
+      </div>
+      <form id="form-edit-kb" onsubmit="window.hdApp.submitEditKb(event)">
+        <input type="hidden" name="article_id" id="edit-kb-id" />
+        <div class="hd-modal-body">
+          <div class="hd-form-row">
+            <div class="hd-form-group">
+              <label class="hd-form-label">Article Code *</label>
+              <input type="text" name="article_code" id="edit-kb-code" class="hd-form-input" required />
+            </div>
+            <div class="hd-form-group">
+              <label class="hd-form-label">Category *</label>
+              <input type="text" name="category" id="edit-kb-cat" class="hd-form-input" required />
+            </div>
+          </div>
+          <div class="hd-form-group">
+            <label class="hd-form-label">Title *</label>
+            <input type="text" name="title" id="edit-kb-title" class="hd-form-input" required />
+          </div>
+          <div class="hd-form-group">
+            <label class="hd-form-label">Executive Summary</label>
+            <input type="text" name="summary" id="edit-kb-summary" class="hd-form-input" />
+          </div>
+          <div class="hd-form-group">
+            <label class="hd-form-label">Full SOP Runbook Content *</label>
+            <textarea name="content" id="edit-kb-content" class="hd-form-textarea" rows="6" required></textarea>
+          </div>
+          <div class="hd-form-group">
+            <label class="hd-form-label">Tags</label>
+            <input type="text" name="tags" id="edit-kb-tags" class="hd-form-input" />
+          </div>
+        </div>
+        <div class="hd-modal-footer">
+          <button type="button" class="btn btn-outline" onclick="window.hdApp.closeModal('modal-edit-kb')">Cancel</button>
+          <button type="submit" class="btn btn-primary-amber">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Read SOP Runbook Modal -->
+  <div id="modal-view-kb" class="hd-modal-overlay">
+    <div class="hd-modal-dialog" style="max-width: 680px;">
+      <div class="hd-modal-header">
+        <div>
+          <span id="view-kb-code" style="font-size: 11px; font-weight: 700; color: var(--hd-accent); letter-spacing: 0.5px;"></span>
+          <h3 id="view-kb-title" class="hd-modal-title" style="margin-top: 4px;"></h3>
+        </div>
+        <button type="button" class="hd-modal-close" onclick="window.hdApp.closeModal('modal-view-kb')">✕</button>
+      </div>
+      <div class="hd-modal-body">
+        <div id="view-kb-summary" style="font-style: italic; color: var(--hd-text-muted); margin-bottom: 16px; padding: 12px; background: rgba(0,0,0,0.2); border-left: 3px solid var(--hd-accent); border-radius: 4px;"></div>
+        <div style="font-weight: 700; font-size: 13px; color: #fff; margin-bottom: 8px;">Runbook Procedure &amp; Technical Steps:</div>
+        <pre id="view-kb-content" style="white-space: pre-wrap; font-family: monospace; font-size: 12.5px; background: #071524; padding: 16px; border-radius: 6px; border: 1px solid var(--hd-navy-border); color: #E0E8F0; line-height: 1.6;"></pre>
+      </div>
+      <div class="hd-modal-footer">
+        <button type="button" class="btn btn-primary-amber" onclick="window.hdApp.closeModal('modal-view-kb')">Close Runbook</button>
+      </div>
     </div>
   </div>
 

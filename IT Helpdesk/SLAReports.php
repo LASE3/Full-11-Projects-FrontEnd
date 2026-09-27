@@ -2,6 +2,40 @@
 require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/../includes/auth_guard.php';
 requireAuth('IT');
+require_once __DIR__ . '/api/db_helper.php';
+$pdo = getItDb();
+$currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Alexey Ivanov', 'clearance_level' => 'L2'];
+
+// Dynamic calculations
+$totalStmt = $pdo->query("SELECT COUNT(*) FROM tickets");
+$totalTickets = (int)$totalStmt->fetchColumn();
+
+$critStmt = $pdo->query("SELECT COUNT(*) FROM tickets WHERE priority = 'Critical'");
+$critCount = (int)$critStmt->fetchColumn();
+
+$resolvedStmt = $pdo->query("SELECT COUNT(*) FROM tickets WHERE status = 'Resolved'");
+$resolvedCount = (int)$resolvedStmt->fetchColumn();
+
+$withinSlaStmt = $pdo->query("SELECT COUNT(*) FROM tickets WHERE sla_status = 'Within SLA' OR sla_status IS NULL");
+$withinSlaCount = (int)$withinSlaStmt->fetchColumn();
+$slaPct = $totalTickets > 0 ? round(($withinSlaCount / $totalTickets) * 100, 1) : 98.4;
+
+// SLA Policies
+$slaStmt = $pdo->query("SELECT * FROM sla_policies ORDER BY FIELD(priority_level, 'Critical', 'High', 'Medium', 'Low')");
+$policies = $slaStmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Global Badges
+$openCountStmt = $pdo->query("SELECT COUNT(*) FROM tickets WHERE status != 'Resolved'");
+$openCount = (int)$openCountStmt->fetchColumn();
+
+$myTicketsStmt = $pdo->query("SELECT COUNT(*) FROM tickets WHERE (assigned_to LIKE '%Alexey%' OR assigned_emp_id = 'EMP-1018') AND status != 'Resolved'");
+$myTicketsCount = (int)$myTicketsStmt->fetchColumn();
+
+$assetCountStmt = $pdo->query("SELECT COUNT(*) FROM it_assets");
+$assetCount = (int)$assetCountStmt->fetchColumn();
+
+$kbCountStmt = $pdo->query("SELECT COUNT(*) FROM knowledge_base_articles");
+$kbCount = (int)$kbCountStmt->fetchColumn();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -32,7 +66,7 @@ requireAuth('IT');
               <div class="brand-subline">
                 <span class="status-dot-pulse"></span>
                 <span>helpdesk.vostokpribor.local</span>
-                <span class="hd-opacity-50" >|</span>
+                <span class="hd-opacity-50">|</span>
                 <span>SUPPORT OPERATIONS</span>
               </div>
             </div>
@@ -48,9 +82,9 @@ requireAuth('IT');
         </div>
 
         <div class="top-nav__actions">
-          <div class="pipeline-sync-badge hd-badge-telemetry" >
-            <span class="hd-status-success" >●</span>
-            <span>SLA: <strong>98.4% Compliant</strong></span>
+          <div class="pipeline-sync-badge hd-badge-telemetry">
+            <span class="hd-status-success">●</span>
+            <span>SLA: <strong><?= $slaPct ?>% Compliant</strong></span>
           </div>
           <button class="icon-button" title="Incident Telemetry Notifications" onclick="window.hdApp.showToast('Critical Alert', 'SCADA Gateway Node #3 packet loss detected in Lipetsk Bay.', 'critical')">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -59,22 +93,22 @@ requireAuth('IT');
             </svg>
             <span class="badge-dot"></span>
           </button>
-          <div class="top-user-profile" onclick="window.hdApp.showToast('Active Tech Session', 'Alexey Ivanov · Tier 3 IT Operations Engineer')">
+          <div class="top-user-profile" onclick="window.hdApp.showToast('Active Tech Session', '<?= htmlspecialchars($currUser['full_name']) ?> · Lead IT Engineer')">
             <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDoVYMImYMOrFG-GImEjxCUij3YIwCjbxiUVg9-84NgNQUnx44rwhCbh4EVKLngwn6R5_hzNhRQkfTglEUz1jtP83GRGR8WbDdiIQblwg1fLV0mqc04y19GGKO27NGBpanqADz4vwO3ANY9KcZiOXBusZHAE_PU_FuuwKqChSLXXJsGo289bHOL3MFrKWoXXMoxnqoUIglg-NYsM99jg8cA3e1CeWhqlY0x7isLHdQfGbcFE_XiNNJg" alt="Alexey Ivanov" class="user-avatar-top" />
             <div class="user-details-top">
-              <span class="user-name-top">Alexey Ivanov</span>
+              <span class="user-name-top"><?= htmlspecialchars($currUser['full_name']) ?></span>
               <span class="user-role-top">Lead IT Tech · Tier 3</span>
             </div>
           </div>
         </div>
 
         <!-- Top Bar Sign Out -->
-        <a href="../api/logout.php?system=IT%20Helpdesk&redirect=../IT%20Helpdesk/login.php" class="top-signout-btn" title="Sign Out of IT Helpdesk" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" ><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
+        <a href="../api/logout.php?system=IT%20Helpdesk&redirect=../IT%20Helpdesk/login.php" class="top-signout-btn" title="Sign Out of IT Helpdesk" onclick="(function(){sessionStorage.clear();localStorage.clear();})()"><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
       </div>
     </header>
 
     <div class="main-layout">
-            <aside class="sidebar">
+      <aside class="sidebar">
         <div>
           <div class="sidebar-section-title">IT Support Operations</div>
           <nav class="sidebar-nav">
@@ -99,7 +133,7 @@ requireAuth('IT');
                   </svg></span>
                 <span>Ticket Queue</span>
               </div>
-              <span class="sidebar-badge badge-orange">34</span>
+              <span class="sidebar-badge badge-orange"><?= $openCount ?></span>
             </a>
             <a href="MyTickets.php" class="sidebar-nav-item">
               <div class="sidebar-item-left">
@@ -109,7 +143,7 @@ requireAuth('IT');
                   </svg></span>
                 <span>My Tickets</span>
               </div>
-              <span class="sidebar-badge badge-red">8</span>
+              <span class="sidebar-badge badge-red"><?= $myTicketsCount ?></span>
             </a>
             <a href="KnowledgeBase.php" class="sidebar-nav-item">
               <div class="sidebar-item-left">
@@ -119,7 +153,7 @@ requireAuth('IT');
                   </svg></span>
                 <span>Knowledge Base</span>
               </div>
-              <span class="sidebar-badge">142</span>
+              <span class="sidebar-badge"><?= $kbCount ?></span>
             </a>
             <a href="AssetManagement.php" class="sidebar-nav-item">
               <div class="sidebar-item-left">
@@ -131,7 +165,7 @@ requireAuth('IT');
                   </svg></span>
                 <span>Asset Management</span>
               </div>
-              <span class="sidebar-badge">1,820</span>
+              <span class="sidebar-badge"><?= $assetCount ?></span>
             </a>
             <a href="SLAReports.php" class="sidebar-nav-item active">
               <div class="sidebar-item-left">
@@ -141,13 +175,13 @@ requireAuth('IT');
                   </svg></span>
                 <span>SLA Reports</span>
               </div>
-              <span class="sidebar-badge badge-green">98.4%</span>
+              <span class="sidebar-badge badge-green"><?= $slaPct ?>%</span>
             </a>
           </nav>
         </div>
 
-        <div class="sidebar-section-title hd-mt-4" >Unified Ecosystem</div>
-        <nav class="sidebar-nav hd-mb-2" >
+        <div class="sidebar-section-title hd-mt-4">Unified Ecosystem</div>
+        <nav class="sidebar-nav hd-mb-2">
           <a href="../VOSTOKPRIBOR Corporate Web Platform/index.php" class="sidebar-nav-item">
             <div class="sidebar-item-left">
               <span class="sidebar-icon">
@@ -159,7 +193,7 @@ requireAuth('IT');
               </span>
               <span>Corporate Platform</span>
             </div>
-            <span class="sidebar-badge hd-text-xs" >SYS 01</span>
+            <span class="sidebar-badge hd-text-xs">SYS 01</span>
           </a>
           <a href="../Employee Intranet/index.php" class="sidebar-nav-item">
             <div class="sidebar-item-left">
@@ -173,19 +207,18 @@ requireAuth('IT');
               </span>
               <span>Employee Intranet</span>
             </div>
-            <span class="sidebar-badge hd-text-xs" >SYS 04</span>
+            <span class="sidebar-badge hd-text-xs">SYS 04</span>
           </a>
         </nav>
-        <!-- Log Out -->
 
         <div class="sidebar-footer">
           <div class="security-widget-card">
             <div class="security-widget-header">
-              <span>Incident Response Gateway</span>
+              <span>SLA Target Engine</span>
               <span class="security-badge-status">● LIVE</span>
             </div>
-            <div class="hd-text-inverse-muted-sm" >
-              Active Escalations: <strong>3 P1 Incidents</strong>
+            <div class="hd-text-inverse-muted-sm">
+              SLA Standard: <strong>GOST R 9001:2015</strong>
             </div>
           </div>
         </div>
@@ -213,19 +246,19 @@ requireAuth('IT');
             </div>
           </div>
 
-          <!-- KPI Summary -->
+          <!-- KPI Summary (Dynamic from DB) -->
           <div class="kpi-grid">
             <div class="hd-card kpi-card">
               <div class="kpi-header">
-                <span>Total Monthly Incidents</span>
+                <span>Total Live Incidents</span>
                 <div class="kpi-icon-pill orange">📊</div>
               </div>
               <div class="kpi-value-row">
-                <span class="kpi-value">286</span>
+                <span class="kpi-value"><?= $totalTickets ?></span>
               </div>
               <div class="kpi-footer">
-                <span>August Operations</span>
-                <span class="kpi-trend up">▲ 98.4% On Time</span>
+                <span>Database Tracked</span>
+                <span class="kpi-trend up">▲ <?= $slaPct ?>% On Time</span>
               </div>
             </div>
 
@@ -235,7 +268,7 @@ requireAuth('IT');
                 <div class="kpi-icon-pill red">⏱️</div>
               </div>
               <div class="kpi-value-row">
-                <span class="kpi-value hd-text-critical" >42 min</span>
+                <span class="kpi-value hd-text-critical">42 min</span>
               </div>
               <div class="kpi-footer">
                 <span>Target &lt; 120 min</span>
@@ -245,15 +278,15 @@ requireAuth('IT');
 
             <div class="hd-card kpi-card">
               <div class="kpi-header">
-                <span>First Contact Resolution</span>
+                <span>SLA Compliance Rate</span>
                 <div class="kpi-icon-pill green">✓</div>
               </div>
               <div class="kpi-value-row">
-                <span class="kpi-value hd-text-success" >82.6%</span>
+                <span class="kpi-value hd-text-success"><?= $slaPct ?>%</span>
               </div>
               <div class="kpi-footer">
-                <span>236 Resolved in Tier 1/2</span>
-                <span class="kpi-trend up">▲ +4.2% MoM</span>
+                <span><?= $withinSlaCount ?> Met SLA Baseline</span>
+                <span class="kpi-trend up">Optimal</span>
               </div>
             </div>
 
@@ -271,8 +304,106 @@ requireAuth('IT');
               </div>
             </div>
           </div>
+
+          <!-- SLA Policies Configuration Table (Dynamic from DB) -->
+          <div class="hd-card hd-panel-flush" style="margin-top: 24px;">
+            <div class="hd-table-header-flex">
+              <div>
+                <div class="hd-title-13-navy">Configured Incident SLA Policies &amp; Escalation Thresholds</div>
+                <div class="hd-text-muted-11" style="margin-top: 2px;">Target horizons governed by VOSTOKPRIBOR Plant Operational SOP-04</div>
+              </div>
+            </div>
+
+            <table class="hd-table">
+              <thead>
+                <tr>
+                  <th class="hd-w-120">Priority Tier</th>
+                  <th>First Response Target</th>
+                  <th>Resolution Target</th>
+                  <th>Escalation Threshold</th>
+                  <th>Policy Description &amp; Scope</th>
+                  <th class="hd-text-right">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <?php if (empty($policies)): ?>
+                <tr>
+                  <td colspan="6" style="text-align: center; padding: 24px; color: var(--hd-text-muted);">
+                    No SLA policies configured in database.
+                  </td>
+                </tr>
+                <?php else: ?>
+                  <?php foreach ($policies as $p): 
+                    $prioClass = 'priority-critical';
+                    if ($p['priority_level'] === 'High') $prioClass = 'priority-high';
+                    if ($p['priority_level'] === 'Medium') $prioClass = 'priority-medium';
+                    if ($p['priority_level'] === 'Low') $prioClass = 'priority-low';
+                  ?>
+                  <tr class="hd-table-row">
+                    <td><span class="priority-badge <?= $prioClass ?>"><?= strtoupper(htmlspecialchars($p['priority_level'])) ?></span></td>
+                    <td><strong><?= (int)$p['first_response_time_minutes'] ?> mins</strong></td>
+                    <td>
+                      <strong>
+                        <?php 
+                          $res = (int)$p['resolution_time_minutes'];
+                          echo $res >= 60 ? round($res / 60, 1) . ' hours (' . $res . 'm)' : $res . ' mins';
+                        ?>
+                      </strong>
+                    </td>
+                    <td><span class="hd-mono-orange-sm"><?= (int)$p['escalation_threshold_minutes'] ?> mins</span></td>
+                    <td><?= htmlspecialchars($p['description'] ?? 'Standard tier SLA policy') ?></td>
+                    <td class="hd-text-right">
+                      <button class="btn btn-outline btn-sm" onclick="window.hdApp.openEditSlaModal(<?= htmlspecialchars(json_encode($p), ENT_QUOTES, 'UTF-8') ?>)">Edit Policy</button>
+                    </td>
+                  </tr>
+                  <?php endforeach; ?>
+                <?php endif; ?>
+              </tbody>
+            </table>
+          </div>
         </div>
       </main>
+    </div>
+  </div>
+
+  <!-- Edit SLA Policy Modal -->
+  <div id="modal-edit-sla" class="hd-modal-overlay">
+    <div class="hd-modal-dialog">
+      <div class="hd-modal-header">
+        <h3 class="hd-modal-title">✎ Configure SLA Policy Horizons</h3>
+        <button type="button" class="hd-modal-close" onclick="window.hdApp.closeModal('modal-edit-sla')">✕</button>
+      </div>
+      <form id="form-edit-sla" onsubmit="window.hdApp.submitEditSla(event)">
+        <input type="hidden" name="policy_id" id="edit-sla-id" />
+        <div class="hd-modal-body">
+          <div class="hd-form-group">
+            <label class="hd-form-label">Priority Tier</label>
+            <input type="text" name="priority_level" id="edit-sla-prio" class="hd-form-input" readonly style="background: rgba(0,0,0,0.2);" />
+          </div>
+          <div class="hd-form-row">
+            <div class="hd-form-group">
+              <label class="hd-form-label">First Response Target (Minutes) *</label>
+              <input type="number" name="first_response_time_minutes" id="edit-sla-resp" class="hd-form-input" required min="1" />
+            </div>
+            <div class="hd-form-group">
+              <label class="hd-form-label">Resolution Target (Minutes) *</label>
+              <input type="number" name="resolution_time_minutes" id="edit-sla-resol" class="hd-form-input" required min="5" />
+            </div>
+          </div>
+          <div class="hd-form-group">
+            <label class="hd-form-label">Escalation Threshold (Minutes) *</label>
+            <input type="number" name="escalation_threshold_minutes" id="edit-sla-escl" class="hd-form-input" required min="1" />
+          </div>
+          <div class="hd-form-group">
+            <label class="hd-form-label">Policy Description &amp; Scope</label>
+            <textarea name="description" id="edit-sla-desc" class="hd-form-textarea"></textarea>
+          </div>
+        </div>
+        <div class="hd-modal-footer">
+          <button type="button" class="btn btn-outline" onclick="window.hdApp.closeModal('modal-edit-sla')">Cancel</button>
+          <button type="submit" class="btn btn-primary-amber">Save SLA Policy</button>
+        </div>
+      </form>
     </div>
   </div>
 

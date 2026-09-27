@@ -151,25 +151,40 @@
       execBtn.innerHTML =
         '<span class="material-symbols-outlined text-[24px] animate-spin">sync</span><span>TRANSMITTING MERKLE OVERRIDE INVOCATION...</span>';
 
-      setTimeout(() => {
+      setTimeout(async () => {
         execBtn.className =
           "w-full h-12 bg-secondary text-on-secondary font-title-sm text-title-sm font-bold tracking-wider flex items-center justify-center gap-space-sm";
         execBtn.innerHTML =
           '<span class="material-symbols-outlined text-[24px]">task_alt</span><span>OVERRIDE ACTIVE // SUPERUSER SHELL OPENED</span>';
+
+        try {
+          await fetch("api/audit.php?action=notarize_stamp", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              action: "BREAK_GLASS_OVERRIDE_EXECUTED",
+              system_id: "SYS-11",
+              reason: "Break-Glass Protocol Invoked with 2/2 Quorum",
+              actor_emp_id: "EMP-1005",
+            }),
+          });
+        } catch (e) {
+          console.warn("Audit notary err:", e);
+        }
 
         const hsmConsole = document.getElementById("hsmConsole");
         if (hsmConsole) {
           const log1 = document.createElement("div");
           log1.className = "text-error font-bold";
           log1.textContent =
-            "[09:43:00] MERKLE-BROADCAST: Autonomous override daemon dispatched across selected nodes!";
+            "[09:43:00] MERKLE-BROADCAST: Autonomous override daemon dispatched and sealed in database!";
           hsmConsole.appendChild(log1);
           hsmConsole.scrollTop = hsmConsole.scrollHeight;
         }
 
-        window.showToast(
+        window.showToast?.(
           "BREAK-GLASS ENGAGED",
-          "Lease active (30m). Superuser telemetry session logged to Astana Audit Escrow.",
+          "Lease active (30m). Superuser telemetry session logged to Database Audit Ledger.",
           "success",
           "lock_open",
         );

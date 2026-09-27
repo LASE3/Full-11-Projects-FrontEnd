@@ -1712,5 +1712,178 @@ body.sidebar-open .sidebar-backdrop {
 .hd-mono { font-family: var(--hd-font-mono, monospace); }
 .ticket-table-body tr { transition: background-color 0.15s ease; }
 
+/* ==========================================================================
+   Universal Modal & CRUD System for IT Helpdesk
+   ========================================================================== */
+.hd-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 25, 38, 0.75);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  z-index: 2500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.25s ease, visibility 0.25s ease;
+}
+
+.hd-modal-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.hd-modal-dialog {
+  background: #ffffff;
+  border-radius: var(--hd-radius-md, 8px);
+  box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+  border: 1px solid var(--hd-surface-border, #e2e8f0);
+  width: 92%;
+  max-width: 600px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: hdModalPop 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes hdModalPop {
+  from { transform: scale(0.95) translateY(10px); opacity: 0; }
+  to { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+.hd-modal-header {
+  padding: 1rem 1.25rem;
+  background: #0f2438;
+  color: #ffffff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid var(--hd-orange, #C97A3D);
+}
+
+.hd-modal-header h3 {
+  font-size: 15px;
+  font-weight: 700;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.hd-modal-close {
+  background: transparent;
+  border: none;
+  color: rgba(255,255,255,0.7);
+  font-size: 18px;
+  cursor: pointer;
+  line-height: 1;
+  padding: 4px;
+  transition: color 0.15s ease;
+}
+
+.hd-modal-close:hover {
+  color: #ffffff;
+}
+
+.hd-modal-body {
+  padding: 1.25rem;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  background: #f8fafc;
+}
+
+.hd-modal-footer {
+  padding: 0.85rem 1.25rem;
+  background: #ffffff;
+  border-top: 1px solid #e2e8f0;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.hd-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.hd-form-group label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #0f2438;
+}
+
+.hd-form-input,
+.hd-form-select,
+.hd-form-textarea {
+  width: 100%;
+  padding: 0.55rem 0.75rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  font-size: 13px;
+  background: #ffffff;
+  color: #0f2438;
+  font-family: inherit;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.hd-form-input:focus,
+.hd-form-select:focus,
+.hd-form-textarea:focus {
+  outline: none;
+  border-color: #C97A3D;
+  box-shadow: 0 0 0 3px rgba(201, 122, 61, 0.15);
+}
+
+.hd-form-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.btn-crud-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 4px;
+  border: 1px solid transparent;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  padding: 0;
+  vertical-align: middle;
+  font-size: 13px;
+}
+
+.btn-crud-edit {
+  color: #3b82f6;
+  border-color: rgba(59, 130, 246, 0.3);
+  background: rgba(59, 130, 246, 0.08);
+}
+
+.btn-crud-edit:hover {
+  background: #3b82f6;
+  color: #ffffff;
+}
+
+.btn-crud-delete {
+  color: #ef4444;
+  border-color: rgba(239, 68, 68, 0.3);
+  background: rgba(239, 68, 68, 0.08);
+}
+
+.btn-crud-delete:hover {
+  background: #ef4444;
+  color: #ffffff;
+}
+
+
 
 
