@@ -2182,3 +2182,168 @@ code {
 .vk-table-row-confidential {
   background-color: rgba(244, 63, 94, 0.02);
 }
+
+/* Universal Modal Dialog and CRUD Helper Styles */
+.vk-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 36, 56, 0.75);
+  -webkit-backdrop-filter: blur(5px);
+  backdrop-filter: blur(5px);
+  z-index: 1000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.vk-modal-overlay.active,
+.vk-modal-overlay[style*="display: flex"] {
+  display: flex !important;
+}
+
+.vk-modal-dialog {
+  background: #ffffff;
+  border: 1px solid var(--vk-neutral-200);
+  border-radius: var(--radius-md, 8px);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 620px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: modalPop 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.vk-modal-header {
+  padding: 16px 20px;
+  background-color: var(--vk-primary-dark, #0F2438);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 2px solid var(--vk-sys-accent, #1E8FA6);
+}
+
+.vk-modal-body {
+  padding: 20px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  background: #ffffff;
+}
+
+.vk-modal-footer {
+  padding: 14px 20px;
+  background-color: #f8fafc;
+  border-top: 1px solid var(--vk-neutral-200, #e2e8f0);
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.crud-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.crud-form-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--vk-neutral-700, #334155);
+}
+
+.crud-form-input,
+.crud-form-select,
+.crud-form-textarea {
+  width: 100%;
+  padding: 8px 12px;
+  font-family: inherit;
+  font-size: 13px;
+  border: 1px solid var(--vk-neutral-300, #cbd5e1);
+  border-radius: 6px;
+  background: #ffffff;
+  color: var(--vk-neutral-900, #0f172a);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.crud-form-input:focus,
+.crud-form-select:focus,
+.crud-form-textarea:focus {
+  outline: none;
+  border-color: var(--vk-sys-accent, #1E8FA6);
+  box-shadow: 0 0 0 3px rgba(30, 143, 166, 0.15);
+}
+
+.crud-form-textarea {
+  resize: vertical;
+  min-height: 80px;
+  font-family: var(--font-mono, monospace);
+  font-size: 12px;
+}
+
+.btn-crud-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 4px;
+  cursor: pointer;
+  border: 1px solid var(--vk-neutral-300, #cbd5e1);
+  background: #ffffff;
+  color: var(--vk-neutral-700, #334155);
+  transition: all 0.15s ease;
+}
+
+.btn-crud-action:hover {
+  background: #f1f5f9;
+  border-color: var(--vk-neutral-400, #94a3b8);
+}
+
+.btn-crud-edit {
+  color: var(--vk-primary, #1B3A5C);
+  border-color: rgba(27, 58, 92, 0.25);
+}
+.btn-crud-edit:hover {
+  background: rgba(27, 58, 92, 0.08);
+  border-color: var(--vk-primary, #1B3A5C);
+}
+
+.btn-crud-delete {
+  color: #dc2626;
+  border-color: rgba(220, 38, 38, 0.25);
+}
+.btn-crud-delete:hover {
+  background: rgba(220, 38, 38, 0.08);
+  border-color: #dc2626;
+}
+
+.endpoint-badge-put {
+  background: rgba(217, 130, 43, 0.15);
+  color: #d97706;
+  border: 1px solid rgba(217, 130, 43, 0.3);
+  font-family: var(--font-mono, monospace);
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 3px;
+  text-transform: uppercase;
+}
+
+.endpoint-badge-delete {
+  background: rgba(239, 68, 68, 0.15);
+  color: #dc2626;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  font-family: var(--font-mono, monospace);
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 3px;
+  text-transform: uppercase;
+}
+

@@ -12,7 +12,7 @@
   const SYSTEM_NAV_MAP = [
     {
       path: "dashboard",
-      href: "mainDashborde.php",
+      href: "mainDashboard.php",
       label: "Main Dashboard",
       icon: "dashboard",
       badge: "KPI & Threat",
@@ -76,7 +76,7 @@
     },
     {
       path: "emergency-lockdown",
-      href: "Emergency Lockdown.php",
+      href: "EmergencyLockdown.php",
       label: "Emergency Lockdown",
       icon: "lock",
       badge: "QUARANTINE",
@@ -89,7 +89,7 @@
     const filename = decodeURIComponent(
       path.substring(path.lastIndexOf("/") + 1),
     );
-    return filename || "mainDashborde.php";
+    return filename || "mainDashboard.php";
   }
 
   function initNavigation() {
@@ -107,9 +107,9 @@
         // Detect if this is the active page
         const isCurrent =
           currentFile.toLowerCase() === mapItem.href.toLowerCase() ||
-          (currentFile === "" && mapItem.href === "mainDashborde.php") ||
+          (currentFile === "" && mapItem.href === "mainDashboard.php") ||
           (currentFile.toLowerCase() === "index.php" &&
-            mapItem.href === "mainDashborde.php");
+            mapItem.href === "mainDashboard.php");
 
         if (isCurrent) {
           link.setAttribute("aria-current", "page");
@@ -140,7 +140,7 @@
     brandHeaders.forEach((el) => {
       el.style.cursor = "pointer";
       el.onclick = () => {
-        window.location.href = "mainDashborde.php";
+        window.location.href = "mainDashboard.php";
       };
     });
   }
@@ -221,7 +221,7 @@
   const SEARCH_ENTITIES = [
     {
       name: "Main Dashboard (KPI & Threat Overview)",
-      path: "mainDashborde.php",
+      path: "mainDashboard.php",
       type: "View",
       cat: "Navigation",
     },
@@ -275,38 +275,38 @@
     },
     {
       name: "Emergency Lockdown Console (DEFCON-1)",
-      path: "Emergency Lockdown.php",
+      path: "EmergencyLockdown.php",
       type: "View",
       cat: "Quarantine",
     },
     // Baseline Key Personnel
     {
       name: "Viktor Sokolov (EMP-1001) - CEO [L4 Clearance]",
-      path: "mainDashborde.php",
+      path: "mainDashboard.php",
       type: "EMP-ID",
       cat: "Executive",
     },
     {
       name: "Amina Karimova (EMP-1002) - COO [L4 Clearance]",
-      path: "mainDashborde.php",
+      path: "mainDashboard.php",
       type: "EMP-ID",
       cat: "Executive",
     },
     {
       name: "Elena Morozova (EMP-1004) - CTO [L4 Clearance]",
-      path: "mainDashborde.php",
+      path: "mainDashboard.php",
       type: "EMP-ID",
       cat: "Executive",
     },
     {
       name: "Timur Akhmetov (EMP-1005) - Chief Governance Officer [L4]",
-      path: "mainDashborde.php",
+      path: "mainDashboard.php",
       type: "EMP-ID",
       cat: "Governance",
     },
     {
       name: "Leonid Volkov (EMP-1018) - Systems Engineer [L3 Clearance]",
-      path: "mainDashborde.php",
+      path: "mainDashboard.php",
       type: "EMP-ID",
       cat: "Engineering",
     },
@@ -318,7 +318,7 @@
     },
     {
       name: "Jonas Richter (EMP-1020) - Lead Developer [L3 Clearance]",
-      path: "mainDashborde.php",
+      path: "mainDashboard.php",
       type: "EMP-ID",
       cat: "Engineering",
     },
@@ -403,7 +403,7 @@
     },
     {
       name: "DOC-2026-007 Employee Access Matrix (Attestation)",
-      path: "mainDashborde.php",
+      path: "mainDashboard.php",
       type: "Doc",
       cat: "Classified",
     },

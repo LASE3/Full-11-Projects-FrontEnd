@@ -96,7 +96,7 @@ $topRisk = $riskRegister[0] ?? null;
             <nav class="flex flex-col gap-[2px] px-space-xs mb-space-md"
                 data-active-classes="bg-primary-container text-on-primary font-semibold border-l-4 border-secondary-fixed">
                 <a class="flex items-center justify-between px-space-sm py-space-xs rounded text-on-primary-container hover:bg-primary-container hover:text-on-primary transition-all font-body-compact text-body-compact"
-                    data-path="dashboard" href="mainDashborde.php">
+                    data-path="dashboard" href="mainDashboard.php">
                     <div class="flex items-center gap-space-sm"><span
                             class="material-symbols-outlined text-[18px]">dashboard</span><span>Main Dashboard</span>
                     </div><span
@@ -247,6 +247,8 @@ $topRisk = $riskRegister[0] ?? null;
                                 <span>Submit to Almaty Board</span>
                             </button>
                             <button
+                                id="btnNewRisk"
+                                onclick="openNewRiskModal()"
                                 class="h-control-height-md px-space-md bg-primary hover:bg-primary-container text-on-primary font-body-compact text-body-compact font-semibold flex items-center gap-space-xs transition-colors shadow-sm">
                                 <span class="material-symbols-outlined text-[16px]">add_moderator</span>
                                 <span>New Risk Filing (DOC-REQ)</span>
@@ -651,7 +653,17 @@ $topRisk = $riskRegister[0] ?? null;
                                                 ? '<span class="px-space-xs py-[2px] bg-error text-on-error font-label-uppercase text-[9px] font-bold">REVIEW REQUIRED</span>'
                                                 : '<span class="px-space-xs py-[2px] bg-secondary-container text-on-secondary-container font-label-uppercase text-[9px] font-bold">VALIDATED</span>';
                                         ?>
-                                            <tr class="bg-surface-container-low hover:bg-surface-container transition-colors border-b border-outline-variant/30">
+                                            <tr class="risk-row bg-surface-container-low hover:bg-surface-container transition-colors border-b border-outline-variant/30"
+                                                data-id="<?= $r['risk_id'] ?>"
+                                                data-code="RR-2026-<?= str_pad($r['risk_id'], 3, '0', STR_PAD_LEFT) ?>"
+                                                data-desc="<?= htmlspecialchars($r['description']) ?>"
+                                                data-impact="<?= htmlspecialchars($r['impact']) ?>"
+                                                data-likelihood="<?= htmlspecialchars($r['likelihood']) ?>"
+                                                data-status="<?= htmlspecialchars($r['status']) ?>"
+                                                data-owner="<?= htmlspecialchars($r['owner_emp_id']) ?>"
+                                                data-date="<?= htmlspecialchars($r['review_date'] ?? '2026-10-31') ?>"
+                                                data-target="<?= htmlspecialchars($r['system_target'] ?? ('SYS-' . str_pad(($r['risk_id'] % 11) + 1, 2, '0', STR_PAD_LEFT) . ' Production Enclave')) ?>"
+                                                data-vector="<?= htmlspecialchars($r['threat_vector'] ?? '') ?>">
                                                 <td class="py-space-xs px-space-sm <?= $borderClass ?>">
                                                     <div class="flex items-center gap-space-xs">
                                                         <span class="font-bold <?= $isCrit ? 'text-error' : 'text-primary' ?>">RR-2026-<?= str_pad($r['risk_id'], 3, '0', STR_PAD_LEFT) ?></span>
@@ -668,7 +680,7 @@ $topRisk = $riskRegister[0] ?? null;
                                                     <div class="text-[10px] text-on-surface-variant"><?= htmlspecialchars($r['likelihood']) ?> &times; <?= htmlspecialchars($r['impact']) ?></div>
                                                 </td>
                                                 <td class="py-space-xs px-space-sm">
-                                                    <div class="font-bold text-primary">SYS-<?= str_pad(($r['risk_id'] % 11) + 1, 2, '0', STR_PAD_LEFT) ?> Production Enclave</div>
+                                                    <div class="font-bold text-primary"><?= htmlspecialchars($r['system_target'] ?? ('SYS-' . str_pad(($r['risk_id'] % 11) + 1, 2, '0', STR_PAD_LEFT) . ' Production Enclave')) ?></div>
                                                     <div class="text-[10px] text-on-surface-variant">Core Industrial Databus</div>
                                                 </td>
                                                 <td class="py-space-xs px-space-sm">
@@ -686,10 +698,18 @@ $topRisk = $riskRegister[0] ?? null;
                                                 <td class="py-space-xs px-space-sm text-center">
                                                     <?= $statusBadge ?>
                                                 </td>
-                                                <td class="py-space-xs px-space-sm text-right">
-                                                    <button class="px-space-xs py-space-2xs bg-primary text-on-primary font-label-uppercase text-[10px] hover:bg-primary-container">
-                                                        INSPECT &rarr;
-                                                    </button>
+                                                <td class="py-space-xs px-space-sm text-right whitespace-nowrap">
+                                                    <div class="flex items-center justify-end gap-1">
+                                                        <button class="px-space-xs py-space-2xs bg-primary text-on-primary font-label-uppercase text-[10px] hover:bg-primary-container" onclick="inspectRisk(<?= $r['risk_id'] ?>)">
+                                                            INSPECT
+                                                        </button>
+                                                        <button class="px-space-xs py-space-2xs bg-surface-container-high hover:bg-secondary hover:text-white text-primary font-label-uppercase text-[10px] transition-colors" onclick="editRisk(<?= $r['risk_id'] ?>)">
+                                                            EDIT
+                                                        </button>
+                                                        <button class="px-space-xs py-space-2xs bg-error/10 hover:bg-error hover:text-white text-error font-label-uppercase text-[10px] transition-colors" onclick="deleteRisk(<?= $r['risk_id'] ?>)">
+                                                            DELETE
+                                                        </button>
+                                                    </div>
                                                 </td>
                                             </tr>
                                         <?php endforeach; ?>
@@ -944,9 +964,99 @@ $topRisk = $riskRegister[0] ?? null;
                         </button>
                     </div>
                 </div>
+    <!-- MODAL: STATUTORY RISK FILING / AMENDMENT -->
+    <div id="riskModal" class="fixed inset-0 bg-primary/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-surface-container-lowest border-l-4 border-[#D9822B] p-space-md max-w-lg w-full shadow-2xl flex flex-col gap-space-sm">
+            <div class="flex items-center justify-between pb-space-xs border-b border-surface-container-high">
+                <div class="flex items-center gap-space-xs">
+                    <span class="material-symbols-outlined text-[#D9822B] text-[20px]">add_moderator</span>
+                    <h3 id="riskModalTitle" class="font-headline-md text-[16px] font-bold text-primary uppercase">New Statutory Risk Filing</h3>
+                </div>
+                <button type="button" onclick="closeRiskModal()" class="text-on-surface-variant hover:text-error">
+                    <span class="material-symbols-outlined text-[20px]">close</span>
+                </button>
             </div>
-        </main>
+            <form id="riskForm" onsubmit="saveRiskForm(event)" class="flex flex-col gap-space-sm font-telemetry-micro text-telemetry-micro">
+                <input type="hidden" id="modalRiskId" name="risk_id" value="">
+                <input type="hidden" id="modalRiskAction" name="action" value="create">
+                
+                <div>
+                    <label class="block font-bold text-on-surface mb-1">RISK DESCRIPTION &amp; HAZARD *</label>
+                    <textarea id="modalRiskDesc" name="description" required rows="2" placeholder="Describe the industrial or statutory threat vector..."
+                        class="w-full bg-surface-container p-space-xs text-on-surface focus:outline-none focus:ring-1 focus:ring-[#D9822B]"></textarea>
+                </div>
+
+                <div class="grid grid-cols-2 gap-space-xs">
+                    <div>
+                        <label class="block font-bold text-on-surface mb-1">IMPACT LEVEL</label>
+                        <select id="modalRiskImpact" name="impact" class="w-full bg-surface-container h-control-height-sm px-space-xs text-on-surface focus:outline-none focus:ring-1 focus:ring-[#D9822B]">
+                            <option value="Critical">Critical (Catastrophic)</option>
+                            <option value="High" selected>High (Major)</option>
+                            <option value="Medium">Medium (Moderate)</option>
+                            <option value="Low">Low (Minor)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block font-bold text-on-surface mb-1">LIKELIHOOD</label>
+                        <select id="modalRiskLikelihood" name="likelihood" class="w-full bg-surface-container h-control-height-sm px-space-xs text-on-surface focus:outline-none focus:ring-1 focus:ring-[#D9822B]">
+                            <option value="Frequent">Frequent (L5)</option>
+                            <option value="Probable">Probable (L4)</option>
+                            <option value="Moderate" selected>Moderate (L3)</option>
+                            <option value="Remote">Remote (L2)</option>
+                            <option value="Improbable">Improbable (L1)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-space-xs">
+                    <div>
+                        <label class="block font-bold text-on-surface mb-1">IMPACTED APPARATUS / NODE</label>
+                        <input type="text" id="modalRiskTarget" name="system_target" value="SYS-01 Production Enclave" placeholder="e.g. SYS-03 SCADA Gateway"
+                            class="w-full bg-surface-container h-control-height-sm px-space-xs text-on-surface focus:outline-none focus:ring-1 focus:ring-[#D9822B]">
+                    </div>
+                    <div>
+                        <label class="block font-bold text-on-surface mb-1">RISK CUSTODIAN (EMP-ID)</label>
+                        <input type="text" id="modalRiskOwner" name="owner_emp_id" value="EMP-1005" placeholder="e.g. EMP-1005"
+                            class="w-full bg-surface-container h-control-height-sm px-space-xs text-on-surface focus:outline-none focus:ring-1 focus:ring-[#D9822B]">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-space-xs">
+                    <div>
+                        <label class="block font-bold text-on-surface mb-1">BOARD STANCE / STATUS</label>
+                        <select id="modalRiskStatus" name="status" class="w-full bg-surface-container h-control-height-sm px-space-xs text-on-surface focus:outline-none focus:ring-1 focus:ring-[#D9822B]">
+                            <option value="UnderReview" selected>Under Review</option>
+                            <option value="ActionRequired">Action Required</option>
+                            <option value="Mitigated">Mitigated / Remediated</option>
+                            <option value="Accepted">Accepted by Board</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block font-bold text-on-surface mb-1">SLA REVIEW DATE</label>
+                        <input type="date" id="modalRiskReviewDate" name="review_date" value="<?= date('Y-m-d', strtotime('+30 days')) ?>"
+                            class="w-full bg-surface-container h-control-height-sm px-space-xs text-on-surface focus:outline-none focus:ring-1 focus:ring-[#D9822B]">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block font-bold text-on-surface mb-1">THREAT VECTOR APPRAISAL</label>
+                    <textarea id="modalRiskThreatVector" name="threat_vector" rows="2" placeholder="Root cause telemetry and threat vector analysis..."
+                        class="w-full bg-surface-container p-space-xs text-on-surface focus:outline-none focus:ring-1 focus:ring-[#D9822B]"></textarea>
+                </div>
+
+                <div class="flex items-center justify-end gap-space-xs pt-space-xs border-t border-surface-container-high mt-space-xs">
+                    <button type="button" onclick="closeRiskModal()" class="h-control-height-sm px-space-sm bg-surface-container hover:bg-surface-container-high text-on-surface font-label-uppercase text-[10px] uppercase font-bold">
+                        Cancel
+                    </button>
+                    <button type="submit" id="btnSaveRisk" class="h-control-height-sm px-space-md bg-primary hover:bg-primary-container text-on-primary font-label-uppercase text-[10px] uppercase font-bold flex items-center gap-1 shadow">
+                        <span class="material-symbols-outlined text-[14px]">save</span>
+                        <span>Commit to Register</span>
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
+
     <script src="js/common.js"></script>
     <script src="js/boardRiskRegister.js"></script>
 </body>

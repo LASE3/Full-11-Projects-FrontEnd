@@ -2,6 +2,26 @@
 require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/../includes/auth_guard.php';
 requireAuth('DEV');
+
+// Fetch all guides dynamically from database
+$guides = [];
+try {
+    $stmt = $pdo->query("SELECT * FROM developer_guides ORDER BY section_number ASC, id ASC");
+    $guides = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    $guides = [];
+}
+
+// Separate statutory document hero from section guides
+$statutoryDoc = null;
+$sectionGuides = [];
+foreach ($guides as $g) {
+    if ($g['guide_code'] === 'DOC-2026-010' || $g['category'] === 'Statutory Specification') {
+        $statutoryDoc = $g;
+    } else {
+        $sectionGuides[] = $g;
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -38,8 +58,7 @@ requireAuth('DEV');
         <div class="dev-flex-center-gap-16" >
             <div class="dev-search-box-wrap" >
                 <span class="material-symbols-outlined text-[16px] dev-position-absolute-left-10px-d4a8">search</span>
-                <input class="search-trigger-input" type="text" placeholder="Search guides, RFCs, protocols (Ctrl + K)" readonly
-                     />
+                <input class="search-trigger-input" type="text" placeholder="Search guides, RFCs, protocols (Ctrl + K)" readonly />
             </div>
             <div class="dev-display-flex-align-items-9eca" >
                 <span class="material-symbols-outlined text-[14px] dev-color-secondary">schedule</span>
@@ -56,7 +75,7 @@ requireAuth('DEV');
             </div>
 
             <!-- Top Bar Sign Out -->
-            <a href="../api/logout.php?system=Developer&redirect=../Developer/login.php" class="top-signout-btn" title="Sign Out of Developer" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" ><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
+            <a href="../api/logout.php?system=Developer&redirect=../Developer/login.php" class="top-signout-btn" title="Sign Out of Developer" onclick="(function(){sessionStorage.clear();localStorage.clear();})()"><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
         </div>
     </header>
 
@@ -148,136 +167,249 @@ requireAuth('DEV');
             <div class="dev-color-var-vk-primary-57e8" >Jonas Richter (EMP-1020)</div>
             <div class="dev-color-var-vk-neutral-19bc" >Lead Developer • ENG</div>
         </div>
-
-        <!-- Log Out -->
-
     </aside>
 
     <!-- MAIN CONTENT -->
     <main class="vk-app-body">
-        <div class="dev-margin-bottom-24px-dc2c" >
-            <div class="dev-display-flex-align-items-81c3" >
-                <span class="dev-mono-muted-11" >ROOT / SYSTEM 10 / GUIDES &amp; PROTOCOLS</span>
-                <span class="badge-classification badge-internal">Internal Specification</span>
+        <div class="dev-margin-bottom-24px-dc2c" style="display: flex; justify-content: space-between; align-items: flex-start;">
+            <div>
+                <div class="dev-display-flex-align-items-81c3" >
+                    <span class="dev-mono-muted-11" >ROOT / SYSTEM 10 / GUIDES &amp; PROTOCOLS</span>
+                    <span class="badge-classification badge-internal">Internal Specification</span>
+                </div>
+                <h1 class="dev-font-size-26px-font-2295" >
+                    Enterprise Integration Guides &amp; Protocols
+                </h1>
+                <p class="dev-color-var-vk-neutral-1aeb" >
+                    Architectural blueprints and statutory integration standards for connecting client ERP networks, SCADA controllers, and logistics feeds with VOSTOKPRIBOR.
+                </p>
             </div>
-            <h1 class="dev-font-size-26px-font-2295" >
-                Enterprise Integration Guides &amp; Protocols
-            </h1>
-            <p class="dev-color-var-vk-neutral-1aeb" >
-                Architectural blueprints and statutory integration standards for connecting client ERP networks, SCADA controllers, and logistics feeds with VOSTOKPRIBOR.
-            </p>
+            <div>
+                <button class="vk-btn vk-btn-primary" id="btnOpenCreateGuide">
+                    <span class="material-symbols-outlined text-[16px]">add</span> Add Guide / Protocol
+                </button>
+            </div>
         </div>
 
         <!-- STATUTORY DOCUMENT HERO CARD (DOC-2026-010) -->
-        <div class="vk-card tag-internal" id="doc010" >
-            <div class="vk-card-header dev-background-color-f8fafc-fb8d">
+        <?php if ($statutoryDoc): 
+            $statJson = htmlspecialchars(json_encode($statutoryDoc), ENT_QUOTES, 'UTF-8');
+        ?>
+        <div class="vk-card tag-internal dev-margin-bottom-24px-dc2c" id="doc010">
+            <div class="vk-card-header dev-background-color-f8fafc-fb8d" style="display: flex; justify-content: space-between; align-items: center;">
                 <div class="dev-display-flex-align-items-1c20" >
-                    <span class="material-symbols-outlined text-[22px] dev-color-var-vk-class-5979">description</span>
+                    <span class="material-symbols-outlined text-[22px] dev-color-var-vk-class-5979"><?= htmlspecialchars($statutoryDoc['icon'] ?: 'description') ?></span>
                     <div>
-                        <div class="dev-font-weight-700-font-d74c" >DOC-2026-010: API_Integration_Guide.pdf</div>
-                        <div class="dev-mono-muted-11" >Authoritative Baseline Specification • System 10 Reference Document</div>
+                        <div class="dev-font-weight-700-font-d74c" ><?= htmlspecialchars($statutoryDoc['title']) ?></div>
+                        <div class="dev-mono-muted-11" ><?= htmlspecialchars($statutoryDoc['guide_code']) ?> • <?= htmlspecialchars($statutoryDoc['category']) ?></div>
                     </div>
                 </div>
                 <div class="dev-display-flex-gap-8px-1326" >
-                    <span class="badge-classification badge-internal">INTERNAL USE</span>
+                    <span class="badge-classification badge-internal"><?= htmlspecialchars($statutoryDoc['classification']) ?></span>
                     <button class="vk-btn vk-btn-outline dev-padding-4px-10px-font-9ec7" onclick="window.showToast('SPEC DOWNLOAD', 'Exported statutory document DOC-2026-010.pdf', 'success')">
                         <span class="material-symbols-outlined text-[14px]">file_download</span> Download PDF
+                    </button>
+                    <button class="btn-crud-action btn-crud-edit btn-edit-guide" data-guide='<?= $statJson ?>' title="Edit Statutory Specification">
+                        <span class="material-symbols-outlined text-[14px]">edit</span>
                     </button>
                 </div>
             </div>
             <div class="vk-card-body dev-line-height-1-6-80c9">
-                <div class="dev-display-grid-grid-template-0fd8" >
-                    <div>
-                        <h4 class="dev-font-size-13px-font-9d6e" >Document Scope</h4>
-                        <p class="dev-text-muted" >
-                            Defines cryptographic and telemetry contracts between client ERP systems (e.g. CUS-1002 BaltNord) and System 11 Admin &amp; Governance pipelines. Mandates HMAC SHA-256 signatures on all webhooks.
-                        </p>
-                    </div>
-                    <div>
-                        <h4 class="dev-font-size-13px-font-9d6e" >Signatory Verification</h4>
-                        <p class="dev-text-muted" >
-                            Managed by Lead Developer Jonas Richter (EMP-1020) and Software Integration Engineer Dana Yermak (EMP-1017). Attested under ISO 27001 &amp; ST RK IEC 62443.
-                        </p>
-                    </div>
+                <p class="dev-text-muted dev-mb-16">
+                    <?= nl2br(htmlspecialchars($statutoryDoc['summary'])) ?>
+                </p>
+                <?php if (!empty($statutoryDoc['code_snippet'])): ?>
+                <div class="dev-background-color-0a1624-padding-e1fb dev-mb-16" style="border-radius: 6px; font-family: monospace; font-size: 13px; color: #38bdf8;">
+                    <?= htmlspecialchars($statutoryDoc['code_snippet']) ?>
                 </div>
+                <?php endif; ?>
+                <?php if (!empty($statutoryDoc['footer_note'])): ?>
+                <div class="dev-font-size-12px-color-fb5d">
+                    <strong>Attestation Note:</strong> <?= htmlspecialchars($statutoryDoc['footer_note']) ?>
+                </div>
+                <?php endif; ?>
             </div>
         </div>
+        <?php endif; ?>
 
-        <!-- GUIDE SECTIONS -->
-        <div class="dev-display-flex-flex-direction-e9a4" >
-            <!-- Guide 1: Authentication -->
-            <div class="vk-card tag-confidential">
-                <div class="vk-card-header">
+        <!-- SECTION GUIDES (Dynamic from Database with CRUD) -->
+        <div class="dev-display-flex-flex-direction-e9a4" id="guidesContainer">
+            <?php if (empty($sectionGuides)): ?>
+            <div class="vk-card dev-padding-24px dev-text-center dev-text-muted">
+                No integration guides configured yet. Click "Add Guide / Protocol" to register one.
+            </div>
+            <?php else: ?>
+            <?php foreach ($sectionGuides as $guide): 
+                $badgeClass = 'badge-internal';
+                $cardTag = 'tag-internal';
+                $clsLower = strtolower($guide['classification']);
+                if (str_contains($clsLower, 'confidential')) {
+                    $badgeClass = 'badge-confidential';
+                    $cardTag = 'tag-confidential';
+                } elseif (str_contains($clsLower, 'public')) {
+                    $badgeClass = 'badge-public';
+                    $cardTag = 'tag-public';
+                }
+                $gJson = htmlspecialchars(json_encode($guide), ENT_QUOTES, 'UTF-8');
+            ?>
+            <div class="vk-card <?= $cardTag ?>" id="guide-card-<?= $guide['id'] ?>">
+                <div class="vk-card-header" style="display: flex; justify-content: space-between; align-items: center;">
                     <div class="dev-flex-center-gap-10" >
-                        <span class="material-symbols-outlined text-[20px] dev-color-var-vk-class-7bf4">lock</span>
-                        <h3 class="dev-font-size-15px-font-578e" >1. Authentication &amp; Token Scoping</h3>
+                        <span class="material-symbols-outlined text-[20px] dev-color-accent"><?= htmlspecialchars($guide['icon'] ?: 'menu_book') ?></span>
+                        <h3 class="dev-font-size-15px-font-578e" >
+                            <?= $guide['section_number'] ?>. <?= htmlspecialchars($guide['title']) ?>
+                        </h3>
                     </div>
-                    <span class="badge-classification badge-confidential">Confidential</span>
+                    <div class="dev-flex-center-gap-8">
+                        <span class="badge-classification <?= $badgeClass ?>"><?= htmlspecialchars($guide['classification']) ?></span>
+                        <button class="btn-crud-action btn-crud-edit btn-edit-guide" data-guide='<?= $gJson ?>' title="Edit Guide">
+                            <span class="material-symbols-outlined text-[14px]">edit</span>
+                        </button>
+                        <button class="btn-crud-action btn-crud-delete btn-delete-guide" data-id="<?= $guide['id'] ?>" data-title="<?= htmlspecialchars($guide['title']) ?>" title="Delete Guide">
+                            <span class="material-symbols-outlined text-[14px]">delete</span>
+                        </button>
+                    </div>
                 </div>
                 <div class="vk-card-body">
-                    <p class="dev-color-var-vk-neutral-5df1" >
-                        All API requests require an HTTP Authorization header containing a bearer token issued through the Partner Credentials Vault:
+                    <p class="dev-color-var-vk-neutral-5df1 dev-mb-16">
+                        <?= nl2br(htmlspecialchars($guide['summary'])) ?>
                     </p>
-                    <div class="dev-background-color-0a1624-padding-e1fb" >
-                        Authorization: Bearer vk_live_9a41c2e8f10b7a89d4e12c5
-                    </div>
-                    <p class="dev-color-var-vk-neutral-b40a" >
-                        Production keys expire every 90 days. Systems automatically reject tokens lacking valid IP whitelisting configured in the Credentials Vault.
-                    </p>
-                </div>
-            </div>
 
-            <!-- Guide 2: ERP Integration -->
-            <div class="vk-card tag-internal" id="erp">
-                <div class="vk-card-header">
-                    <div class="dev-flex-center-gap-10" >
-                        <span class="material-symbols-outlined text-[20px] dev-color-var-vk-class-5979">sync_alt</span>
-                        <h3 class="dev-font-size-15px-font-578e" >2. ERP Integration Standard (SAP / 1C:Enterprise / Dynamics)</h3>
+                    <?php if (!empty($guide['code_snippet'])): ?>
+                    <div class="dev-background-color-0a1624-padding-e1fb dev-mb-16" style="border-radius: 6px; font-family: monospace; font-size: 13px; color: #38bdf8; overflow-x: auto; white-space: pre-wrap;">
+<?= htmlspecialchars($guide['code_snippet']) ?>
                     </div>
-                    <span class="badge-classification badge-internal">Internal Standard</span>
-                </div>
-                <div class="vk-card-body">
-                    <p class="dev-color-var-vk-neutral-e351" >
-                        To sync purchase orders, equipment fulfillment stages, and billing events directly with your corporate accounting software:
-                    </p>
-                    <ol class="dev-padding-left-20px-font-b6a3" >
-                        <li><strong>Register Webhook Target:</strong> Provide your HTTPS endpoint in the Webhooks console with TLS 1.3 encryption.</li>
-                        <li><strong>Order Matching:</strong> Align commercial opportunities from System 05 (CRM) with Order IDs in System 02 (E-Commerce).</li>
-                        <li><strong>Invoice Reconciliation:</strong> Track payments against System 07 (Finance &amp; Billing) reference numbers (e.g. <code>INV-2026-002</code>).</li>
-                    </ol>
-                </div>
-            </div>
+                    <?php endif; ?>
 
-            <!-- Guide 3: SCADA Ingestion -->
-            <div class="vk-card tag-public">
-                <div class="vk-card-header">
-                    <div class="dev-flex-center-gap-10" >
-                        <span class="material-symbols-outlined text-[20px] dev-color-secondary">sensors</span>
-                        <h3 class="dev-font-size-15px-font-578e" >3. SCADA Real-Time Telemetry Pipeline (Modbus &amp; OPC-UA)</h3>
-                    </div>
-                    <span class="badge-classification badge-public">Public Spec</span>
-                </div>
-                <div class="vk-card-body">
-                    <p class="dev-color-var-vk-neutral-5df1" >
-                        Industrial equipment deployed with customer facilities transmits operational frames at up to 64,800 events per second. Use the high-speed batch endpoint <code>/v1/scada/ingest/frames</code> or connect directly to the Almaty WebSocket stream:
+                    <?php if (!empty($guide['footer_note'])): ?>
+                    <p class="dev-color-var-vk-neutral-b40a dev-font-size-12px">
+                        <?= htmlspecialchars($guide['footer_note']) ?>
                     </p>
-                    <div class="dev-background-color-0a1624-padding-1ab7" >
-                        wss://developer.vostokpribor.local/v1/stream/scada/feed?facility=ALMATY-01
-                    </div>
+                    <?php endif; ?>
                 </div>
             </div>
+            <?php endforeach; ?>
+            <?php endif; ?>
         </div>
     </main>
 
-        <footer class="vk-footer">
+    <!-- CREATE / EDIT GUIDE MODAL -->
+    <div class="vk-modal-overlay" id="guideModal">
+        <div class="vk-modal-dialog" style="max-width: 600px;">
+            <div class="vk-modal-header">
+                <div class="dev-flex-center-gap-8">
+                    <span class="material-symbols-outlined text-[20px] dev-color-accent">integration_instructions</span>
+                    <h3 id="guideModalTitle" class="dev-font-size-15px-font-29ad">Register New Integration Guide</h3>
+                </div>
+                <button class="dev-background-transparent-border-none-aba8" id="btnCloseGuideModal" style="color: #94a3b8; cursor: pointer;">
+                    <span class="material-symbols-outlined text-[18px]">close</span>
+                </button>
+            </div>
+            <div class="vk-modal-body">
+                <input type="hidden" id="guideId" value="" />
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                    <div class="crud-form-group">
+                        <label class="crud-form-label" for="guideCode">Guide Code *</label>
+                        <input class="crud-form-input" id="guideCode" type="text" placeholder="e.g. GUIDE-004" required />
+                    </div>
+                    <div class="crud-form-group">
+                        <label class="crud-form-label" for="guideSection">Section Number</label>
+                        <input class="crud-form-input" id="guideSection" type="number" value="4" />
+                    </div>
+                </div>
+                <div class="crud-form-group">
+                    <label class="crud-form-label" for="guideTitle">Guide Title *</label>
+                    <input class="crud-form-input" id="guideTitle" type="text" placeholder="e.g. Modbus TCP Gateway Bridging Protocol" required />
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px;">
+                    <div class="crud-form-group">
+                        <label class="crud-form-label" for="guideCategory">Category</label>
+                        <input class="crud-form-input" id="guideCategory" type="text" value="Protocol Specification" />
+                    </div>
+                    <div class="crud-form-group">
+                        <label class="crud-form-label" for="guideClassification">Classification</label>
+                        <select class="crud-form-select" id="guideClassification">
+                            <option value="Internal Standard">Internal Standard</option>
+                            <option value="Confidential">Confidential</option>
+                            <option value="Public Spec">Public Spec</option>
+                        </select>
+                    </div>
+                    <div class="crud-form-group">
+                        <label class="crud-form-label" for="guideIcon">Material Icon</label>
+                        <input class="crud-form-input" id="guideIcon" type="text" value="menu_book" placeholder="e.g. lock, sync_alt" />
+                    </div>
+                </div>
+                <div class="crud-form-group">
+                    <label class="crud-form-label" for="guideSummary">Summary &amp; Implementation Details *</label>
+                    <textarea class="crud-form-textarea" id="guideSummary" style="height: 100px;" placeholder="Full architectural details and usage recommendations..." required></textarea>
+                </div>
+                <div class="crud-form-group">
+                    <label class="crud-form-label" for="guideSnippet">Code / Endpoint Snippet</label>
+                    <textarea class="crud-form-textarea" id="guideSnippet" style="height: 60px; font-family: monospace;" placeholder="Authorization: Bearer vk_live_... or https://..."></textarea>
+                </div>
+                <div class="crud-form-group">
+                    <label class="crud-form-label" for="guideFooterNote">Footer / Attestation Note</label>
+                    <input class="crud-form-input" id="guideFooterNote" type="text" placeholder="e.g. Attested under ISO 27001 & ST RK IEC 62443." />
+                </div>
+            </div>
+            <div class="vk-modal-footer">
+                <button class="vk-btn vk-btn-outline" id="btnCancelGuideModal">Cancel</button>
+                <button class="vk-btn vk-btn-primary" id="btnSaveGuide">
+                    <span class="material-symbols-outlined text-[16px]">save</span> Save Guide
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PUBLIC-FACING / DEVELOPER FOOTER -->
+    <footer class="vk-footer">
         <div class="vk-footer-bottom dev-border-top-none-padding-efbd">
-            <div>© 2026 VOSTOKPRIBOR Global Logistics &amp; Supply JSC. System 10: Developer &amp; API Portal.</div>
+            <div>&copy; 2026 VOSTOKPRIBOR Global Logistics &amp; Supply JSC. System 10: Developer &amp; API Portal.</div>
             <div>DOC-2026-010 Specification • Almaty Enclave Engineering</div>
         </div>
     </footer>
 
+    <!-- Universal Command Palette Modal -->
+    <div class="cmd-palette-backdrop" id="cmd-palette-modal">
+        <div class="cmd-palette-box">
+            <div class="cmd-palette-header">
+                <span class="material-symbols-outlined text-[20px] dev-color-accent">terminal</span>
+                <input class="cmd-palette-input" id="cmd-palette-input" type="text" placeholder="Type a command or jump to documentation..." />
+            </div>
+            <div class="cmd-palette-list" id="cmd-palette-results">
+                <a class="cmd-palette-item" href="Dashboard.php">
+                    <span class="material-symbols-outlined text-[16px]">menu_book</span>
+                    <span>API Reference &amp; Endpoints</span>
+                </a>
+                <a class="cmd-palette-item" href="guides.php">
+                    <span class="material-symbols-outlined text-[16px]">integration_instructions</span>
+                    <span>Integration Guides &amp; DOC-2026-010</span>
+                </a>
+                <a class="cmd-palette-item" href="credentials.php">
+                    <span class="material-symbols-outlined text-[16px]">key</span>
+                    <span>API Credentials Vault</span>
+                </a>
+                <a class="cmd-palette-item" href="sandbox.php">
+                    <span class="material-symbols-outlined text-[16px]">terminal</span>
+                    <span>Interactive Sandbox Console</span>
+                </a>
+                <a class="cmd-palette-item" href="metrics.php">
+                    <span class="material-symbols-outlined text-[16px]">monitoring</span>
+                    <span>Usage Metrics &amp; Telemetry</span>
+                </a>
+                <a class="cmd-palette-item" href="partner-registration.php">
+                    <span class="material-symbols-outlined text-[16px]">how_to_reg</span>
+                    <span>Enterprise Partner Registration</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Universal Toast Container -->
+    <div class="vk-toast-container"></div>
+
     <script src="js/dev-common.js"></script>
-    <script src="js/dev-portal.js"></script>
+    <script src="js/dev-guides.js"></script>
 </body>
 
 </html>

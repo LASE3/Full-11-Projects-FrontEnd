@@ -7,15 +7,24 @@ require_once __DIR__ . '/gov_service.php';
 $currentUser = gov_getActiveUserProfile();
 $compliance = gov_getComplianceOversight();
 $metrics = gov_getGovernanceMetrics();
+$controls = gov_getComplianceControls();
 
 $reviews = $compliance['reviews'];
 $incidents = $compliance['incidents'];
 
+$totalControls = count($controls);
+$compliantControls = count(array_filter($controls, fn($c) => $c['status'] === 'COMPLIANT'));
+$deviationControls = count(array_filter($controls, fn($c) => $c['status'] === 'DEVIATION'));
+$remediationControls = count(array_filter($controls, fn($c) => $c['status'] === 'REMEDIATION'));
+
+$isoCount = count(array_filter($controls, fn($c) => stripos($c['framework'] ?? '', '27001') !== false || stripos($c['framework'] ?? '', 'ISO') !== false));
+$kazCount = count(array_filter($controls, fn($c) => stripos($c['framework'] ?? '', 'KAZ') !== false || stripos($c['framework'] ?? '', 'ST RK') !== false));
+$scadaCount = count(array_filter($controls, fn($c) => stripos($c['framework'] ?? '', 'SCADA') !== false || stripos($c['framework'] ?? '', 'IEC') !== false || stripos($c['framework'] ?? '', 'GOST') !== false || (stripos($c['framework'] ?? '', '27001') === false && stripos($c['framework'] ?? '', 'KAZ') === false)));
+
 $totalReviews = count($reviews);
 $compliantReviews = count(array_filter($reviews, fn($r) => stripos($r['action_taken'], 'Attested') !== false || stripos($r['action_taken'], 'Validated') !== false));
-$deviationReviews = count(array_filter($reviews, fn($r) => stripos($r['fiسnding'], 'Breach') !== false || stripos($r['action_taken'], 'Orphan') !== false || stripos($r['finding'], 'Unlawful') !== false));
-$remediationReviews = $totalReviews - $compliantReviews - $deviationReviews;
-if ($remediationReviews < 0) $remediationReviews = 0;
+$deviationReviews = count(array_filter($reviews, fn($r) => stripos($r['finding'] ?? '', 'Breach') !== false || stripos($r['action_taken'] ?? '', 'Orphan') !== false || stripos($r['finding'] ?? '', 'Unlawful') !== false));
+$remediationReviews = max(0, $totalReviews - $compliantReviews - $deviationReviews);
 ?>
 <!DOCTYPE html>
 
@@ -100,7 +109,7 @@ if ($remediationReviews < 0) $remediationReviews = 0;
                 data-active-classes="bg-primary-container text-on-primary font-semibold border-l-4 border-secondary-fixed">
                 <a aria-current="page"
                     class="flex items-center justify-between px-space-sm py-space-xs rounded transition-all bg-primary-container text-on-primary font-semibold border-l-4 border-secondary-fixed"
-                    data-path="dashboard" href="mainDashborde.php">
+                    data-path="dashboard" href="mainDashboard.php">
                     <div class="flex items-center gap-space-sm"><span
                             class="material-symbols-outlined text-[18px]">dashboard</span><span>Main Dashboard</span>
                     </div><span
@@ -401,45 +410,49 @@ if ($remediationReviews < 0) $remediationReviews = 0;
                             <div
                                 class="p-space-md bg-surface-container-low border-b border-outline-variant flex flex-col lg:flex-row lg:items-center justify-between gap-space-md">
                                 <!-- TABS -->
-                                <div class="flex items-center gap-space-2xs overflow-x-auto select-none">
-                                    <button
-                                        class="px-space-md py-space-xs bg-primary text-on-primary font-telemetry-micro text-telemetry-micro font-bold uppercase rounded-none border border-primary transition-colors flex items-center gap-space-xs whitespace-nowrap">
+                                <div class="flex items-center gap-space-2xs overflow-x-auto select-none" id="frameworkTabs">
+                                    <button onclick="filterFramework('all')" data-tab="all"
+                                        class="tab-btn px-space-md py-space-xs bg-primary text-on-primary font-telemetry-micro text-telemetry-micro font-bold uppercase rounded-none border border-primary transition-colors flex items-center gap-space-xs whitespace-nowrap cursor-pointer">
                                         <span>All Frameworks</span>
-                                        <span
-                                            class="px-space-2xs bg-primary-container text-on-primary rounded text-[10px]">29</span>
+                                        <span class="px-space-2xs bg-primary-container text-on-primary rounded text-[10px]"><?= $totalControls ?></span>
                                     </button>
-                                    <button
-                                        class="px-space-md py-space-xs bg-surface-container hover:bg-surface-container-high text-on-surface-variant font-telemetry-micro text-telemetry-micro font-medium uppercase rounded-none border border-outline-variant/60 transition-colors flex items-center gap-space-xs whitespace-nowrap">
+                                    <button onclick="filterFramework('27001')" data-tab="27001"
+                                        class="tab-btn px-space-md py-space-xs bg-surface-container hover:bg-surface-container-high text-on-surface-variant font-telemetry-micro text-telemetry-micro font-medium uppercase rounded-none border border-outline-variant/60 transition-colors flex items-center gap-space-xs whitespace-nowrap cursor-pointer">
                                         <span>ISO/IEC 27001</span>
-                                        <span class="text-outline text-[10px]">14</span>
+                                        <span class="text-outline text-[10px]"><?= $isoCount ?></span>
                                     </button>
-                                    <button
-                                        class="px-space-md py-space-xs bg-surface-container hover:bg-surface-container-high text-on-surface-variant font-telemetry-micro text-telemetry-micro font-medium uppercase rounded-none border border-outline-variant/60 transition-colors flex items-center gap-space-xs whitespace-nowrap">
+                                    <button onclick="filterFramework('KAZ')" data-tab="KAZ"
+                                        class="tab-btn px-space-md py-space-xs bg-surface-container hover:bg-surface-container-high text-on-surface-variant font-telemetry-micro text-telemetry-micro font-medium uppercase rounded-none border border-outline-variant/60 transition-colors flex items-center gap-space-xs whitespace-nowrap cursor-pointer">
                                         <span>KAZ-CERT Directive</span>
-                                        <span class="text-outline text-[10px]">8</span>
+                                        <span class="text-outline text-[10px]"><?= $kazCount ?></span>
                                     </button>
-                                    <button
-                                        class="px-space-md py-space-xs bg-surface-container hover:bg-surface-container-high text-on-surface-variant font-telemetry-micro text-telemetry-micro font-medium uppercase rounded-none border border-outline-variant/60 transition-colors flex items-center gap-space-xs whitespace-nowrap">
+                                    <button onclick="filterFramework('SCADA')" data-tab="SCADA"
+                                        class="tab-btn px-space-md py-space-xs bg-surface-container hover:bg-surface-container-high text-on-surface-variant font-telemetry-micro text-telemetry-micro font-medium uppercase rounded-none border border-outline-variant/60 transition-colors flex items-center gap-space-xs whitespace-nowrap cursor-pointer">
                                         <span>SCADA / Metrology</span>
-                                        <span class="text-outline text-[10px]">7</span>
+                                        <span class="text-outline text-[10px]"><?= $scadaCount ?></span>
                                     </button>
                                 </div>
-                                <!-- SEARCH & SEVERITY DROPDOWN -->
-                                <div class="flex items-center gap-space-xs">
+                                <!-- SEARCH & SEVERITY DROPDOWN & NEW CONTROL BUTTON -->
+                                <div class="flex items-center gap-space-xs flex-wrap">
                                     <div class="relative">
                                         <span
                                             class="material-symbols-outlined absolute left-space-xs top-1/2 -translate-y-1/2 text-[14px] text-outline">search</span>
-                                        <input
-                                            class="w-48 lg:w-56 h-control-height-sm pl-space-lg pr-space-xs bg-surface-container-lowest border border-outline-variant font-telemetry-micro text-telemetry-micro text-on-surface placeholder:text-outline focus:outline-none focus:border-primary"
-                                            placeholder="Filter Control ID or Hash..." type="text" />
+                                        <input id="controlSearchInput"
+                                            class="w-44 lg:w-52 h-control-height-sm pl-space-lg pr-space-xs bg-surface-container-lowest border border-outline-variant font-telemetry-micro text-telemetry-micro text-on-surface placeholder:text-outline focus:outline-none focus:border-primary"
+                                            placeholder="Filter Control ID or Hash..." type="text" oninput="filterControlsTable()" />
                                     </div>
-                                    <select
+                                    <select id="controlStatusFilter" onchange="filterControlsTable()"
                                         class="h-control-height-sm px-space-xs bg-surface-container-lowest border border-outline-variant font-telemetry-micro text-telemetry-micro text-on-surface focus:outline-none focus:border-primary cursor-pointer">
-                                        <option>Status: All (29)</option>
-                                        <option>Compliant (27)</option>
-                                        <option>Remediation (1)</option>
-                                        <option>Deviation (1)</option>
+                                        <option value="ALL">Status: All (<?= $totalControls ?>)</option>
+                                        <option value="COMPLIANT">Compliant (<?= $compliantControls ?>)</option>
+                                        <option value="REMEDIATION">Remediation (<?= $remediationControls ?>)</option>
+                                        <option value="DEVIATION">Deviation (<?= $deviationControls ?>)</option>
                                     </select>
+                                    <button onclick="openNewControlModal()"
+                                        class="h-control-height-sm px-space-sm bg-primary text-on-primary hover:bg-primary/90 font-telemetry-micro text-telemetry-micro font-bold flex items-center gap-space-2xs uppercase tracking-wider transition-colors cursor-pointer">
+                                        <span class="material-symbols-outlined text-[14px]">add_box</span>
+                                        <span>Register Control</span>
+                                    </button>
                                 </div>
                             </div>
                             <!-- HIGH DENSITY DATA TABLE -->
@@ -461,322 +474,98 @@ if ($remediationReviews < 0) $remediationReviews = 0;
                                             <th
                                                 class="py-space-xs px-space-sm border-r border-outline-variant/40 w-32 text-center">
                                                 Status</th>
-                                            <th class="py-space-xs px-space-sm w-28 text-right">Verification</th>
+                                            <th class="py-space-xs px-space-sm w-32 text-right">Actions</th>
                                         </tr>
                                     </thead>
-                                    <tbody
-                                        class="font-body-compact text-body-compact divide-y divide-outline-variant/40">
-                                        <!-- ROW 1: COMPLIANT -->
-                                        <tr class="hover:bg-surface-container-low transition-colors group">
-                                            <td
-                                                class="py-space-xs px-space-sm border-r border-outline-variant/40 font-telemetry-data text-telemetry-micro text-primary font-bold">
-                                                CTRL-ISO-9.2
-                                                <span class="block text-[9px] text-outline font-normal">ST RK 27001
-                                                    §9</span>
-                                            </td>
-                                            <td class="py-space-xs px-space-sm border-r border-outline-variant/40">
-                                                <div class="font-semibold text-on-surface">Dual-Custody Break-Glass
-                                                    Protocol Enforcement</div>
-                                                <div class="text-[11px] text-on-surface-variant">Mandatory quorum
-                                                    authorization for Level 5 cryptographic override</div>
-                                            </td>
-                                            <td
-                                                class="py-space-xs px-space-sm border-r border-outline-variant/40 font-telemetry-micro text-telemetry-micro text-on-surface">
-                                                <span
-                                                    class="px-space-2xs py-[1px] bg-surface-container font-medium border border-outline-variant/50">SYS-11
-                                                    Gov-Core</span>
-                                            </td>
-                                            <td class="py-space-xs px-space-sm border-r border-outline-variant/40">
-                                                <div class="font-medium text-on-surface text-[11px]">Timur Akhmetov
-                                                </div>
-                                                <div class="font-telemetry-micro text-[10px] text-outline">EMP-1005
-                                                    (CGO)</div>
-                                            </td>
-                                            <td
-                                                class="py-space-xs px-space-sm border-r border-outline-variant/40 font-telemetry-micro text-telemetry-micro">
-                                                <span
-                                                    class="text-secondary font-semibold hover:underline cursor-pointer">SHA256:4f8a...9c1</span>
-                                                <span class="block text-[9px] text-outline">HSM-VERIFIED</span>
-                                            </td>
-                                            <td
-                                                class="py-space-xs px-space-sm border-r border-outline-variant/40 text-center">
-                                                <span
-                                                    class="inline-flex items-center gap-space-2xs px-space-xs py-[2px] bg-secondary-container/30 text-on-secondary-container font-label-uppercase text-label-uppercase font-bold border border-secondary/30">
-                                                    <span class="w-1.5 h-1.5 bg-secondary rounded-full"></span>
-                                                    COMPLIANT
-                                                </span>
-                                            </td>
-                                            <td class="py-space-xs px-space-sm text-right">
-                                                <button
-                                                    class="px-space-xs py-[2px] bg-surface-container hover:bg-primary hover:text-on-primary border border-outline-variant font-telemetry-micro text-[10px] font-semibold transition-colors cursor-pointer">
-                                                    Inspect
-                                                </button>
+                                    <tbody class="font-body-compact text-body-compact divide-y divide-outline-variant/40" id="controlsTableBody">
+                                        <?php if (empty($controls)): ?>
+                                        <tr>
+                                            <td colspan="7" class="py-space-md px-space-sm text-center text-outline font-telemetry-micro">
+                                                No statutory compliance controls registered in database. Click "Register Control" to add one.
                                             </td>
                                         </tr>
-                                        <!-- ROW 2: DEVIATION (NC-2026-009) -->
-                                        <tr
-                                            class="bg-error-container/15 hover:bg-error-container/25 transition-colors border-l-4 border-error">
-                                            <td
-                                                class="py-space-xs px-space-sm border-r border-outline-variant/40 font-telemetry-data text-telemetry-micro text-error font-bold">
-                                                CTRL-GOV-07
-                                                <span class="block text-[9px] text-error font-normal">NC-2026-009</span>
+                                        <?php else: foreach ($controls as $c): 
+                                            $st = strtoupper($c['status'] ?? 'COMPLIANT');
+                                            $statusBadge = 'bg-secondary-container/30 text-on-secondary-container border-secondary/30 text-secondary';
+                                            $dotColor = 'bg-secondary';
+                                            if ($st === 'DEVIATION') {
+                                                $statusBadge = 'bg-error-container/40 text-on-error-container border-error/40 text-error';
+                                                $dotColor = 'bg-error';
+                                            } elseif ($st === 'REMEDIATION') {
+                                                $statusBadge = 'bg-tertiary-container/40 text-on-tertiary-container border-tertiary/40 text-tertiary';
+                                                $dotColor = 'bg-tertiary';
+                                            }
+                                            $cId = htmlspecialchars($c['control_id'] ?? '');
+                                            $cFramework = htmlspecialchars($c['framework'] ?? 'ST RK 27001');
+                                            $cTitle = htmlspecialchars($c['title'] ?? '');
+                                            $cDesc = htmlspecialchars($c['description'] ?? '');
+                                            $cAsset = htmlspecialchars($c['target_asset'] ?? 'SYS-11 Gov-Core');
+                                            $cCustName = htmlspecialchars($c['custodian_name'] ?? 'Custodian');
+                                            $cCustId = htmlspecialchars($c['custodian_emp_id'] ?? 'EMP-1005');
+                                            $cHash = htmlspecialchars($c['proof_hash'] ?? 'SHA256:4f8a...9c1');
+                                            $cType = htmlspecialchars($c['verification_type'] ?? 'HSM-VERIFIED');
+                                            $cJson = htmlspecialchars(json_encode($c), ENT_QUOTES, 'UTF-8');
+                                        ?>
+                                        <tr class="hover:bg-surface-container-low transition-colors group control-row" data-control-id="<?= $cId ?>" data-framework="<?= $cFramework ?>" data-status="<?= $st ?>" data-json='<?= $cJson ?>'>
+                                            <td class="py-space-xs px-space-sm border-r border-outline-variant/40 font-telemetry-data text-telemetry-micro text-primary font-bold">
+                                                <?= $cId ?>
+                                                <span class="block text-[9px] text-outline font-normal"><?= $cFramework ?></span>
                                             </td>
                                             <td class="py-space-xs px-space-sm border-r border-outline-variant/40">
-                                                <div class="font-bold text-on-surface flex items-center gap-space-xs">
-                                                    <span>Orphaned Privileged Identifier Revocation SLA (&lt;24h)</span>
-                                                    <span
-                                                        class="px-space-2xs bg-error text-on-error font-telemetry-micro text-[9px] uppercase font-bold">Overdue
-                                                        SLA</span>
-                                                </div>
-                                                <div class="text-[11px] text-error font-medium">EMP-3044 Maksim Sokolov
-                                                    de-boarded; active keys exist in Sys-03</div>
+                                                <div class="font-semibold text-on-surface"><?= $cTitle ?></div>
+                                                <div class="text-[11px] text-on-surface-variant"><?= $cDesc ?></div>
                                             </td>
-                                            <td
-                                                class="py-space-xs px-space-sm border-r border-outline-variant/40 font-telemetry-micro text-telemetry-micro text-on-surface">
-                                                <span
-                                                    class="px-space-2xs py-[1px] bg-error-container/60 text-on-error-container font-medium border border-error/30">SYS-03
-                                                    Bridge</span>
+                                            <td class="py-space-xs px-space-sm border-r border-outline-variant/40 font-telemetry-micro text-telemetry-micro text-on-surface">
+                                                <span class="px-space-2xs py-[1px] bg-surface-container font-medium border border-outline-variant/50"><?= $cAsset ?></span>
                                             </td>
                                             <td class="py-space-xs px-space-sm border-r border-outline-variant/40">
-                                                <div class="font-medium text-on-surface text-[11px]">Leonid Volkov
-                                                </div>
-                                                <div class="font-telemetry-micro text-[10px] text-outline">EMP-1018
-                                                    (IAM)</div>
+                                                <div class="font-medium text-on-surface text-[11px]"><?= $cCustName ?></div>
+                                                <div class="font-telemetry-micro text-[10px] text-outline"><?= $cCustId ?></div>
                                             </td>
-                                            <td
-                                                class="py-space-xs px-space-sm border-r border-outline-variant/40 font-telemetry-micro text-telemetry-micro">
-                                                <span
-                                                    class="text-error font-bold hover:underline cursor-pointer">SEC-REV-094</span>
-                                                <span class="block text-[9px] text-error">EXPIRED TOKEN</span>
+                                            <td class="py-space-xs px-space-sm border-r border-outline-variant/40 font-telemetry-micro text-telemetry-micro">
+                                                <span class="text-secondary font-semibold hover:underline cursor-pointer" title="<?= $cHash ?>"><?= strlen($cHash) > 16 ? substr($cHash, 0, 16) . '...' : $cHash ?></span>
+                                                <span class="block text-[9px] text-outline"><?= $cType ?></span>
                                             </td>
-                                            <td
-                                                class="py-space-xs px-space-sm border-r border-outline-variant/40 text-center">
-                                                <span
-                                                    class="inline-flex items-center gap-space-2xs px-space-xs py-[2px] bg-error-container text-on-error-container font-label-uppercase text-label-uppercase font-bold border border-error">
-                                                    <span class="w-1.5 h-1.5 bg-error rounded-full animate-ping"></span>
-                                                    DEVIATION
-                                                </span>
-                                            </td>
-                                            <td class="py-space-xs px-space-sm text-right">
-                                                <button
-                                                    class="px-space-xs py-[2px] bg-error text-on-error hover:bg-on-error-container font-telemetry-micro text-[10px] font-bold transition-colors cursor-pointer">
-                                                    Remediate
+                                            <td class="py-space-xs px-space-sm border-r border-outline-variant/40 text-center">
+                                                <button onclick="cycleControlStatus('<?= $cId ?>', '<?= $st ?>')" title="Click to cycle status (Compliant -> Remediation -> Deviation)"
+                                                    class="inline-flex items-center gap-space-2xs px-space-xs py-[2px] <?= $statusBadge ?> font-label-uppercase text-label-uppercase font-bold border cursor-pointer hover:opacity-80 transition-opacity">
+                                                    <span class="w-1.5 h-1.5 <?= $dotColor ?> rounded-full"></span>
+                                                    <?= $st ?>
                                                 </button>
                                             </td>
-                                        </tr>
-                                        <!-- ROW 3: UNDER REMEDIATION (NC-2026-004) -->
-                                        <tr
-                                            class="bg-tertiary-fixed/15 hover:bg-tertiary-fixed/25 transition-colors border-l-4 border-tertiary">
-                                            <td
-                                                class="py-space-xs px-space-sm border-r border-outline-variant/40 font-telemetry-data text-telemetry-micro text-tertiary font-bold">
-                                                CTRL-SCADA-11
-                                                <span
-                                                    class="block text-[9px] text-tertiary font-normal">NC-2026-004</span>
-                                            </td>
-                                            <td class="py-space-xs px-space-sm border-r border-outline-variant/40">
-                                                <div class="font-bold text-on-surface">SCADA Gateway Mutual TLS
-                                                    Certificate Rotation</div>
-                                                <div class="text-[11px] text-on-surface-variant">Sys-08 Karaganda
-                                                    Telemetry Bridge TLS node cert expiring in &lt;18h</div>
-                                            </td>
-                                            <td
-                                                class="py-space-xs px-space-sm border-r border-outline-variant/40 font-telemetry-micro text-telemetry-micro text-on-surface">
-                                                <span
-                                                    class="px-space-2xs py-[1px] bg-surface-container font-medium border border-outline-variant/50">SYS-08
-                                                    Bridge</span>
-                                            </td>
-                                            <td class="py-space-xs px-space-sm border-r border-outline-variant/40">
-                                                <div class="font-medium text-on-surface text-[11px]">Amina Karimova
-                                                </div>
-                                                <div class="font-telemetry-micro text-[10px] text-outline">EMP-1002
-                                                    (KAZ-CERT)</div>
-                                            </td>
-                                            <td
-                                                class="py-space-xs px-space-sm border-r border-outline-variant/40 font-telemetry-micro text-telemetry-micro">
-                                                <span
-                                                    class="text-tertiary font-bold hover:underline cursor-pointer">TLS-CRT-7718</span>
-                                                <span class="block text-[9px] text-tertiary">RE-ENCRYPTING</span>
-                                            </td>
-                                            <td
-                                                class="py-space-xs px-space-sm border-r border-outline-variant/40 text-center">
-                                                <span
-                                                    class="inline-flex items-center gap-space-2xs px-space-xs py-[2px] bg-tertiary-fixed text-on-tertiary-fixed font-label-uppercase text-label-uppercase font-bold border border-tertiary/40">
-                                                    <span class="w-1.5 h-1.5 bg-tertiary rounded-full"></span>
-                                                    IN PROGRESS
-                                                </span>
-                                            </td>
                                             <td class="py-space-xs px-space-sm text-right">
-                                                <button
-                                                    class="px-space-xs py-[2px] bg-surface-container hover:bg-tertiary hover:text-on-tertiary border border-outline-variant font-telemetry-micro text-[10px] font-semibold transition-colors cursor-pointer">
-                                                    Review
-                                                </button>
-                                            </td>
-                                        </tr>
-                                        <!-- ROW 4: COMPLIANT -->
-                                        <tr class="hover:bg-surface-container-low transition-colors group">
-                                            <td
-                                                class="py-space-xs px-space-sm border-r border-outline-variant/40 font-telemetry-data text-telemetry-micro text-primary font-bold">
-                                                CTRL-CERT-04
-                                                <span class="block text-[9px] text-outline font-normal">KAZ-CERT
-                                                    DIR-44</span>
-                                            </td>
-                                            <td class="py-space-xs px-space-sm border-r border-outline-variant/40">
-                                                <div class="font-semibold text-on-surface">Cryptographic Audit
-                                                    Immutability across Sys 01-10</div>
-                                                <div class="text-[11px] text-on-surface-variant">Continuous streaming
-                                                    Merkle root notarization to Almaty Station Master Ledger</div>
-                                            </td>
-                                            <td
-                                                class="py-space-xs px-space-sm border-r border-outline-variant/40 font-telemetry-micro text-telemetry-micro text-on-surface">
-                                                <span
-                                                    class="px-space-2xs py-[1px] bg-surface-container font-medium border border-outline-variant/50">SYS
-                                                    01..10 Bridges</span>
-                                            </td>
-                                            <td class="py-space-xs px-space-sm border-r border-outline-variant/40">
-                                                <div class="font-medium text-on-surface text-[11px]">Timur Akhmetov
+                                                <div class="inline-flex items-center gap-1 justify-end">
+                                                    <button onclick="editControl('<?= $cId ?>')" title="Edit Control"
+                                                        class="px-space-xs py-[2px] bg-surface-container hover:bg-primary hover:text-on-primary border border-outline-variant font-telemetry-micro text-[10px] font-semibold transition-colors cursor-pointer">
+                                                        Edit
+                                                    </button>
+                                                    <button onclick="deleteControl('<?= $cId ?>')" title="Delete Control"
+                                                        class="px-space-xs py-[2px] bg-surface-container hover:bg-error hover:text-on-error border border-outline-variant font-telemetry-micro text-[10px] font-semibold transition-colors cursor-pointer">
+                                                        Del
+                                                    </button>
                                                 </div>
-                                                <div class="font-telemetry-micro text-[10px] text-outline">EMP-1005
-                                                    (CGO)</div>
-                                            </td>
-                                            <td
-                                                class="py-space-xs px-space-sm border-r border-outline-variant/40 font-telemetry-micro text-telemetry-micro">
-                                                <span
-                                                    class="text-secondary font-semibold hover:underline cursor-pointer">DOC-2026-015</span>
-                                                <span class="block text-[9px] text-outline">SECP256K1</span>
-                                            </td>
-                                            <td
-                                                class="py-space-xs px-space-sm border-r border-outline-variant/40 text-center">
-                                                <span
-                                                    class="inline-flex items-center gap-space-2xs px-space-xs py-[2px] bg-secondary-container/30 text-on-secondary-container font-label-uppercase text-label-uppercase font-bold border border-secondary/30">
-                                                    <span class="w-1.5 h-1.5 bg-secondary rounded-full"></span>
-                                                    COMPLIANT
-                                                </span>
-                                            </td>
-                                            <td class="py-space-xs px-space-sm text-right">
-                                                <button
-                                                    class="px-space-xs py-[2px] bg-surface-container hover:bg-primary hover:text-on-primary border border-outline-variant font-telemetry-micro text-[10px] font-semibold transition-colors cursor-pointer">
-                                                    Inspect
-                                                </button>
                                             </td>
                                         </tr>
-                                        <!-- ROW 5: COMPLIANT -->
-                                        <tr class="hover:bg-surface-container-low transition-colors group">
-                                            <td
-                                                class="py-space-xs px-space-sm border-r border-outline-variant/40 font-telemetry-data text-telemetry-micro text-primary font-bold">
-                                                CTRL-IND-02
-                                                <span class="block text-[9px] text-outline font-normal">GOST
-                                                    34.003-90</span>
-                                            </td>
-                                            <td class="py-space-xs px-space-sm border-r border-outline-variant/40">
-                                                <div class="font-semibold text-on-surface">Telemetry Ingestion Integrity
-                                                    via Hardware Security Module</div>
-                                                <div class="text-[11px] text-on-surface-variant">Hardware-fused
-                                                    attestation chips on high-pressure pipelines &amp; switchgear</div>
-                                            </td>
-                                            <td
-                                                class="py-space-xs px-space-sm border-r border-outline-variant/40 font-telemetry-micro text-telemetry-micro text-on-surface">
-                                                <span
-                                                    class="px-space-2xs py-[1px] bg-surface-container font-medium border border-outline-variant/50">Field
-                                                    Gateway Nodes</span>
-                                            </td>
-                                            <td class="py-space-xs px-space-sm border-r border-outline-variant/40">
-                                                <div class="font-medium text-on-surface text-[11px]">Nurlan Baizhanov
-                                                </div>
-                                                <div class="font-telemetry-micro text-[10px] text-outline">EMP-1022
-                                                    (SCADA)</div>
-                                            </td>
-                                            <td
-                                                class="py-space-xs px-space-sm border-r border-outline-variant/40 font-telemetry-micro text-telemetry-micro">
-                                                <span
-                                                    class="text-secondary font-semibold hover:underline cursor-pointer">HSM-TK-9022</span>
-                                                <span class="block text-[9px] text-outline">TAMPER-SEALED</span>
-                                            </td>
-                                            <td
-                                                class="py-space-xs px-space-sm border-r border-outline-variant/40 text-center">
-                                                <span
-                                                    class="inline-flex items-center gap-space-2xs px-space-xs py-[2px] bg-secondary-container/30 text-on-secondary-container font-label-uppercase text-label-uppercase font-bold border border-secondary/30">
-                                                    <span class="w-1.5 h-1.5 bg-secondary rounded-full"></span>
-                                                    COMPLIANT
-                                                </span>
-                                            </td>
-                                            <td class="py-space-xs px-space-sm text-right">
-                                                <button
-                                                    class="px-space-xs py-[2px] bg-surface-container hover:bg-primary hover:text-on-primary border border-outline-variant font-telemetry-micro text-[10px] font-semibold transition-colors cursor-pointer">
-                                                    Inspect
-                                                </button>
-                                            </td>
-                                        </tr>
-                                        <!-- ROW 6: COMPLIANT -->
-                                        <tr class="hover:bg-surface-container-low transition-colors group">
-                                            <td
-                                                class="py-space-xs px-space-sm border-r border-outline-variant/40 font-telemetry-data text-telemetry-micro text-primary font-bold">
-                                                CTRL-SEC-15
-                                                <span class="block text-[9px] text-outline font-normal">ST RK 27001
-                                                    §8</span>
-                                            </td>
-                                            <td class="py-space-xs px-space-sm border-r border-outline-variant/40">
-                                                <div class="font-semibold text-on-surface">Multi-Factor Hardware FIDO2
-                                                    on Bastion Enclaves</div>
-                                                <div class="text-[11px] text-on-surface-variant">Zero perimeter bypass
-                                                    for administrative shell entry into Gov-Core</div>
-                                            </td>
-                                            <td
-                                                class="py-space-xs px-space-sm border-r border-outline-variant/40 font-telemetry-micro text-telemetry-micro text-on-surface">
-                                                <span
-                                                    class="px-space-2xs py-[1px] bg-surface-container font-medium border border-outline-variant/50">Bastion-01
-                                                    Enclave</span>
-                                            </td>
-                                            <td class="py-space-xs px-space-sm border-r border-outline-variant/40">
-                                                <div class="font-medium text-on-surface text-[11px]">Leonid Volkov
-                                                </div>
-                                                <div class="font-telemetry-micro text-[10px] text-outline">EMP-1018
-                                                    (IAM)</div>
-                                            </td>
-                                            <td
-                                                class="py-space-xs px-space-sm border-r border-outline-variant/40 font-telemetry-micro text-telemetry-micro">
-                                                <span
-                                                    class="text-secondary font-semibold hover:underline cursor-pointer">FIDO-BL-0199</span>
-                                                <span class="block text-[9px] text-outline">100% COVERAGE</span>
-                                            </td>
-                                            <td
-                                                class="py-space-xs px-space-sm border-r border-outline-variant/40 text-center">
-                                                <span
-                                                    class="inline-flex items-center gap-space-2xs px-space-xs py-[2px] bg-secondary-container/30 text-on-secondary-container font-label-uppercase text-label-uppercase font-bold border border-secondary/30">
-                                                    <span class="w-1.5 h-1.5 bg-secondary rounded-full"></span>
-                                                    COMPLIANT
-                                                </span>
-                                            </td>
-                                            <td class="py-space-xs px-space-sm text-right">
-                                                <button
-                                                    class="px-space-xs py-[2px] bg-surface-container hover:bg-primary hover:text-on-primary border border-outline-variant font-telemetry-micro text-[10px] font-semibold transition-colors cursor-pointer">
-                                                    Inspect
-                                                </button>
-                                            </td>
-                                        </tr>
+                                        <?php endforeach; endif; ?>
                                     </tbody>
                                 </table>
                             </div>
                             <!-- TABLE FOOTER PAGINATION & TELEMETRY SYNC -->
-                            <div
-                                class="p-space-sm bg-surface-container-low border-t border-outline-variant flex items-center justify-between text-telemetry-micro font-telemetry-micro text-on-surface-variant">
-                                <div class="flex items-center gap-space-sm">
-                                    <span>SHOWING 6 OF 29 REGULATORY CONTROLS</span>
+                            <div class="p-space-sm bg-surface-container-low border-t border-outline-variant flex items-center justify-between text-telemetry-micro font-telemetry-micro text-on-surface-variant flex-wrap gap-2">
+                                <div class="flex items-center gap-space-sm flex-wrap">
+                                    <span id="footerCountSpan">SHOWING <?= $totalControls ?> OF <?= $totalControls ?> REGULATORY CONTROLS</span>
                                     <span class="text-outline-variant">|</span>
                                     <span class="text-secondary font-bold flex items-center gap-space-2xs">
                                         <span class="w-2 h-2 bg-secondary rounded-full"></span>
-                                        27 COMPLIANT
+                                        <?= $compliantControls ?> COMPLIANT
                                     </span>
-                                    <span class="text-tertiary font-semibold">1 REMEDIATION</span>
-                                    <span class="text-error font-bold">1 DEVIATION</span>
+                                    <span class="text-tertiary font-semibold"><?= $remediationControls ?> REMEDIATION</span>
+                                    <span class="text-error font-bold"><?= $deviationControls ?> DEVIATION</span>
                                 </div>
                                 <div class="flex items-center gap-space-xs">
-                                    <button
-                                        class="px-space-xs py-[2px] border border-outline-variant bg-surface-container-lowest hover:bg-surface-container text-on-surface disabled:opacity-40"
-                                        disabled="">PREV</button>
-                                    <span class="px-space-xs font-bold text-primary">PAGE 1 / 5</span>
-                                    <button
-                                        class="px-space-xs py-[2px] border border-outline-variant bg-surface-container-lowest hover:bg-surface-container text-on-surface">NEXT</button>
+                                    <span class="px-space-xs font-bold text-primary">DATABASE LIVE SYNC</span>
                                 </div>
+                            </div>
                             </div>
                         </div>
                         <!-- LIVE COMPLIANCE STREAM TICKER -->
@@ -895,84 +684,64 @@ if ($remediationReviews < 0) $remediationReviews = 0;
                         </div>
                         <!-- ACTIVE REMEDIATION DESK / CRITICAL DEVIATIONS -->
                         <div class="bg-surface-container-lowest border border-outline-variant shadow-sm flex flex-col">
-                            <div
-                                class="p-space-md bg-surface-container-low border-b border-outline-variant flex items-center justify-between">
+                            <div class="p-space-md bg-surface-container-low border-b border-outline-variant flex items-center justify-between">
                                 <div class="flex items-center gap-space-xs">
                                     <span class="material-symbols-outlined text-error text-[18px]">report_problem</span>
-                                    <span
-                                        class="font-headline-md text-[14px] text-primary font-bold uppercase tracking-tight">Active
-                                        Non-Conformity Desk</span>
+                                    <span class="font-headline-md text-[14px] text-primary font-bold uppercase tracking-tight">Active Non-Conformity Desk</span>
                                 </div>
-                                <span
-                                    class="px-space-xs py-[1px] bg-error-container text-on-error-container font-label-uppercase text-label-uppercase font-bold">
-                                    2 CRITICAL
-                                </span>
+                                <div class="flex items-center gap-space-xs">
+                                    <span class="px-space-xs py-[1px] bg-error-container text-on-error-container font-label-uppercase text-label-uppercase font-bold">
+                                        <?= count($incidents) ?> RECORDED
+                                    </span>
+                                    <button onclick="openNewIncidentModal()" title="Report Incident / Deviation"
+                                        class="px-space-xs py-[2px] bg-error text-on-error hover:bg-error/90 font-telemetry-micro text-[10px] font-bold uppercase tracking-wider transition-colors cursor-pointer flex items-center gap-1">
+                                        <span class="material-symbols-outlined text-[12px]">add</span>
+                                        <span>Report</span>
+                                    </button>
+                                </div>
                             </div>
-                            <div class="p-space-md flex flex-col gap-space-md">
-                                <!-- ITEM 1: NC-2026-009 -->
-                                <div
-                                    class="border border-error/40 bg-surface-container-low p-space-sm flex flex-col gap-space-xs">
+                            <div class="p-space-md flex flex-col gap-space-md" id="incidentsDeskList">
+                                <?php if (empty($incidents)): ?>
+                                    <div class="p-space-sm bg-surface-container-low border border-outline-variant text-center text-outline font-telemetry-micro">
+                                        No active deviations or non-conformity incidents recorded.
+                                    </div>
+                                <?php else: foreach ($incidents as $inc):
+                                    $incCode = htmlspecialchars($inc['incident_code'] ?? ('NC-' . $inc['incident_id']));
+                                    $incTitle = htmlspecialchars($inc['title'] ?? '');
+                                    $incDesc = htmlspecialchars($inc['description'] ?? '');
+                                    $incSev = strtoupper($inc['severity'] ?? 'HIGH');
+                                    $incStatus = strtoupper($inc['status'] ?? 'OPEN');
+                                    $leadName = htmlspecialchars($inc['lead_name'] ?? ($inc['assigned_to_emp_id'] ?? 'Unassigned'));
+                                    $borderSev = ($incSev === 'CRITICAL' || $incSev === 'HIGH') ? 'border-error/40' : 'border-tertiary/40';
+                                    $badgeSev = ($incSev === 'CRITICAL' || $incSev === 'HIGH') ? 'bg-error text-on-error' : 'bg-tertiary-fixed text-on-tertiary-fixed';
+                                ?>
+                                <div class="border <?= $borderSev ?> bg-surface-container-low p-space-sm flex flex-col gap-space-xs">
                                     <div class="flex items-center justify-between">
-                                        <span class="font-telemetry-micro text-[11px] text-error font-bold">NC-2026-009
-                                            // ORPHANED ACCOUNT</span>
-                                        <span
-                                            class="px-space-xs py-[1px] bg-error text-on-error font-security-stamp text-[9px] font-bold">OVERDUE</span>
+                                        <span class="font-telemetry-micro text-[11px] text-error font-bold"><?= $incCode ?> // <?= $incTitle ?></span>
+                                        <span class="px-space-xs py-[1px] <?= $badgeSev ?> font-security-stamp text-[9px] font-bold"><?= $incStatus ?></span>
                                     </div>
                                     <div class="font-body-compact text-body-compact text-on-surface font-semibold">
-                                        Maksim Sokolov (Contractor EMP-3044) revoked in HRIS, but active keys retain RW
-                                        on Sys-03 Telemetry Ingestion Bridge.
+                                        <?= $incDesc ?>
                                     </div>
-                                    <div
-                                        class="font-telemetry-micro text-[10px] text-on-surface-variant flex items-center gap-space-xs">
-                                        <span class="material-symbols-outlined text-[12px] text-error">timer</span>
-                                        <span>Discovered: 4h 12m ago • SLA limit: 24h</span>
+                                    <div class="font-telemetry-micro text-[10px] text-on-surface-variant flex items-center gap-space-xs">
+                                        <span class="material-symbols-outlined text-[12px] text-error">assignment_ind</span>
+                                        <span>Lead: <?= $leadName ?> • Severity: <?= $incSev ?></span>
                                     </div>
-                                    <div
-                                        class="pt-space-xs mt-space-2xs border-t border-outline-variant/40 flex items-center justify-between">
-                                        <button
-                                            class="h-control-height-sm px-space-sm bg-primary hover:bg-primary-container text-on-primary font-body-compact text-[11px] font-semibold flex items-center gap-space-xs transition-colors cursor-pointer">
+                                    <div class="pt-space-xs mt-space-2xs border-t border-outline-variant/40 flex items-center justify-between">
+                                        <button onclick="window.location.href='PrivilegedAccounts.php'" class="h-control-height-sm px-space-sm bg-primary hover:bg-primary-container text-on-primary font-body-compact text-[11px] font-semibold flex items-center gap-space-xs transition-colors cursor-pointer">
                                             <span class="material-symbols-outlined text-[14px]">link</span>
-                                            <span>Cross-Reference Access Matrix</span>
+                                            <span>Cross-Reference Matrix</span>
                                         </button>
-                                        <button
-                                            class="h-control-height-sm px-space-xs text-error hover:bg-error-container font-telemetry-micro text-[10px] font-bold transition-colors cursor-pointer">
-                                            Revoke Now
+                                        <?php if ($incStatus !== 'RESOLVED' && $incStatus !== 'CLOSED'): ?>
+                                        <button onclick="resolveIncident(<?= (int)$inc['incident_id'] ?>)" class="h-control-height-sm px-space-xs text-error hover:bg-error-container font-telemetry-micro text-[10px] font-bold transition-colors cursor-pointer">
+                                            Resolve Now
                                         </button>
+                                        <?php else: ?>
+                                        <span class="text-secondary font-bold text-[10px] font-telemetry-micro">RESOLVED</span>
+                                        <?php endif; ?>
                                     </div>
                                 </div>
-                                <!-- ITEM 2: NC-2026-004 -->
-                                <div
-                                    class="border border-tertiary/40 bg-surface-container-low p-space-sm flex flex-col gap-space-xs">
-                                    <div class="flex items-center justify-between">
-                                        <span
-                                            class="font-telemetry-micro text-[11px] text-tertiary font-bold">NC-2026-004
-                                            // mTLS CERT ROTATION</span>
-                                        <span
-                                            class="px-space-xs py-[1px] bg-tertiary-fixed text-on-tertiary-fixed font-security-stamp text-[9px] font-bold">EXPIRING</span>
-                                    </div>
-                                    <div class="font-body-compact text-body-compact text-on-surface font-semibold">
-                                        Sys-08 Karaganda SCADA Bridge client certificate invalid in 17h 40m. Automatic
-                                        rotation pipeline stalled at Step 3/4.
-                                    </div>
-                                    <div
-                                        class="font-telemetry-micro text-[10px] text-on-surface-variant flex items-center gap-space-xs">
-                                        <span
-                                            class="material-symbols-outlined text-[12px] text-tertiary">lock_reset</span>
-                                        <span>Target: KARAGANDA-SCADA-08-GATEWAY</span>
-                                    </div>
-                                    <div
-                                        class="pt-space-xs mt-space-2xs border-t border-outline-variant/40 flex items-center justify-between">
-                                        <button
-                                            class="h-control-height-sm px-space-sm bg-surface-container-highest hover:bg-surface-variant text-on-surface font-body-compact text-[11px] font-semibold flex items-center gap-space-xs transition-colors cursor-pointer">
-                                            <span class="material-symbols-outlined text-[14px]">cable</span>
-                                            <span>Inspect TLS Bridge</span>
-                                        </button>
-                                        <button
-                                            class="h-control-height-sm px-space-xs text-tertiary font-telemetry-micro text-[10px] font-bold transition-colors cursor-pointer">
-                                            Push Cert
-                                        </button>
-                                    </div>
-                                </div>
+                                <?php endforeach; endif; ?>
                             </div>
                         </div>
                         <!-- AUDITOR VERIFICATION CERTIFICATE BADGE & DIGITAL STAMP -->
@@ -1042,6 +811,118 @@ if ($remediationReviews < 0) $remediationReviews = 0;
     </div>
     <script src="js/common.js"></script>
     <script src="js/complianceOversight.js"></script>
+
+    <!-- MODAL: REGISTER / EDIT STATUTORY CONTROL -->
+    <div id="controlModal" class="fixed inset-0 z-50 hidden bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-surface-container-lowest border-2 border-primary w-full max-w-xl shadow-2xl overflow-hidden flex flex-col">
+            <div class="p-space-md bg-surface-container-low border-b border-outline-variant flex items-center justify-between">
+                <div class="flex items-center gap-space-xs">
+                    <span class="material-symbols-outlined text-primary text-[20px]">policy</span>
+                    <h3 id="controlModalTitle" class="font-headline-md text-[14px] text-primary font-bold uppercase tracking-wider">Register Statutory Control</h3>
+                </div>
+                <button type="button" onclick="closeControlModal()" class="text-on-surface-variant hover:text-error text-xl font-bold p-1 leading-none">&times;</button>
+            </div>
+            <form id="controlForm" onsubmit="saveControlForm(event)" class="p-space-md flex flex-col gap-space-sm text-telemetry-micro font-telemetry-micro">
+                <input type="hidden" id="ctrl_is_edit" value="0">
+                <div class="grid grid-cols-2 gap-space-sm">
+                    <div>
+                        <label class="block text-outline font-semibold uppercase mb-1">Control ID *</label>
+                        <input type="text" id="ctrl_id" required class="w-full h-control-height-sm px-space-xs bg-surface-container-lowest border border-outline-variant font-telemetry-data text-on-surface" placeholder="e.g. CTRL-ISO-9.5">
+                    </div>
+                    <div>
+                        <label class="block text-outline font-semibold uppercase mb-1">Regulatory Framework *</label>
+                        <input type="text" id="ctrl_framework" required class="w-full h-control-height-sm px-space-xs bg-surface-container-lowest border border-outline-variant text-on-surface" placeholder="e.g. ST RK 27001 §9.5">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-outline font-semibold uppercase mb-1">Title / Statutory Requirement *</label>
+                    <input type="text" id="ctrl_title" required class="w-full h-control-height-sm px-space-xs bg-surface-container-lowest border border-outline-variant text-on-surface" placeholder="Requirement title...">
+                </div>
+                <div>
+                    <label class="block text-outline font-semibold uppercase mb-1">Directive Description</label>
+                    <textarea id="ctrl_description" rows="2" class="w-full p-space-xs bg-surface-container-lowest border border-outline-variant text-on-surface" placeholder="Detailed enforcement requirements..."></textarea>
+                </div>
+                <div class="grid grid-cols-2 gap-space-sm">
+                    <div>
+                        <label class="block text-outline font-semibold uppercase mb-1">Target Asset</label>
+                        <input type="text" id="ctrl_target_asset" class="w-full h-control-height-sm px-space-xs bg-surface-container-lowest border border-outline-variant text-on-surface" placeholder="e.g. SYS-11 Gov-Core">
+                    </div>
+                    <div>
+                        <label class="block text-outline font-semibold uppercase mb-1">Custodian Employee ID</label>
+                        <input type="text" id="ctrl_custodian_emp_id" class="w-full h-control-height-sm px-space-xs bg-surface-container-lowest border border-outline-variant font-telemetry-data text-on-surface" placeholder="EMP-1005" value="EMP-1005">
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-space-sm">
+                    <div>
+                        <label class="block text-outline font-semibold uppercase mb-1">Status</label>
+                        <select id="ctrl_status" class="w-full h-control-height-sm px-space-xs bg-surface-container-lowest border border-outline-variant text-on-surface">
+                            <option value="COMPLIANT">COMPLIANT</option>
+                            <option value="REMEDIATION">REMEDIATION</option>
+                            <option value="DEVIATION">DEVIATION</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-outline font-semibold uppercase mb-1">Verification Type</label>
+                        <input type="text" id="ctrl_verification_type" class="w-full h-control-height-sm px-space-xs bg-surface-container-lowest border border-outline-variant text-on-surface" placeholder="HSM-VERIFIED" value="HSM-VERIFIED">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-outline font-semibold uppercase mb-1">Proof Hash / Token</label>
+                    <input type="text" id="ctrl_proof_hash" class="w-full h-control-height-sm px-space-xs bg-surface-container-lowest border border-outline-variant font-telemetry-data text-on-surface" placeholder="SHA256:...">
+                </div>
+                <div class="flex items-center justify-end gap-space-xs pt-space-sm border-t border-outline-variant">
+                    <button type="button" onclick="closeControlModal()" class="px-space-md py-space-xs bg-surface-container hover:bg-surface-container-high text-on-surface border border-outline-variant uppercase font-bold cursor-pointer">Cancel</button>
+                    <button type="submit" id="ctrlSubmitBtn" class="px-space-md py-space-xs bg-primary hover:bg-primary/90 text-on-primary border border-primary uppercase font-bold cursor-pointer">Commit Control</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: REPORT INCIDENT / DEVIATION -->
+    <div id="incidentModal" class="fixed inset-0 z-50 hidden bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-surface-container-lowest border-2 border-error w-full max-w-xl shadow-2xl overflow-hidden flex flex-col">
+            <div class="p-space-md bg-surface-container-low border-b border-outline-variant flex items-center justify-between">
+                <div class="flex items-center gap-space-xs">
+                    <span class="material-symbols-outlined text-error text-[20px]">report</span>
+                    <h3 class="font-headline-md text-[14px] text-error font-bold uppercase tracking-wider">Report Non-Conformity Incident</h3>
+                </div>
+                <button type="button" onclick="closeIncidentModal()" class="text-on-surface-variant hover:text-error text-xl font-bold p-1 leading-none">&times;</button>
+            </div>
+            <form id="incidentForm" onsubmit="saveIncidentForm(event)" class="p-space-md flex flex-col gap-space-sm text-telemetry-micro font-telemetry-micro">
+                <div class="grid grid-cols-2 gap-space-sm">
+                    <div>
+                        <label class="block text-outline font-semibold uppercase mb-1">Incident Code *</label>
+                        <input type="text" id="inc_code" required class="w-full h-control-height-sm px-space-xs bg-surface-container-lowest border border-outline-variant font-telemetry-data text-on-surface" placeholder="NC-2026-010">
+                    </div>
+                    <div>
+                        <label class="block text-outline font-semibold uppercase mb-1">Severity *</label>
+                        <select id="inc_severity" class="w-full h-control-height-sm px-space-xs bg-surface-container-lowest border border-outline-variant text-on-surface">
+                            <option value="Critical">Critical</option>
+                            <option value="High" selected>High</option>
+                            <option value="Medium">Medium</option>
+                            <option value="Low">Low</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-outline font-semibold uppercase mb-1">Title *</label>
+                    <input type="text" id="inc_title" required class="w-full h-control-height-sm px-space-xs bg-surface-container-lowest border border-outline-variant text-on-surface" placeholder="e.g. Unlawful Token Persistence">
+                </div>
+                <div>
+                    <label class="block text-outline font-semibold uppercase mb-1">Incident Details *</label>
+                    <textarea id="inc_description" rows="3" required class="w-full p-space-xs bg-surface-container-lowest border border-outline-variant text-on-surface" placeholder="Detailed non-conformity findings and breach telemetry..."></textarea>
+                </div>
+                <div>
+                    <label class="block text-outline font-semibold uppercase mb-1">Assigned Investigator (EMP ID)</label>
+                    <input type="text" id="inc_assigned_to" class="w-full h-control-height-sm px-space-xs bg-surface-container-lowest border border-outline-variant font-telemetry-data text-on-surface" placeholder="EMP-1042" value="EMP-1042">
+                </div>
+                <div class="flex items-center justify-end gap-space-xs pt-space-sm border-t border-outline-variant">
+                    <button type="button" onclick="closeIncidentModal()" class="px-space-md py-space-xs bg-surface-container hover:bg-surface-container-high text-on-surface border border-outline-variant uppercase font-bold cursor-pointer">Cancel</button>
+                    <button type="submit" class="px-space-md py-space-xs bg-error hover:bg-error/90 text-on-error border border-error uppercase font-bold cursor-pointer">File Incident</button>
+                </div>
+            </form>
+        </div>
+    </div>
 </body>
 
 </html>

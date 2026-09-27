@@ -90,7 +90,7 @@ $metrics = gov_getGovernanceMetrics();
             <nav class="flex flex-col gap-[2px] px-space-xs mb-space-md"
                 data-active-classes="bg-primary-container text-on-primary font-semibold border-l-4 border-secondary-fixed">
                 <a class="flex items-center justify-between px-space-sm py-space-xs rounded text-on-primary-container hover:bg-primary-container hover:text-on-primary transition-all font-body-compact text-body-compact"
-                    data-path="dashboard" href="mainDashborde.php">
+                    data-path="dashboard" href="mainDashboard.php">
                     <div class="flex items-center gap-space-sm"><span
                             class="material-symbols-outlined text-[18px]">dashboard</span><span>Main Dashboard</span>
                     </div><span
@@ -248,8 +248,8 @@ $metrics = gov_getGovernanceMetrics();
                             id="btn-checkin-all"><span
                                 class="material-symbols-outlined text-[17px] text-primary">lock_reset</span><span>Check-in
                                 All Active Leases</span></button><button
-                            class="h-control-height-md px-space-md bg-error hover:bg-on-error-container text-on-error font-security-stamp text-[11px] font-bold uppercase rounded border border-error flex items-center gap-space-xs transition-all shadow-sm hover:shadow"
-                            onclick="confirm('CRITICAL OVERRIDE: Sever all interactive sessions and force global bastions to DEFCON-2 lockout?')"><span
+                            class="h-control-height-md px-space-md bg-error hover:bg-on-error-container text-on-error font-security-stamp text-[11px] font-bold uppercase rounded border border-error flex items-center gap-space-xs transition-all shadow-sm hover:shadow cursor-pointer"
+                            onclick="emergencySeverAll()"><span
                                 class="material-symbols-outlined text-[16px]">power_off</span><span>Emergency Session
                                 Sever (Lockout)</span></button></div>
                 </div>
@@ -521,9 +521,18 @@ $metrics = gov_getGovernanceMetrics();
                                                 </td>
                                                 <td class="py-space-xs px-space-sm text-right">
                                                     <div class="flex items-center justify-end gap-space-2xs">
-                                                        <button class="px-space-xs py-[3px] bg-surface-container text-primary hover:bg-surface-container-high border border-outline-variant rounded font-telemetry-micro text-telemetry-micro font-bold" onclick="alert('Auditing <?= htmlspecialchars($pa['emp_id']) ?> session token')">
+                                                        <button class="px-space-xs py-[3px] bg-surface-container text-primary hover:bg-surface-container-high border border-outline-variant rounded font-telemetry-micro text-telemetry-micro font-bold cursor-pointer" onclick="inspectAccount('<?= htmlspecialchars($pa['emp_id']) ?>', '<?= htmlspecialchars($pa['full_name']) ?>', '<?= htmlspecialchars($pa['username']) ?>', '<?= htmlspecialchars($pa['clearance_level']) ?>')">
                                                             Inspect
                                                         </button>
+                                                        <?php if ($pa['account_status'] === 'Active'): ?>
+                                                        <button class="px-space-xs py-[3px] bg-error hover:bg-error/90 text-on-error rounded font-telemetry-micro text-telemetry-micro font-bold cursor-pointer" onclick="severAccountCredentials('<?= htmlspecialchars($pa['emp_id']) ?>')">
+                                                            Sever
+                                                        </button>
+                                                        <?php else: ?>
+                                                        <button class="px-space-xs py-[3px] bg-secondary hover:bg-secondary/90 text-on-secondary rounded font-telemetry-micro text-telemetry-micro font-bold cursor-pointer" onclick="restoreAccountCredentials('<?= htmlspecialchars($pa['emp_id']) ?>')">
+                                                            Restore
+                                                        </button>
+                                                        <?php endif; ?>
                                                     </div>
                                                 </td>
                                             </tr>
@@ -679,8 +688,8 @@ $metrics = gov_getGovernanceMetrics();
                                         </button>
                                     </div>
                                     <button
-                                        class="h-control-height-sm w-full bg-error hover:bg-on-error-container text-on-error rounded font-security-stamp text-[10px] uppercase font-bold tracking-wider flex items-center justify-center gap-1"
-                                        onclick="confirm('CRITICAL ACTION: Immediately sever session #PAM-9082 and invalidate the ephemeral lease?')">
+                                        class="h-control-height-sm w-full bg-error hover:bg-on-error-container text-on-error rounded font-security-stamp text-[10px] uppercase font-bold tracking-wider flex items-center justify-center gap-1 cursor-pointer"
+                                        onclick="terminateActiveLease()">
                                         <span class="material-symbols-outlined text-[14px]">cancel</span>
                                         Terminate &amp; Sever Leased Credentials
                                     </button>

@@ -7,6 +7,11 @@ require_once __DIR__ . '/gov_service.php';
 $currentUser = gov_getActiveUserProfile();
 $systemsLockdown = gov_getSystemsLockdownMatrix();
 $metrics = gov_getGovernanceMetrics();
+
+$isolatedCount = count(array_filter($systemsLockdown, fn($s) => ($s['status'] ?? '') === 'ISOLATED'));
+$totalSystems = count($systemsLockdown);
+$defconLevel = ($isolatedCount === $totalSystems && $totalSystems > 0) ? 'DEFCON-1' : (($isolatedCount > 0) ? 'DEFCON-2' : 'DEFCON-4');
+$defconStatus = ($isolatedCount === $totalSystems && $totalSystems > 0) ? 'MAXIMUM TELEMETRY QUARANTINE' : (($isolatedCount > 0) ? 'PARTIAL ENCLAVE ISOLATION' : 'NOMINAL INTERCONNECT');
 ?>
 <!DOCTYPE html>
 
@@ -90,7 +95,7 @@ $metrics = gov_getGovernanceMetrics();
             <nav class="flex flex-col gap-[2px] px-space-xs mb-space-md"
                 data-active-classes="bg-primary-container text-on-primary font-semibold border-l-4 border-secondary-fixed">
                 <a class="flex items-center justify-between px-space-sm py-space-xs rounded text-on-primary-container hover:bg-primary-container hover:text-on-primary transition-all font-body-compact text-body-compact"
-                    data-path="dashboard" href="mainDashborde.php">
+                    data-path="dashboard" href="mainDashboard.php">
                     <div class="flex items-center gap-space-sm"><span
                             class="material-symbols-outlined text-[18px]">dashboard</span><span>Main Dashboard</span>
                     </div><span

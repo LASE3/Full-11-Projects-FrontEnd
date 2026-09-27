@@ -237,11 +237,133 @@
           window.showToast(
             "LEASE SEVERED",
             "Ephemeral session terminated and cryptographic keys flushed from memory.",
-            "warn",
+    // Real-Time Database PAM Actions
+    window.severAccountCredentials = async function (empId) {
+      if (
+        !confirm(
+          `Revoke and sever all active leased credentials for [${empId}]?`,
+        )
+      )
+        return;
+      try {
+        const res = await fetch("api/privileged.php?action=sever_credentials", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ emp_id: empId }),
+        });
+        const data = await res.json();
+        if (data.success) {
+          window.showToast?.(
+            "CREDENTIALS SEVERED",
+            `Account ${empId} revoked and active sessions invalidated in database.`,
+            "error",
             "link_off",
           );
+          setTimeout(() => location.reload(), 800);
+        } else {
+          window.showToast?.("ERROR", data.error || "Sever failed", "error");
         }
+      } catch (err) {
+        window.showToast?.("NETWORK ERROR", err.message, "error");
       }
-    });
+    };
+
+    window.restoreAccountCredentials = async function (empId) {
+      try {
+        const res = await fetch(
+          "api/privileged.php?action=restore_credentials",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ emp_id: empId }),
+          },
+        );
+        const data = await res.json();
+        if (data.success) {
+          window.showToast?.(
+            "CREDENTIALS RESTORED",
+            `Account ${empId} restored to active status in database.`,
+            "success",
+            "verified",
+          );
+          setTimeout(() => location.reload(), 800);
+        } else {
+          window.showToast?.("ERROR", data.error || "Restore failed", "error");
+        }
+      } catch (err) {
+        window.showToast?.("NETWORK ERROR", err.message, "error");
+      }
+    };
+
+    window.terminateActiveLease = async function () {
+      if (
+        !confirm(
+          "CRITICAL ACTION: Immediately terminate session and invalidate ephemeral lease in database?",
+        )
+      )
+        return;
+      try {
+        const res = await fetch("api/privileged.php?action=terminate_session", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ session_id: "all" }),
+        });
+        const data = await res.json();
+        if (data.success) {
+          window.showToast?.(
+            "SESSION TERMINATED",
+            "Interactive session severed and keys flushed from memory.",
+            "error",
+            "cancel",
+          );
+          setTimeout(() => location.reload(), 800);
+        } else {
+          window.showToast?.(
+            "ERROR",
+            data.error || "Termination failed",
+            "error",
+          );
+        }
+      } catch (err) {
+        window.showToast?.("NETWORK ERROR", err.message, "error");
+      }
+    };
+
+    window.emergencySeverAll = async function () {
+      if (
+        !confirm(
+          "DEFCON-2 LOCKOUT: Sever all active privileged accounts and force global bastions to lockout?",
+        )
+      )
+        return;
+      try {
+        const res = await fetch("api/privileged.php?action=terminate_session", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ session_id: "all" }),
+        });
+        const data = await res.json();
+        if (data.success) {
+          window.showToast?.(
+            "GLOBAL SEVER EXECUTED",
+            "All interactive PAM sessions terminated across bastions.",
+            "error",
+            "power_off",
+          );
+          setTimeout(() => location.reload(), 1000);
+        }
+      } catch (err) {
+        window.showToast?.("NETWORK ERROR", err.message, "error");
+      }
+    };
+
+    window.inspectAccount = function (empId, fullName, username, clearance) {
+      window.showToast?.(
+        "AUDIT INSPECTOR",
+        `Examining ${fullName} (${empId}) • Vault User: ${username} • Clearance: ${clearance}`,
+        "info",
+        "shield_person",
+      );
+    };
   });
 })();

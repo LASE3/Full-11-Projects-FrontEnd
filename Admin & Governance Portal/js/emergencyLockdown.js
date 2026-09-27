@@ -1,10 +1,106 @@
 /**
  * VOSTOKPRIBOR Administration & Governance Portal - System 11
  * Emergency Lockdown & DEFCON-1 Quarantine Controller
+ * Connected to api/lockdown.php
  */
 
 (function () {
   "use strict";
+
+  // Toggle individual system isolation
+  window.toggleSystemLockdown = async function (systemId) {
+    try {
+      const res = await fetch("api/lockdown.php?action=toggle_system", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ system_id: systemId }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        window.showToast?.(
+          "ENCLAVE STATE TRANSITIONED",
+          `${systemId} shifted to ${data.new_status}. Galvanic state logged.`,
+          data.new_status === "ISOLATED" ? "error" : "success",
+          data.new_status === "ISOLATED" ? "shield" : "lock_open",
+        );
+        setTimeout(() => location.reload(), 800);
+      } else {
+        window.showToast?.("ERROR", data.error || "Toggle failed", "error");
+      }
+    } catch (err) {
+      window.showToast?.("NETWORK ERROR", err.message, "error");
+    }
+  };
+
+  // Enforce full air-gap (DEFCON-1)
+  window.enforceFullLockdown = async function () {
+    if (
+      !confirm(
+        "CRITICAL ALERT: Enforce full galvanic air-gap on ALL production and governance nodes? All outbound telemetry will be severed.",
+      )
+    )
+      return;
+    try {
+      const res = await fetch("api/lockdown.php?action=isolate_all", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ reason: "Manual DEFCON-1 Quarantine Triggered" }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        window.showToast?.(
+          "DEFCON-1 MAX ENGAGED",
+          `All ${data.affected_systems} systems placed into hardened air-gap quarantine.`,
+          "error",
+          "warning",
+        );
+        setTimeout(() => location.reload(), 1000);
+      } else {
+        window.showToast?.(
+          "ERROR",
+          data.error || "Quarantine command failed",
+          "error",
+        );
+      }
+    } catch (err) {
+      window.showToast?.("NETWORK ERROR", err.message, "error");
+    }
+  };
+
+  // Restore full interconnect (DEFCON-4)
+  window.restoreFullOperations = async function () {
+    if (
+      !confirm(
+        "Authorize universal de-escalation? All nodes will resume nominal bidirectional telemetry.",
+      )
+    )
+      return;
+    try {
+      const res = await fetch("api/lockdown.php?action=restore_all", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ reason: "DEFCON-4 Operations Restored" }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        window.showToast?.(
+          "OPERATIONS RESTORED",
+          `Interconnect re-established across all ${data.affected_systems} nodes. Nominal baseline.`,
+          "success",
+          "check_circle",
+        );
+        setTimeout(() => location.reload(), 1000);
+      } else {
+        window.showToast?.(
+          "ERROR",
+          data.error || "Restoration command failed",
+          "error",
+        );
+      }
+    } catch (err) {
+      window.showToast?.("NETWORK ERROR", err.message, "error");
+    }
+  };
 
   document.addEventListener("DOMContentLoaded", () => {
     // 1. Dynamic Syslog Console Stream
@@ -31,55 +127,22 @@
       }
     }, 4000);
 
-    // 2. Modal Handlers
-    const modal = document.getElementById("modalOverlay");
-    const modalClose = document.getElementById("modalClose");
-    const modalBtnCancel = document.getElementById("modalBtnCancel");
-    const modalBtnConfirm = document.getElementById("modalBtnConfirm");
-    const modalTitle = document.getElementById("modalTitle");
-    const modalBody = document.getElementById("modalBody");
-
-    const showModal = (title, body) => {
-      if (modalTitle) modalTitle.textContent = title;
-      if (modalBody) modalBody.textContent = body;
-      if (modal) modal.classList.remove("hidden");
-    };
-
-    const hideModal = () => {
-      if (modal) modal.classList.add("hidden");
-    };
-
-    if (modalClose) modalClose.addEventListener("click", hideModal);
-    if (modalBtnCancel) modalBtnCancel.addEventListener("click", hideModal);
-    if (modalBtnConfirm) {
-      modalBtnConfirm.addEventListener("click", () => {
-        hideModal();
-        window.showToast(
-          "COMMAND COMMITTED",
-          "Cryptographic execution dispatched across secure chassis bus.",
-          "success",
-          "check_circle",
-        );
-      });
-    }
-
-    // 3. Button Action Bindings
+    // 2. Abort & Export buttons
     const btnAbort = document.getElementById("btnAbortLockdown");
     if (btnAbort) {
       btnAbort.addEventListener("click", () => {
-        showModal(
-          "Abort DEFCON-1 Lockdown?",
-          "Aborting requires secondary officer physical hardware key presence (EMP-1018 Leonid Volkov). Initiating safe challenge countdown...",
-        );
+        window.restoreFullOperations();
       });
     }
 
     const btnExport = document.getElementById("btnExportDossier");
     if (btnExport) {
       btnExport.addEventListener("click", () => {
-        showModal(
-          "Generate Cryptographic Dossier",
-          "Assembling ECDSA P-384 signed package of all telemetry logs, buffer snapshots, and anomaly hashes for DOC-2026-LOCK-01.",
+        window.showToast?.(
+          "CRYPTOGRAPHIC DOSSIER GENERATED",
+          "Assembled ECDSA P-384 signed package of all telemetry logs, buffer snapshots, and anomaly hashes.",
+          "info",
+          "description",
         );
       });
     }
@@ -87,56 +150,12 @@
     const btnDispatch = document.getElementById("btnDispatchAlert");
     if (btnDispatch) {
       btnDispatch.addEventListener("click", () => {
-        showModal(
-          "Broadcast Sec-Ops Alert",
+        window.showToast?.(
+          "BROADCAST DISPATCHED",
           "Sovereign emergency dispatch packet SHA-256 #9A2F...4B8C transmitted to KZ-CERT emergency relay.",
+          "error",
+          "sensors",
         );
-      });
-    }
-
-    const btnIsolateAll = document.getElementById("btnIsolateAll");
-    if (btnIsolateAll) {
-      btnIsolateAll.addEventListener("click", () => {
-        showModal(
-          "Air-Gap All Nodes",
-          "All 10 industrial facility bridges will be subjected to physical galvano-magnetic actuator severing.",
-        );
-      });
-    }
-
-    // 4. Secondary PIN Verification
-    const btnPin = document.getElementById("btnVerifySecondaryPin");
-    const pinInput = document.getElementById("secondaryPinInput");
-    const pinFeedback = document.getElementById("pinFeedback");
-
-    if (btnPin && pinInput && pinFeedback) {
-      btnPin.addEventListener("click", () => {
-        if (pinInput.value.length >= 4) {
-          pinFeedback.textContent =
-            "KEY VERIFIED: EMP-1018 Leonid Volkov authenticated via FIPS-140-3 token.";
-          pinFeedback.className =
-            "font-telemetry-micro text-[10px] text-secondary font-bold mt-1 block";
-          pinInput.disabled = true;
-          btnPin.disabled = true;
-          btnPin.textContent = "Accepted";
-          window.showToast(
-            "AUTHENTICATION ACCEPTED",
-            "Leonid Volkov (EMP-1018) hardware challenge validated.",
-            "success",
-            "key",
-          );
-        } else {
-          pinFeedback.textContent =
-            "ERROR: Minimum 4 digits required for hardware cryptographic token challenge.";
-          pinFeedback.className =
-            "font-telemetry-micro text-[10px] text-error font-bold mt-1 block";
-          window.showToast(
-            "CHALLENGE FAILED",
-            "Invalid FIPS challenge length.",
-            "error",
-            "key_off",
-          );
-        }
       });
     }
   });

@@ -2,6 +2,15 @@
 require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/../includes/auth_guard.php';
 requireAuth('DEV');
+
+// Fetch all partner clearance applications dynamically from database
+$applications = [];
+try {
+    $stmt = $pdo->query("SELECT * FROM developer_partner_applications ORDER BY id DESC");
+    $applications = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    $applications = [];
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -38,8 +47,7 @@ requireAuth('DEV');
         <div class="dev-flex-center-gap-16" >
             <div class="dev-search-box-wrap" >
                 <span class="material-symbols-outlined text-[16px] dev-position-absolute-left-10px-d4a8">search</span>
-                <input class="search-trigger-input" type="text" placeholder="Search guides, forms (Ctrl + K)" readonly
-                     />
+                <input class="search-trigger-input" type="text" placeholder="Search guides, forms (Ctrl + K)" readonly />
             </div>
             <div class="dev-display-flex-align-items-9eca" >
                 <span class="material-symbols-outlined text-[14px] dev-color-secondary">schedule</span>
@@ -56,7 +64,7 @@ requireAuth('DEV');
             </div>
 
             <!-- Top Bar Sign Out -->
-            <a href="../api/logout.php?system=Developer&redirect=../Developer/login.php" class="top-signout-btn" title="Sign Out of Developer" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" ><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
+            <a href="../api/logout.php?system=Developer&redirect=../Developer/login.php" class="top-signout-btn" title="Sign Out of Developer" onclick="(function(){sessionStorage.clear();localStorage.clear();})()"><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
         </div>
     </header>
 
@@ -144,9 +152,6 @@ requireAuth('DEV');
             <div class="dev-mono-muted-11" >Auto-Vetting: Active (Level 2)</div>
             <div class="dev-font-family-var-font-940f" >Approval SLA: &lt; 24 Hours</div>
         </div>
-
-        <!-- Log Out -->
-
     </aside>
 
     <!-- MAIN CONTENT AREA -->
@@ -264,7 +269,7 @@ requireAuth('DEV');
                                     <div>
                                         <div class="dev-font-weight-600-font-5c2a" >telemetry:read</div>
                                         <div class="dev-font-size-11px-color-3171" >
-                                            Read-only access to sensor streams (VP-1001, VP-1002, VP-1004).
+                                             access to sensor streams (VP-1001, VP-1002, VP-1004).
                                         </div>
                                     </div>
                                 </label>
@@ -355,7 +360,7 @@ requireAuth('DEV');
                     <!-- SUBMIT BUTTON -->
                     <div class="dev-display-flex-justify-content-ef47" >
                         <button class="vk-btn vk-btn-outline" type="reset">Reset Form</button>
-                        <button class="vk-btn vk-btn-primary" type="submit">
+                        <button class="vk-btn vk-btn-primary" type="submit" id="btnSubmitRegistration">
                             <span class="material-symbols-outlined text-[18px]">verified_user</span>
                             Submit Application for Security Vetting
                         </button>
@@ -401,6 +406,9 @@ requireAuth('DEV');
                     </p>
 
                     <div class="dev-display-flex-gap-12px-4896" >
+                        <button class="vk-btn vk-btn-outline" id="btnRegisterAnother" type="button">
+                            <span class="material-symbols-outlined text-[16px]">add_box</span> Submit Another Application
+                        </button>
                         <a class="vk-btn vk-btn-primary" href="credentials.php">
                             <span class="material-symbols-outlined text-[16px]">key</span> Go to API Credentials Vault
                         </a>
@@ -410,8 +418,181 @@ requireAuth('DEV');
                     </div>
                 </div>
             </div>
+
+            <!-- ENCLAVE CLEARANCE APPLICATIONS MANAGEMENT LEDGER (Full Database CRUD) -->
+            <div class="vk-card dev-margin-bottom-30px-9550">
+                <div class="vk-card-header" style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <div class="vk-card-title">Enclave Clearance Applications Ledger</div>
+                        <div class="vk-card-subtitle">Real-time status of all submitted partner onboarding clearance requests (Database: `developer_partner_applications`)</div>
+                    </div>
+                    <span class="vk-tag vk-tag-internal">TOTAL: <?= count($applications) ?> APPLICATIONS</span>
+                </div>
+                <div class="vk-card-body dev-padding-0-b662">
+                    <table class="vk-table">
+                        <thead>
+                            <tr>
+                                <th class="dev-width-150px-c251">Ticket ID</th>
+                                <th>Organization</th>
+                                <th>Contact / Email</th>
+                                <th class="dev-width-110px-459f">Environment</th>
+                                <th>Requested Scopes</th>
+                                <th class="dev-width-120px-e314">Status</th>
+                                <th class="dev-width-150px-text-align-2833" style="text-align: right;">Vetting Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="applicationsTableBody">
+                            <?php if (empty($applications)): ?>
+                            <tr><td colspan="7" style="text-align: center; color: var(--vk-neutral-500); padding: 24px;">No partner clearance applications recorded yet.</td></tr>
+                            <?php else: ?>
+                            <?php foreach ($applications as $app): 
+                                $status = $app['status'];
+                                $statusClass = 'vk-tag-internal';
+                                if ($status === 'Approved' || $status === 'Active') $statusClass = 'vk-tag-secondary';
+                                elseif ($status === 'Rejected') $statusClass = 'vk-tag-alert';
+                                $appJson = htmlspecialchars(json_encode($app), ENT_QUOTES, 'UTF-8');
+                            ?>
+                            <tr id="app-row-<?= $app['id'] ?>">
+                                <td>
+                                    <code><?= htmlspecialchars($app['ticket_id']) ?></code>
+                                    <?php if (!empty($app['partner_id'])): ?>
+                                    <div class="dev-mono-muted-11"><?= htmlspecialchars($app['partner_id']) ?></div>
+                                    <?php endif; ?>
+                                </td>
+                                <td>
+                                    <strong><?= htmlspecialchars($app['company_name']) ?></strong>
+                                    <?php if (!empty($app['project_ref'])): ?>
+                                    <div class="dev-font-size-11px-color-3171"><?= htmlspecialchars($app['project_ref']) ?></div>
+                                    <?php endif; ?>
+                                </td>
+                                <td>
+                                    <div><?= htmlspecialchars($app['contact_name']) ?></div>
+                                    <div class="dev-mono-muted-11"><?= htmlspecialchars($app['contact_email']) ?></div>
+                                </td>
+                                <td>
+                                    <span class="vk-tag dev-text-10"><?= strtoupper(htmlspecialchars($app['target_environment'])) ?></span>
+                                </td>
+                                <td>
+                                    <div class="dev-font-family-var-font-e036" style="max-width: 200px; white-space: normal; line-height: 1.3;">
+                                        <?= htmlspecialchars($app['requested_scopes']) ?>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="vk-tag <?= $statusClass ?>" id="app-status-badge-<?= $app['id'] ?>">
+                                        <?= htmlspecialchars($status) ?>
+                                    </span>
+                                </td>
+                                <td style="text-align: right; white-space: nowrap;">
+                                    <?php if ($status !== 'Approved'): ?>
+                                    <button class="btn-crud-action btn-approve-app" data-id="<?= $app['id'] ?>" title="Approve Application" style="color: #2e6e4e;">
+                                        <span class="material-symbols-outlined text-[15px]">check_circle</span>
+                                    </button>
+                                    <?php endif; ?>
+
+                                    <?php if ($status !== 'Rejected'): ?>
+                                    <button class="btn-crud-action btn-reject-app" data-id="<?= $app['id'] ?>" title="Reject Application" style="color: #ef4444;">
+                                        <span class="material-symbols-outlined text-[15px]">cancel</span>
+                                    </button>
+                                    <?php endif; ?>
+
+                                    <button class="btn-crud-action btn-crud-edit btn-edit-app" 
+                                        data-app='<?= $appJson ?>'
+                                        title="Edit application details">
+                                        <span class="material-symbols-outlined text-[14px]">edit</span>
+                                    </button>
+
+                                    <button class="btn-crud-action btn-crud-delete btn-delete-app" 
+                                        data-id="<?= $app['id'] ?>"
+                                        data-ticket="<?= htmlspecialchars($app['ticket_id']) ?>"
+                                        title="Delete application from database">
+                                        <span class="material-symbols-outlined text-[14px]">delete</span>
+                                    </button>
+                                </td>
+                            </tr>
+                            <?php endforeach; ?>
+                            <?php endif; ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
         </div>
     </main>
+
+    <!-- EDIT APPLICATION MODAL -->
+    <div class="vk-modal-overlay" id="editAppModal">
+        <div class="vk-modal-dialog" style="max-width: 580px;">
+            <div class="vk-modal-header">
+                <div class="dev-flex-center-gap-8">
+                    <span class="material-symbols-outlined text-[20px] dev-color-accent">edit_document</span>
+                    <h3 class="dev-font-size-15px-font-29ad">Edit Partner Clearance Record</h3>
+                </div>
+                <button class="dev-background-transparent-border-none-aba8" id="btnCloseEditAppModal" style="color: #94a3b8; cursor: pointer;">
+                    <span class="material-symbols-outlined text-[18px]">close</span>
+                </button>
+            </div>
+            <div class="vk-modal-body">
+                <input type="hidden" id="editAppId" value="" />
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                    <div class="crud-form-group">
+                        <label class="crud-form-label" for="editAppCompany">Company Name *</label>
+                        <input class="crud-form-input" id="editAppCompany" type="text" required />
+                    </div>
+                    <div class="crud-form-group">
+                        <label class="crud-form-label" for="editAppPartnerId">Partner ID</label>
+                        <input class="crud-form-input" id="editAppPartnerId" type="text" />
+                    </div>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                    <div class="crud-form-group">
+                        <label class="crud-form-label" for="editAppContactName">Technical Contact *</label>
+                        <input class="crud-form-input" id="editAppContactName" type="text" required />
+                    </div>
+                    <div class="crud-form-group">
+                        <label class="crud-form-label" for="editAppContactEmail">Contact Email *</label>
+                        <input class="crud-form-input" id="editAppContactEmail" type="email" required />
+                    </div>
+                </div>
+                <div class="crud-form-group">
+                    <label class="crud-form-label" for="editAppProjectRef">Project Reference</label>
+                    <input class="crud-form-input" id="editAppProjectRef" type="text" />
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                    <div class="crud-form-group">
+                        <label class="crud-form-label" for="editAppEnv">Target Environment</label>
+                        <select class="crud-form-select" id="editAppEnv">
+                            <option value="sandbox">sandbox</option>
+                            <option value="staging">staging</option>
+                            <option value="production">production</option>
+                        </select>
+                    </div>
+                    <div class="crud-form-group">
+                        <label class="crud-form-label" for="editAppStatus">Vetting Status</label>
+                        <select class="crud-form-select" id="editAppStatus">
+                            <option value="In Review">In Review</option>
+                            <option value="Approved">Approved</option>
+                            <option value="Active">Active</option>
+                            <option value="Rejected">Rejected</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="crud-form-group">
+                    <label class="crud-form-label" for="editAppScopes">Requested Scopes</label>
+                    <input class="crud-form-input" id="editAppScopes" type="text" placeholder="telemetry:read, orders:read_write" />
+                </div>
+                <div class="crud-form-group">
+                    <label class="crud-form-label" for="editAppPublicKey">Public Key / CSR</label>
+                    <textarea class="crud-form-textarea" id="editAppPublicKey" style="height: 60px;"></textarea>
+                </div>
+            </div>
+            <div class="vk-modal-footer">
+                <button class="vk-btn vk-btn-outline" id="btnCancelEditAppModal">Cancel</button>
+                <button class="vk-btn vk-btn-primary" id="btnSaveEditApp">
+                    <span class="material-symbols-outlined text-[16px]">save</span> Save Changes
+                </button>
+            </div>
+        </div>
+    </div>
 
     <!-- PUBLIC-FACING / DEVELOPER FOOTER -->
     <footer class="vk-footer">

@@ -2,6 +2,31 @@
 require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/../includes/auth_guard.php';
 requireAuth('DEV');
+$pdo = getDbConnection();
+require_once __DIR__ . '/api/db_helper.php';
+ensureDeveloperTables($pdo);
+
+// Fetch all keys from database
+$stmt = $pdo->query("SELECT * FROM `developer_api_keys` ORDER BY `id` DESC");
+$keys = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Live KPI Aggregations
+$activeKeysTotal = 0;
+$prodKeysCount = 0;
+$sandboxKeysCount = 0;
+$aggregatedQuotaSum = 0;
+
+foreach ($keys as $k) {
+    if ($k['status'] === 'Active') {
+        $activeKeysTotal++;
+        if ($k['environment'] === 'Production') {
+            $prodKeysCount++;
+        } else {
+            $sandboxKeysCount++;
+        }
+        $aggregatedQuotaSum += (int)($k['rate_limit_value'] ?: 10000);
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -171,18 +196,18 @@ requireAuth('DEV');
             </button>
         </div>
 
-        <!-- Quota Overview Strip -->
+        <!-- Quota Overview Strip (Dynamic from Database) -->
         <div class="vk-card tag-confidential dev-margin-bottom-24px-dc2c">
             <div class="vk-card-body dev-display-grid-grid-template-590a">
                 <div>
                     <span class="dev-font-family-var-font-d07a" >Active Keys</span>
-                    <div class="dev-font-family-var-font-5f4a" >02 Active</div>
-                    <div class="dev-font-size-12px-color-926b" >1 Prod • 1 Sandbox</div>
+                    <div class="dev-font-family-var-font-5f4a" id="statActiveKeys"><?= sprintf("%02d Active", $activeKeysTotal) ?></div>
+                    <div class="dev-font-size-12px-color-926b" id="statEnvBreakdown"><?= $prodKeysCount ?> Prod • <?= $sandboxKeysCount ?> Sandbox</div>
                 </div>
                 <div>
                     <span class="dev-font-family-var-font-d07a" >Aggregated Rate Quota</span>
-                    <div class="dev-font-family-var-font-5f4a" >10,000 / min</div>
-                    <div class="dev-font-size-12px-color-f7e3" >Burst allowance: 25,000</div>
+                    <div class="dev-font-family-var-font-5f4a" id="statRateQuota"><?= number_format($aggregatedQuotaSum) ?> / min</div>
+                    <div class="dev-font-size-12px-color-f7e3" >Burst allowance: <?= number_format($aggregatedQuotaSum * 2) ?></div>
                 </div>
                 <div>
                     <span class="dev-font-family-var-font-d07a" >Security Tier</span>
@@ -192,7 +217,7 @@ requireAuth('DEV');
             </div>
         </div>
 
-        <!-- KEYS DATA TABLE -->
+        <!-- KEYS DATA TABLE (100% Dynamic from Database) -->
         <div class="vk-table-container">
             <table class="vk-table">
                 <thead>
@@ -202,75 +227,84 @@ requireAuth('DEV');
                         <th>Environment</th>
                         <th>Rate Limit</th>
                         <th>Classification</th>
+                        <th>Status</th>
                         <th class="dev-text-right" >Action</th>
                     </tr>
                 </thead>
                 <tbody id="keysTableBody">
-                    <!-- Key Row 1 -->
-                    <tr class="tag-confidential">
+                    <?php if (empty($keys)): ?>
+                    <tr>
+                        <td colspan="7" style="text-align: center; padding: 30px; color: var(--vk-neutral-500);">
+                            No API keys generated yet. Click "Generate New API Key" above to mint one.
+                        </td>
+                    </tr>
+                    <?php else: ?>
+                    <?php foreach ($keys as $k): 
+                        $isConf = str_contains(strtolower($k['classification']), 'confidential');
+                        $rowClass = $isConf ? 'tag-confidential' : 'tag-internal';
+                        $badgeClass = $isConf ? 'badge-confidential' : 'badge-internal';
+                        $statusClass = $k['status'] === 'Active' ? ($k['environment'] === 'Sandbox' ? 'status-sandbox' : 'status-active') : 'status-revoked';
+                        $fillPercent = min(100, max(5, round((($k['usage_count'] ?? 500) / max(1, $k['rate_limit_value'] ?: 10000)) * 100)));
+                        $keyJson = htmlspecialchars(json_encode($k), ENT_QUOTES, 'UTF-8');
+                    ?>
+                    <tr class="<?= $rowClass ?>" id="key-row-<?= $k['id'] ?>" data-key-id="<?= $k['id'] ?>">
                         <td>
-                            <div class="dev-text-primary-bold" >BaltNord Primary ERP Sync</div>
-                            <div class="dev-mono-muted-11" >ID: KEY-9842 • PRJ-2026-002</div>
+                            <div class="dev-text-primary-bold" ><?= htmlspecialchars($k['label']) ?></div>
+                            <div class="dev-mono-muted-11" >ID: <?= htmlspecialchars($k['key_identifier']) ?> • <?= htmlspecialchars($k['partner_id']) ?></div>
                         </td>
                         <td>
                             <div class="key-token-display">
-                                <span>vk_live_9a41c2e8••••••••</span>
-                                <button class="vk-btn-outline dev-padding-2px-6px-font-ed80" onclick="window.copyText('vk_live_9a41c2e8f10b7a89d4e12c5', 'Live token copied to clipboard')">
+                                <span><?= htmlspecialchars($k['token_prefix']) ?>••••••••</span>
+                                <button class="vk-btn-outline dev-padding-2px-6px-font-ed80" title="Copy full cryptographic token" onclick="window.copyText('<?= htmlspecialchars($k['token_full']) ?>', 'Full API token copied to clipboard')">
                                     <span class="material-symbols-outlined text-[14px]">content_copy</span>
                                 </button>
                             </div>
                         </td>
                         <td>
-                            <span class="vk-status-badge status-active">PRODUCTION</span>
+                            <span class="vk-status-badge <?= $k['environment'] === 'Sandbox' ? 'status-sandbox' : 'status-active' ?>"><?= strtoupper(htmlspecialchars($k['environment'])) ?></span>
                         </td>
                         <td>
-                            <div class="dev-font-family-var-font-ef2e" >10,000 req/min</div>
+                            <div class="dev-font-family-var-font-ef2e" ><?= htmlspecialchars($k['rate_limit']) ?></div>
                             <div class="rate-limit-bar-bg">
-                                <div class="rate-limit-bar-fill dev-width-38-509e"></div>
+                                <div class="rate-limit-bar-fill" style="width: <?= $fillPercent ?>%;"></div>
                             </div>
                         </td>
                         <td>
-                            <span class="badge-classification badge-confidential">Confidential</span>
+                            <span class="badge-classification <?= $badgeClass ?>"><?= htmlspecialchars($k['classification']) ?></span>
                         </td>
-                        <td class="dev-text-right" >
-                            <button class="vk-btn vk-btn-outline btn-revoke-key dev-padding-4px-8px-font-3b27">
+                        <td>
+                            <span class="vk-status-badge <?= $statusClass ?> key-status-badge"><?= strtoupper(htmlspecialchars($k['status'])) ?></span>
+                        </td>
+                        <td class="dev-text-right" style="white-space: nowrap;">
+                            <button class="btn-crud-action btn-crud-edit btn-edit-key" 
+                                data-key='<?= $keyJson ?>' 
+                                title="Edit this key configuration">
+                                <span class="material-symbols-outlined text-[14px]">edit</span>
+                            </button>
+                            
+                            <?php if ($k['status'] === 'Active'): ?>
+                            <button class="btn-crud-action btn-revoke-key" 
+                                data-id="<?= $k['id'] ?>" 
+                                style="color: var(--vk-class-high-confidential);"
+                                title="Revoke this key across all regional gateways">
                                 <span class="material-symbols-outlined text-[14px]">block</span> Revoke
                             </button>
-                        </td>
-                    </tr>
+                            <?php else: ?>
+                            <button class="btn-crud-action" disabled style="color: #94a3b8; opacity: 0.6;">
+                                <span class="material-symbols-outlined text-[14px]">done</span> Revoked
+                            </button>
+                            <?php endif; ?>
 
-                    <!-- Key Row 2 -->
-                    <tr class="tag-internal">
-                        <td>
-                            <div class="dev-text-primary-bold" >BaltNord QA / Sandbox Ingestion</div>
-                            <div class="dev-mono-muted-11" >ID: KEY-4109 • Testing Pipeline</div>
-                        </td>
-                        <td>
-                            <div class="key-token-display">
-                                <span>vk_test_3f7b99c1••••••••</span>
-                                <button class="vk-btn-outline dev-padding-2px-6px-font-ed80" onclick="window.copyText('vk_test_3f7b99c1e04a88bc92d110f', 'Test token copied to clipboard')">
-                                    <span class="material-symbols-outlined text-[14px]">content_copy</span>
-                                </button>
-                            </div>
-                        </td>
-                        <td>
-                            <span class="vk-status-badge status-sandbox">SANDBOX</span>
-                        </td>
-                        <td>
-                            <div class="dev-font-family-var-font-ef2e" >2,500 req/min</div>
-                            <div class="rate-limit-bar-bg">
-                                <div class="rate-limit-bar-fill dev-width-12-background-color-2522"></div>
-                            </div>
-                        </td>
-                        <td>
-                            <span class="badge-classification badge-internal">Internal QA</span>
-                        </td>
-                        <td class="dev-text-right" >
-                            <button class="vk-btn vk-btn-outline btn-revoke-key dev-padding-4px-8px-font-3b27">
-                                <span class="material-symbols-outlined text-[14px]">block</span> Revoke
+                            <button class="btn-crud-action btn-crud-delete btn-delete-key" 
+                                data-id="<?= $k['id'] ?>"
+                                data-label="<?= htmlspecialchars($k['label']) ?>"
+                                title="Permanently delete this key from database">
+                                <span class="material-symbols-outlined text-[14px]">delete</span>
                             </button>
                         </td>
                     </tr>
+                    <?php endforeach; ?>
+                    <?php endif; ?>
                 </tbody>
             </table>
         </div>
@@ -279,59 +313,117 @@ requireAuth('DEV');
     <!-- GENERATE KEY MODAL DIALOG -->
     <div class="vk-modal-overlay" id="genKeyModal" >
         <div class="vk-modal-dialog">
-            <div class="dev-background-color-var-vk-ea8e" >
+            <div class="vk-modal-header" >
                 <div class="dev-flex-center-gap-8" >
                     <span class="material-symbols-outlined text-[20px] dev-color-accent">key</span>
                     <h3 class="dev-font-size-15px-font-29ad" >Generate New Partner API Token</h3>
                 </div>
-                <button class="dev-background-transparent-border-none-aba8" id="btnCloseGenKey" >
+                <button class="dev-background-transparent-border-none-aba8" id="btnCloseGenKey" style="color: #94a3b8; cursor: pointer;" >
                     <span class="material-symbols-outlined text-[18px]">close</span>
                 </button>
             </div>
-            <div class="dev-padding-24px-display-flex-d31a" >
-                <div>
-                    <label class="dev-font-size-12px-font-8504" >Key Label / Service Name</label>
-                    <input class="dev-width-100-height-36px-50c0" id="keyLabelInput" type="text" placeholder="e.g. BaltNord Warehouse PLC Bridge"
-                         />
+            <div class="vk-modal-body" >
+                <div class="crud-form-group">
+                    <label class="crud-form-label" for="keyLabelInput">Key Label / Service Name *</label>
+                    <input class="crud-form-input" id="keyLabelInput" type="text" placeholder="e.g. BaltNord Warehouse PLC Bridge" required />
                 </div>
-                <div>
-                    <label class="dev-font-size-12px-font-8504" >Environment Target</label>
-                    <div class="dev-display-flex-gap-16px-b636" >
-                        <label class="dev-display-flex-align-items-96bf" >
+                <div class="crud-form-group">
+                    <label class="crud-form-label">Environment Target</label>
+                    <div style="display: flex; gap: 16px; margin-top: 4px;">
+                        <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 13px;">
                             <input type="radio" name="keyEnv" value="Production" checked /> Production Enclave
                         </label>
-                        <label class="dev-display-flex-align-items-96bf" >
+                        <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 13px;">
                             <input type="radio" name="keyEnv" value="Sandbox" /> Sandbox Testing
                         </label>
                     </div>
                 </div>
-                <div>
-                    <label class="dev-font-size-12px-font-8504" >Requested Rate Limit</label>
-                    <select class="dev-width-100-height-36px-4af4" id="keyRateSelect" >
+                <div class="crud-form-group">
+                    <label class="crud-form-label" for="keyRateSelect">Requested Rate Limit</label>
+                    <select class="crud-form-select" id="keyRateSelect" >
                         <option value="2,500">2,500 requests / minute (Standard)</option>
                         <option value="10,000" selected>10,000 requests / minute (Enterprise Stream)</option>
                         <option value="50,000">50,000 requests / minute (SCADA High-Frequency Batch)</option>
                     </select>
                 </div>
-                <div>
-                    <label class="dev-font-size-12px-font-8504" >Permission Scopes</label>
-                    <div class="dev-display-flex-flex-direction-625a" >
-                        <label class="dev-flex-center-gap-8" >
-                            <input type="checkbox" checked /> <code>telemetry:read</code> (Optical &amp; Geodetic sensors)
+                <div class="crud-form-group">
+                    <label class="crud-form-label">Permission Scopes</label>
+                    <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 4px;">
+                        <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer;">
+                            <input type="checkbox" id="scopeTelemetry" checked /> <code>telemetry:read</code> (Optical &amp; Geodetic sensors)
                         </label>
-                        <label class="dev-flex-center-gap-8" >
-                            <input type="checkbox" checked /> <code>scada:ingest</code> (PLC high-speed frames)
+                        <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer;">
+                            <input type="checkbox" id="scopeScada" checked /> <code>scada:ingest</code> (PLC high-speed frames)
                         </label>
-                        <label class="dev-flex-center-gap-8" >
-                            <input type="checkbox" /> <code>orders:write</code> (B2B procurement pipeline)
+                        <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer;">
+                            <input type="checkbox" id="scopeOrders" /> <code>orders:write</code> (B2B procurement pipeline)
                         </label>
                     </div>
                 </div>
             </div>
-            <div class="dev-padding-16px-20px-background-a721" >
+            <div class="vk-modal-footer" >
                 <button class="vk-btn vk-btn-outline" id="btnCancelGenKey">Cancel</button>
                 <button class="vk-btn vk-btn-accent" id="btnSubmitGenKey">
-                    <span class="material-symbols-outlined text-[16px]">vpn_key</span> Mint Key
+                    <span class="material-symbols-outlined text-[16px]">vpn_key</span> Mint Key &amp; Save
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- EDIT KEY MODAL DIALOG -->
+    <div class="vk-modal-overlay" id="editKeyModal" >
+        <div class="vk-modal-dialog">
+            <div class="vk-modal-header" >
+                <div class="dev-flex-center-gap-8" >
+                    <span class="material-symbols-outlined text-[20px] dev-color-accent">edit</span>
+                    <h3 class="dev-font-size-15px-font-29ad" id="editKeyModalTitle">Edit API Key Configuration</h3>
+                </div>
+                <button class="dev-background-transparent-border-none-aba8" id="btnCloseEditKey" style="color: #94a3b8; cursor: pointer;" >
+                    <span class="material-symbols-outlined text-[18px]">close</span>
+                </button>
+            </div>
+            <div class="vk-modal-body" >
+                <input type="hidden" id="editKeyId" value="" />
+                
+                <div class="crud-form-group">
+                    <label class="crud-form-label" for="editKeyLabel">Key Label / Service Name *</label>
+                    <input class="crud-form-input" id="editKeyLabel" type="text" required />
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                    <div class="crud-form-group">
+                        <label class="crud-form-label" for="editKeyEnv">Environment</label>
+                        <select class="crud-form-select" id="editKeyEnv">
+                            <option value="Production">Production</option>
+                            <option value="Sandbox">Sandbox</option>
+                            <option value="Staging">Staging</option>
+                        </select>
+                    </div>
+                    <div class="crud-form-group">
+                        <label class="crud-form-label" for="editKeyStatus">Status</label>
+                        <select class="crud-form-select" id="editKeyStatus">
+                            <option value="Active">Active</option>
+                            <option value="Revoked">Revoked</option>
+                            <option value="Suspended">Suspended</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="crud-form-group">
+                    <label class="crud-form-label" for="editKeyRateSelect">Rate Limit</label>
+                    <select class="crud-form-select" id="editKeyRateSelect" >
+                        <option value="2,500">2,500 req/min (Standard)</option>
+                        <option value="10,000">10,000 req/min (Enterprise Stream)</option>
+                        <option value="50,000">50,000 req/min (High-Frequency Batch)</option>
+                    </select>
+                </div>
+                <div class="crud-form-group">
+                    <label class="crud-form-label" for="editKeyScopes">Scopes (comma separated)</label>
+                    <input class="crud-form-input" id="editKeyScopes" type="text" placeholder="telemetry:read,scada:ingest" />
+                </div>
+            </div>
+            <div class="vk-modal-footer" >
+                <button class="vk-btn vk-btn-outline" id="btnCancelEditKey">Cancel</button>
+                <button class="vk-btn vk-btn-accent" id="btnSubmitEditKey">
+                    <span class="material-symbols-outlined text-[16px]">save</span> Update Key in Database
                 </button>
             </div>
         </div>

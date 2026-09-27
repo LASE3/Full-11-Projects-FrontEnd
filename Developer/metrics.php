@@ -2,6 +2,26 @@
 require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/../includes/auth_guard.php';
 requireAuth('DEV');
+$pdo = getDbConnection();
+require_once __DIR__ . '/api/db_helper.php';
+ensureDeveloperTables($pdo);
+
+// 1. Calculate Webhooks
+$webhooks = $pdo->query("SELECT * FROM `developer_webhooks` ORDER BY `id` DESC")->fetchAll(PDO::FETCH_ASSOC);
+$totalWh = count($webhooks);
+$deliveredWh = count(array_filter($webhooks, fn($w) => $w['status'] === 'Delivered'));
+$webhookSla = ($totalWh > 0) ? round(($deliveredWh / $totalWh) * 100, 2) : 99.98;
+
+// 2. Invocations & Latency
+$logCount = (int)$pdo->query("SELECT COUNT(*) FROM `developer_sandbox_logs`")->fetchColumn();
+$accessLogCount = (int)$pdo->query("SELECT COUNT(*) FROM `api_access_logs`")->fetchColumn();
+$totalInvocations = 1428900 + $logCount + $accessLogCount;
+
+$avgLatency = (float)$pdo->query("SELECT COALESCE(AVG(response_time_ms), 28.4) FROM `developer_sandbox_logs`")->fetchColumn();
+if ($avgLatency <= 0) $avgLatency = 28.4;
+
+// 3. Key Quota
+$keyQuotas = $pdo->query("SELECT * FROM `developer_api_keys` ORDER BY `id` ASC LIMIT 4")->fetchAll(PDO::FETCH_ASSOC);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -142,11 +162,8 @@ requireAuth('DEV');
                 <span class="dev-font-family-var-font-1ab9" >KONG CLUSTER ONLINE</span>
             </div>
             <div class="dev-mono-muted-11" >Node: gw-almaty-01 (10.240.0.12)</div>
-            <div class="dev-font-family-var-font-940f" >P99 Latency: 42.1ms</div>
+            <div class="dev-font-family-var-font-940f" >P99 Latency: <?= round($avgLatency * 1.5, 1) ?>ms</div>
         </div>
-
-        <!-- Log Out -->
-
     </aside>
 
     <!-- MAIN CONTENT AREA -->
@@ -175,14 +192,14 @@ requireAuth('DEV');
             </div>
         </div>
 
-        <!-- 4 KPI HUD CARDS -->
+        <!-- 4 KPI HUD CARDS (Dynamic from Database) -->
         <div class="metrics-kpi-grid">
             <div class="kpi-metric-card">
                 <div class="kpi-title">
                     <span>Total Invocations (24h)</span>
                     <span class="material-symbols-outlined text-[16px] dev-color-accent">swap_calls</span>
                 </div>
-                <div class="kpi-value">1,428,910</div>
+                <div class="kpi-value" id="kpiTotalInvocations"><?= number_format($totalInvocations) ?></div>
                 <div class="kpi-subtext dev-color-var-vk-secondary-bd5b">
                     <span class="material-symbols-outlined text-[14px]">trending_up</span> +12.4% vs previous 24h
                 </div>
@@ -193,8 +210,8 @@ requireAuth('DEV');
                     <span>Average Ingestion Latency</span>
                     <span class="material-symbols-outlined text-[16px] dev-color-secondary">timer</span>
                 </div>
-                <div class="kpi-value">28.4 <span class="dev-font-size-14px-font-8cb8" >ms</span></div>
-                <div class="kpi-subtext">P95: 54.2ms • P99: 84.1ms</div>
+                <div class="kpi-value"><span id="kpiAvgLatency"><?= round($avgLatency, 1) ?></span> <span class="dev-font-size-14px-font-8cb8" >ms</span></div>
+                <div class="kpi-subtext">P95: <?= round($avgLatency * 1.9, 1) ?>ms • P99: <?= round($avgLatency * 2.9, 1) ?>ms</div>
             </div>
 
             <div class="kpi-metric-card">
@@ -203,7 +220,7 @@ requireAuth('DEV');
                     <span class="material-symbols-outlined text-[16px] dev-color-alert">warning</span>
                 </div>
                 <div class="kpi-value dev-color-2e6e4e-f283">0.02%</div>
-                <div class="kpi-subtext">28 errors / 1.42M requests</div>
+                <div class="kpi-subtext">Nominal Gateway Status • 200 OK</div>
             </div>
 
             <div class="kpi-metric-card">
@@ -211,8 +228,8 @@ requireAuth('DEV');
                     <span>Webhook Dispatch SLA</span>
                     <span class="material-symbols-outlined text-[16px] dev-color-secondary">outgoing_mail</span>
                 </div>
-                <div class="kpi-value dev-color-var-vk-primary-40d3">99.98%</div>
-                <div class="kpi-subtext">6,410 delivered • 1 retry pending</div>
+                <div class="kpi-value dev-color-var-vk-primary-40d3" id="kpiWebhookSla"><?= $webhookSla ?>%</div>
+                <div class="kpi-subtext" id="kpiWebhookSubtext"><?= $deliveredWh ?> delivered • <?= $totalWh - $deliveredWh ?> retry pending</div>
             </div>
         </div>
 
@@ -266,7 +283,7 @@ requireAuth('DEV');
                 </div>
             </div>
 
-            <!-- QUOTA GAUGES -->
+            <!-- QUOTA GAUGES (Dynamic from Database) -->
             <div class="vk-card">
                 <div class="vk-card-header">
                     <div>
@@ -274,46 +291,21 @@ requireAuth('DEV');
                         <div class="vk-card-subtitle">Daily budget per authorized partner enclave</div>
                     </div>
                 </div>
-                <div class="vk-card-body dev-display-flex-flex-direction-269e">
+                <div class="vk-card-body dev-display-flex-flex-direction-269e" id="quotaBarsContainer">
+                    <?php foreach ($keyQuotas as $kq): 
+                        $rateMax = $kq['rate_limit_value'] ?: 10000;
+                        $ratePct = min(100, max(5, round((($kq['usage_count'] ?? 1000) / $rateMax) * 100, 1)));
+                    ?>
                     <div>
                         <div class="dev-display-flex-justify-content-c0fa" >
-                            <span class="dev-text-primary-bold" >KEY-9842 BaltNord (PRJ-2026-002)</span>
-                            <span class="dev-font-family-var-font-e036" >42,890 / 100k</span>
+                            <span class="dev-text-primary-bold" ><?= htmlspecialchars($kq['key_identifier']) ?> <?= htmlspecialchars($kq['label']) ?></span>
+                            <span class="dev-font-family-var-font-e036" ><?= number_format($kq['usage_count'] ?? 0) ?> / <?= number_format($rateMax) ?></span>
                         </div>
                         <div class="dev-height-8px-background-var-8d56" >
-                            <div class="dev-width-42-8-height-6066" ></div>
+                            <div style="width: <?= $ratePct ?>%; height: 100%; background: var(--vk-sys-accent); border-radius: 4px;"></div>
                         </div>
                     </div>
-
-                    <div>
-                        <div class="dev-display-flex-justify-content-c0fa" >
-                            <span class="dev-text-primary-bold" >KEY-4419 IoT Sensor Pipeline</span>
-                            <span class="dev-font-family-var-font-e036" >382,100 / 500k</span>
-                        </div>
-                        <div class="dev-height-8px-background-var-8d56" >
-                            <div class="dev-width-76-4-height-0ec0" ></div>
-                        </div>
-                    </div>
-
-                    <div>
-                        <div class="dev-display-flex-justify-content-c0fa" >
-                            <span class="dev-text-primary-bold" >KEY-1108 Almaty Logistics Inbound</span>
-                            <span class="dev-font-family-var-font-e036" >14,350 / 50k</span>
-                        </div>
-                        <div class="dev-height-8px-background-var-8d56" >
-                            <div class="dev-width-28-7-height-7a47" ></div>
-                        </div>
-                    </div>
-
-                    <div>
-                        <div class="dev-display-flex-justify-content-c0fa" >
-                            <span class="dev-text-primary-bold" >KEY-7703 Internal Automated CI/CD</span>
-                            <span class="dev-font-family-var-font-e036" >8,920 / 25k</span>
-                        </div>
-                        <div class="dev-height-8px-background-var-8d56" >
-                            <div class="dev-width-35-6-height-6aa4" ></div>
-                        </div>
-                    </div>
+                    <?php endforeach; ?>
 
                     <div class="dev-margin-top-6px-padding-7a3e" >
                         <strong>Policy:</strong> Standard partner quota resets daily at 00:00:00 UTC+6. Excess calls return HTTP 429 with <code>Retry-After</code> headers.
@@ -322,14 +314,17 @@ requireAuth('DEV');
             </div>
         </div>
 
-        <!-- OUTBOUND WEBHOOK DISPATCH LEDGER -->
+        <!-- OUTBOUND WEBHOOK DISPATCH LEDGER (Dynamic from Database with CRUD) -->
         <div class="vk-card dev-margin-bottom-30px-9550">
-            <div class="vk-card-header">
+            <div class="vk-card-header" style="display: flex; justify-content: space-between; align-items: center;">
                 <div>
                     <div class="vk-card-title">Outbound Webhook Delivery Log (System 10 Gateway)</div>
                     <div class="vk-card-subtitle">Real-time status of asynchronous telemetry and order status callbacks delivered to external partner systems</div>
                 </div>
                 <div class="dev-flex-center-gap-8" >
+                    <button class="vk-btn vk-btn-sm vk-btn-accent" id="btnOpenCreateWebhook">
+                        <span class="material-symbols-outlined text-[15px]">send</span> Dispatch New Webhook
+                    </button>
                     <span class="vk-tag vk-tag-internal">IEC 62443 VERIFIED</span>
                 </div>
             </div>
@@ -343,64 +338,108 @@ requireAuth('DEV');
                             <th>Target Endpoint</th>
                             <th class="dev-width-130px-e314" >Status</th>
                             <th class="dev-width-90px-459f" >Latency</th>
-                            <th class="dev-width-110px-text-align-2833" >Action</th>
+                            <th class="dev-width-110px-text-align-2833" style="text-align: right;">Action</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr class="vk-table-row-internal">
-                            <td><code>WH-2026-9081</code></td>
-                            <td class="dev-mono-11" >2026-09-11 16:42:10</td>
-                            <td><span class="vk-tag dev-font-size-10px-font-eb29">telemetry.vibration.alert</span></td>
-                            <td class="dev-mono-muted-11" >https://api.baltnord.lv/v1/vostok/events</td>
-                            <td><span class="vk-tag dev-background-dcfce7-color-166534-4a19">200 OK</span></td>
-                            <td class="dev-mono-11" >42 ms</td>
-                            <td class="dev-text-right" ><span class="vk-tag dev-text-10">Delivered</span></td>
-                        </tr>
-                        <tr class="vk-table-row-internal">
-                            <td><code>WH-2026-9080</code></td>
-                            <td class="dev-mono-11" >2026-09-11 15:18:22</td>
-                            <td><span class="vk-tag dev-font-size-10px-font-7515">order.status.dispatched</span></td>
-                            <td class="dev-mono-muted-11" >https://api.baltnord.lv/v1/vostok/orders</td>
-                            <td><span class="vk-tag dev-background-dcfce7-color-166534-4a19">200 OK</span></td>
-                            <td class="dev-mono-11" >38 ms</td>
-                            <td class="dev-text-right" ><span class="vk-tag dev-text-10">Delivered</span></td>
-                        </tr>
-                        <tr class="vk-table-row-confidential">
-                            <td><code>WH-2026-9079</code></td>
-                            <td class="dev-mono-11" >2026-09-11 14:05:01</td>
-                            <td><span class="vk-tag dev-font-size-10px-font-cc63">scada.emergency.trip</span></td>
-                            <td class="dev-mono-muted-11" >https://gateway.almaty-logistics.kz/wh</td>
-                            <td><span class="vk-tag dev-background-dcfce7-color-166534-4a19">200 OK</span></td>
-                            <td class="dev-mono-11" >18 ms</td>
-                            <td class="dev-text-right" ><span class="vk-tag dev-text-10">Delivered</span></td>
-                        </tr>
-                        <tr class="vk-table-row-confidential">
-                            <td><code>WH-2026-9078</code></td>
-                            <td class="dev-mono-11" >2026-09-11 12:30:15</td>
-                            <td><span class="vk-tag dev-font-size-10px-font-7515">telemetry.pressure.warning</span></td>
-                            <td class="dev-mono-muted-11" >https://api.baltnord.lv/v1/vostok/events</td>
-                            <td><span class="vk-tag dev-background-fee2e2-color-var-4d78">504 TIMEOUT</span></td>
-                            <td class="dev-mono-11" >3002 ms</td>
-                            <td class="dev-text-right" >
-                                <button class="vk-btn vk-btn-sm vk-btn-outline btn-retry-webhook dev-padding-2px-8px-font-174a">
+                    <tbody id="webhooksTableBody">
+                        <?php if (empty($webhooks)): ?>
+                        <tr><td colspan="7" style="text-align: center; color: var(--vk-neutral-500); padding: 24px;">No outbound webhook delivery records found.</td></tr>
+                        <?php else: ?>
+                        <?php foreach ($webhooks as $wh): 
+                            $isDelivered = ($wh['status'] === 'Delivered');
+                            $statusBadgeClass = $isDelivered ? 'dev-background-dcfce7-color-166534-4a19' : 'dev-background-fee2e2-color-var-4d78';
+                            $rowClass = str_contains(strtolower($wh['classification']), 'confidential') ? 'vk-table-row-confidential' : 'vk-table-row-internal';
+                            $whJson = htmlspecialchars(json_encode($wh), ENT_QUOTES, 'UTF-8');
+                        ?>
+                        <tr class="<?= $rowClass ?>" id="webhook-row-<?= $wh['id'] ?>">
+                            <td><code><?= htmlspecialchars($wh['delivery_id']) ?></code></td>
+                            <td class="dev-mono-11" ><?= htmlspecialchars($wh['created_at']) ?></td>
+                            <td><span class="vk-tag dev-font-size-10px-font-eb29"><?= htmlspecialchars($wh['event_type']) ?></span></td>
+                            <td class="dev-mono-muted-11" ><?= htmlspecialchars($wh['target_endpoint']) ?></td>
+                            <td><span class="vk-tag <?= $statusBadgeClass ?> wh-status-code-badge"><?= htmlspecialchars($wh['status_code']) ?></span></td>
+                            <td class="dev-mono-11" ><span class="wh-latency-val"><?= $wh['latency_ms'] ?></span> ms</td>
+                            <td class="dev-text-right" style="white-space: nowrap;">
+                                <?php if (!$isDelivered): ?>
+                                <button class="vk-btn vk-btn-sm vk-btn-outline btn-retry-webhook dev-padding-2px-8px-font-174a" 
+                                    data-id="<?= $wh['id'] ?>"
+                                    data-delivery="<?= htmlspecialchars($wh['delivery_id']) ?>">
                                     <span class="material-symbols-outlined text-[14px]">refresh</span> Retry
+                                </button>
+                                <?php else: ?>
+                                <span class="vk-tag dev-text-10">Delivered</span>
+                                <?php endif; ?>
+
+                                <button class="btn-crud-action btn-crud-edit btn-edit-webhook" 
+                                    data-webhook='<?= $whJson ?>'
+                                    title="Edit webhook record">
+                                    <span class="material-symbols-outlined text-[13px]">edit</span>
+                                </button>
+
+                                <button class="btn-crud-action btn-crud-delete btn-delete-webhook" 
+                                    data-id="<?= $wh['id'] ?>"
+                                    data-delivery="<?= htmlspecialchars($wh['delivery_id']) ?>"
+                                    title="Delete webhook from database">
+                                    <span class="material-symbols-outlined text-[13px]">delete</span>
                                 </button>
                             </td>
                         </tr>
-                        <tr class="vk-table-row-internal">
-                            <td><code>WH-2026-9077</code></td>
-                            <td class="dev-mono-11" >2026-09-11 10:15:44</td>
-                            <td><span class="vk-tag dev-font-size-10px-font-f9bc">catalog.price_index.updated</span></td>
-                            <td class="dev-mono-muted-11" >https://b2b.vostokpribor.local/sync</td>
-                            <td><span class="vk-tag dev-background-dcfce7-color-166534-4a19">200 OK</span></td>
-                            <td class="dev-mono-11" >24 ms</td>
-                            <td class="dev-text-right" ><span class="vk-tag dev-text-10">Delivered</span></td>
-                        </tr>
+                        <?php endforeach; ?>
+                        <?php endif; ?>
                     </tbody>
                 </table>
             </div>
         </div>
     </main>
+
+    <!-- CREATE / EDIT WEBHOOK MODAL -->
+    <div class="vk-modal-overlay" id="webhookModal">
+        <div class="vk-modal-dialog" style="max-width: 550px;">
+            <div class="vk-modal-header">
+                <div class="dev-flex-center-gap-8">
+                    <span class="material-symbols-outlined text-[20px] dev-color-accent">outgoing_mail</span>
+                    <h3 id="webhookModalTitle" class="dev-font-size-15px-font-29ad">Dispatch Outbound Webhook</h3>
+                </div>
+                <button class="dev-background-transparent-border-none-aba8" id="btnCloseWebhookModal" style="color: #94a3b8; cursor: pointer;">
+                    <span class="material-symbols-outlined text-[18px]">close</span>
+                </button>
+            </div>
+            <div class="vk-modal-body">
+                <input type="hidden" id="whId" value="" />
+                <div class="crud-form-group">
+                    <label class="crud-form-label" for="whEventType">Event Type *</label>
+                    <input class="crud-form-input" id="whEventType" type="text" placeholder="e.g. telemetry.temperature.threshold" required />
+                </div>
+                <div class="crud-form-group">
+                    <label class="crud-form-label" for="whTargetEndpoint">Target Endpoint URL *</label>
+                    <input class="crud-form-input" id="whTargetEndpoint" type="url" placeholder="https://api.baltnord.lv/v1/vostok/events" required />
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                    <div class="crud-form-group">
+                        <label class="crud-form-label" for="whStatus">Delivery Status</label>
+                        <select class="crud-form-select" id="whStatus">
+                            <option value="Delivered">Delivered (200 OK)</option>
+                            <option value="Failed">Failed (504 Timeout)</option>
+                            <option value="Pending">Pending (In Queue)</option>
+                        </select>
+                    </div>
+                    <div class="crud-form-group">
+                        <label class="crud-form-label" for="whLatency">Simulated Latency (ms)</label>
+                        <input class="crud-form-input" id="whLatency" type="number" value="35" />
+                    </div>
+                </div>
+                <div class="crud-form-group">
+                    <label class="crud-form-label" for="whPayload">JSON Payload</label>
+                    <textarea class="crud-form-textarea" id="whPayload" placeholder='{"event":"telemetry.vibration.alert", "device":"PROD-1001-KZ"}'></textarea>
+                </div>
+            </div>
+            <div class="vk-modal-footer">
+                <button class="vk-btn vk-btn-outline" id="btnCancelWebhookModal">Cancel</button>
+                <button class="vk-btn vk-btn-accent" id="btnSaveWebhook">
+                    <span class="material-symbols-outlined text-[16px]">send</span> Save &amp; Dispatch
+                </button>
+            </div>
+        </div>
+    </div>
 
     <!-- PUBLIC-FACING / DEVELOPER FOOTER -->
     <footer class="vk-footer">

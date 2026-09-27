@@ -380,3 +380,32 @@ function gov_getComplianceOversight()
         'incidents' => $incidents
     ];
 }
+
+/**
+ * Get Compliance Controls Catalog
+ */
+function gov_getComplianceControls()
+{
+    $pdo = getDbConnection();
+    return $pdo->query("
+        SELECT cc.*, e.full_name AS custodian_name, e.job_title AS custodian_title
+        FROM compliance_controls cc
+        LEFT JOIN employees e ON cc.custodian_emp_id = e.emp_id
+        ORDER BY cc.control_id ASC
+    ")->fetchAll(PDO::FETCH_ASSOC);
+}
+
+/**
+ * Get Re-Certification Windows
+ */
+function gov_getRecertificationWindows()
+{
+    $pdo = getDbConnection();
+    return $pdo->query("
+        SELECT rw.*, e.full_name AS creator_name
+        FROM recertification_windows rw
+        LEFT JOIN employees e ON rw.created_by_emp_id = e.emp_id
+        ORDER BY rw.window_id DESC
+    ")->fetchAll(PDO::FETCH_ASSOC);
+}
+

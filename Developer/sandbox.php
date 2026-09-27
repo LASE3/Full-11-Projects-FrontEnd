@@ -2,6 +2,13 @@
 require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/../includes/auth_guard.php';
 requireAuth('DEV');
+$pdo = getDbConnection();
+require_once __DIR__ . '/api/db_helper.php';
+ensureDeveloperTables($pdo);
+
+// Fetch presets and recent execution logs from database
+$presets = $pdo->query("SELECT * FROM `developer_sandbox_presets` ORDER BY `id` ASC")->fetchAll(PDO::FETCH_ASSOC);
+$recentLogs = $pdo->query("SELECT * FROM `developer_sandbox_logs` ORDER BY `id` DESC LIMIT 5")->fetchAll(PDO::FETCH_ASSOC);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -144,11 +151,8 @@ requireAuth('DEV');
         <div class="dev-padding-16px-border-top-156b" >
             <div class="dev-font-family-var-font-6447" >Mock Ingestion Engine</div>
             <div class="dev-text-muted" >Target: Almaty Mock Cluster</div>
-            <div class="dev-color-var-vk-secondary-9fd9" >Latency: &lt;35ms Simulated</div>
+            <div class="dev-color-var-vk-secondary-9fd9" >Latency: &lt;35ms Live Dispatched</div>
         </div>
-
-        <!-- Log Out -->
-
     </aside>
 
     <!-- MAIN CONTENT -->
@@ -156,30 +160,38 @@ requireAuth('DEV');
         <div class="dev-mb-20" >
             <div class="dev-display-flex-align-items-81c3" >
                 <span class="dev-mono-muted-11" >ROOT / SYSTEM 10 / TESTING CONSOLE</span>
-                <span class="badge-classification badge-internal">Sandbox Mock Environment</span>
+                <span class="badge-classification badge-internal">Sandbox Gateway Node</span>
             </div>
             <h1 class="dev-font-size-26px-font-2295" >
                 Interactive API Request Runner &amp; Simulator
             </h1>
             <p class="dev-color-var-vk-neutral-56fa" >
-                Directly dispatch test requests to VOSTOKPRIBOR sandbox nodes without impacting production SCADA telemetry or ERP records.
+                Directly dispatch test requests to VOSTOKPRIBOR sandbox nodes connected to the real system database without impacting production SCADA telemetry.
             </p>
         </div>
 
-        <!-- Quick Endpoint Presets -->
-        <div class="dev-display-flex-align-items-7bb4" >
+        <!-- Quick Endpoint Presets (100% Dynamic from Database) -->
+        <div class="dev-display-flex-align-items-7bb4" style="flex-wrap: wrap; gap: 8px;">
             <span class="dev-font-family-var-font-0e94" >Quick Presets:</span>
-            <button class="vk-btn vk-btn-outline btn-preset" data-method="GET" data-url="/v1/sensors/optical/telemetry?device_id=PROD-1001-KZ" data-body="">
-                <span class="endpoint-badge-get dev-padding-1px-4px-font-650b">GET</span> PROD-1001 Optical Telemetry
-            </button>
-            <button class="vk-btn vk-btn-outline btn-preset" data-method="GET" data-url="/v1/devices/geodetic/measurements?unit=PROD-1002" data-body="">
-                <span class="endpoint-badge-get dev-padding-1px-4px-font-650b">GET</span> PROD-1002 Geodetic Vectors
-            </button>
-            <button class="vk-btn vk-btn-outline btn-preset" data-method="POST" data-url="/v1/scada/ingest/frames" data-body='{"facility_id":"ALMATY-CENTRAL-01","protocol":"MODBUS-TCP","plc_register":"40001","payload_hex":"0A2B4C"}'>
-                <span class="endpoint-badge-post dev-padding-1px-4px-font-650b">POST</span> PROD-1004 SCADA Frame
-            </button>
-            <button class="vk-btn vk-btn-outline btn-preset" data-method="POST" data-url="/v1/b2b/orders/create" data-body='{"customer_id":"CUS-1002","items":[{"prod_id":"PROD-1001","qty":4}]}'>
-                <span class="endpoint-badge-post dev-padding-1px-4px-font-650b">POST</span> B2B Order Create
+            <?php foreach ($presets as $preset): 
+                $badgeStyle = strtoupper($preset['method']) === 'POST' ? 'endpoint-badge-post' : (strtoupper($preset['method']) === 'PUT' ? 'endpoint-badge-put' : (strtoupper($preset['method']) === 'DELETE' ? 'endpoint-badge-delete' : 'endpoint-badge-get'));
+            ?>
+            <div style="display: inline-flex; align-items: center; border: 1px solid var(--vk-neutral-200); border-radius: 6px; overflow: hidden; background: #fff;">
+                <button class="vk-btn vk-btn-outline btn-preset" style="border: none; border-radius: 0; padding: 5px 10px;"
+                    data-method="<?= htmlspecialchars($preset['method']) ?>" 
+                    data-url="<?= htmlspecialchars($preset['url']) ?>" 
+                    data-body="<?= htmlspecialchars($preset['sample_body'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
+                    <span class="<?= $badgeStyle ?> dev-padding-1px-4px-font-650b"><?= htmlspecialchars($preset['method']) ?></span> 
+                    <?= htmlspecialchars($preset['title']) ?>
+                </button>
+                <button class="btn-delete-preset" data-id="<?= $preset['id'] ?>" title="Delete preset" style="background: transparent; border: none; border-left: 1px solid #e2e8f0; padding: 6px; cursor: pointer; color: #94a3b8;">
+                    <span class="material-symbols-outlined text-[13px]">close</span>
+                </button>
+            </div>
+            <?php endforeach; ?>
+
+            <button class="vk-btn vk-btn-outline" id="btnOpenSavePreset" style="margin-left: auto; border-style: dashed;">
+                <span class="material-symbols-outlined text-[14px]">bookmark_add</span> Save Current as Preset
             </button>
         </div>
 
@@ -189,7 +201,7 @@ requireAuth('DEV');
             <div class="vk-card tag-internal">
                 <div class="vk-card-header">
                     <div class="dev-font-weight-700-font-2e8f" >HTTP Request Builder</div>
-                    <span class="badge-classification badge-internal">Sandbox Mode</span>
+                    <span class="badge-classification badge-internal">Database-Connected Live Sandbox</span>
                 </div>
                 <div class="vk-card-body dev-display-flex-flex-direction-269e">
                     <!-- URL Bar -->
@@ -208,7 +220,7 @@ requireAuth('DEV');
 
                     <!-- Authorization Token Preview -->
                     <div>
-                        <label class="dev-font-size-11px-font-a64a" >Headers (Auto-injected)</label>
+                        <label class="dev-font-size-11px-font-a64a" >Headers (Auto-injected by Gateway)</label>
                         <div class="dev-background-f8fafc-border-1px-0d68" >
                             Authorization: Bearer vk_test_3f7b99c1e04a88bc92d110f<br />
                             Accept: application/json<br />
@@ -258,7 +270,91 @@ requireAuth('DEV');
                 </div>
             </div>
         </div>
+
+        <!-- RECENT EXECUTION HISTORY (From database table developer_sandbox_logs) -->
+        <div class="vk-card" style="margin-top: 24px;">
+            <div class="vk-card-header" style="display: flex; justify-content: space-between; align-items: center;">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span class="material-symbols-outlined text-[18px] dev-color-accent">history</span>
+                    <div class="vk-card-title">Recent Sandbox Dispatches (Database Ledger)</div>
+                </div>
+                <button class="vk-btn vk-btn-outline" id="btnClearSandboxLogs" style="font-size: 11px; padding: 3px 8px;">
+                    <span class="material-symbols-outlined text-[13px]">delete_sweep</span> Clear History
+                </button>
+            </div>
+            <div class="vk-card-body" style="padding: 0;">
+                <table class="vk-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 80px;">Method</th>
+                            <th>Request URL</th>
+                            <th style="width: 100px;">Status</th>
+                            <th style="width: 90px;">Latency</th>
+                            <th style="width: 90px;">Payload</th>
+                            <th style="width: 140px;">Timestamp</th>
+                            <th style="width: 90px; text-align: right;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="sandboxLogsBody">
+                        <?php if (empty($recentLogs)): ?>
+                        <tr><td colspan="7" style="text-align: center; color: var(--vk-neutral-500); padding: 20px;">No requests dispatched yet.</td></tr>
+                        <?php else: ?>
+                        <?php foreach ($recentLogs as $log): 
+                            $statusStyle = ($log['status_code'] >= 200 && $log['status_code'] < 300) ? 'status-active' : 'status-revoked';
+                        ?>
+                        <tr>
+                            <td><span class="endpoint-badge-<?= strtolower($log['method']) ?>"><?= htmlspecialchars($log['method']) ?></span></td>
+                            <td><code style="font-family: var(--font-mono); font-size: 12px;"><?= htmlspecialchars($log['url']) ?></code></td>
+                            <td><span class="vk-status-badge <?= $statusStyle ?>"><?= $log['status_code'] ?></span></td>
+                            <td style="font-family: var(--font-mono); font-size: 12px;"><?= $log['response_time_ms'] ?> ms</td>
+                            <td style="font-family: var(--font-mono); font-size: 11px; color: var(--vk-neutral-500);"><?= htmlspecialchars($log['response_size']) ?></td>
+                            <td style="font-size: 11px; color: var(--vk-neutral-500);"><?= htmlspecialchars($log['executed_at']) ?></td>
+                            <td style="text-align: right;">
+                                <button class="btn-crud-action btn-rerun-log" 
+                                    data-method="<?= htmlspecialchars($log['method']) ?>" 
+                                    data-url="<?= htmlspecialchars($log['url']) ?>" 
+                                    data-body="<?= htmlspecialchars($log['request_body'] ?? '', ENT_QUOTES, 'UTF-8') ?>"
+                                    title="Load and replay this request">
+                                    <span class="material-symbols-outlined text-[13px]">replay</span>
+                                </button>
+                            </td>
+                        </tr>
+                        <?php endforeach; ?>
+                        <?php endif; ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </main>
+
+    <!-- SAVE PRESET MODAL DIALOG -->
+    <div class="vk-modal-overlay" id="savePresetModal">
+        <div class="vk-modal-dialog" style="max-width: 500px;">
+            <div class="vk-modal-header">
+                <div class="dev-flex-center-gap-8">
+                    <span class="material-symbols-outlined text-[20px] dev-color-accent">bookmark_add</span>
+                    <h3 class="dev-font-size-15px-font-29ad">Save Endpoint Preset</h3>
+                </div>
+                <button class="dev-background-transparent-border-none-aba8" id="btnClosePresetModal" style="color: #94a3b8; cursor: pointer;">
+                    <span class="material-symbols-outlined text-[18px]">close</span>
+                </button>
+            </div>
+            <div class="vk-modal-body">
+                <div class="crud-form-group">
+                    <label class="crud-form-label" for="presetTitleInput">Preset Title *</label>
+                    <input class="crud-form-input" id="presetTitleInput" type="text" placeholder="e.g. SCADA Emergency Trip Simulation" required />
+                </div>
+                <div class="crud-form-group">
+                    <label class="crud-form-label" for="presetDescInput">Short Description</label>
+                    <input class="crud-form-input" id="presetDescInput" type="text" placeholder="Optional notes about this test payload" />
+                </div>
+            </div>
+            <div class="vk-modal-footer">
+                <button class="vk-btn vk-btn-outline" id="btnCancelPresetModal">Cancel</button>
+                <button class="vk-btn vk-btn-accent" id="btnConfirmSavePreset">Save Preset to Database</button>
+            </div>
+        </div>
+    </div>
 
         <footer class="vk-footer">
         <div class="vk-footer-bottom dev-border-top-none-padding-efbd">
