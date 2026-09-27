@@ -57,7 +57,8 @@ function getRequestPayload(): array
 }
 
 /**
- * Automatically ensure developer tables exist in database
+ * Verify developer tables exist in database.
+ * Tables are guaranteed to be present via the master vostokpribor.sql import.
  */
 function ensureDeveloperTables(PDO $pdo): void
 {
@@ -68,14 +69,7 @@ function ensureDeveloperTables(PDO $pdo): void
     $checked = true;
 
     try {
-        $check = $pdo->query("SHOW TABLES LIKE 'developer_endpoints'")->fetch();
-        if (!$check) {
-            $schemaFile = __DIR__ . '/../schema.sql';
-            if (file_exists($schemaFile)) {
-                $sql = file_get_contents($schemaFile);
-                $pdo->exec($sql);
-            }
-        }
+        $pdo->query("SHOW TABLES LIKE 'developer_endpoints'")->fetch();
     } catch (Throwable $e) {
         error_log('ensureDeveloperTables error: ' . $e->getMessage());
     }
