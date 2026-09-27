@@ -1,8 +1,7 @@
 /**
  * VOSTOKPRIBOR ENTERPRISE DESIGN SYSTEM
  * System 09: File Center / Document Hub
- * Document Approvals & Electronic Signoff Module
- * Baseline Scenario: DOC-2026-004 (PRJ-2026-002 BaltNord) reviewed by Farida Iskakova (EMP-1019)
+ * Document Approvals & Electronic Signoff Module (Live Database Integration)
  */
 
 (function () {
@@ -36,56 +35,90 @@
     }
 
     if (formSign) {
-      formSign.addEventListener("submit", (e) => {
+      formSign.addEventListener("submit", async (e) => {
         e.preventDefault();
 
+        const docId = document.getElementById("sign-doc-id") ? document.getElementById("sign-doc-id").value : "DOC-2026-004";
         const submitBtn = formSign.querySelector('button[type="submit"]');
         submitBtn.disabled = true;
         submitBtn.innerHTML =
-          '<span class="material-symbols-outlined text-[16px] animate-spin">sync</span> Affixing HSM Signature...';
+          '<span class="material-symbols-outlined text-[16px] animate-spin">sync</span> Affixing HSM Signature to MySQL...';
 
-        setTimeout(() => {
-          signModal.style.display = "none";
+        try {
+          const response = await fetch("api/approvals.php", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              action: "sign",
+              doc_id: docId,
+              comments: "Certified technical deliverable and authorized release to L4 Governance",
+            }),
+          });
 
-          // Update Stepper
-          if (step2) {
-            step2.classList.remove("active");
-            step2.classList.add("completed");
-            step2.querySelector(".step-circle").innerHTML =
-              '<span class="material-symbols-outlined text-[18px]">done</span>';
-          }
-          if (step3) {
-            step3.classList.add("active");
-          }
-          if (stepperFill) {
-            stepperFill.style.width = "85%";
-          }
+          const res = await response.json();
 
-          // Update Badge
-          if (approvalBadge) {
-            approvalBadge.textContent = "PM APPROVED // IN GOVERNANCE REVIEW";
-            approvalBadge.className = "vk-status-badge status-approved";
-          }
+          if (res.success && res.data) {
+            const data = res.data;
+            signModal.style.display = "none";
 
-          // Disable the approve button and show signed stamp
-          if (btnOpenSignModal) {
-            btnOpenSignModal.disabled = true;
-            btnOpenSignModal.innerHTML =
-              '<span class="material-symbols-outlined text-[16px]">verified</span> Signed by Farida Iskakova (EMP-1019)';
-            btnOpenSignModal.classList.remove("vk-btn-primary");
-            btnOpenSignModal.classList.add("vk-btn-outline");
-            btnOpenSignModal.style.borderColor = "var(--vk-secondary)";
-            btnOpenSignModal.style.color = "var(--vk-secondary)";
-          }
+            // Update Stepper
+            if (step2) {
+              step2.classList.remove("active");
+              step2.classList.add("completed");
+              const circle = step2.querySelector(".step-circle");
+              if (circle) {
+                circle.innerHTML = '<span class="material-symbols-outlined text-[18px]">done</span>';
+              }
+              const subtext = step2.querySelector(".fc-font-family-var-font-c0ef");
+              if (subtext) {
+                subtext.innerHTML = 'SIGNED &amp; ATTESTED';
+                subtext.style.color = 'var(--vk-secondary)';
+              }
+            }
+            if (step3) {
+              step3.classList.add("active");
+            }
+            if (stepperFill) {
+              stepperFill.style.width = "85%";
+            }
 
-          // Show success toast
-          window.showToast(
-            "DIGITAL SIGNATURE AFFIXED",
-            "DOC-2026-004 approved by Farida Iskakova (EMP-1019). Routed to Timur Akhmetov (EMP-1005) for final L4 governance release.",
-            "success",
-            "draw",
-          );
-        }, 900);
+            // Update Badge
+            if (approvalBadge) {
+              approvalBadge.textContent = data.approval_status || "PM APPROVED // IN GOVERNANCE REVIEW";
+              approvalBadge.className = "vk-status-badge status-approved";
+            }
+
+            // Disable button and show signed stamp
+            if (btnOpenSignModal) {
+              btnOpenSignModal.disabled = true;
+              btnOpenSignModal.innerHTML = `<span class="material-symbols-outlined text-[16px]">verified</span> Signed by ${data.signatory_name} (${data.signatory_id})`;
+              btnOpenSignModal.classList.remove("vk-btn-primary");
+              btnOpenSignModal.classList.add("vk-btn-outline");
+              btnOpenSignModal.style.borderColor = "var(--vk-secondary)";
+              btnOpenSignModal.style.color = "var(--vk-secondary)";
+            }
+
+            // Show success toast
+            if (window.showToast) {
+              window.showToast(
+                "DIGITAL SIGNATURE AFFIXED",
+                `${docId} approved and recorded in MySQL database. Token: ${data.token}. Routed to Timur Akhmetov for L4 Governance clearance.`,
+                "success",
+                "draw"
+              );
+            }
+          } else {
+            alert("Signoff error: " + (res.message || "Failed to record signature"));
+          }
+        } catch (err) {
+          alert("Network or database error: " + err.message);
+        } finally {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML =
+            '<span class="material-symbols-outlined text-[16px]">draw</span> Affix Signature &amp; Release';
+        }
       });
     }
   }
@@ -106,24 +139,28 @@
         document.querySelectorAll(".redact-target").forEach((el) => {
           el.classList.add("redacted-bar");
         });
-        window.showToast(
-          "CUSTOMER VIEW APPLIED",
-          "Masked proprietary PLC memory maps and internal Almaty IP topology.",
-          "info",
-          "lock",
-        );
+        if (window.showToast) {
+          window.showToast(
+            "CUSTOMER VIEW APPLIED",
+            "Masked proprietary PLC memory maps and internal Almaty IP topology.",
+            "info",
+            "lock"
+          );
+        }
       } else {
         toggleBtn.innerHTML =
           '<span class="material-symbols-outlined text-[16px]">visibility_off</span> Preview Redacted (Customer Portal)';
         document.querySelectorAll(".redact-target").forEach((el) => {
           el.classList.remove("redacted-bar");
         });
-        window.showToast(
-          "INTERNAL SPEC VIEW",
-          "Displaying full engineering specification with raw memory registers.",
-          "info",
-          "visibility",
-        );
+        if (window.showToast) {
+          window.showToast(
+            "INTERNAL SPEC VIEW",
+            "Displaying full engineering specification with raw memory registers.",
+            "info",
+            "visibility"
+          );
+        }
       }
     });
   }

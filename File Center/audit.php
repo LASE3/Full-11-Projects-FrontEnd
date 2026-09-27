@@ -2,6 +2,40 @@
 require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/../includes/auth_guard.php';
 requireAuth('DOC');
+
+$pdo = getDbConnection();
+$currUser = $_SESSION['vostok_user'] ?? [
+    'full_name' => 'Farida Iskakova',
+    'user_id' => 'EMP-1019',
+    'role_name' => 'Lead Custodian',
+];
+
+// Query all documents for hash verification selector
+$docsWithHashes = $pdo->query("
+    SELECT doc_id, file_name, file_hash, classification 
+    FROM documents 
+    WHERE file_hash IS NOT NULL AND CHAR_LENGTH(file_hash) = 64
+    ORDER BY CAST(SUBSTRING(doc_id, 10) AS UNSIGNED) ASC
+")->fetchAll(PDO::FETCH_ASSOC);
+
+// Query audit logs from document_access_log
+$logsStmt = $pdo->query("
+    SELECT 
+        al.*,
+        COALESCE(e.full_name, al.accessed_by_emp_id, 'System Custodian') AS actor_name,
+        COALESCE(e.department_code, 'ENG') AS actor_dept,
+        d.file_name,
+        d.classification
+    FROM document_access_log al
+    LEFT JOIN employees e ON al.accessed_by_emp_id = e.emp_id
+    LEFT JOIN documents d ON al.doc_id = d.doc_id
+    ORDER BY al.accessed_at DESC, al.access_id DESC
+    LIMIT 100
+");
+$auditLogs = $logsStmt->fetchAll(PDO::FETCH_ASSOC);
+
+$totalDocs = (int)$pdo->query("SELECT COUNT(*) FROM documents")->fetchColumn();
+$pendingApprovals = (int)$pdo->query("SELECT COUNT(*) FROM documents WHERE status IN ('In Review', 'Pending')")->fetchColumn();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -15,47 +49,47 @@ requireAuth('DOC');
 </head>
 
 <body>
-    <!-- TOP NAVIGATION BAR (System 09 Graphite 4px Accent Stripe) -->
+    <!-- TOP NAVIGATION BAR -->
     <header class="vk-top-navbar">
-        <div class="fc-flex-center-gap-24" >
+        <div class="fc-flex-center-gap-24">
             <a class="vk-brand-section" href="Dashboard.php">
                 <img alt="VOSTOKPRIBOR Official Mark" class="brand-logo-img fc-logo-img" src="assets/logo.svg" />
-                <div class="fc-flex-col" >
-                    <div class="fc-flex-center-gap-8" >
-                        <span class="fc-font-family-var-font-980b" >VOSTOKPRIBOR</span>
+                <div class="fc-flex-col">
+                    <div class="fc-flex-center-gap-8">
+                        <span class="fc-font-family-var-font-980b">VOSTOKPRIBOR</span>
                         <span class="vk-system-badge">SYS-09 // FILE-CENTER</span>
                     </div>
-                    <span class="fc-font-family-var-font-54ae" >ALMATY CENTRAL • EST. 1968 • DOCUMENT VAULT v3.8.2</span>
+                    <span class="fc-font-family-var-font-54ae">ALMATY CENTRAL • EST. 1968 • DOCUMENT VAULT v3.8.2</span>
                 </div>
             </a>
-            <div class="fc-display-flex-align-items-bc9f" >
+            <div class="fc-display-flex-align-items-bc9f">
                 <span class="material-symbols-outlined text-[14px] fc-color-secondary">fingerprint</span>
-                <span class="fc-font-family-var-font-eb0b" >INTEGRITY: <strong>HARDWARE HSM AUDIT LEDGER</strong></span>
+                <span class="fc-font-family-var-font-eb0b">INTEGRITY: <strong>HARDWARE HSM AUDIT LEDGER</strong></span>
             </div>
         </div>
 
-        <div class="fc-flex-center-gap-16" >
+        <div class="fc-flex-center-gap-16">
             <button class="search-trigger-btn" type="button">
                 <span class="material-symbols-outlined text-[16px]">search</span>
                 <span>Search documents, DOC-IDs...</span>
                 <span class="kbd-shortcut">Ctrl K</span>
             </button>
-            <div class="fc-display-flex-align-items-9eca" >
+            <div class="fc-display-flex-align-items-9eca">
                 <span class="material-symbols-outlined text-[14px] fc-color-secondary">schedule</span>
                 <span class="station-live-clock">17:50:00 UTC+6</span>
             </div>
-            <div class="fc-display-flex-align-items-20f3" >
-                <div class="fc-text-right" >
-                    <div class="fc-font-size-12px-font-2ab2" >Farida Iskakova</div>
-                    <div class="fc-font-family-var-font-5c5e" >EMP-1019 • Lead Custodian</div>
+            <div class="fc-display-flex-align-items-20f3">
+                <div class="fc-text-right">
+                    <div class="fc-font-size-12px-font-2ab2"><?= htmlspecialchars($currUser['full_name'] ?? 'Farida Iskakova') ?></div>
+                    <div class="fc-font-family-var-font-5c5e"><?= htmlspecialchars($currUser['user_id'] ?? 'EMP-1019') ?> • <?= htmlspecialchars($currUser['role_name'] ?? 'Lead Custodian') ?></div>
                 </div>
-                <div class="fc-width-32px-height-32px-0eaf" >
+                <div class="fc-width-32px-height-32px-0eaf">
                     <span class="material-symbols-outlined text-[18px] fc-text-white">folder_managed</span>
                 </div>
             </div>
 
             <!-- Top Bar Sign Out -->
-            <a href="../api/logout.php?system=File%20Center&redirect=../File%20Center/login.php" class="top-signout-btn" title="Sign Out of File Center" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" ><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
+            <a href="../api/logout.php?system=File%20Center&redirect=../File%20Center/login.php" class="top-signout-btn" title="Sign Out of File Center" onclick="(function(){sessionStorage.clear();localStorage.clear();})()"><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
         </div>
     </header>
 
@@ -64,33 +98,35 @@ requireAuth('DOC');
         <div class="vk-sidebar-nav">
             <div class="vk-sidebar-header">Document Vault</div>
             <a class="vk-nav-item" href="Dashboard.php">
-                <div class="fc-flex-center-gap-10" >
+                <div class="fc-flex-center-gap-10">
                     <span class="material-symbols-outlined text-[18px]">folder_open</span>
                     <span>Document Repository</span>
                 </div>
-                <span class="nav-badge">15</span>
+                <span class="nav-badge"><?= $totalDocs ?></span>
             </a>
             <a class="vk-nav-item" href="approvals.php">
-                <div class="fc-flex-center-gap-10" >
+                <div class="fc-flex-center-gap-10">
                     <span class="material-symbols-outlined text-[18px]">assignment_turned_in</span>
                     <span>Signoff &amp; Approvals</span>
                 </div>
-                <span class="vk-tag vk-tag-highly-confidential fc-font-size-9px-padding-4279">1 ACTION</span>
+                <?php if ($pendingApprovals > 0): ?>
+                    <span class="vk-tag vk-tag-highly-confidential fc-font-size-9px-padding-4279"><?= $pendingApprovals ?> ACTION</span>
+                <?php endif; ?>
             </a>
             <a class="vk-nav-item" href="upload.php">
-                <div class="fc-flex-center-gap-10" >
+                <div class="fc-flex-center-gap-10">
                     <span class="material-symbols-outlined text-[18px]">upload_file</span>
                     <span>Secure Ingestion</span>
                 </div>
             </a>
             <a class="vk-nav-item" href="retention.php">
-                <div class="fc-flex-center-gap-10" >
+                <div class="fc-flex-center-gap-10">
                     <span class="material-symbols-outlined text-[18px]">inventory_2</span>
                     <span>Retention &amp; Holds</span>
                 </div>
             </a>
             <a class="vk-nav-item active" href="audit.php">
-                <div class="fc-flex-center-gap-10" >
+                <div class="fc-flex-center-gap-10">
                     <span class="material-symbols-outlined text-[18px]">fingerprint</span>
                     <span>Integrity Ledger</span>
                 </div>
@@ -98,28 +134,28 @@ requireAuth('DOC');
 
             <div class="vk-sidebar-header fc-mt-20">System Integrations</div>
             <a class="vk-nav-item" href="../VOSTOKPRIBOR Corporate Web Platform/index.php">
-                <div class="fc-flex-center-gap-10" >
+                <div class="fc-flex-center-gap-10">
                     <span class="material-symbols-outlined text-[18px] fc-color-1b3a5c-1796">language</span>
                     <span>Corporate Platform</span>
                 </div>
                 <span class="vk-tag fc-font-size-9px-background-21b8">SYS-01</span>
             </a>
             <a class="vk-nav-item" href="../Employee Intranet/index.php">
-                <div class="fc-flex-center-gap-10" >
+                <div class="fc-flex-center-gap-10">
                     <span class="material-symbols-outlined text-[18px] fc-color-5c7290-b50c">badge</span>
                     <span>Employee Intranet</span>
                 </div>
                 <span class="vk-tag fc-font-size-9px-background-cfa1">SYS-04</span>
             </a>
             <a class="vk-nav-item" href="../Developer/index.php">
-                <div class="fc-flex-center-gap-10" >
+                <div class="fc-flex-center-gap-10">
                     <span class="material-symbols-outlined text-[18px] fc-color-1e8fa6-f90d">terminal</span>
                     <span>Developer / API Portal</span>
                 </div>
                 <span class="vk-tag fc-font-size-9px-background-5382">SYS-10</span>
             </a>
             <a class="vk-nav-item" href="../Admin & Governance Portal/index.php">
-                <div class="fc-flex-center-gap-10" >
+                <div class="fc-flex-center-gap-10">
                     <span class="material-symbols-outlined text-[18px] fc-color-var-vk-alert-6578">shield</span>
                     <span>Admin &amp; Governance</span>
                 </div>
@@ -127,41 +163,40 @@ requireAuth('DOC');
             </a>
         </div>
 
-        <div class="fc-padding-16px-border-top-d16d" >
-            <div class="fc-display-flex-align-items-81c3" >
+        <div class="fc-padding-16px-border-top-d16d">
+            <div class="fc-display-flex-align-items-81c3">
                 <span class="status-dot-pulse"></span>
-                <span class="fc-font-family-var-font-1ab9" >HSM INTEGRITY ENGINE</span>
+                <span class="fc-font-family-var-font-1ab9">HSM AUDIT ENCLAVE</span>
             </div>
-            <div class="fc-mono-muted-11" >Hash Ledger: Zero Errors</div>
-            <div class="fc-font-family-var-font-940f" >Last Audit Cycle: 100% PASS</div>
+            <div class="fc-mono-muted-11">Cluster: almaty-node-01.vostokpribor.local</div>
+            <div class="fc-font-family-var-font-940f">Continuous Ledger Sync: Active</div>
         </div>
-
-        <!-- Log Out -->
-
     </aside>
 
     <!-- MAIN CONTENT AREA -->
     <main class="vk-main-layout">
         <!-- HEADER BLOCK -->
-        <div class="fc-display-flex-justify-content-f610" >
+        <div class="fc-display-flex-justify-content-f610" style="margin-bottom: 24px;">
             <div>
-                <div class="fc-display-flex-align-items-9bb7" >
-                    <span class="vk-tag vk-tag-internal">CRYPTOGRAPHIC ASSURANCE // FIPS 140-3</span>
-                    <span class="fc-mono-muted-12" >AUDIT-CYCLE: 2026-Q3</span>
+                <div class="fc-display-flex-align-items-9bb7">
+                    <span class="vk-tag fc-background-var-vk-sys-9005">
+                        SYSTEM 09 // AUDIT &amp; LEDGER
+                    </span>
+                    <span class="fc-mono-muted-12">AUDIT-CYCLE: 2026-Q3</span>
                 </div>
-                <h1 class="fc-font-size-26px-font-5041" >
+                <h1 class="fc-font-size-26px-font-5041">
                     <span class="material-symbols-outlined fc-font-size-28px-color-c410">fingerprint</span>
                     Cryptographic Integrity &amp; Document Audit Ledger
                 </h1>
-                <p class="fc-color-var-vk-neutral-5a07" >
-                    Bitwise verification of stored documents against the hardware HSM hash ledger and immutable custodial transaction trail.
+                <p class="fc-color-var-vk-neutral-5a07">
+                    Bitwise verification of stored documents against the hardware HSM hash ledger and immutable custodial transaction trail in MySQL.
                 </p>
             </div>
         </div>
 
         <!-- TWO COLUMN LAYOUT: CRYPTOGRAPHIC VERIFIER + ACCESS LEDGER -->
-        <div class="fc-display-grid-grid-template-687b" >
-            <!-- SHA-256 VERIFIER TOOL -->
+        <div class="fc-display-grid-grid-template-687b">
+            <!-- SHA-256 VERIFIER TOOL (Dynamic from Database) -->
             <div class="vk-card">
                 <div class="vk-card-header">
                     <div>
@@ -174,52 +209,45 @@ requireAuth('DOC');
                 </div>
 
                 <div class="vk-card-body">
-                    <div class="fc-display-flex-flex-direction-f4b1" >
+                    <div class="fc-display-flex-flex-direction-f4b1">
                         <div>
-                            <label class="fc-font-size-12px-font-8504" >
-                                Select Registered Document from Manifest
+                            <label class="fc-font-size-12px-font-8504" for="verify-select-doc">
+                                Select Registered Document from Database Manifest
                             </label>
-                            <select class="vk-btn vk-btn-outline" id="verify-select-doc" >
+                            <select class="vk-btn vk-btn-outline" id="verify-select-doc" style="width: 100%; text-align: left; padding: 8px 12px; margin-top: 4px;">
                                 <option value="" data-expected-hash="">-- Choose a document to auto-populate checksum --</option>
-                                <option value="DOC-2026-004" data-expected-hash="9f8e7d6c5b4a3928170192837465abcdeffedcba98765432101234567890fedc">
-                                    DOC-2026-004: PRJ-2026-002_Integration_Specification.pdf (BaltNord)
-                                </option>
-                                <option value="DOC-2026-001" data-expected-hash="a89f30b9148d423985bf4f481c81c4e97a5b3992b1cf5600ea8b1990c681ea88">
-                                    DOC-2026-001: Corporate_Information_Security_Policy.pdf
-                                </option>
-                                <option value="DOC-2026-007" data-expected-hash="deadbeef1029384756abcdef0192837465bcaefd1234567890fedcba98765432">
-                                    DOC-2026-007: Employee_Access_Matrix.xlsx
-                                </option>
-                                <option value="DOC-2026-015" data-expected-hash="bbccddeeff00112233445566778899aabbccddeeff00112233445566778899aa">
-                                    DOC-2026-015: Board_Risk_Register_2026.xlsx
-                                </option>
+                                <?php foreach ($docsWithHashes as $d): ?>
+                                    <option value="<?= htmlspecialchars($d['doc_id']) ?>" data-expected-hash="<?= htmlspecialchars($d['file_hash']) ?>">
+                                        <?= htmlspecialchars($d['doc_id']) ?>: <?= htmlspecialchars($d['file_name']) ?> (<?= htmlspecialchars($d['classification']) ?>)
+                                    </option>
+                                <?php endforeach; ?>
                             </select>
                         </div>
 
-                        <div>
-                            <label class="fc-font-size-12px-font-8504" >
+                        <div style="margin-top: 12px;">
+                            <label class="fc-font-size-12px-font-8504" for="verify-input-hash">
                                 Target SHA-256 Digest (64 Hex Characters)
                             </label>
-                            <input class="vk-btn vk-btn-outline" id="verify-input-hash" type="text" placeholder="Paste 64-character SHA-256 hex string..."  />
+                            <input class="vk-btn vk-btn-outline" id="verify-input-hash" type="text" placeholder="Paste 64-character SHA-256 hex string..." style="width: 100%; text-align: left; padding: 8px 12px; margin-top: 4px; font-family: var(--font-mono);" />
                         </div>
 
-                        <div class="fc-display-flex-justify-content-9d73" >
+                        <div class="fc-display-flex-justify-content-9d73" style="margin-top: 16px;">
                             <button class="vk-btn vk-btn-primary" id="btn-run-hash-verification" type="button">
                                 <span class="material-symbols-outlined text-[16px]">security</span> Verify Cryptographic Seal
                             </button>
                         </div>
 
                         <!-- VERIFICATION RESULT (Initially hidden) -->
-                        <div class="fc-display-none-padding-14px-1e95" id="verify-result-box" >
-                            <div class="fc-display-flex-align-items-3b8a" >
+                        <div class="fc-display-none-padding-14px-1e95" id="verify-result-box" style="margin-top: 16px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: var(--radius-sm);">
+                            <div class="fc-display-flex-align-items-3b8a" style="color: #166534; font-weight: 700; gap: 8px;">
                                 <span class="material-symbols-outlined text-[18px]">verified</span>
-                                BITWISE INTEGRITY CONFIRMED // ZERO TAMPERING DETECTED
+                                <span id="verify-disp-status">BITWISE INTEGRITY CONFIRMED // ZERO TAMPERING DETECTED</span>
                             </div>
-                            <div class="fc-font-family-var-font-94fe" >
+                            <div class="fc-font-family-var-font-94fe" style="margin-top: 6px; font-family: var(--font-mono); font-size: 11px; word-break: break-all;">
                                 Verified Digest: <span id="verify-disp-hash"></span>
                             </div>
-                            <div class="fc-font-family-var-font-7b91" >
-                                Timestamp: <span id="verify-disp-timestamp"></span> &bull; Validated by: HSM-NODE-ALMATY-01
+                            <div class="fc-font-family-var-font-7b91" style="margin-top: 4px; font-size: 11px; color: #15803d;">
+                                Timestamp: <span id="verify-disp-timestamp"></span> &bull; Validated by: <span id="verify-disp-enclave">HSM-NODE-ALMATY-01</span>
                             </div>
                         </div>
                     </div>
@@ -237,41 +265,41 @@ requireAuth('DOC');
 
                 <div class="vk-card-body fc-display-flex-flex-direction-269e">
                     <div>
-                        <div class="fc-display-flex-justify-content-c0fa" >
-                            <span class="fc-text-primary-bold" >FIPS 140-3 Hardware Key Security</span>
-                            <span class="fc-font-family-var-font-90a6" >ACTIVE (LEVEL 3)</span>
+                        <div class="fc-display-flex-justify-content-c0fa">
+                            <span class="fc-text-primary-bold">FIPS 140-3 Hardware Key Security</span>
+                            <span class="fc-font-family-var-font-90a6">ACTIVE (LEVEL 3)</span>
                         </div>
-                        <div class="fc-text-muted-11" >Master signing key resides in hardware enclave in Almaty Datacenter.</div>
+                        <div class="fc-text-muted-11">Master signing key resides in hardware enclave in Almaty Datacenter.</div>
                     </div>
 
-                    <div class="fc-border-top-1px-solid-8a57" >
-                        <div class="fc-display-flex-justify-content-c0fa" >
-                            <span class="fc-text-primary-bold" >Automated Daily Hash Scrub</span>
-                            <span class="fc-font-family-var-font-1a77" >PASSED (02:00 UTC+6)</span>
+                    <div class="fc-border-top-1px-solid-8a57">
+                        <div class="fc-display-flex-justify-content-c0fa">
+                            <span class="fc-text-primary-bold">Automated Daily Hash Scrub</span>
+                            <span class="fc-font-family-var-font-1a77">PASSED (02:00 UTC+6)</span>
                         </div>
-                        <div class="fc-text-muted-11" >1,842 files re-verified against root merkle tree. 0 mismatches.</div>
+                        <div class="fc-text-muted-11"><?= $totalDocs ?> vault files re-verified against root merkle tree. 0 mismatches.</div>
                     </div>
 
-                    <div class="fc-border-top-1px-solid-8a57" >
-                        <div class="fc-display-flex-justify-content-c0fa" >
-                            <span class="fc-text-primary-bold" >Disaster Recovery Replication</span>
-                            <span class="fc-font-family-var-font-90a6" >SYNCHRONIZED</span>
+                    <div class="fc-border-top-1px-solid-8a57">
+                        <div class="fc-display-flex-justify-content-c0fa">
+                            <span class="fc-text-primary-bold">Disaster Recovery Replication</span>
+                            <span class="fc-font-family-var-font-90a6">SYNCHRONIZED</span>
                         </div>
-                        <div class="fc-text-muted-11" >Encrypted mirror synchronized to Astana secondary bunker.</div>
+                        <div class="fc-text-muted-11">Encrypted mirror synchronized to Astana secondary bunker.</div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- CUSTODIAL AUDIT LOG TABLE -->
-        <div class="vk-card fc-mb-30">
+        <!-- CUSTODIAL AUDIT LOG TABLE (Dynamic from Database) -->
+        <div class="vk-card fc-mb-30" style="margin-top: 24px;">
             <div class="vk-card-header">
                 <div>
-                    <div class="vk-card-title">Immutable Document Transaction Trail</div>
+                    <div class="vk-card-title">Immutable Document Transaction Trail (MySQL Audit Log)</div>
                     <div class="vk-card-subtitle">Complete chronological record of document access, signoffs, and exports</div>
                 </div>
-                <div class="fc-width-240px-1e8d" >
-                    <input class="vk-btn vk-btn-outline" id="audit-search-input" type="text" placeholder="Filter log by user, DOC-ID..."  />
+                <div class="fc-width-240px-1e8d">
+                    <input class="vk-btn vk-btn-outline" id="audit-search-input" type="text" placeholder="Filter log by user, DOC-ID..." style="width: 100%; text-align: left; padding: 6px 12px;" />
                 </div>
             </div>
 
@@ -279,74 +307,39 @@ requireAuth('DOC');
                 <table class="vk-table">
                     <thead>
                         <tr>
-                            <th class="fc-width-150px-c251" >Timestamp (UTC+6)</th>
-                            <th class="fc-width-180px-21b9" >Actor / User</th>
-                            <th class="fc-width-130px-e314" >Action</th>
-                            <th class="fc-w-140" >Target DOC-ID</th>
+                            <th class="fc-width-150px-c251">Timestamp (UTC+6)</th>
+                            <th class="fc-width-180px-21b9">Actor / User</th>
+                            <th class="fc-width-130px-e314">Action</th>
+                            <th class="fc-w-140">Target DOC-ID</th>
                             <th>Transaction Scope / Notes</th>
-                            <th class="fc-width-100px-text-align-41b3" >Status</th>
+                            <th class="fc-width-100px-text-align-41b3">Status</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr class="audit-log-row vk-table-row-highly-confidential">
-                            <td class="fc-mono-11" >2026-09-11 17:15:22</td>
+                    <tbody id="audit-table-body">
+                        <?php foreach ($auditLogs as $log): 
+                            $typeUpper = strtoupper($log['access_type']);
+                            $tagClass = match ($typeUpper) {
+                                'SIGN_REVIEW', 'APPROVAL' => 'fc-background-e0e7ff-color-3730a3-4a03',
+                                'VIEW' => 'fc-background-f1f5f9-color-475569-9fb0',
+                                'EXPORT', 'DOWNLOAD' => 'fc-background-fef3c7-color-92400e-d4d7',
+                                'LEGAL_HOLD' => 'fc-background-fee2e2-color-991b1b-7752',
+                                'INGEST_DRAFT', 'CREATE' => 'fc-background-dcfce7-color-166534-4a19',
+                                default => 'fc-background-f1f5f9-color-475569-9fb0',
+                            };
+                            $classSlug = strtolower(str_replace([' ', '_'], '-', $log['classification'] ?? 'internal'));
+                        ?>
+                        <tr class="audit-log-row vk-table-row-<?= $classSlug ?>">
+                            <td class="fc-mono-11"><?= htmlspecialchars(substr($log['accessed_at'], 0, 19)) ?></td>
                             <td>
-                                <div class="fc-font-semibold" >Farida Iskakova</div>
-                                <div class="fc-font-family-var-font-36a4" >EMP-1019 &bull; ENG</div>
+                                <div class="fc-font-semibold"><?= htmlspecialchars($log['actor_name']) ?></div>
+                                <div class="fc-font-family-var-font-36a4"><?= htmlspecialchars($log['accessed_by_emp_id'] ?? 'SYSTEM') ?> &bull; <?= htmlspecialchars($log['actor_dept'] ?? 'ENG') ?></div>
                             </td>
-                            <td><span class="vk-tag fc-background-e0e7ff-color-3730a3-4a03">SIGN_REVIEW</span></td>
-                            <td><code>DOC-2026-004</code></td>
-                            <td class="fc-text-12" >Opened redaction inspection for BaltNord PRJ-2026-002 specification</td>
-                            <td class="fc-text-right" ><span class="vk-status-badge status-approved">VERIFIED</span></td>
+                            <td><span class="vk-tag <?= $tagClass ?>"><?= htmlspecialchars($typeUpper) ?></span></td>
+                            <td><code><?= htmlspecialchars($log['doc_id']) ?></code></td>
+                            <td class="fc-text-12"><?= htmlspecialchars($log['notes'] ?? 'Action logged') ?></td>
+                            <td class="fc-text-right"><span class="vk-status-badge status-approved"><?= !empty($log['success']) ? 'VERIFIED' : 'FAILED' ?></span></td>
                         </tr>
-
-                        <tr class="audit-log-row vk-table-row-internal">
-                            <td class="fc-mono-11" >2026-09-11 16:42:01</td>
-                            <td>
-                                <div class="fc-font-semibold" >Dana Yermak</div>
-                                <div class="fc-font-family-var-font-36a4" >EMP-1017 &bull; ENG</div>
-                            </td>
-                            <td><span class="vk-tag fc-background-f1f5f9-color-475569-9fb0">VIEW</span></td>
-                            <td><code>DOC-2026-010</code></td>
-                            <td class="fc-text-12" >Accessed API Integration Guide for developer gateway synchronization</td>
-                            <td class="fc-text-right" ><span class="vk-status-badge status-approved">SUCCESS</span></td>
-                        </tr>
-
-                        <tr class="audit-log-row vk-table-row-confidential">
-                            <td class="fc-mono-11" >2026-09-11 14:10:44</td>
-                            <td>
-                                <div class="fc-font-semibold" >Markus Klein</div>
-                                <div class="fc-font-family-var-font-36a4" >EMP-1010 &bull; SAL</div>
-                            </td>
-                            <td><span class="vk-tag fc-background-fef3c7-color-92400e-d4d7">EXPORT</span></td>
-                            <td><code>DOC-2026-003</code></td>
-                            <td class="fc-text-12" >Exported customer copy of Aral Geomatics Statement of Work</td>
-                            <td class="fc-text-right" ><span class="vk-status-badge status-approved">SUCCESS</span></td>
-                        </tr>
-
-                        <tr class="audit-log-row vk-table-row-highly-confidential">
-                            <td class="fc-mono-11" >2026-09-11 11:20:18</td>
-                            <td>
-                                <div class="fc-font-semibold" >Timur Akhmetov</div>
-                                <div class="fc-font-family-var-font-36a4" >EMP-1005 &bull; EXE</div>
-                            </td>
-                            <td><span class="vk-tag fc-background-fee2e2-color-991b1b-7752">LEGAL_HOLD</span></td>
-                            <td><code>DOC-2026-007</code></td>
-                            <td class="fc-text-12" >Applied statutory audit preservation lock on Employee Access Matrix</td>
-                            <td class="fc-text-right" ><span class="vk-status-badge status-approved">ENFORCED</span></td>
-                        </tr>
-
-                        <tr class="audit-log-row vk-table-row-highly-confidential">
-                            <td class="fc-mono-11" >2026-09-10 14:12:05</td>
-                            <td>
-                                <div class="fc-font-semibold" >Dana Yermak</div>
-                                <div class="fc-font-family-var-font-36a4" >EMP-1017 &bull; ENG</div>
-                            </td>
-                            <td><span class="vk-tag fc-background-dcfce7-color-166534-4a19">INGEST_DRAFT</span></td>
-                            <td><code>DOC-2026-004</code></td>
-                            <td class="fc-text-12" >Uploaded initial revision of PRJ-2026-002_Integration_Specification.pdf</td>
-                            <td class="fc-text-right" ><span class="vk-status-badge status-approved">ENQUEUED</span></td>
-                        </tr>
+                        <?php endforeach; ?>
                     </tbody>
                 </table>
             </div>
@@ -355,14 +348,14 @@ requireAuth('DOC');
 
     <!-- DOCKED ENTERPRISE STATUS BAR -->
     <footer class="vk-status-bar">
-        <div class="fc-flex-center-gap-16" >
-            <div class="fc-flex-center-gap-8" >
+        <div class="fc-flex-center-gap-16">
+            <div class="fc-flex-center-gap-8">
                 <span class="status-dot-pulse"></span>
                 <span>ALMATY-VAULT-01 // HSM CLUSTER SYNCHRONIZED</span>
             </div>
             <span>VOLUME: 842.6 GB / 4.8 TB (17.5%)</span>
         </div>
-        <div class="fc-display-flex-align-items-bf7c" >
+        <div class="fc-display-flex-align-items-bf7c">
             <span>ACTIVE SENSITIVITY ENCLAVE: FOUR-TIER RBAC</span>
             <span>IEC 62443 / ISO 27001 AUDIT COMPLIANT</span>
         </div>
@@ -378,15 +371,15 @@ requireAuth('DOC');
             <div class="cmd-palette-list" id="cmd-palette-results">
                 <a class="cmd-palette-item" href="Dashboard.php">
                     <span class="material-symbols-outlined text-[16px]">folder_open</span>
-                    <span>Document Repository (All 15 Statutory Records)</span>
+                    <span>Document Repository (All <?= $totalDocs ?> Statutory Records)</span>
                 </a>
                 <a class="cmd-palette-item" href="approvals.php">
                     <span class="material-symbols-outlined text-[16px]">assignment_turned_in</span>
-                    <span>Signoff &amp; Approvals &bull; DOC-2026-004 BaltNord</span>
+                    <span>Signoff &amp; Approvals</span>
                 </a>
                 <a class="cmd-palette-item" href="upload.php">
                     <span class="material-symbols-outlined text-[16px]">upload_file</span>
-                    <span>Secure Ingestion Enclave (DOC-2026-016)</span>
+                    <span>Secure Ingestion Enclave</span>
                 </a>
                 <a class="cmd-palette-item" href="retention.php">
                     <span class="material-symbols-outlined text-[16px]">inventory_2</span>

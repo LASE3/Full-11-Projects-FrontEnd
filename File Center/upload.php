@@ -2,6 +2,27 @@
 require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/../includes/auth_guard.php';
 requireAuth('DOC');
+
+$pdo = getDbConnection();
+$currUser = $_SESSION['vostok_user'] ?? [
+    'full_name' => 'Farida Iskakova',
+    'user_id' => 'EMP-1019',
+    'role_name' => 'Lead Custodian',
+];
+
+$lastDoc = $pdo->query("
+    SELECT doc_id FROM documents 
+    WHERE doc_id LIKE 'DOC-2026-%' 
+    ORDER BY CAST(SUBSTRING(doc_id, 10) AS UNSIGNED) DESC 
+    LIMIT 1
+")->fetchColumn();
+$nextNum = 16;
+if ($lastDoc && preg_match('/DOC-2026-(\d+)/', $lastDoc, $m)) {
+    $nextNum = ((int)$m[1]) + 1;
+}
+$nextDocId = sprintf('DOC-2026-%03d', $nextNum);
+$totalDocs = (int)$pdo->query("SELECT COUNT(*) FROM documents")->fetchColumn();
+$pendingApprovals = (int)$pdo->query("SELECT COUNT(*) FROM documents WHERE status IN ('In Review', 'Pending')")->fetchColumn();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -47,8 +68,8 @@ requireAuth('DOC');
             </div>
             <div class="fc-display-flex-align-items-20f3" >
                 <div class="fc-text-right" >
-                    <div class="fc-font-size-12px-font-2ab2" >Farida Iskakova</div>
-                    <div class="fc-font-family-var-font-5c5e" >EMP-1019 • Lead Custodian</div>
+                    <div class="fc-font-size-12px-font-2ab2" ><?= htmlspecialchars($currUser['full_name'] ?? 'Farida Iskakova') ?></div>
+                    <div class="fc-font-family-var-font-5c5e" ><?= htmlspecialchars($currUser['user_id'] ?? 'EMP-1019') ?> • <?= htmlspecialchars($currUser['role_name'] ?? 'Lead Custodian') ?></div>
                 </div>
                 <div class="fc-width-32px-height-32px-0eaf" >
                     <span class="material-symbols-outlined text-[18px] fc-text-white">folder_managed</span>
@@ -69,14 +90,16 @@ requireAuth('DOC');
                     <span class="material-symbols-outlined text-[18px]">folder_open</span>
                     <span>Document Repository</span>
                 </div>
-                <span class="nav-badge">15</span>
+                <span class="nav-badge"><?= $totalDocs ?></span>
             </a>
             <a class="vk-nav-item" href="approvals.php">
                 <div class="fc-flex-center-gap-10" >
                     <span class="material-symbols-outlined text-[18px]">assignment_turned_in</span>
                     <span>Signoff &amp; Approvals</span>
                 </div>
-                <span class="vk-tag vk-tag-highly-confidential fc-font-size-9px-padding-4279">1 ACTION</span>
+                <?php if ($pendingApprovals > 0): ?>
+                    <span class="vk-tag vk-tag-highly-confidential fc-font-size-9px-padding-4279"><?= $pendingApprovals ?> ACTION</span>
+                <?php endif; ?>
             </a>
             <a class="vk-nav-item active" href="upload.php">
                 <div class="fc-flex-center-gap-10" >
@@ -136,9 +159,6 @@ requireAuth('DOC');
             <div class="fc-mono-muted-11" >Auto Virus Scan: Active</div>
             <div class="fc-font-family-var-font-940f" >SHA-256 Engine: Online</div>
         </div>
-
-        <!-- Log Out -->
-
     </aside>
 
     <!-- MAIN CONTENT AREA -->
@@ -151,7 +171,7 @@ requireAuth('DOC');
                         <span class="vk-tag fc-background-var-vk-sys-9005">
                             SYSTEM 09 // INTAKE ENCLAVE
                         </span>
-                        <span class="fc-mono-muted-12" >NEXT ID: DOC-2026-016</span>
+                        <span class="fc-mono-muted-12" id="header-next-doc-id">NEXT ID: <?= htmlspecialchars($nextDocId) ?></span>
                     </div>
                     <h1 class="fc-font-size-26px-font-5041" >
                         <span class="material-symbols-outlined fc-font-size-28px-color-a4d3">upload_file</span>
@@ -167,7 +187,6 @@ requireAuth('DOC');
                     </button>
                 </div>
             </div>
-
             <!-- DROPZONE -->
             <div class="dropzone-box" id="upload-dropzone">
                 <input class="fc-display-none-224b" type="file" id="file-input-hidden"  />

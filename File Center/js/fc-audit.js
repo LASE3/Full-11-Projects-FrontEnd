@@ -28,14 +28,16 @@
       });
     }
 
-    btnVerify.addEventListener("click", () => {
+    btnVerify.addEventListener("click", async () => {
       const hash = inputHash.value.trim();
+      const docId = selectDoc ? selectDoc.value.trim() : "";
+
       if (!hash) {
         window.showToast(
           "INPUT REQUIRED",
           "Please paste a SHA-256 hash or select a document from the register.",
           "error",
-          "error",
+          "error"
         );
         return;
       }
@@ -44,25 +46,55 @@
       btnVerify.innerHTML =
         '<span class="material-symbols-outlined text-[14px] animate-spin">sync</span> Querying Hardware HSM Ledger...';
 
-      setTimeout(() => {
-        btnVerify.disabled = false;
-        btnVerify.innerHTML =
-          '<span class="material-symbols-outlined text-[14px]">security</span> Verify Cryptographic Seal';
+      try {
+        const res = await fetch("api/audit.php?action=verify_hash", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json"
+          },
+          body: JSON.stringify({
+            doc_id: docId,
+            hash: hash
+          })
+        });
 
+        const json = await res.json();
+
+        if (!res.ok || !json.success) {
+          throw new Error(json.message || "Cryptographic integrity mismatch or lookup error.");
+        }
+
+        const data = json.data;
         if (resultBox) {
           resultBox.style.display = "block";
-          document.getElementById("verify-disp-hash").textContent = hash;
-          document.getElementById("verify-disp-timestamp").textContent =
-            new Date().toISOString() + " (UTC+6)";
+          const dispHash = document.getElementById("verify-disp-hash");
+          const dispTime = document.getElementById("verify-disp-timestamp");
+          if (dispHash) dispHash.textContent = data.digest || hash;
+          if (dispTime) dispTime.textContent = (data.timestamp || new Date().toISOString()) + (data.file_name ? " // " + data.file_name : "");
         }
 
         window.showToast(
           "INTEGRITY CONFIRMED",
-          "Bitwise match verified against Almaty central hardware HSM enclave. Zero tampering detected.",
+          json.message || "Bitwise match verified against Almaty central hardware HSM enclave. Zero tampering detected.",
           "success",
-          "verified",
+          "verified"
         );
-      }, 800);
+      } catch (err) {
+        if (resultBox) {
+          resultBox.style.display = "none";
+        }
+        window.showToast(
+          "VERIFICATION FAILED",
+          err.message || "Supplied hash does not match vault root hash.",
+          "error",
+          "gpp_bad"
+        );
+      } finally {
+        btnVerify.disabled = false;
+        btnVerify.innerHTML =
+          '<span class="material-symbols-outlined text-[14px]">security</span> Verify Cryptographic Seal';
+      }
     });
   }
 

@@ -1,11 +1,13 @@
 /**
  * VOSTOKPRIBOR ENTERPRISE DESIGN SYSTEM
  * System 09: File Center / Document Hub
- * Document Ingestion & Metadata Taxonomy Module
+ * Document Ingestion & Metadata Taxonomy Module (Live Database Integration)
  */
 
 (function () {
   "use strict";
+
+  let currentSelectedFile = null;
 
   document.addEventListener("DOMContentLoaded", () => {
     initDropzone();
@@ -47,13 +49,15 @@
     });
 
     function handleFileSelected(file) {
+      currentSelectedFile = file;
+      const sizeMB = (file.size / 1024 / 1024).toFixed(1);
       if (selectedFileName) {
-        selectedFileName.textContent = `Selected: ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)`;
+        selectedFileName.textContent = `Selected: ${file.name} (${sizeMB} MB)`;
         selectedFileName.style.display = "block";
       }
       const titleInput = document.getElementById("meta-doc-title");
       if (titleInput && !titleInput.value) {
-        titleInput.value = file.name.replace(/\.[^/.]+$/, "");
+        titleInput.value = file.name;
       }
     }
   }
@@ -107,12 +111,14 @@
         fileNameElem.style.display = "block";
       }
 
-      window.showToast(
-        "PRESET LOADED",
-        "Applied authoritative metadata for BaltNord PRJ-2026-002 test dossier.",
-        "info",
-        "dataset",
-      );
+      if (window.showToast) {
+        window.showToast(
+          "PRESET LOADED",
+          "Applied authoritative metadata for BaltNord PRJ-2026-002 test dossier.",
+          "info",
+          "dataset"
+        );
+      }
     });
   }
 
@@ -122,51 +128,99 @@
 
     if (!form) return;
 
-    form.addEventListener("submit", (e) => {
+    form.addEventListener("submit", async (e) => {
       e.preventDefault();
 
       const title = document.getElementById("meta-doc-title").value.trim();
       const dept = document.getElementById("meta-department").value;
-      const classification = document.getElementById(
-        "meta-classification",
-      ).value;
+      const projectRef = document.getElementById("meta-project-ref").value.trim();
+      const customerRef = document.getElementById("meta-customer-ref").value.trim();
+      const classification = document.getElementById("meta-classification").value;
+      const retention = document.getElementById("meta-retention").value;
+      const custodian = document.getElementById("meta-custodian").value.trim();
+      const description = document.getElementById("meta-description").value.trim();
 
       if (!title) {
-        window.showToast(
-          "VALIDATION ERROR",
-          "Please provide a document title.",
-          "error",
-          "error",
-        );
+        if (window.showToast) {
+          window.showToast("VALIDATION ERROR", "Please provide a document title.", "error", "error");
+        }
         return;
+      }
+
+      // Determine file size
+      let fileSize = "2.4 MB";
+      if (currentSelectedFile) {
+        fileSize = `${(currentSelectedFile.size / 1024 / 1024).toFixed(1)} MB`;
       }
 
       const submitBtn = form.querySelector('button[type="submit"]');
       submitBtn.disabled = true;
       submitBtn.innerHTML =
-        '<span class="material-symbols-outlined text-[16px] animate-spin">sync</span> Ingesting & Calculating Hash...';
+        '<span class="material-symbols-outlined text-[16px] animate-spin">sync</span> Ingesting into MySQL Database...';
 
-      setTimeout(() => {
-        form.style.display = "none";
-        if (successBox) {
-          successBox.style.display = "block";
-          document.getElementById("disp-new-doc-id").textContent =
-            "DOC-2026-016";
-          document.getElementById("disp-new-doc-title").textContent = title;
-          document.getElementById("disp-new-doc-dept").textContent = dept;
-          document.getElementById("disp-new-doc-class").textContent =
-            classification.toUpperCase();
-          document.getElementById("disp-new-doc-hash").textContent =
-            "9a3f2b4c810d7e5e6c1a89b034298fc1c149afbf4c8996fb92427ae41e4649b9";
+      try {
+        const response = await fetch("api/documents.php", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            action: "create",
+            title: title,
+            department: dept,
+            project_ref: projectRef,
+            customer_ref: customerRef,
+            classification: classification,
+            retention_period: retention,
+            custodian: custodian,
+            description: description,
+            file_size: fileSize,
+            status: classification === "highly-confidential" ? "In Review" : "Approved",
+          }),
+        });
+
+        const res = await response.json();
+
+        if (res.success && res.data) {
+          const doc = res.data;
+          form.style.display = "none";
+          if (successBox) {
+            successBox.style.display = "block";
+            document.getElementById("disp-new-doc-id").textContent = doc.doc_id;
+            document.getElementById("disp-new-doc-title").textContent = doc.file_name;
+            document.getElementById("disp-new-doc-dept").textContent = doc.department;
+            document.getElementById("disp-new-doc-class").textContent = doc.classification.toUpperCase();
+            document.getElementById("disp-new-doc-hash").textContent = doc.file_hash;
+          }
+
+          if (window.showToast) {
+            window.showToast(
+              "DOCUMENT SECURED IN VAULT",
+              `Assigned ${doc.doc_id}. Registered in MySQL database and Almaty HSM hardware ledger.`,
+              "success",
+              "security"
+            );
+          }
+
+          // Update header with the subsequent next ID
+          try {
+            const nextRes = await fetch("api/documents.php?action=next_id");
+            const nextData = await nextRes.json();
+            if (nextData.success && nextData.data) {
+              const headerId = document.getElementById("header-next-doc-id");
+              if (headerId) headerId.textContent = `NEXT ID: ${nextData.data.next_doc_id}`;
+            }
+          } catch (ne) {}
+        } else {
+          alert("Ingestion error: " + (res.message || "Failed to ingest document"));
         }
-
-        window.showToast(
-          "DOCUMENT SECURED IN VAULT",
-          `Assigned DOC-2026-016. SHA-256 hash registered in Almaty HSM hardware ledger.`,
-          "success",
-          "security",
-        );
-      }, 1100);
+      } catch (err) {
+        alert("Network or database error: " + err.message);
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML =
+          '<span class="material-symbols-outlined text-[16px]">security</span> Ingest &amp; Register in Hardware Vault';
+      }
     });
   }
 })();

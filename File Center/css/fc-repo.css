@@ -279,3 +279,143 @@
   justify-content: space-between;
   gap: 8px;
 }
+
+/* CRUD Action Buttons in Table */
+.table-actions-cell {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.vk-btn-danger {
+  background: #fee2e2 !important;
+  color: #991b1b !important;
+  border: 1px solid #fecaca !important;
+}
+
+.vk-btn-danger:hover {
+  background: #fecaca !important;
+  color: #7f1d1d !important;
+}
+
+/* CRUD Modal Styles */
+.crud-modal-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 36, 56, 0.65);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+  z-index: 2600;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.crud-modal-box {
+  width: 100%;
+  max-width: 620px;
+  background: #ffffff;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--vk-neutral-200);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+  animation: modalScaleUp 0.2s ease-out;
+  display: flex;
+  flex-direction: column;
+  max-height: 90vh;
+}
+
+.crud-modal-box.danger-modal {
+  max-width: 480px;
+}
+
+.crud-modal-header {
+  padding: 16px 20px;
+  background: var(--vk-neutral-50);
+  border-bottom: 1px solid var(--vk-neutral-200);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.crud-modal-title {
+  font-family: var(--font-heading);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--vk-neutral-900);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.crud-modal-body {
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.crud-modal-footer {
+  padding: 14px 20px;
+  background: var(--vk-neutral-50);
+  border-top: 1px solid var(--vk-neutral-200);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.crud-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.crud-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.crud-form-group.full-width {
+  grid-column: span 2;
+}
+
+.crud-form-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--vk-neutral-700);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.crud-form-input, .crud-form-select, .crud-form-textarea {
+  padding: 8px 12px;
+  border: 1px solid var(--vk-neutral-300);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: var(--vk-neutral-900);
+  background: #ffffff;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+.crud-form-input:focus, .crud-form-select:focus, .crud-form-textarea:focus {
+  border-color: var(--vk-secondary);
+  box-shadow: 0 0 0 2px rgba(14, 124, 134, 0.15);
+}
+
+@keyframes modalScaleUp {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
