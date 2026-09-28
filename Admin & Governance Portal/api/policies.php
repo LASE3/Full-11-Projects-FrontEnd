@@ -83,6 +83,23 @@ try {
                 $docId = 'DOC-2026-' . str_pad($maxId + 1, 3, '0', STR_PAD_LEFT);
             }
 
+            // Ensure document exists in documents table to satisfy foreign key constraint
+            $chkDoc = $pdo->prepare("SELECT doc_id FROM documents WHERE doc_id = ?");
+            $chkDoc->execute([$docId]);
+            if (!$chkDoc->fetch()) {
+                $insDoc = $pdo->prepare("
+                    INSERT INTO documents 
+                    (doc_id, file_name, description, classification, folder, department, file_size, status, retention_period, owning_system, owner_emp_id)
+                    VALUES (?, ?, ?, 'Confidential', 'policies', 'EXE', '1.2 MB', 'Approved', '7y', 'SYS-11 GOV-CORE', ?)
+                ");
+                $insDoc->execute([
+                    $docId,
+                    preg_replace('/[^a-zA-Z0-9_-]/', '_', $title) . '.pdf',
+                    $description ?: 'Statutory Security Policy Document',
+                    getCurrentGovActor()
+                ]);
+            }
+
             $stmt = $pdo->prepare("
                 INSERT INTO security_policies 
                 (doc_id, title, effective_date, severity, enforcement_mode, description, system_id)

@@ -174,3 +174,39 @@ function getItSidebarStats(?PDO $pdo = null): array
 
     return $cachedStats;
 }
+
+/**
+ * Returns user details from session or default IT specialist.
+ * Ensures all pages display the actual logged-in user and their clearance/role.
+ */
+function getItCurrentUser(): array
+{
+    $u = $_SESSION['vostok_user'] ?? [];
+    $fullName = !empty($u['full_name']) ? (string)$u['full_name'] : 'Alexey Ivanov';
+    $roleName = !empty($u['role_name']) ? (string)$u['role_name'] : 'Lead IT Tech';
+    $clearance = !empty($u['clearance_level']) ? (string)$u['clearance_level'] : 'L3';
+    
+    $tierText = match ($clearance) {
+        'L4'    => 'Tier 4 · Administrator',
+        'L3'    => 'Tier 3',
+        'L2'    => 'Tier 2',
+        'L1'    => 'Tier 1',
+        default => $clearance,
+    };
+
+    if (stripos($roleName, 'Tier') !== false) {
+        $roleDisplay = $roleName;
+    } else {
+        $roleDisplay = $roleName . ' · ' . $tierText;
+    }
+
+    return [
+        'full_name'       => $fullName,
+        'role_name'       => $roleName,
+        'clearance_level' => $clearance,
+        'role_display'    => $roleDisplay,
+        'emp_id'          => $u['user_id'] ?? ($u['emp_id'] ?? 'EMP-1018'),
+        'email'           => $u['email'] ?? '',
+        'department_code' => $u['department_code'] ?? 'SYS',
+    ];
+}

@@ -154,8 +154,8 @@
 
   document.addEventListener("DOMContentLoaded", () => {
     // Policy Rule Live Simulation Trigger
-    const simBtn = Array.from(document.querySelectorAll("button")).find((b) =>
-      b.textContent.includes("Trigger Live Node Simulation")
+    const simBtn = document.getElementById("btnSimulateImpact") || Array.from(document.querySelectorAll("button")).find((b) =>
+      b.textContent.includes("Simulate")
     );
     if (simBtn) {
       simBtn.addEventListener("click", function () {
@@ -167,7 +167,7 @@
         setTimeout(() => {
           this.innerHTML = orig;
           this.disabled = false;
-          window.showToast(
+          window.showToast?.(
             "SIMULATION NOMINAL",
             "Statutory Policy Interlocks verified across 11 target environments. Zero boundary violations detected.",
             "success",
@@ -178,8 +178,8 @@
     }
 
     // Cryptographic Proof Verification
-    const verifyBtn = Array.from(document.querySelectorAll("button")).find((b) =>
-      b.textContent.includes("Verify Cryptographic Proof")
+    const verifyBtn = document.getElementById("btnCryptoSignOff") || Array.from(document.querySelectorAll("button")).find((b) =>
+      b.textContent.includes("Sign-Off") || b.textContent.includes("Verify")
     );
     if (verifyBtn) {
       verifyBtn.addEventListener("click", function () {
@@ -207,9 +207,9 @@
               this.disabled = false;
             }, 3000);
 
-            window.showToast(
+            window.showToast?.(
               "CRYPTOGRAPHIC SEAL VALID",
-              `Policy ledger hash [${(data.hash || "").substring(0, 16)}...] matched against Almaty HSM root [EMP-1005 Signed].`,
+              `Policy ledger hash [${(data.hash || "").substring(0, 16)}...] matched against Almaty HSM root.`,
               "success",
               "shield"
             );
@@ -221,19 +221,185 @@
       });
     }
 
-    // Filter Policy Rules on Search
-    const searchInput = document.querySelector(
-      'input[placeholder*="policy"], input[placeholder*="Search"]'
-    );
-    const rows = document.querySelectorAll(".policy-row");
-    if (searchInput && rows.length > 0) {
-      searchInput.addEventListener("input", (e) => {
-        const q = e.target.value.toLowerCase().trim();
+    // Export Policy Bundle (JSON & CSV supported)
+    const exportBtn = document.getElementById("btnExportBundle");
+    if (exportBtn) {
+      exportBtn.addEventListener("click", () => {
+        const rows = document.querySelectorAll(".policy-row");
+        const bundle = [];
+        let csvContent = "Policy_ID,Document_Code,Directive_Title,Severity,Mode,System_Domain,Description\n";
+
         rows.forEach((r) => {
-          const text = r.innerText.toLowerCase();
-          r.style.display = q === "" || text.includes(q) ? "" : "none";
+          const id = r.getAttribute("data-id") || "";
+          const doc = r.getAttribute("data-doc") || "";
+          const title = (r.getAttribute("data-title") || "").replace(/"/g, '""');
+          const severity = r.getAttribute("data-severity") || "";
+          const mode = r.getAttribute("data-mode") || "";
+          const system = (r.getAttribute("data-system") || "").replace(/"/g, '""');
+          const desc = (r.getAttribute("data-desc") || "").replace(/"/g, '""');
+
+          bundle.push({ id, doc, title, severity, mode, system, description: desc });
+          csvContent += `"${id}","${doc}","${title}","${severity}","${mode}","${system}","${desc}"\n`;
         });
+
+        // Download JSON Package
+        const blob = new Blob([JSON.stringify({ station: "ALMATY-CENTRAL", framework: "ST RK ISO/IEC 27001", timestamp: new Date().toISOString(), policies: bundle }, null, 2)], {
+          type: "application/json"
+        });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `VOSTOKPRIBOR_Security_Policies_${Date.now()}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        window.showToast?.("POLICIES EXPORTED", "Statutory policy bundle downloaded successfully.", "success", "file_download");
       });
     }
+
+    // Filter Engine
+    const searchInput = document.getElementById("policySearchInput") || document.querySelector('input[placeholder*="Query policy"]');
+    const rows = document.querySelectorAll(".policy-row");
+    const categoryButtons = document.querySelectorAll("#policyCategoryPills button, .policy-tab-btn");
+    let currentCategory = "ALL";
+
+    function applyPolicyFilter() {
+      const q = (searchInput ? searchInput.value : "").toLowerCase().trim();
+      let matchCount = 0;
+
+      rows.forEach((r) => {
+        const text = r.innerText.toLowerCase();
+        const severity = (r.getAttribute("data-severity") || "").toLowerCase();
+        const mode = (r.getAttribute("data-mode") || "").toLowerCase();
+        const system = (r.getAttribute("data-system") || "").toLowerCase();
+
+        let matchesCat = true;
+        if (currentCategory === "CRITICAL") {
+          matchesCat = severity === "critical" || severity === "high";
+        } else if (currentCategory === "PRIVILEGED") {
+          matchesCat = text.includes("privileged") || text.includes("mfa") || text.includes("authentication") || text.includes("identity");
+        } else if (currentCategory === "SCADA") {
+          matchesCat = text.includes("scada") || text.includes("industrial") || text.includes("plc") || system.includes("sys-0");
+        } else if (currentCategory === "CRYPTO") {
+          matchesCat = text.includes("crypto") || text.includes("key") || text.includes("hsm") || text.includes("fips");
+        } else if (currentCategory === "REVISION") {
+          matchesCat = text.includes("revision") || text.includes("audit") || mode.includes("audit");
+        }
+
+        let matchesSearch = true;
+        if (q !== "") {
+          matchesSearch = text.includes(q);
+        }
+
+        if (matchesCat && matchesSearch) {
+          r.style.display = "";
+          matchCount++;
+        } else {
+          r.style.display = "none";
+        }
+      });
+    }
+
+    if (searchInput) {
+      searchInput.addEventListener("input", applyPolicyFilter);
+    }
+
+    // Category Tabs Logic
+    categoryButtons.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        categoryButtons.forEach((b) => {
+          b.className = "policy-tab-btn h-control-height-sm px-space-sm bg-surface-container hover:bg-surface-container-high text-on-surface font-security-stamp uppercase whitespace-nowrap cursor-pointer";
+        });
+        btn.className = "policy-tab-btn h-control-height-sm px-space-sm bg-primary text-on-primary font-security-stamp uppercase font-semibold whitespace-nowrap shadow-sm cursor-pointer";
+
+        currentCategory = btn.getAttribute("data-cat") || btn.textContent.trim().toUpperCase();
+        if (currentCategory.includes("ALL")) currentCategory = "ALL";
+        else if (currentCategory.includes("CONFIDENTIAL") || currentCategory.includes("CRITICAL")) currentCategory = "CRITICAL";
+        else if (currentCategory.includes("PRIVILEGED")) currentCategory = "PRIVILEGED";
+        else if (currentCategory.includes("SCADA")) currentCategory = "SCADA";
+        else if (currentCategory.includes("CRYPTO")) currentCategory = "CRYPTO";
+        else if (currentCategory.includes("REVISION")) currentCategory = "REVISION";
+
+        applyPolicyFilter();
+        window.showToast?.("FILTER ENGAGED", `Showing policy category: ${btn.textContent.trim()}`, "info", "filter_list");
+      });
+    });
+
+    // Sort Button
+    const sortBtn = document.getElementById("btnSortPolicy");
+    const sortLabel = document.getElementById("sortPolicyLabel");
+    let sortAsc = false;
+    if (sortBtn) {
+      sortBtn.addEventListener("click", () => {
+        sortAsc = !sortAsc;
+        if (sortLabel) sortLabel.textContent = sortAsc ? "SORT: PRIORITY ASC" : "SORT: PRIORITY DESC";
+        const tbody = document.querySelector("#policiesTable tbody, table tbody");
+        if (tbody) {
+          const rowArr = Array.from(tbody.querySelectorAll(".policy-row"));
+          rowArr.sort((a, b) => {
+            const sevOrder = { critical: 3, high: 2, medium: 1, low: 0 };
+            const sA = sevOrder[(a.getAttribute("data-severity") || "").toLowerCase()] || 0;
+            const sB = sevOrder[(b.getAttribute("data-severity") || "").toLowerCase()] || 0;
+            return sortAsc ? sA - sB : sB - sA;
+          });
+          rowArr.forEach((r) => tbody.appendChild(r));
+        }
+        window.showToast?.("SORT APPLIED", `Policy table reordered by priority (${sortAsc ? "ASC" : "DESC"}).`, "info", "swap_vert");
+      });
+    }
+
+    // Refresh Button
+    const refreshBtn = document.getElementById("btnRefreshPolicy");
+    const refreshLabel = document.getElementById("refreshPolicyLabel");
+    if (refreshBtn) {
+      refreshBtn.addEventListener("click", () => {
+        const icon = refreshBtn.querySelector(".material-symbols-outlined");
+        if (icon) icon.classList.add("animate-spin");
+        if (refreshLabel) refreshLabel.textContent = "REFRESH: SYNCING...";
+        setTimeout(() => {
+          if (icon) icon.classList.remove("animate-spin");
+          if (refreshLabel) refreshLabel.textContent = "REFRESH: SYNCED";
+          applyPolicyFilter();
+          window.showToast?.("POLICIES SYNCHRONIZED", "All statutory policy interlocks synchronized with deterministic kernel interlock.", "success", "sync");
+        }, 600);
+      });
+    }
+
+    // Mode Toggle (Standard vs Matrix)
+    const btnStd = document.getElementById("btnModeStandard");
+    const btnMat = document.getElementById("btnModeMatrix");
+    if (btnStd && btnMat) {
+      btnStd.addEventListener("click", () => {
+        btnStd.className = "h-control-height-sm px-space-sm bg-surface-container-lowest text-primary font-label-uppercase text-[10px] font-bold shadow-sm cursor-pointer";
+        btnMat.className = "h-control-height-sm px-space-sm text-on-surface-variant hover:text-on-surface font-label-uppercase text-[10px] cursor-pointer";
+        rows.forEach(r => r.classList.remove("bg-secondary-container/10"));
+        window.showToast?.("VIEW ENGAGED", "Switched to Standard Statutory Registry view.", "info", "view_list");
+      });
+      btnMat.addEventListener("click", () => {
+        btnMat.className = "h-control-height-sm px-space-sm bg-surface-container-lowest text-secondary font-label-uppercase text-[10px] font-bold shadow-sm cursor-pointer";
+        btnStd.className = "h-control-height-sm px-space-sm text-on-surface-variant hover:text-on-surface font-label-uppercase text-[10px] cursor-pointer";
+        rows.forEach(r => r.classList.add("bg-secondary-container/10"));
+        window.showToast?.("VIEW ENGAGED", "Switched to Enforcement Matrix view.", "info", "grid_view");
+      });
+    }
+
+    // Top 4 Stat Cards Click Interactivity
+    const topStatCards = document.querySelectorAll(".grid-cols-1.md\\:grid-cols-2.xl\\:grid-cols-4 > div");
+    topStatCards.forEach((card, idx) => {
+      card.classList.add("cursor-pointer", "transition-all", "hover:shadow-md");
+      card.addEventListener("click", () => {
+        topStatCards.forEach(c => c.classList.remove("ring-2", "ring-primary"));
+        card.classList.add("ring-2", "ring-primary");
+
+        if (idx === 0) currentCategory = "CRITICAL";
+        else if (idx === 1) currentCategory = "REVISION";
+        else if (idx === 2) currentCategory = "SCADA";
+        else currentCategory = "ALL";
+
+        applyPolicyFilter();
+        window.showToast?.("METRIC FILTER", `Filtered policy table from telemetry card #${idx + 1}.`, "info", "analytics");
+      });
+    });
   });
 })();

@@ -4,7 +4,7 @@ require_once __DIR__ . '/../includes/auth_guard.php';
 requireAuth('IT');
 require_once __DIR__ . '/api/db_helper.php';
 $pdo = getItDb();
-$currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Alexey Ivanov', 'clearance_level' => 'L2'];
+$currUser = getItCurrentUser();
 
 // Query all assets
 $stmt = $pdo->query("SELECT * FROM it_assets ORDER BY last_seen_at DESC");
@@ -74,11 +74,11 @@ $slaPct = $sbStats['sla_pct'];
             </svg>
             <span class="badge-dot"></span>
           </button>
-          <div class="top-user-profile" onclick="window.hdApp.showToast('Active Tech Session', '<?= htmlspecialchars($currUser['full_name']) ?> · Lead IT Engineer')">
-            <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDoVYMImYMOrFG-GImEjxCUij3YIwCjbxiUVg9-84NgNQUnx44rwhCbh4EVKLngwn6R5_hzNhRQkfTglEUz1jtP83GRGR8WbDdiIQblwg1fLV0mqc04y19GGKO27NGBpanqADz4vwO3ANY9KcZiOXBusZHAE_PU_FuuwKqChSLXXJsGo289bHOL3MFrKWoXXMoxnqoUIglg-NYsM99jg8cA3e1CeWhqlY0x7isLHdQfGbcFE_XiNNJg" alt="Alexey Ivanov" class="user-avatar-top" />
+          <div class="top-user-profile" onclick="window.hdApp.showToast('Active Tech Session', '<?= addslashes(htmlspecialchars($currUser['full_name'])) ?> · <?= addslashes(htmlspecialchars($currUser['role_display'])) ?>')">
+            <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDoVYMImYMOrFG-GImEjxCUij3YIwCjbxiUVg9-84NgNQUnx44rwhCbh4EVKLngwn6R5_hzNhRQkfTglEUz1jtP83GRGR8WbDdiIQblwg1fLV0mqc04y19GGKO27NGBpanqADz4vwO3ANY9KcZiOXBusZHAE_PU_FuuwKqChSLXXJsGo289bHOL3MFrKWoXXMoxnqoUIglg-NYsM99jg8cA3e1CeWhqlY0x7isLHdQfGbcFE_XiNNJg" alt="<?= htmlspecialchars($currUser['full_name']) ?>" class="user-avatar-top" />
             <div class="user-details-top">
               <span class="user-name-top"><?= htmlspecialchars($currUser['full_name']) ?></span>
-              <span class="user-role-top">Lead IT Tech · Tier 3</span>
+              <span class="user-role-top"><?= htmlspecialchars($currUser['role_display']) ?></span>
             </div>
           </div>
         </div>
@@ -258,13 +258,13 @@ $slaPct = $sbStats['sla_pct'];
               </thead>
               <tbody>
                 <?php if (empty($assets)): ?>
-                <tr>
-                  <td colspan="7" style="text-align: center; padding: 24px; color: var(--hd-text-muted);">
-                    No hardware assets registered in database. Click "+ Register Device" to add one.
-                  </td>
-                </tr>
+                  <tr>
+                    <td colspan="7" style="text-align: center; padding: 24px; color: var(--hd-text-muted);">
+                      No hardware assets registered in database. Click "+ Register Device" to add one.
+                    </td>
+                  </tr>
                 <?php else: ?>
-                  <?php foreach ($assets as $a): 
+                  <?php foreach ($assets as $a):
                     $health = $a['health_status'] ?? 'Online';
                     $healthClass = 'status-pill status-in-progress';
                     if (stripos($health, 'Degraded') !== false || stripos($health, 'Fault') !== false) {
@@ -273,29 +273,29 @@ $slaPct = $sbStats['sla_pct'];
                       $healthClass = 'priority-badge priority-high';
                     }
                   ?>
-                  <tr class="hd-table-row">
-                    <td><strong class="hd-mono-navy"><?= htmlspecialchars((string)($a['asset_tag'] ?? ('VP-NODE-' . $a['asset_id']))) ?></strong></td>
-                    <td>
-                      <div class="hd-font-semibold-navy"><?= htmlspecialchars((string)($a['device_model'] ?: ($a['asset_type'] ?? 'Unknown Device'))) ?></div>
-                      <div class="hd-text-muted-11"><?= htmlspecialchars((string)($a['asset_type'] ?? 'Industrial Node')) ?></div>
-                    </td>
-                    <td><?= htmlspecialchars((string)($a['location'] ?? 'Plant Bay')) ?></td>
-                    <td>
-                      <code class="hd-mono-navy-11"><?= htmlspecialchars((string)($a['ip_address'] ?? 'DHCP')) ?></code>
-                      <?php if (!empty($a['mac_address'])): ?>
-                      <div class="hd-text-muted-11" style="font-family: monospace; font-size: 10px;"><?= htmlspecialchars((string)$a['mac_address']) ?></div>
-                      <?php endif; ?>
-                    </td>
-                    <td><?= htmlspecialchars((string)($a['firmware_version'] ?? 'N/A')) ?></td>
-                    <td><span class="<?= $healthClass ?>"><?= htmlspecialchars((string)$health) ?></span></td>
-                    <td class="hd-text-right">
-                      <div style="display: inline-flex; gap: 6px; align-items: center;">
-                        <button class="btn btn-outline btn-sm" onclick="window.hdApp.openInspectModal(<?= htmlspecialchars(json_encode($a), ENT_QUOTES, 'UTF-8') ?>)">Inspect</button>
-                        <button class="btn-crud-edit" onclick="window.hdApp.openEditAssetModal(<?= htmlspecialchars(json_encode($a), ENT_QUOTES, 'UTF-8') ?>)" title="Edit Asset">✎</button>
-                        <button class="btn-crud-delete" onclick="window.hdApp.deleteAsset(<?= (int)$a['asset_id'] ?>, '<?= htmlspecialchars((string)($a['asset_tag'] ?? ('Node #' . $a['asset_id'])), ENT_QUOTES) ?>')" title="Delete Asset">🗑</button>
-                      </div>
-                    </td>
-                  </tr>
+                    <tr class="hd-table-row">
+                      <td><strong class="hd-mono-navy"><?= htmlspecialchars((string)($a['asset_tag'] ?? ('VP-NODE-' . $a['asset_id']))) ?></strong></td>
+                      <td>
+                        <div class="hd-font-semibold-navy"><?= htmlspecialchars((string)($a['device_model'] ?: ($a['asset_type'] ?? 'Unknown Device'))) ?></div>
+                        <div class="hd-text-muted-11"><?= htmlspecialchars((string)($a['asset_type'] ?? 'Industrial Node')) ?></div>
+                      </td>
+                      <td><?= htmlspecialchars((string)($a['location'] ?? 'Plant Bay')) ?></td>
+                      <td>
+                        <code class="hd-mono-navy-11"><?= htmlspecialchars((string)($a['ip_address'] ?? 'DHCP')) ?></code>
+                        <?php if (!empty($a['mac_address'])): ?>
+                          <div class="hd-text-muted-11" style="font-family: monospace; font-size: 10px;"><?= htmlspecialchars((string)$a['mac_address']) ?></div>
+                        <?php endif; ?>
+                      </td>
+                      <td><?= htmlspecialchars((string)($a['firmware_version'] ?? 'N/A')) ?></td>
+                      <td><span class="<?= $healthClass ?>"><?= htmlspecialchars((string)$health) ?></span></td>
+                      <td class="hd-text-right">
+                        <div style="display: inline-flex; gap: 6px; align-items: center;">
+                          <button class="btn btn-outline btn-sm" onclick="window.hdApp.openInspectModal(<?= htmlspecialchars(json_encode($a), ENT_QUOTES, 'UTF-8') ?>)">Inspect</button>
+                          <button class="btn-crud-edit" onclick="window.hdApp.openEditAssetModal(<?= htmlspecialchars(json_encode($a), ENT_QUOTES, 'UTF-8') ?>)" title="Edit Asset">✎</button>
+                          <button class="btn-crud-delete" onclick="window.hdApp.deleteAsset(<?= (int)$a['asset_id'] ?>, '<?= htmlspecialchars((string)($a['asset_tag'] ?? ('Node #' . $a['asset_id'])), ENT_QUOTES) ?>')" title="Delete Asset">🗑</button>
+                        </div>
+                      </td>
+                    </tr>
                   <?php endforeach; ?>
                 <?php endif; ?>
               </tbody>
@@ -459,22 +459,70 @@ $slaPct = $sbStats['sla_pct'];
       </div>
       <div class="hd-modal-body" id="inspect-modal-body" style="padding:20px;">
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
-          <div><div style="font-size:11px;color:var(--hd-text-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">Asset Tag</div><div id="ins-tag" style="font-family:monospace;font-weight:700;font-size:15px;color:var(--hd-navy);"></div></div>
-          <div><div style="font-size:11px;color:var(--hd-text-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">Device Model</div><div id="ins-model" style="font-weight:600;"></div></div>
-          <div><div style="font-size:11px;color:var(--hd-text-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">Asset Type</div><div id="ins-type"></div></div>
-          <div><div style="font-size:11px;color:var(--hd-text-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">Location / Plant Bay</div><div id="ins-loc"></div></div>
-          <div><div style="font-size:11px;color:var(--hd-text-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">IP Address</div><div id="ins-ip" style="font-family:monospace;"></div></div>
-          <div><div style="font-size:11px;color:var(--hd-text-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">MAC Address</div><div id="ins-mac" style="font-family:monospace;font-size:12px;"></div></div>
-          <div><div style="font-size:11px;color:var(--hd-text-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">Firmware Version</div><div id="ins-fw" style="font-family:monospace;"></div></div>
-          <div><div style="font-size:11px;color:var(--hd-text-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">OS / Version</div><div id="ins-os"></div></div>
-          <div><div style="font-size:11px;color:var(--hd-text-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">Serial Number</div><div id="ins-serial" style="font-family:monospace;font-size:12px;"></div></div>
-          <div><div style="font-size:11px;color:var(--hd-text-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">Hostname</div><div id="ins-host" style="font-family:monospace;"></div></div>
-          <div><div style="font-size:11px;color:var(--hd-text-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">Criticality</div><div id="ins-crit"></div></div>
-          <div><div style="font-size:11px;color:var(--hd-text-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">Environment</div><div id="ins-env"></div></div>
-          <div><div style="font-size:11px;color:var(--hd-text-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">Health Status</div><div id="ins-health"></div></div>
-          <div><div style="font-size:11px;color:var(--hd-text-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">Status</div><div id="ins-status"></div></div>
-          <div><div style="font-size:11px;color:var(--hd-text-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">Assigned Date</div><div id="ins-date"></div></div>
-          <div><div style="font-size:11px;color:var(--hd-text-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">Last Seen</div><div id="ins-seen" style="font-family:monospace;font-size:12px;"></div></div>
+          <div>
+            <div style="font-size:11px;color:var(--hd-text-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">Asset Tag</div>
+            <div id="ins-tag" style="font-family:monospace;font-weight:700;font-size:15px;color:var(--hd-navy);"></div>
+          </div>
+          <div>
+            <div style="font-size:11px;color:var(--hd-text-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">Device Model</div>
+            <div id="ins-model" style="font-weight:600;"></div>
+          </div>
+          <div>
+            <div style="font-size:11px;color:var(--hd-text-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">Asset Type</div>
+            <div id="ins-type"></div>
+          </div>
+          <div>
+            <div style="font-size:11px;color:var(--hd-text-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">Location / Plant Bay</div>
+            <div id="ins-loc"></div>
+          </div>
+          <div>
+            <div style="font-size:11px;color:var(--hd-text-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">IP Address</div>
+            <div id="ins-ip" style="font-family:monospace;"></div>
+          </div>
+          <div>
+            <div style="font-size:11px;color:var(--hd-text-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">MAC Address</div>
+            <div id="ins-mac" style="font-family:monospace;font-size:12px;"></div>
+          </div>
+          <div>
+            <div style="font-size:11px;color:var(--hd-text-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">Firmware Version</div>
+            <div id="ins-fw" style="font-family:monospace;"></div>
+          </div>
+          <div>
+            <div style="font-size:11px;color:var(--hd-text-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">OS / Version</div>
+            <div id="ins-os"></div>
+          </div>
+          <div>
+            <div style="font-size:11px;color:var(--hd-text-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">Serial Number</div>
+            <div id="ins-serial" style="font-family:monospace;font-size:12px;"></div>
+          </div>
+          <div>
+            <div style="font-size:11px;color:var(--hd-text-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">Hostname</div>
+            <div id="ins-host" style="font-family:monospace;"></div>
+          </div>
+          <div>
+            <div style="font-size:11px;color:var(--hd-text-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">Criticality</div>
+            <div id="ins-crit"></div>
+          </div>
+          <div>
+            <div style="font-size:11px;color:var(--hd-text-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">Environment</div>
+            <div id="ins-env"></div>
+          </div>
+          <div>
+            <div style="font-size:11px;color:var(--hd-text-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">Health Status</div>
+            <div id="ins-health"></div>
+          </div>
+          <div>
+            <div style="font-size:11px;color:var(--hd-text-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">Status</div>
+            <div id="ins-status"></div>
+          </div>
+          <div>
+            <div style="font-size:11px;color:var(--hd-text-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">Assigned Date</div>
+            <div id="ins-date"></div>
+          </div>
+          <div>
+            <div style="font-size:11px;color:var(--hd-text-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">Last Seen</div>
+            <div id="ins-seen" style="font-family:monospace;font-size:12px;"></div>
+          </div>
         </div>
         <div style="margin-top:16px;">
           <div style="font-size:11px;color:var(--hd-text-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;">Configuration &amp; Notes</div>
@@ -491,29 +539,32 @@ $slaPct = $sbStats['sla_pct'];
   <div id="toast-container"></div>
   <script src="js/app.js"></script>
   <script>
-  window.hdApp.openInspectModal = function(asset) {
-    if (!asset) return;
-    window.hdApp._inspectAsset = asset;
-    var f = function(id, val) { var el = document.getElementById(id); if (el) el.textContent = val || '—'; };
-    f('ins-tag',    asset.asset_tag || ('VP-NODE-' + asset.asset_id));
-    f('ins-model',  asset.device_model || asset.asset_type || 'Industrial Edge Node');
-    f('ins-type',   asset.asset_type || 'Hardware Asset');
-    f('ins-loc',    asset.location || 'Central Datacenter Bay');
-    f('ins-ip',     asset.ip_address || 'DHCP');
-    f('ins-mac',    asset.mac_address || 'N/A');
-    f('ins-fw',     asset.firmware_version || 'N/A');
-    f('ins-os',     ((asset.operating_system || '') + (asset.os_version ? ' ' + asset.os_version : '')) || 'Embedded Linux');
-    f('ins-serial', asset.serial_number || 'N/A');
-    f('ins-host',   asset.hostname || 'N/A');
-    f('ins-crit',   asset.criticality || 'High');
-    f('ins-env',    asset.environment || 'Production');
-    f('ins-health', asset.health_status || 'Online (Active)');
-    f('ins-status', asset.status || 'Active');
-    f('ins-date',   asset.assigned_date || '2026-01-01');
-    f('ins-seen',   asset.last_seen_at || 'Just now');
-    f('ins-notes',  asset.notes || 'No specialized subsystem notes recorded.');
-    window.hdApp.openModal('modal-inspect-asset');
-  };
+    window.hdApp.openInspectModal = function(asset) {
+      if (!asset) return;
+      window.hdApp._inspectAsset = asset;
+      var f = function(id, val) {
+        var el = document.getElementById(id);
+        if (el) el.textContent = val || '—';
+      };
+      f('ins-tag', asset.asset_tag || ('VP-NODE-' + asset.asset_id));
+      f('ins-model', asset.device_model || asset.asset_type || 'Industrial Edge Node');
+      f('ins-type', asset.asset_type || 'Hardware Asset');
+      f('ins-loc', asset.location || 'Central Datacenter Bay');
+      f('ins-ip', asset.ip_address || 'DHCP');
+      f('ins-mac', asset.mac_address || 'N/A');
+      f('ins-fw', asset.firmware_version || 'N/A');
+      f('ins-os', ((asset.operating_system || '') + (asset.os_version ? ' ' + asset.os_version : '')) || 'Embedded Linux');
+      f('ins-serial', asset.serial_number || 'N/A');
+      f('ins-host', asset.hostname || 'N/A');
+      f('ins-crit', asset.criticality || 'High');
+      f('ins-env', asset.environment || 'Production');
+      f('ins-health', asset.health_status || 'Online (Active)');
+      f('ins-status', asset.status || 'Active');
+      f('ins-date', asset.assigned_date || '2026-01-01');
+      f('ins-seen', asset.last_seen_at || 'Just now');
+      f('ins-notes', asset.notes || 'No specialized subsystem notes recorded.');
+      window.hdApp.openModal('modal-inspect-asset');
+    };
   </script>
 </body>
 

@@ -133,6 +133,38 @@
       }
     });
 
+    // Live Dynamic Sidebar Badges Sync with Database
+    function refreshSidebarBadges() {
+      fetch("api/sidebar_badges.php")
+        .then((res) => res.json())
+        .then((data) => {
+          if (data && data.success && data.badges) {
+            const b = data.badges;
+            const badgeMap = {
+              "dashboard": b.dashboard,
+              "access-matrix-and-role-review": b.access_matrix,
+              "privileged-accounts-monitoring": b.privileged,
+              "audit-logs-and-event-streams": b.audit_logs,
+              "ingestion-bridges": b.bridges,
+              "emergency-break-glass": b.break_glass,
+              "emergency-lockdown": b.lockdown,
+              "enterprise-security-policies": b.policies,
+              "board-risk-register": b.risks,
+              "compliance-and-incident-oversight": b.compliance
+            };
+            Object.keys(badgeMap).forEach((path) => {
+              const el = document.querySelector(`[data-nav-badge="${path}"]`);
+              if (el && badgeMap[path]) {
+                el.textContent = badgeMap[path];
+              }
+            });
+          }
+        })
+        .catch(() => {});
+    }
+    refreshSidebarBadges();
+    setInterval(refreshSidebarBadges, 15000);
+
     // Ensure logo click returns to main dashboard
     const brandHeaders = document.querySelectorAll(
       "header .flex.items-center.gap-space-md:first-child",

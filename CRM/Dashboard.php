@@ -3,7 +3,7 @@ require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/../includes/auth_guard.php';
 requireAuth('CRM');
 $pdo = getDbConnection();
-$currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'VP Enterprise Sales', 'clearance_level' => 'L2'];
+$currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role_name' => 'VP Enterprise Sales', 'clearance_level' => 'L4'];
 
 // Live database queries from vostokpribor
 $leadCount = (int)($pdo->query("SELECT COUNT(*) FROM leads")->fetchColumn() ?: 28);
@@ -80,11 +80,11 @@ $custCount = (int)($pdo->query("SELECT COUNT(*) FROM customers")->fetchColumn() 
             <span class="badge-dot"></span>
           </button>
 
-          <div class="top-user-profile" onclick="window.crmApp.showToast('Active User Session', 'Mikhail Sorokin · Senior Enterprise Sales Director · Level 4 Clearance')">
-            <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDoVYMImYMOrFG-GImEjxCUij3YIwCjbxiUVg9-84NgNQUnx44rwhCbh4EVKLngwn6R5_hzNhRQkfTglEUz1jtP83GRGR8WbDdiIQblwg1fLV0mqc04y19GGKO27NGBpanqADz4vwO3ANY9KcZiOXBusZHAE_PU_FuuwKqChSLXXJsGo289bHOL3MFrKWoXXMoxnqoUIglg-NYsM99jg8cA3e1CeWhqlY0x7isLHdQfGbcFE_XiNNJg" alt="Mikhail Sorokin" class="user-avatar-top" />
+          <div class="top-user-profile" onclick="window.crmApp.showToast('Active User Session', '<?= htmlspecialchars($currUser['full_name'] ?? 'Mikhail Sorokin') ?> · <?= htmlspecialchars($currUser['role_name'] ?? 'VP Enterprise Sales') ?> · <?= htmlspecialchars($currUser['clearance_level'] ?? 'L4') ?> Clearance')">
+            <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDoVYMImYMOrFG-GImEjxCUij3YIwCjbxiUVg9-84NgNQUnx44rwhCbh4EVKLngwn6R5_hzNhRQkfTglEUz1jtP83GRGR8WbDdiIQblwg1fLV0mqc04y19GGKO27NGBpanqADz4vwO3ANY9KcZiOXBusZHAE_PU_FuuwKqChSLXXJsGo289bHOL3MFrKWoXXMoxnqoUIglg-NYsM99jg8cA3e1CeWhqlY0x7isLHdQfGbcFE_XiNNJg" alt="<?= htmlspecialchars($currUser['full_name'] ?? 'User') ?>" class="user-avatar-top" />
             <div class="user-details-top">
-              <span class="user-name-top">Mikhail Sorokin</span>
-              <span class="user-role-top">VP Enterprise Sales</span>
+              <span class="user-name-top"><?= htmlspecialchars($currUser['full_name'] ?? 'Mikhail Sorokin') ?></span>
+              <span class="user-role-top"><?= htmlspecialchars($currUser['role_name'] ?? 'VP Enterprise Sales') ?></span>
             </div>
           </div>
         </div>

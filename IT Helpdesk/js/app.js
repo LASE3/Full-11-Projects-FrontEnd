@@ -235,10 +235,7 @@
         const res = await fetch("api/tickets.php?action=bulk_assign", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            assigned_to: "Alexey Ivanov",
-            assigned_emp_id: "EMP-1018"
-          })
+            // Trigger automated round-robin triage across active duty engineers
         });
         const data = await res.json();
         if (data.success) {
@@ -276,18 +273,23 @@
         });
         const data = await res.json();
         if (data.success) {
+          const authName = (data.data && data.data.display_author) ? data.data.display_author : (document.querySelector('.user-name-top')?.textContent?.trim() || 'IT Specialist');
+          const authRole = (data.data && data.data.display_role) ? data.data.display_role : (document.querySelector('.user-role-top')?.textContent?.trim() || 'Tier 3');
+          const initials = authName.split(' ').filter(Boolean).map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'IT';
+          const safeText = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>');
+
           const msgRow = document.createElement("div");
           msgRow.className = "chat-msg-row tech-msg";
           msgRow.innerHTML = `
             <div class="hd-stat-column-box" style="width: 36px; height: 36px; border-radius: 50%; background: #C97A3D; color: #fff; font-size: 13px; font-weight: bold;">
-              AI
+              ${initials}
             </div>
             <div class="chat-bubble">
               <div class="chat-msg-header">
-                <strong>Alexey Ivanov (Tier 3 IT Tech)</strong>
+                <strong>${authName} (${authRole})</strong>
                 <span>Just now</span>
               </div>
-              <p>${text.replace(/\n/g, '<br>')}</p>
+              <p>${safeText}</p>
             </div>
           `;
           if (thread) {

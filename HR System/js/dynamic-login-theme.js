@@ -248,90 +248,9 @@
   }
 
   function injectSimBar() {
-    if (document.querySelector(".vp-sim-bar")) return;
-    const mainEl = document.querySelector(".auth-main") || document.body;
-
-    const bar = document.createElement("div");
-    bar.className = "vp-sim-bar";
-    bar.innerHTML = [
-      '<span class="vp-sim-label">Theme Preview:</span>',
-      '<span class="vp-sim-status" id="sim-status-text">HR Default</span>',
-      '<button type="button" class="vp-sim-btn vp-sys"   onclick="setLoginThemePreset(\'system\')">⟳ System</button>',
-      '<button type="button" class="vp-sim-btn vp-blue"  onclick="setLoginThemePreset(\'blue\')">● Normal</button>',
-      '<button type="button" class="vp-sim-btn vp-red"   onclick="setLoginThemePreset(\'red\')">● Error</button>',
-      '<button type="button" class="vp-sim-btn vp-green" onclick="setLoginThemePreset(\'green\')">● Success</button>',
-      '<button type="button" class="vp-sim-btn vp-amber" onclick="setLoginThemePreset(\'yellow\')">● Security</button>',
-    ].join("");
-
-    if (!document.getElementById("vp-sim-styles")) {
-      const style = document.createElement("style");
-      style.id = "vp-sim-styles";
-      style.textContent = `
-        .vp-sim-bar {
-          display: flex;
-          align-items: center;
-          flex-wrap: wrap;
-          gap: 6px;
-          margin: 0.5rem auto 0;
-          padding: 8px 12px;
-          background: rgba(15,36,56,0.75);
-          border: 1px solid rgba(255,255,255,0.12);
-          border-radius: 8px;
-          max-width: 440px;
-          width: 100%;
-          font-family: var(--font-mono, monospace);
-          font-size: 0.68rem;
-          color: #94A3B8;
-          backdrop-filter: blur(10px);
-          -webkit-backdrop-filter: blur(10px);
-          box-sizing: border-box;
-          z-index: 10;
-        }
-        .auth-card-wide ~ .vp-sim-bar {
-          max-width: 680px;
-        }
-        .vp-sim-label {
-          font-weight: 600;
-          color: #DCE1E6;
-          white-space: nowrap;
-          margin-right: 2px;
-        }
-        .vp-sim-status {
-          font-weight: 700;
-          color: var(--auth-accent, #7B2CBF);
-          transition: color 0.3s ease;
-          flex: 1;
-          min-width: 80px;
-        }
-        .vp-sim-btn {
-          background: rgba(255,255,255,0.07);
-          border: 1px solid rgba(255,255,255,0.14);
-          border-radius: 4px;
-          color: #E2E8F0;
-          padding: 3px 8px;
-          font-size: 0.65rem;
-          font-family: var(--font-mono, monospace);
-          cursor: pointer;
-          transition: all 0.2s ease;
-          white-space: nowrap;
-        }
-        .vp-sim-btn:hover { background: rgba(255,255,255,0.18); }
-        .vp-sys:hover   { border-color: #64748B; color: #CBD5E1; }
-        .vp-blue:hover  { border-color: #7B2CBF; color: #D8B4FE; }
-        .vp-red:hover   { border-color: #B23A32; color: #FCA5A5; }
-        .vp-green:hover { border-color: #1E7E4E; color: #6EE7B7; }
-        .vp-amber:hover { border-color: #E8A33D; color: #FCD34D; }
-      `;
-      document.head.appendChild(style);
-    }
-
-    const card =
-      mainEl.querySelector(".auth-card") || mainEl.querySelector("section");
-    if (card && card.parentNode) {
-      card.parentNode.insertBefore(bar, card.nextSibling);
-    } else {
-      mainEl.appendChild(bar);
-    }
+    // Theme Preview toolbar permanently removed across all systems
+    const bars = document.querySelectorAll(".vp-sim-bar, .theme-simulation-bar");
+    bars.forEach((el) => el.remove());
   }
 
   function enforceCardCentering() {
@@ -364,6 +283,10 @@
       }
       .auth-card.auth-card-wide {
         max-width: 680px !important;
+      }
+      .vp-sim-bar,
+      .theme-simulation-bar {
+        display: none !important;
       }
     `;
     document.head.appendChild(style);

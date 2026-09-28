@@ -8,6 +8,7 @@ $currentUser = gov_getActiveUserProfile();
 $auditLogs = gov_getUnifiedAuditLogs(50);
 $privilegedAccounts = gov_getPrivilegedAccounts();
 $metrics = gov_getGovernanceMetrics();
+$sidebarBadges = gov_getSidebarBadges();
 ?>
 <!DOCTYPE html>
 
@@ -67,11 +68,9 @@ $metrics = gov_getGovernanceMetrics();
                 <div class="flex items-center gap-space-sm">
                     <div class="flex flex-col text-right">
                         <div class="flex items-center justify-end gap-space-xs"><span
-                                class="font-telemetry-micro text-telemetry-micro font-bold text-on-primary">Timur
-                                Akhmetov</span><span
-                                class="font-label-uppercase text-label-uppercase text-secondary-fixed bg-secondary-container/20 px-space-2xs rounded">EMP-1005</span>
-                        </div><span class="font-telemetry-micro text-[10px] text-on-primary-container">CLEARANCE: LEVEL
-                            5 (ALMATY CENTRAL)</span>
+                                class="font-telemetry-micro text-telemetry-micro font-bold text-on-primary"><?= htmlspecialchars((string)($currentUser['full_name'] ?? 'System Administrator')) ?></span><span
+                                class="font-label-uppercase text-label-uppercase text-secondary-fixed bg-secondary-container/20 px-space-2xs rounded"><?= htmlspecialchars((string)($currentUser['user_id'] ?? ($currentUser['emp_id'] ?? 'EMP-0001'))) ?></span>
+                        </div><span class="font-telemetry-micro text-[10px] text-on-primary-container">CLEARANCE: LEVEL <?= htmlspecialchars(substr((string)($currentUser['clearance_level'] ?? 'L4'), 1) ?: '4') ?> (<?= htmlspecialchars(strtoupper((string)($currentUser['role_name'] ?? 'EXECUTIVE ADMIN'))) ?>)</span>
                     </div>
                     <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span
                             class="material-symbols-outlined text-on-primary text-[18px]">person</span></div>
@@ -82,110 +81,7 @@ $metrics = gov_getGovernanceMetrics();
             <a href="../api/logout.php?system=Admin%20%26%20Governance%20Portal&redirect=../Admin%20%26%20Governance%20Portal/login.php" class="top-signout-btn" title="Sign Out of Admin &amp; Governance Portal" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" ><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
         </div>
     </header>
-    <aside
-        class="fixed left-0 top-[60px] h-[calc(100vh-60px)] w-[260px] bg-primary z-40 flex flex-col justify-between border-r border-outline/30 select-none overflow-y-auto">
-        <div class="py-space-md">
-            <div class="px-space-md mb-space-xs"><span
-                    class="font-label-uppercase text-label-uppercase text-on-primary-container tracking-wider">CORE
-                    GOVERNANCE</span></div>
-            <nav class="flex flex-col gap-[2px] px-space-xs mb-space-md"
-                data-active-classes="bg-primary-container text-on-primary font-semibold border-l-4 border-secondary-fixed">
-                <a class="flex items-center justify-between px-space-sm py-space-xs rounded text-on-primary-container hover:bg-primary-container hover:text-on-primary transition-all font-body-compact text-body-compact"
-                    data-path="dashboard" href="mainDashboard.php">
-                    <div class="flex items-center gap-space-sm"><span
-                            class="material-symbols-outlined text-[18px]">dashboard</span><span>Main Dashboard</span>
-                    </div><span
-                        class="font-telemetry-micro text-[10px] px-space-2xs bg-secondary-container/20 text-secondary-fixed rounded">KPI
-                        &amp; Threat</span>
-                </a><a
-                    class="flex items-center justify-between px-space-sm py-space-xs rounded text-on-primary-container hover:bg-primary-container hover:text-on-primary transition-all font-body-compact text-body-compact"
-                    data-path="access-matrix-and-role-review" href="accessMatrix.php">
-                    <div class="flex items-center gap-space-sm"><span
-                            class="material-symbols-outlined text-[18px]">grid_view</span><span>Access Matrix</span>
-                    </div><span
-                        class="font-telemetry-micro text-[10px] px-space-2xs bg-error-container text-on-error-container rounded font-bold">2
-                        Orphaned</span>
-                </a><a
-                    class="flex items-center justify-between px-space-sm py-space-xs rounded text-on-primary-container hover:bg-primary-container hover:text-on-primary transition-all font-body-compact text-body-compact"
-                    data-path="privileged-accounts-monitoring" href="PrivilegedAccounts.php">
-                    <div class="flex items-center gap-space-sm"><span
-                            class="material-symbols-outlined text-[18px]">admin_panel_settings</span><span>Privileged
-                            Accounts</span></div><span
-                        class="font-telemetry-micro text-[10px] px-space-2xs bg-surface-variant/20 text-on-primary-container rounded">7
-                        Active</span>
-                </a>
-            </nav>
-            <div class="px-space-md mb-space-xs"><span
-                    class="font-label-uppercase text-label-uppercase text-on-primary-container tracking-wider">AUDIT
-                    &amp; INTELLIGENCE</span></div>
-            <nav class="flex flex-col gap-[2px] px-space-xs mb-space-md"
-                data-active-classes="bg-primary-container text-on-primary font-semibold border-l-4 border-secondary-fixed">
-                <a aria-current="page"
-                    class="flex items-center justify-between px-space-sm py-space-xs rounded transition-all bg-primary-container text-on-primary font-semibold border-l-4 border-secondary-fixed"
-                    data-path="audit-logs-and-event-streams" href="AuditLogs.php">
-                    <div class="flex items-center gap-space-sm"><span
-                            class="material-symbols-outlined text-[18px]">terminal</span><span>Audit Logs</span></div>
-                    <span
-                        class="font-telemetry-micro text-[10px] px-space-2xs bg-secondary-fixed text-on-secondary-fixed font-bold rounded animate-pulse">LIVE</span>
-                </a><a
-                    class="flex items-center justify-between px-space-sm py-space-xs rounded text-on-primary-container hover:bg-primary-container hover:text-on-primary transition-all font-body-compact text-body-compact"
-                    data-path="ingestion-bridges" href="IngestionBridges.php">
-                    <div class="flex items-center gap-space-sm"><span
-                            class="material-symbols-outlined text-[18px]">cable</span><span>Ingestion Bridges</span>
-                    </div><span class="font-telemetry-micro text-[10px] text-on-primary-container">01-10</span>
-                </a><a
-                    class="flex items-center justify-between px-space-sm py-space-xs rounded text-error hover:bg-error-container hover:text-on-error-container transition-all font-body-compact text-body-compact"
-                    data-path="emergency-break-glass" href="Break-GlassAccess.php">
-                    <div class="flex items-center gap-space-sm"><span
-                            class="material-symbols-outlined text-[18px] text-error">e911_emergency</span><span
-                            class="font-bold uppercase">Break-Glass Access</span></div><span
-                        class="material-symbols-outlined text-[16px] text-error">lock_open</span>
-                </a>
-                <a class="flex items-center justify-between px-space-sm py-space-xs rounded text-error hover:bg-error-container hover:text-on-error-container transition-all font-body-compact text-body-compact" data-path="emergency-lockdown" href="EmergencyLockdown.php">
-                    <div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[18px] text-error">lock</span><span class="font-bold uppercase">Emergency Lockdown</span></div><span class="font-telemetry-micro text-[10px] px-space-2xs bg-error text-on-error font-bold rounded">DEFCON-1</span>
-                </a>
-            </nav>
-            <div class="px-space-md mb-space-xs"><span
-                    class="font-label-uppercase text-label-uppercase text-on-primary-container tracking-wider">REGULATORY
-                    &amp; RISK</span></div>
-            <nav class="flex flex-col gap-[2px] px-space-xs mb-space-md"
-                data-active-classes="bg-primary-container text-on-primary font-semibold border-l-4 border-secondary-fixed">
-                <a class="flex items-center justify-between px-space-sm py-space-xs rounded text-on-primary-container hover:bg-primary-container hover:text-on-primary transition-all font-body-compact text-body-compact"
-                    data-path="enterprise-security-policies" href="SecurityPolicies.php">
-                    <div class="flex items-center gap-space-sm"><span
-                            class="material-symbols-outlined text-[18px]">policy</span><span>Security Policies</span>
-                    </div>
-                </a><a
-                    class="flex items-center justify-between px-space-sm py-space-xs rounded text-on-primary-container hover:bg-primary-container hover:text-on-primary transition-all font-body-compact text-body-compact"
-                    data-path="board-risk-register" href="BoardRiskRegister.php">
-                    <div class="flex items-center gap-space-sm"><span
-                            class="material-symbols-outlined text-[18px]">balance</span><span>Board Risk Register</span>
-                    </div><span
-                        class="font-telemetry-micro text-[9px] px-space-2xs bg-primary-container text-on-primary-container rounded">2026-015</span>
-                </a><a
-                    class="flex items-center justify-between px-space-sm py-space-xs rounded text-on-primary-container hover:bg-primary-container hover:text-on-primary transition-all font-body-compact text-body-compact"
-                    data-path="compliance-and-incident-oversight" href="ComplianceOversight.php">
-                    <div class="flex items-center gap-space-sm"><span
-                            class="material-symbols-outlined text-[18px]">gavel</span><span>Compliance Oversight</span>
-                    </div>
-                </a>
-            </nav>
-        </div>
-
-        <div class="p-space-md bg-primary-container/40 border-t border-outline/20 flex flex-col gap-space-2xs">
-            <div class="flex items-center justify-between"><span
-                    class="font-security-stamp text-[10px] text-secondary-fixed-dim uppercase tracking-wider">SEC-OPS
-                    FACILITY</span>
-                <div class="w-1.5 h-1.5 rounded-full bg-secondary-fixed"></div>
-            </div>
-            <div class="font-telemetry-micro text-telemetry-micro text-on-primary-container">ALMATY STATION • EST. 1968
-            </div>
-            <div
-                class="font-telemetry-data text-telemetry-data text-on-primary font-semibold tracking-wider pt-space-2xs">
-                <span class="station-live-clock">UTC+6 (ALMATY TIME)</span>
-            </div>
-        </div>
-    </aside>
+    <?= gov_renderSidebar('AuditLogs.php') ?>
     <div class="pl-[260px]">
         <main class="relative pt-[60px] w-full min-h-screen bg-surface px-gutter-desktop py-space-lg">
             <div class="flex flex-col w-full">
@@ -250,11 +146,7 @@ $metrics = gov_getGovernanceMetrics();
                                 class="material-symbols-outlined text-[18px] text-on-surface-variant mr-space-xs">terminal</span>
                             <span
                                 class="font-telemetry-micro text-telemetry-micro text-secondary select-none font-bold mr-space-xs">QUERY&gt;</span>
-                            <input
-                                class="w-full bg-transparent font-telemetry-data text-telemetry-data text-on-surface focus:outline-none placeholder:text-outline py-space-xs"
-                                id="logQueryInput"
-                                placeholder="Search syntax: level:WARN target:SYS-07 user:EMP-1005..." type="text"
-                                value="level:CRITICAL OR action:OVERRIDE target:SYS-*" />
+                            <input class="w-full bg-transparent font-telemetry-data text-telemetry-data text-on-surface focus:outline-none placeholder:text-outline py-space-xs" id="logQueryInput" placeholder="Search syntax: level:WARN target:SYS-07 user:EMP-1005..." type="text" value="" />
                             <button class="text-on-surface-variant hover:text-error transition-colors px-space-xs"
                                 onclick="document.getElementById('logQueryInput').value=''">
                                 <span class="material-symbols-outlined text-[16px]">close</span>
@@ -277,58 +169,61 @@ $metrics = gov_getGovernanceMetrics();
                     </div>
                     <!-- Fine Filter Badges & Protocols -->
                     <div class="flex flex-wrap items-center justify-between gap-space-md pt-space-xs">
-                        <div class="flex flex-wrap items-center gap-space-xs">
-                            <span
-                                class="font-label-uppercase text-label-uppercase text-on-surface-variant mr-space-xs">SEVERITY:</span>
-                            <button
-                                class="px-space-sm py-[3px] bg-primary text-on-primary rounded font-label-uppercase text-label-uppercase">ALL
-                                (14.2K)</button>
-                            <button
-                                class="px-space-sm py-[3px] bg-error-container text-on-error-container hover:bg-error hover:text-on-error rounded font-label-uppercase text-label-uppercase flex items-center gap-space-2xs">
-                                <span class="w-1.5 h-1.5 rounded-full bg-error"></span>CRITICAL (14)
+                        <?php
+$critLogsCount = count(array_filter($auditLogs, fn($l) => $l['result'] === 'Failed' || strpos($l['action'], 'Override') !== false || strpos($l['action'], 'Breach') !== false));
+$warnLogsCount = count(array_filter($auditLogs, fn($l) => $l['result'] === 'Warning'));
+$infoLogsCount = count(array_filter($auditLogs, fn($l) => $l['result'] === 'Success' && strpos($l['action'], 'Override') === false));
+?>
+                        <div class="flex flex-wrap items-center gap-space-xs" id="auditSeverityContainer">
+                            <span class="font-label-uppercase text-label-uppercase text-on-surface-variant mr-space-xs">SEVERITY:</span>
+                            <button data-severity="ALL" class="audit-sev-btn px-space-sm py-[3px] bg-primary text-on-primary rounded font-label-uppercase text-label-uppercase cursor-pointer">
+                                ALL (<?= count($auditLogs) ?>)
                             </button>
-                            <button
-                                class="px-space-sm py-[3px] bg-surface-container-high text-on-surface hover:bg-surface-variant rounded font-label-uppercase text-label-uppercase flex items-center gap-space-2xs">
-                                <span class="w-1.5 h-1.5 rounded-full bg-on-tertiary-container"></span>WARN (82)
+                            <button data-severity="CRITICAL" class="audit-sev-btn px-space-sm py-[3px] bg-surface-container-high text-on-surface hover:bg-error hover:text-on-error rounded font-label-uppercase text-label-uppercase flex items-center gap-space-2xs cursor-pointer">
+                                <span class="w-1.5 h-1.5 rounded-full bg-error"></span>CRITICAL (<?= $critLogsCount ?>)
                             </button>
-                            <button
-                                class="px-space-sm py-[3px] bg-surface-container-high text-on-surface hover:bg-surface-variant rounded font-label-uppercase text-label-uppercase flex items-center gap-space-2xs">
-                                <span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>INFO (1.2K)
+                            <button data-severity="WARN" class="audit-sev-btn px-space-sm py-[3px] bg-surface-container-high text-on-surface hover:bg-surface-variant rounded font-label-uppercase text-label-uppercase flex items-center gap-space-2xs cursor-pointer">
+                                <span class="w-1.5 h-1.5 rounded-full bg-on-tertiary-container"></span>WARN (<?= $warnLogsCount ?>)
                             </button>
-                            <button
-                                class="px-space-sm py-[3px] bg-surface-container-high text-on-surface hover:bg-surface-variant rounded font-label-uppercase text-label-uppercase flex items-center gap-space-2xs">
-                                <span class="w-1.5 h-1.5 rounded-full bg-outline"></span>AUDIT (12.9K)
+                            <button data-severity="INFO" class="audit-sev-btn px-space-sm py-[3px] bg-surface-container-high text-on-surface hover:bg-surface-variant rounded font-label-uppercase text-label-uppercase flex items-center gap-space-2xs cursor-pointer">
+                                <span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>INFO (<?= $infoLogsCount ?>)
+                            </button>
+                            <button data-severity="AUDIT" class="audit-sev-btn px-space-sm py-[3px] bg-surface-container-high text-on-surface hover:bg-surface-variant rounded font-label-uppercase text-label-uppercase flex items-center gap-space-2xs cursor-pointer">
+                                <span class="w-1.5 h-1.5 rounded-full bg-outline"></span>AUDIT (<?= count($auditLogs) ?>)
                             </button>
                             <div class="h-4 w-[1px] bg-surface-variant mx-space-xs hidden md:block"></div>
-                            <span
-                                class="font-label-uppercase text-label-uppercase text-on-surface-variant mr-space-xs hidden md:inline">TARGET
-                                NODE:</span>
-                            <select
-                                class="h-control-height-sm bg-surface-container-low text-on-surface font-telemetry-micro text-telemetry-micro rounded px-space-xs focus:outline-none">
+                            <span class="font-label-uppercase text-label-uppercase text-on-surface-variant mr-space-xs hidden md:inline">TARGET NODE:</span>
+                            <select id="targetNodeFilter" class="h-control-height-sm bg-surface-container-low text-on-surface font-telemetry-micro text-telemetry-micro rounded px-space-xs focus:outline-none cursor-pointer">
                                 <option value="ALL">All Nodes (SYS-01 - SYS-11)</option>
+                                <option value="SYS-01">SYS-01 (Smelting Foundry PLC)</option>
                                 <option value="SYS-02">SYS-02 (Hydraulic Press Complex)</option>
                                 <option value="SYS-03">SYS-03 (Precision CNC Center)</option>
+                                <option value="SYS-04">SYS-04 (Metrology & Quality Lab)</option>
                                 <option value="SYS-05">SYS-05 (110kV Substation Grid)</option>
+                                <option value="SYS-06">SYS-06 (Automated Paint Line)</option>
                                 <option value="SYS-07">SYS-07 (ASRS Automated Storage)</option>
-                                <option selected="" value="SYS-11">SYS-11 (Gov-Core Mainframe)</option>
+                                <option value="SYS-08">SYS-08 (Automated Bogie Conveyor)</option>
+                                <option value="SYS-09">SYS-09 (Air Brake Test Stand)</option>
+                                <option value="SYS-10">SYS-10 (Robotic Welding Station)</option>
+                                <option value="SYS-11">SYS-11 (Gov-Core Mainframe)</option>
                             </select>
                         </div>
                         <!-- Action Utility Buttons -->
                         <div class="flex items-center gap-space-xs">
-                            <button
-                                class="h-control-height-sm px-space-sm bg-secondary-container text-on-secondary-container rounded font-telemetry-micro text-telemetry-micro font-bold flex items-center gap-space-2xs hover:bg-secondary hover:text-on-secondary transition-colors"
+                            <button id="verifyLedgerBtn"
+                                class="h-control-height-sm px-space-sm bg-secondary-container text-on-secondary-container rounded font-telemetry-micro text-telemetry-micro font-bold flex items-center gap-space-2xs hover:bg-secondary hover:text-on-secondary transition-colors cursor-pointer"
                                 title="Verify Merkle Tree Integrity">
                                 <span class="material-symbols-outlined text-[14px]">verified_user</span>
                                 <span>Cryptographic Ledger Verify</span>
                             </button>
-                            <button
-                                class="h-control-height-sm px-space-sm bg-surface-container text-on-surface rounded font-telemetry-micro text-telemetry-micro flex items-center gap-space-2xs hover:bg-surface-container-high transition-colors"
+                            <button id="exportSyslogBtn"
+                                class="h-control-height-sm px-space-sm bg-surface-container text-on-surface rounded font-telemetry-micro text-telemetry-micro flex items-center gap-space-2xs hover:bg-surface-container-high transition-colors cursor-pointer"
                                 title="RFC-5424 Raw Format">
                                 <span class="material-symbols-outlined text-[14px]">download</span>
                                 <span>Export Syslog</span>
                             </button>
-                            <button
-                                class="h-control-height-sm px-space-sm bg-surface-container text-on-surface hover:text-error rounded font-telemetry-micro text-telemetry-micro flex items-center gap-space-2xs"
+                            <button id="clearBufferBtn"
+                                class="h-control-height-sm px-space-sm bg-surface-container text-on-surface hover:text-error rounded font-telemetry-micro text-telemetry-micro flex items-center gap-space-2xs cursor-pointer"
                                 title="Flush current local terminal buffer">
                                 <span class="material-symbols-outlined text-[14px]">mop</span>
                                 <span>Clear Buffer</span>
@@ -373,7 +268,7 @@ $metrics = gov_getGovernanceMetrics();
                                     $isWarn = ($al['result'] === 'Warning');
                                     $sysLabel = !empty($al['system_id']) ? $al['system_id'] : (!empty($al['actor_system']) ? $al['actor_system'] : 'SYS-11');
                                 ?>
-                                    <div class="flex items-start gap-space-xs font-telemetry-data text-telemetry-data py-space-2xs px-space-xs <?= $isCrit ? 'bg-error-container/20 rounded hover:bg-error-container/30' : 'hover:bg-surface-container-highest/10' ?> transition-colors">
+                                    <div class="log-entry-row flex items-start gap-space-xs font-telemetry-data text-telemetry-data py-space-2xs px-space-xs <?= $isCrit ? 'bg-error-container/20 rounded hover:bg-error-container/30' : 'hover:bg-surface-container-highest/10' ?> transition-colors" data-severity="<?= $isCrit ? 'CRITICAL' : ($isWarn ? 'WARN' : 'INFO') ?>" data-node="<?= htmlspecialchars($sysLabel) ?>" data-result="<?= htmlspecialchars($al['result']) ?>"> transition-colors">
                                         <span class="text-on-primary-container select-none font-telemetry-micro w-8 text-right shrink-0"><?= sprintf('%04d', $al['audit_id']) ?></span>
                                         <span class="text-secondary-fixed shrink-0 font-telemetry-micro"><?= htmlspecialchars($al['occurred_at']) ?></span>
                                         <?php if ($isCrit): ?>
@@ -657,11 +552,7 @@ $metrics = gov_getGovernanceMetrics();
                                         permanent cryptographic audit markers to the vault.
                                     </span>
                                 </div>
-                                <button
-                                    class="w-full h-control-height-md bg-error text-on-error rounded font-security-stamp text-security-stamp tracking-wider uppercase hover:opacity-95 transition-opacity flex items-center justify-center gap-space-xs">
-                                    <span class="material-symbols-outlined text-[18px]">lock_open</span>
-                                    <span>INITIALIZE BREAK-GLASS DIALOGUE</span>
-                                </button>
+                                <button class="w-full h-control-height-md bg-error hover:bg-on-error-container text-on-error rounded font-security-stamp text-security-stamp tracking-wider uppercase transition-colors flex items-center justify-center gap-space-xs cursor-pointer" onclick="window.location.href='Break-GlassAccess.php'"><span class="material-symbols-outlined text-[18px]">lock_open</span><span>Enter Break-Glass Chamber</span></button>
                             </div>
                             <!-- Watermark / Security Tag Footer -->
                             <div

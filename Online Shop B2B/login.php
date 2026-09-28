@@ -1,4 +1,7 @@
 <?php
+header("Cache-Control: no-cache, no-store, must-revalidate");
+header("Pragma: no-cache");
+header("Expires: 0");
 if (session_status() === PHP_SESSION_NONE) {
   session_start();
 }
@@ -13,7 +16,16 @@ $initError = $_GET['error'] ?? '';
   <meta name="description"
     content="VOSTOKPRIBOR Online Shop B2B - Industrial instrumentation catalog, procurement accounts, inventory, and order operations.">
   <title>E-Commerce Management Login · VOSTOKPRIBOR SYS-02</title>
-  <link rel="stylesheet" href="css/login.css">
+  <link rel="stylesheet" href="css/login.css?v=1790609011">
+  <style>
+  .vp-sim-bar, .theme-simulation-bar, [class*="vp-sim"], [class*="theme-sim"] {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    height: 0 !important;
+    pointer-events: none !important;
+  }
+</style>
 </head>
 
 <body>
@@ -140,8 +152,19 @@ $initError = $_GET['error'] ?? '';
     <p>&copy; 2026 VOSTOKPRIBOR Industrial Group · B2B Commerce Engine · shop.vostokpribor.local</p>
   </footer>
 
-  <script src="js/dynamic-login-theme.js"></script>
+  <script src="js/dynamic-login-theme.js?v=1790609011"></script>
   <script src="../assets/js/auth-form.js"></script>
+<script>
+  (function(){
+    function purge(){
+      var b = document.querySelectorAll('.vp-sim-bar, .theme-simulation-bar, [class*="vp-sim"], [class*="theme-sim"]');
+      b.forEach(function(el){ el.remove(); });
+    }
+    purge();
+    document.addEventListener('DOMContentLoaded', purge);
+    window.addEventListener('load', purge);
+  })();
+</script>
 </body>
 
 </html>

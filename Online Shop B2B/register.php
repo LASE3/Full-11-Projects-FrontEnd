@@ -7,7 +7,16 @@
   <meta name="description"
     content="VOSTOKPRIBOR B2B Online Shop - Register your company as an enterprise procurement partner.">
   <title>Enterprise Partner Registration · VOSTOKPRIBOR SYS-02</title>
-  <link rel="stylesheet" href="css/login.css">
+  <link rel="stylesheet" href="css/login.css?v=1790609011">
+  <style>
+  .vp-sim-bar, .theme-simulation-bar, [class*="vp-sim"], [class*="theme-sim"] {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    height: 0 !important;
+    pointer-events: none !important;
+  }
+</style>
 </head>
 
 <body>
@@ -239,8 +248,19 @@
     <p>&copy; 2026 VOSTOKPRIBOR Industrial Group · B2B Commerce Engine · shop.vostokpribor.local</p>
   </footer>
 
-  <script src="js/dynamic-login-theme.js"></script>
+  <script src="js/dynamic-login-theme.js?v=1790609011"></script>
   <script src="js/register.js"></script>
+<script>
+  (function(){
+    function purge(){
+      var b = document.querySelectorAll('.vp-sim-bar, .theme-simulation-bar, [class*="vp-sim"], [class*="theme-sim"]');
+      b.forEach(function(el){ el.remove(); });
+    }
+    purge();
+    document.addEventListener('DOMContentLoaded', purge);
+    window.addEventListener('load', purge);
+  })();
+</script>
 </body>
 
 </html>

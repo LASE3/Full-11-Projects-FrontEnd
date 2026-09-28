@@ -7,6 +7,7 @@ require_once __DIR__ . '/gov_service.php';
 $currentUser = gov_getActiveUserProfile();
 $privilegedAccounts = gov_getPrivilegedAccounts();
 $metrics = gov_getGovernanceMetrics();
+$sidebarBadges = gov_getSidebarBadges();
 ?>
 <!DOCTYPE html>
 
@@ -66,11 +67,9 @@ $metrics = gov_getGovernanceMetrics();
                 <div class="flex items-center gap-space-sm">
                     <div class="flex flex-col text-right">
                         <div class="flex items-center justify-end gap-space-xs"><span
-                                class="font-telemetry-micro text-telemetry-micro font-bold text-on-primary">Timur
-                                Akhmetov</span><span
-                                class="font-label-uppercase text-label-uppercase text-secondary-fixed bg-secondary-container/20 px-space-2xs rounded">EMP-1005</span>
-                        </div><span class="font-telemetry-micro text-[10px] text-on-primary-container">CLEARANCE: LEVEL
-                            5 (ALMATY CENTRAL)</span>
+                                class="font-telemetry-micro text-telemetry-micro font-bold text-on-primary"><?= htmlspecialchars((string)($currentUser['full_name'] ?? 'System Administrator')) ?></span><span
+                                class="font-label-uppercase text-label-uppercase text-secondary-fixed bg-secondary-container/20 px-space-2xs rounded"><?= htmlspecialchars((string)($currentUser['user_id'] ?? ($currentUser['emp_id'] ?? 'EMP-0001'))) ?></span>
+                        </div><span class="font-telemetry-micro text-[10px] text-on-primary-container">CLEARANCE: LEVEL <?= htmlspecialchars(substr((string)($currentUser['clearance_level'] ?? 'L4'), 1) ?: '4') ?> (<?= htmlspecialchars(strtoupper((string)($currentUser['role_name'] ?? 'EXECUTIVE ADMIN'))) ?>)</span>
                     </div>
                     <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span
                             class="material-symbols-outlined text-on-primary text-[18px]">person</span></div>
@@ -81,109 +80,7 @@ $metrics = gov_getGovernanceMetrics();
             <a href="../api/logout.php?system=Admin%20%26%20Governance%20Portal&redirect=../Admin%20%26%20Governance%20Portal/login.php" class="top-signout-btn" title="Sign Out of Admin &amp; Governance Portal" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" ><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
         </div>
     </header>
-    <aside
-        class="fixed left-0 top-[60px] h-[calc(100vh-60px)] w-[260px] bg-primary z-40 flex flex-col justify-between border-r border-outline/30 select-none overflow-y-auto">
-        <div class="py-space-md">
-            <div class="px-space-md mb-space-xs"><span
-                    class="font-label-uppercase text-label-uppercase text-on-primary-container tracking-wider">CORE
-                    GOVERNANCE</span></div>
-            <nav class="flex flex-col gap-[2px] px-space-xs mb-space-md"
-                data-active-classes="bg-primary-container text-on-primary font-semibold border-l-4 border-secondary-fixed">
-                <a class="flex items-center justify-between px-space-sm py-space-xs rounded text-on-primary-container hover:bg-primary-container hover:text-on-primary transition-all font-body-compact text-body-compact"
-                    data-path="dashboard" href="mainDashboard.php">
-                    <div class="flex items-center gap-space-sm"><span
-                            class="material-symbols-outlined text-[18px]">dashboard</span><span>Main Dashboard</span>
-                    </div><span
-                        class="font-telemetry-micro text-[10px] px-space-2xs bg-secondary-container/20 text-secondary-fixed rounded">KPI
-                        &amp; Threat</span>
-                </a><a
-                    class="flex items-center justify-between px-space-sm py-space-xs rounded text-on-primary-container hover:bg-primary-container hover:text-on-primary transition-all font-body-compact text-body-compact"
-                    data-path="access-matrix-and-role-review" href="accessMatrix.php">
-                    <div class="flex items-center gap-space-sm"><span
-                            class="material-symbols-outlined text-[18px]">grid_view</span><span>Access Matrix</span>
-                    </div><span
-                        class="font-telemetry-micro text-[10px] px-space-2xs bg-error-container text-on-error-container rounded font-bold">2
-                        Orphaned</span>
-                </a><a aria-current="page"
-                    class="flex items-center justify-between px-space-sm py-space-xs rounded transition-all bg-primary-container text-on-primary font-semibold border-l-4 border-secondary-fixed"
-                    data-path="privileged-accounts-monitoring" href="PrivilegedAccounts.php">
-                    <div class="flex items-center gap-space-sm"><span
-                            class="material-symbols-outlined text-[18px]">admin_panel_settings</span><span>Privileged
-                            Accounts</span></div><span
-                        class="font-telemetry-micro text-[10px] px-space-2xs bg-tertiary-container text-secondary-fixed rounded font-bold border border-secondary-fixed/40">7
-                        Active</span>
-                </a>
-            </nav>
-            <div class="px-space-md mb-space-xs"><span
-                    class="font-label-uppercase text-label-uppercase text-on-primary-container tracking-wider">AUDIT
-                    &amp; INTELLIGENCE</span></div>
-            <nav class="flex flex-col gap-[2px] px-space-xs mb-space-md"
-                data-active-classes="bg-primary-container text-on-primary font-semibold border-l-4 border-secondary-fixed">
-                <a class="flex items-center justify-between px-space-sm py-space-xs rounded text-on-primary-container hover:bg-primary-container hover:text-on-primary transition-all font-body-compact text-body-compact"
-                    data-path="audit-logs-and-event-streams" href="AuditLogs.php">
-                    <div class="flex items-center gap-space-sm"><span
-                            class="material-symbols-outlined text-[18px]">terminal</span><span>Audit Logs</span></div>
-                    <span
-                        class="font-telemetry-micro text-[10px] px-space-2xs bg-secondary-fixed text-on-secondary-fixed font-bold rounded animate-pulse">LIVE</span>
-                </a><a
-                    class="flex items-center justify-between px-space-sm py-space-xs rounded text-on-primary-container hover:bg-primary-container hover:text-on-primary transition-all font-body-compact text-body-compact"
-                    data-path="ingestion-bridges" href="IngestionBridges.php">
-                    <div class="flex items-center gap-space-sm"><span
-                            class="material-symbols-outlined text-[18px]">cable</span><span>Ingestion Bridges</span>
-                    </div><span class="font-telemetry-micro text-[10px] text-on-primary-container">01-10</span>
-                </a><a
-                    class="flex items-center justify-between px-space-sm py-space-xs rounded text-on-primary-container hover:bg-primary-container hover:text-on-primary transition-all font-body-compact text-body-compact"
-                    data-path="emergency-break-glass" href="Break-GlassAccess.php">
-                    <div class="flex items-center gap-space-sm"><span
-                            class="material-symbols-outlined text-[18px] text-error">e911_emergency</span><span
-                            class="font-bold uppercase text-error">Break-Glass Access</span></div><span
-                        class="material-symbols-outlined text-[16px] text-error">lock_open</span>
-                </a>
-                <a class="flex items-center justify-between px-space-sm py-space-xs rounded text-error hover:bg-error-container hover:text-on-error-container transition-all font-body-compact text-body-compact" data-path="emergency-lockdown" href="EmergencyLockdown.php">
-                    <div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[18px] text-error">lock</span><span class="font-bold uppercase">Emergency Lockdown</span></div><span class="font-telemetry-micro text-[10px] px-space-2xs bg-error text-on-error font-bold rounded">DEFCON-1</span>
-                </a>
-            </nav>
-            <div class="px-space-md mb-space-xs"><span
-                    class="font-label-uppercase text-label-uppercase text-on-primary-container tracking-wider">REGULATORY
-                    &amp; RISK</span></div>
-            <nav class="flex flex-col gap-[2px] px-space-xs mb-space-md"
-                data-active-classes="bg-primary-container text-on-primary font-semibold border-l-4 border-secondary-fixed">
-                <a class="flex items-center justify-between px-space-sm py-space-xs rounded text-on-primary-container hover:bg-primary-container hover:text-on-primary transition-all font-body-compact text-body-compact"
-                    data-path="enterprise-security-policies" href="SecurityPolicies.php">
-                    <div class="flex items-center gap-space-sm"><span
-                            class="material-symbols-outlined text-[18px]">policy</span><span>Security Policies</span>
-                    </div>
-                </a><a
-                    class="flex items-center justify-between px-space-sm py-space-xs rounded text-on-primary-container hover:bg-primary-container hover:text-on-primary transition-all font-body-compact text-body-compact"
-                    data-path="board-risk-register" href="BoardRiskRegister.php">
-                    <div class="flex items-center gap-space-sm"><span
-                            class="material-symbols-outlined text-[18px]">balance</span><span>Board Risk Register</span>
-                    </div><span
-                        class="font-telemetry-micro text-[9px] px-space-2xs bg-primary-container text-on-primary-container rounded">2026-015</span>
-                </a><a
-                    class="flex items-center justify-between px-space-sm py-space-xs rounded text-on-primary-container hover:bg-primary-container hover:text-on-primary transition-all font-body-compact text-body-compact"
-                    data-path="compliance-and-incident-oversight" href="ComplianceOversight.php">
-                    <div class="flex items-center gap-space-sm"><span
-                            class="material-symbols-outlined text-[18px]">gavel</span><span>Compliance Oversight</span>
-                    </div>
-                </a>
-            </nav>
-        </div>
-
-        <div class="p-space-md bg-primary-container/40 border-t border-outline/20 flex flex-col gap-space-2xs">
-            <div class="flex items-center justify-between"><span
-                    class="font-security-stamp text-[10px] text-secondary-fixed-dim uppercase tracking-wider">SEC-OPS
-                    FACILITY</span>
-                <div class="w-1.5 h-1.5 rounded-full bg-secondary-fixed"></div>
-            </div>
-            <div class="font-telemetry-micro text-telemetry-micro text-on-primary-container">ALMATY STATION • EST. 1968
-            </div>
-            <div
-                class="font-telemetry-data text-telemetry-data text-on-primary font-semibold tracking-wider pt-space-2xs">
-                <span class="station-live-clock">UTC+6 (ALMATY TIME)</span>
-            </div>
-        </div>
-    </aside>
+    <?= gov_renderSidebar('PrivilegedAccounts.php') ?>
     <div class="pl-[260px]">
         <main class="relative pt-[60px] w-full min-h-screen bg-surface px-gutter-desktop py-space-lg">
             <div class="flex flex-col w-full">
@@ -376,28 +273,28 @@ $metrics = gov_getGovernanceMetrics();
                             class="bg-surface-container-lowest p-space-md rounded border border-outline-variant/40 shadow-sm flex flex-col gap-space-sm">
                             <div class="flex flex-col md:flex-row md:items-center justify-between gap-space-sm">
                                 <!-- Segmented Filter Tabs -->
-                                <div
-                                    class="flex items-center gap-[2px] bg-surface-container p-[2px] rounded border border-outline-variant/50 overflow-x-auto">
-                                    <button
-                                        class="px-space-sm py-[4px] text-body-compact font-body-compact font-bold bg-primary text-on-primary rounded-sm shadow-sm whitespace-nowrap">
+                                <?php
+$activeLeaseCount = count(array_filter($privilegedAccounts, fn($p) => !empty($p['session_id'])));
+$pendingSignoffCount = count(array_filter($privilegedAccounts, fn($p) => empty($p['session_id']) && $p['account_status'] === 'Active'));
+$tier0Count = count(array_filter($privilegedAccounts, fn($p) => $p['clearance_level'] === 'L4'));
+$vaultedCount = count(array_filter($privilegedAccounts, fn($p) => $p['clearance_level'] !== 'L4'));
+?>
+                                <div class="flex items-center gap-[2px] bg-surface-container p-[2px] rounded border border-outline-variant/50 overflow-x-auto" id="pam-tabs-container">
+                                    <button data-tab="ALL" class="pam-tab-btn px-space-sm py-[4px] text-body-compact font-body-compact font-bold bg-primary text-on-primary rounded-sm shadow-sm whitespace-nowrap cursor-pointer">
                                         All Privileged (<?= count($privilegedAccounts) ?>)
                                     </button>
-                                    <button
-                                        class="px-space-sm py-[4px] text-body-compact font-body-compact font-medium text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-sm transition-colors whitespace-nowrap">
-                                        Active Leases (7)
+                                    <button data-tab="ACTIVE" class="pam-tab-btn px-space-sm py-[4px] text-body-compact font-body-compact font-medium text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-sm transition-colors whitespace-nowrap cursor-pointer">
+                                        Active Leases (<?= $activeLeaseCount ?>)
                                     </button>
-                                    <button
-                                        class="px-space-sm py-[4px] text-body-compact font-body-compact font-medium text-[#D9822B] hover:bg-tertiary-fixed/20 rounded-sm transition-colors whitespace-nowrap flex items-center gap-space-2xs">
+                                    <button data-tab="PENDING" class="pam-tab-btn px-space-sm py-[4px] text-body-compact font-body-compact font-medium text-[#D9822B] hover:bg-tertiary-fixed/20 rounded-sm transition-colors whitespace-nowrap flex items-center gap-space-2xs cursor-pointer">
                                         <span class="w-2 h-2 rounded-full bg-[#D9822B]"></span>
-                                        Pending Approval (3)
+                                        Pending Approval (<?= $pendingSignoffCount ?>)
                                     </button>
-                                    <button
-                                        class="px-space-sm py-[4px] text-body-compact font-body-compact font-medium text-error hover:bg-error-container/30 rounded-sm transition-colors whitespace-nowrap">
-                                        High-Risk Tier 0 (5)
+                                    <button data-tab="TIER0" class="pam-tab-btn px-space-sm py-[4px] text-body-compact font-body-compact font-medium text-error hover:bg-error-container/30 rounded-sm transition-colors whitespace-nowrap cursor-pointer">
+                                        High-Risk Tier 0 (<?= $tier0Count ?>)
                                     </button>
-                                    <button
-                                        class="px-space-sm py-[4px] text-body-compact font-body-compact font-medium text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-sm transition-colors whitespace-nowrap">
-                                        Vaulted Services (6)
+                                    <button data-tab="SERVICES" class="pam-tab-btn px-space-sm py-[4px] text-body-compact font-body-compact font-medium text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-sm transition-colors whitespace-nowrap cursor-pointer">
+                                        Vaulted Services (<?= $vaultedCount ?>)
                                     </button>
                                 </div>
                                 <!-- Quick Refresh / Density Toggle -->
@@ -406,7 +303,8 @@ $metrics = gov_getGovernanceMetrics();
                                     <span class="font-bold text-primary">POLLING:</span>
                                     <span class="font-telemetry-data text-secondary font-semibold">1,000ms</span>
                                     <button
-                                        class="p-1 hover:bg-surface-container rounded text-primary transition-colors"
+                                        id="pamPollingRefreshBtn"
+                                        class="p-1 hover:bg-surface-container rounded text-primary transition-colors cursor-pointer"
                                         title="Force Inventory Sync">
                                         <span class="material-symbols-outlined text-[16px]">refresh</span>
                                     </button>
@@ -417,18 +315,12 @@ $metrics = gov_getGovernanceMetrics();
                                 <div class="relative flex-1 w-full">
                                     <span
                                         class="material-symbols-outlined absolute left-space-sm top-1/2 -translate-y-1/2 text-[16px] text-on-surface-variant">filter_alt</span>
-                                    <input
-                                        class="w-full h-control-height-md bg-surface pl-space-lg pr-space-base font-telemetry-data text-telemetry-data text-primary rounded border border-outline-variant focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary"
-                                        placeholder="Filter query syntax (e.g. host:sys-01 user:root)" type="text"
-                                        value="lease_status:ACTIVE OR tier:0" />
+                                    <input id="pamSearchInput" class="w-full h-control-height-md bg-surface pl-space-lg pr-space-base font-telemetry-data text-telemetry-data text-primary rounded border border-outline-variant focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary" placeholder="Filter by account, operator, clearance, or status..." type="text" value="" />
                                 </div>
                                 <div
                                     class="flex items-center gap-space-xs text-telemetry-micro font-telemetry-micro text-on-surface-variant shrink-0">
-                                    <span
-                                        class="bg-surface-container-high px-space-xs py-[3px] rounded border border-outline-variant/50 font-bold">MATCH:
-                                        7 OF 18 RECORDS</span>
-                                    <button
-                                        class="h-control-height-md px-space-sm bg-surface hover:bg-surface-container text-primary font-semibold rounded border border-outline-variant text-body-compact">Reset</button>
+                                    <span id="pamMatchBadge" class="bg-surface-container-high px-space-xs py-[3px] rounded border border-outline-variant/50 font-bold">MATCH: <?= count($privilegedAccounts) ?> OF <?= count($privilegedAccounts) ?> RECORDS</span>
+                                    <button id="pamResetBtn" class="h-control-height-md px-space-sm bg-surface hover:bg-surface-container text-primary font-semibold rounded border border-outline-variant text-body-compact cursor-pointer">Reset</button>
                                 </div>
                             </div>
                         </div>
@@ -446,8 +338,7 @@ $metrics = gov_getGovernanceMetrics();
                                 </div>
                                 <div
                                     class="flex items-center gap-space-md font-telemetry-micro text-telemetry-micro text-on-surface-variant">
-                                    <span>EXPORT: <a class="text-secondary font-bold underline" href="#">CSV</a> / <a
-                                            class="text-secondary font-bold underline" href="#">JSON-SIG</a></span>
+                                    <span>EXPORT: <a id="pamExportCsvBtn" class="text-secondary font-bold underline cursor-pointer" href="javascript:void(0)">CSV</a> / <a id="pamExportJsonBtn" class="text-secondary font-bold underline cursor-pointer" href="javascript:void(0)">JSON-SIG</a></span>
                                 </div>
                             </div>
                             <div class="overflow-x-auto">
@@ -455,31 +346,31 @@ $metrics = gov_getGovernanceMetrics();
                                     <thead>
                                         <tr
                                             class="bg-surface-container border-b border-on-background/20 font-telemetry-micro text-[11px] font-bold text-on-surface-variant uppercase tracking-wider">
-                                            <th class="py-space-xs px-space-sm border-r border-outline-variant/30">
+                                            <th class="py-space-sm px-space-md border-r border-outline-variant/30 min-w-[210px]">
                                                 Account &amp; Target Host</th>
-                                            <th class="py-space-xs px-space-sm border-r border-outline-variant/30">
+                                            <th class="py-space-sm px-space-md border-r border-outline-variant/30 min-w-[200px]">
                                                 Assigned Operator</th>
-                                            <th class="py-space-xs px-space-sm border-r border-outline-variant/30">Vault
+                                            <th class="py-space-sm px-space-md border-r border-outline-variant/30 min-w-[130px] whitespace-nowrap">Vault
                                                 Clearance</th>
-                                            <th class="py-space-xs px-space-sm border-r border-outline-variant/30">
+                                            <th class="py-space-sm px-space-md border-r border-outline-variant/30 min-w-[150px] whitespace-nowrap">
                                                 Access Protocol</th>
-                                            <th class="py-space-xs px-space-sm border-r border-outline-variant/30">Lease
+                                            <th class="py-space-sm px-space-md border-r border-outline-variant/30 min-w-[120px]">Lease
                                                 / TTL Status</th>
-                                            <th class="py-space-xs px-space-sm border-r border-outline-variant/30">
+                                            <th class="py-space-sm px-space-md border-r border-outline-variant/30 min-w-[110px] whitespace-nowrap">
                                                 Integrity Check</th>
-                                            <th class="py-space-xs px-space-sm text-right">Console Action</th>
+                                            <th class="py-space-sm px-space-md text-right min-w-[130px]">Console Action</th>
                                         </tr>
                                     </thead>
                                     <tbody
                                         class="divide-y divide-outline-variant/30 font-body-compact text-body-compact"
                                         id="vault-registry-tbody">
                                         <?php foreach ($privilegedAccounts as $idx => $pa):
-                                            $isTier0 = ($pa['clearance_level'] === 'L4');
-                                            $isActiveSession = !empty($pa['session_id']);
-                                        ?>
-                                            <tr class="hover:bg-surface-container transition-colors <?= $isActiveSession ? 'border-l-4 border-l-secondary bg-surface-container-lowest' : 'bg-surface-container-lowest' ?>">
-                                                <td class="py-space-xs px-space-sm border-r border-outline-variant/20">
-                                                    <div class="flex flex-col">
+                                             $isTier0 = ($pa['clearance_level'] === 'L4');
+                                             $isActiveSession = !empty($pa['session_id']);
+                                         ?>
+                                            <tr class="vault-row hover:bg-surface-container transition-colors <?= $isActiveSession ? 'border-l-4 border-l-secondary bg-surface-container-lowest' : 'bg-surface-container-lowest' ?>" data-tier="<?= $isTier0 ? '0' : '1' ?>" data-active="<?= $isActiveSession ? '1' : '0' ?>" data-status="<?= htmlspecialchars($pa['account_status']) ?>">
+                                                <td class="py-space-sm px-space-md border-r border-outline-variant/20">
+                                                    <div class="flex flex-col gap-0.5">
                                                         <div class="flex items-center gap-space-xs">
                                                             <?php if ($isActiveSession): ?>
                                                                 <span class="w-2 h-2 rounded-full bg-secondary-fixed animate-pulse"></span>
@@ -488,40 +379,47 @@ $metrics = gov_getGovernanceMetrics();
                                                                 <?= htmlspecialchars($pa['username']) ?>@vostok-vault
                                                             </span>
                                                         </div>
-                                                        <span class="font-telemetry-micro text-[10px] text-on-surface-variant">IP: 10.240.<?= (int)$pa['account_id'] ?>.10 • <?= htmlspecialchars($pa['dept_name'] ?? 'SEC-OPS') ?></span>
+                                                        <span class="font-telemetry-micro text-[11px] text-on-surface-variant">IP: 10.240.<?= (int)$pa['account_id'] ?>.10 • <?= htmlspecialchars($pa['dept_name'] ?? 'SEC-OPS') ?></span>
                                                     </div>
                                                 </td>
-                                                <td class="py-space-xs px-space-sm border-r border-outline-variant/20">
-                                                    <div class="flex flex-col">
+                                                <td class="py-space-sm px-space-md border-r border-outline-variant/20">
+                                                    <div class="flex flex-col gap-1 whitespace-normal leading-snug">
                                                         <span class="font-semibold text-primary"><?= htmlspecialchars($pa['full_name']) ?></span>
-                                                        <span class="font-telemetry-micro text-[10px] text-on-surface-variant"><?= htmlspecialchars($pa['emp_id']) ?> • <?= htmlspecialchars($pa['job_title']) ?></span>
+                                                        <span class="font-telemetry-micro text-[11px] text-on-surface-variant flex items-center gap-1">
+                                                            <span class="text-primary font-mono font-medium"><?= htmlspecialchars($pa['emp_id']) ?></span>
+                                                            <span class="text-outline">•</span>
+                                                            <span><?= htmlspecialchars($pa['job_title']) ?></span>
+                                                        </span>
                                                     </div>
                                                 </td>
-                                                <td class="py-space-xs px-space-sm border-r border-outline-variant/20">
-                                                    <span class="font-security-stamp text-[10px] px-space-xs py-[2px] <?= $isTier0 ? 'bg-error text-on-error' : 'bg-primary text-on-primary' ?> font-bold rounded">
+                                                <td class="py-space-sm px-space-md border-r border-outline-variant/20 whitespace-nowrap">
+                                                    <span class="font-security-stamp text-[10px] px-space-xs py-[2px] <?= $isTier0 ? 'bg-error text-on-error' : 'bg-primary text-on-primary' ?> font-bold rounded whitespace-nowrap inline-block">
                                                         <?= $isTier0 ? 'TIER 0 (ROOT)' : 'TIER 1 (PRIV)' ?>
                                                     </span>
                                                 </td>
-                                                <td class="py-space-xs px-space-sm border-r border-outline-variant/20 font-telemetry-micro text-telemetry-micro">
-                                                    Bastion SSH / MFA: <?= $pa['mfa_enabled'] ? '<span class="text-secondary font-bold">YES</span>' : '<span class="text-error font-bold">NO</span>' ?>
+                                                <td class="py-space-sm px-space-md border-r border-outline-variant/20 font-telemetry-micro text-telemetry-micro whitespace-nowrap">
+                                                    <div class="flex flex-col gap-0.5">
+                                                        <span class="text-on-surface font-mono text-[11px]">Bastion SSH</span>
+                                                        <span class="text-on-surface-variant text-[10px]">MFA: <?= $pa['mfa_enabled'] ? '<strong class="text-secondary font-bold">YES</strong>' : '<strong class="text-error font-bold">NO</strong>' ?></span>
+                                                    </div>
                                                 </td>
-                                                <td class="py-space-xs px-space-sm border-r border-outline-variant/20">
-                                                    <div class="flex flex-col">
+                                                <td class="py-space-sm px-space-md border-r border-outline-variant/20 whitespace-nowrap">
+                                                    <div class="flex flex-col gap-0.5">
                                                         <span class="font-telemetry-micro text-telemetry-micro font-bold <?= $isActiveSession ? 'text-secondary' : 'text-on-surface-variant' ?>">
                                                             <?= $isActiveSession ? 'ACTIVE LEASE' : 'STANDBY' ?>
                                                         </span>
                                                         <span class="font-telemetry-micro text-[10px] text-on-surface-variant">Last: <?= htmlspecialchars($pa['last_login'] ?? 'Never') ?></span>
                                                     </div>
                                                 </td>
-                                                <td class="py-space-xs px-space-sm border-r border-outline-variant/20">
+                                                <td class="py-space-sm px-space-md border-r border-outline-variant/20 whitespace-nowrap">
                                                     <span class="inline-flex items-center gap-[4px] px-space-xs py-[2px] <?= ($pa['account_status'] === 'Active') ? 'bg-secondary-container/30 text-on-secondary-container' : 'bg-error-container text-on-error-container' ?> font-security-stamp text-[10px] font-bold rounded">
                                                         <span class="w-1.5 h-1.5 rounded-full <?= ($pa['account_status'] === 'Active') ? 'bg-secondary' : 'bg-error' ?>"></span>
                                                         <?= ($pa['account_status'] === 'Active') ? 'NOMINAL' : 'REVOKED' ?>
                                                     </span>
                                                 </td>
-                                                <td class="py-space-xs px-space-sm text-right">
+                                                <td class="py-space-sm px-space-md text-right">
                                                     <div class="flex items-center justify-end gap-space-2xs">
-                                                        <button class="px-space-xs py-[3px] bg-surface-container text-primary hover:bg-surface-container-high border border-outline-variant rounded font-telemetry-micro text-telemetry-micro font-bold cursor-pointer" onclick="inspectAccount('<?= htmlspecialchars($pa['emp_id']) ?>', '<?= htmlspecialchars($pa['full_name']) ?>', '<?= htmlspecialchars($pa['username']) ?>', '<?= htmlspecialchars($pa['clearance_level']) ?>')">
+                                                        <button class="px-space-xs py-[3px] bg-surface-container text-primary hover:bg-surface-container-high border border-outline-variant rounded font-telemetry-micro text-telemetry-micro font-bold cursor-pointer" onclick="inspectAccount('<?= htmlspecialchars($pa['emp_id']) ?>', '<?= htmlspecialchars(addslashes($pa['full_name'])) ?>', '<?= htmlspecialchars($pa['username']) ?>', '<?= htmlspecialchars($pa['clearance_level']) ?>', 'sys-05-balkhash', '10.240.<?= (int)$pa['account_id'] ?>.10')">
                                                             Inspect
                                                         </button>
                                                         <?php if ($pa['account_status'] === 'Active'): ?>
@@ -629,9 +527,8 @@ $metrics = gov_getGovernanceMetrics();
                                     class="flex items-center justify-between text-telemetry-micro font-telemetry-micro bg-surface-container-low p-space-xs rounded border border-outline-variant/30">
                                     <div>
                                         <span class="text-on-surface-variant block">OPERATOR &amp; TARGET</span>
-                                        <span class="font-bold text-primary font-telemetry-data">K. Nurzhanov
-                                            (EMP-1001)</span>
-                                        <span class="text-primary-container block">admin_grid@sys-05-balkhash</span>
+                                        <span class="font-bold text-primary font-telemetry-data" id="bastion-operator-label">K. Nurzhanov (EMP-1001)</span>
+                                        <span class="text-primary-container block" id="bastion-target-label">admin_grid@sys-05-balkhash</span>
                                     </div>
                                     <div class="text-right">
                                         <span class="text-on-surface-variant block">SESSION UPTIME</span>
@@ -640,8 +537,7 @@ $metrics = gov_getGovernanceMetrics();
                                     </div>
                                 </div>
                                 <!-- Terminal Preview Box (Dark Neobrutalist Console) -->
-                                <div
-                                    class="bg-[#0F2438] text-[#96EEF9] font-telemetry-micro p-space-sm rounded border border-primary text-[11px] leading-[17px] flex flex-col gap-1 font-mono shadow-inner">
+                                <div id="bastionTerminalStream" class="bg-[#0F2438] text-[#96EEF9] font-telemetry-micro p-space-sm rounded border border-primary text-[11px] leading-[17px] flex flex-col gap-1 font-mono shadow-inner">
                                     <div
                                         class="flex items-center justify-between border-b border-outline-variant/20 pb-1 text-on-primary-container text-[10px]">
                                         <span>PTY: /dev/pts/4 (BASTION-ALMATY-02)</span>

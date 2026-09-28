@@ -671,3 +671,24 @@ body {
   color: var(--auth-text-muted);
   margin-top: 16px;
 }
+
+/* FORCEFULLY REMOVE THEME PREVIEW BARS */
+.theme-simulation-bar,
+.vp-sim-bar,
+.theme-sim-btn,
+.vp-sim-btn,
+.vp-sim-label,
+.vp-sim-status,
+[class*="vp-sim"],
+[class*="theme-sim"] {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  height: 0 !important;
+  width: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: none !important;
+  overflow: hidden !important;
+  pointer-events: none !important;
+}
