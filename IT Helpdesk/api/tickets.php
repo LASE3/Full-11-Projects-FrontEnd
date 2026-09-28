@@ -276,15 +276,23 @@ if ($action === 'resolve') {
     $stmt->execute([':id' => $tktId, ':notes' => $notes]);
 
     // Insert resolution comment
+    $currUser = getItCurrentUser();
+    $authEmpId = !empty($payload['author_emp_id']) ? (string)$payload['author_emp_id'] : ($currUser['emp_id'] ?? 'EMP-1018');
+    $authName = !empty($payload['author_name']) ? (string)$payload['author_name'] : ($currUser['full_name'] ?? 'Alexey Ivanov');
+    $authRole = !empty($payload['author_role']) ? (string)$payload['author_role'] : ($currUser['role_display'] ?? 'Lead IT Tech · Tier 3');
+
     $cmtStmt = $pdo->prepare("
         INSERT INTO ticket_comments 
         (tkt_id, author_emp_id, author_name, author_role, author_type, comment_text, created_at)
         VALUES 
-        (:tid, 'EMP-1018', 'Alexey Ivanov', 'Lead IT Tech · Tier 3', 'tech', :txt, NOW())
+        (:tid, :emp, :name, :role, 'tech', :txt, NOW())
     ");
     $cmtStmt->execute([
-        ':tid' => $tktId,
-        ':txt' => "RESOLVED: " . $notes,
+        ':tid'  => $tktId,
+        ':emp'  => $authEmpId,
+        ':name' => $authName,
+        ':role' => $authRole,
+        ':txt'  => "RESOLVED: " . $notes,
     ]);
 
     sendJsonSuccess(['tkt_id' => $tktId], "Ticket [{$tktId}] marked as Resolved.");
@@ -316,15 +324,23 @@ if ($action === 'escalate') {
     ]);
 
     // Insert comment
+    $currUser = getItCurrentUser();
+    $authEmpId = !empty($payload['author_emp_id']) ? (string)$payload['author_emp_id'] : ($currUser['emp_id'] ?? 'EMP-1018');
+    $authName = !empty($payload['author_name']) ? (string)$payload['author_name'] : ($currUser['full_name'] ?? 'Alexey Ivanov');
+    $authRole = !empty($payload['author_role']) ? (string)$payload['author_role'] : ($currUser['role_display'] ?? 'Lead IT Tech · Tier 3');
+
     $cmtStmt = $pdo->prepare("
         INSERT INTO ticket_comments 
         (tkt_id, author_emp_id, author_name, author_role, author_type, comment_text, created_at)
         VALUES 
-        (:tid, 'EMP-1018', 'Alexey Ivanov', 'Lead IT Tech · Tier 3', 'system', :txt, NOW())
+        (:tid, :emp, :name, :role, 'system', :txt, NOW())
     ");
     $cmtStmt->execute([
-        ':tid' => $tktId,
-        ':txt' => "🚨 ESCALATION: " . $reason,
+        ':tid'  => $tktId,
+        ':emp'  => $authEmpId,
+        ':name' => $authName,
+        ':role' => $authRole,
+        ':txt'  => "🚨 ESCALATION: " . $reason,
     ]);
 
     sendJsonSuccess(['tkt_id' => $tktId], "Ticket [{$tktId}] successfully escalated to Governance.");

@@ -72,11 +72,9 @@ $topRisk = $riskRegister[0] ?? null;
                 <div class="flex items-center gap-space-sm">
                     <div class="flex flex-col text-right">
                         <div class="flex items-center justify-end gap-space-xs"><span
-                                class="font-telemetry-micro text-telemetry-micro font-bold text-on-primary">Timur
-                                Akhmetov</span><span
-                                class="font-label-uppercase text-label-uppercase text-secondary-fixed bg-secondary-container/20 px-space-2xs rounded">EMP-1005</span>
-                        </div><span class="font-telemetry-micro text-[10px] text-on-primary-container">CLEARANCE: LEVEL
-                            5 (ALMATY CENTRAL)</span>
+                                class="font-telemetry-micro text-telemetry-micro font-bold text-on-primary"><?= htmlspecialchars((string)($currentUser['full_name'] ?? 'System Administrator')) ?></span><span
+                                class="font-label-uppercase text-label-uppercase text-secondary-fixed bg-secondary-container/20 px-space-2xs rounded"><?= htmlspecialchars((string)($currentUser['user_id'] ?? ($currentUser['emp_id'] ?? 'EMP-0001'))) ?></span>
+                        </div><span class="font-telemetry-micro text-[10px] text-on-primary-container">CLEARANCE: LEVEL <?= htmlspecialchars(substr((string)($currentUser['clearance_level'] ?? 'L4'), 1) ?: '4') ?> (<?= htmlspecialchars(strtoupper((string)($currentUser['role_name'] ?? 'EXECUTIVE ADMIN'))) ?>)</span>
                     </div>
                     <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span
                             class="material-symbols-outlined text-on-primary text-[18px]">person</span></div>
@@ -87,109 +85,7 @@ $topRisk = $riskRegister[0] ?? null;
             <a href="../api/logout.php?system=Admin%20%26%20Governance%20Portal&redirect=../Admin%20%26%20Governance%20Portal/login.php" class="top-signout-btn" title="Sign Out of Admin &amp; Governance Portal" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" ><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
         </div>
     </header>
-    <aside
-        class="fixed left-0 top-[60px] h-[calc(100vh-60px)] w-[260px] bg-primary z-40 flex flex-col justify-between border-r border-outline/30 select-none overflow-y-auto">
-        <div class="py-space-md">
-            <div class="px-space-md mb-space-xs"><span
-                    class="font-label-uppercase text-label-uppercase text-on-primary-container tracking-wider">CORE
-                    GOVERNANCE</span></div>
-            <nav class="flex flex-col gap-[2px] px-space-xs mb-space-md"
-                data-active-classes="bg-primary-container text-on-primary font-semibold border-l-4 border-secondary-fixed">
-                <a class="flex items-center justify-between px-space-sm py-space-xs rounded text-on-primary-container hover:bg-primary-container hover:text-on-primary transition-all font-body-compact text-body-compact"
-                    data-path="dashboard" href="mainDashboard.php">
-                    <div class="flex items-center gap-space-sm"><span
-                            class="material-symbols-outlined text-[18px]">dashboard</span><span>Main Dashboard</span>
-                    </div><span
-                        class="font-telemetry-micro text-[10px] px-space-2xs bg-secondary-container/20 text-secondary-fixed rounded">KPI
-                        &amp; Threat</span>
-                </a><a aria-current="page"
-                    class="flex items-center justify-between px-space-sm py-space-xs rounded transition-all bg-primary-container text-on-primary font-semibold border-l-4 border-secondary-fixed"
-                    data-path="access-matrix-and-role-review" href="accessMatrix.php">
-                    <div class="flex items-center gap-space-sm"><span
-                            class="material-symbols-outlined text-[18px]">grid_view</span><span>Access Matrix</span>
-                    </div><span
-                        class="font-telemetry-micro text-[10px] px-space-2xs bg-error-container text-on-error-container rounded font-bold">2
-                        Orphaned</span>
-                </a><a
-                    class="flex items-center justify-between px-space-sm py-space-xs rounded text-on-primary-container hover:bg-primary-container hover:text-on-primary transition-all font-body-compact text-body-compact"
-                    data-path="privileged-accounts-monitoring" href="PrivilegedAccounts.php">
-                    <div class="flex items-center gap-space-sm"><span
-                            class="material-symbols-outlined text-[18px]">admin_panel_settings</span><span>Privileged
-                            Accounts</span></div><span
-                        class="font-telemetry-micro text-[10px] px-space-2xs bg-surface-variant/20 text-on-primary-container rounded">7
-                        Active</span>
-                </a>
-            </nav>
-            <div class="px-space-md mb-space-xs"><span
-                    class="font-label-uppercase text-label-uppercase text-on-primary-container tracking-wider">AUDIT
-                    &amp; INTELLIGENCE</span></div>
-            <nav class="flex flex-col gap-[2px] px-space-xs mb-space-md"
-                data-active-classes="bg-primary-container text-on-primary font-semibold border-l-4 border-secondary-fixed">
-                <a class="flex items-center justify-between px-space-sm py-space-xs rounded text-on-primary-container hover:bg-primary-container hover:text-on-primary transition-all font-body-compact text-body-compact"
-                    data-path="audit-logs-and-event-streams" href="AuditLogs.php">
-                    <div class="flex items-center gap-space-sm"><span
-                            class="material-symbols-outlined text-[18px]">terminal</span><span>Audit Logs</span></div>
-                    <span
-                        class="font-telemetry-micro text-[10px] px-space-2xs bg-secondary-fixed text-on-secondary-fixed font-bold rounded animate-pulse">LIVE</span>
-                </a><a
-                    class="flex items-center justify-between px-space-sm py-space-xs rounded text-on-primary-container hover:bg-primary-container hover:text-on-primary transition-all font-body-compact text-body-compact"
-                    data-path="ingestion-bridges" href="IngestionBridges.php">
-                    <div class="flex items-center gap-space-sm"><span
-                            class="material-symbols-outlined text-[18px]">cable</span><span>Ingestion Bridges</span>
-                    </div><span class="font-telemetry-micro text-[10px] text-on-primary-container">01-10</span>
-                </a><a
-                    class="flex items-center justify-between px-space-sm py-space-xs rounded text-error hover:bg-error-container hover:text-on-error-container transition-all font-body-compact text-body-compact"
-                    data-path="emergency-break-glass" href="Break-GlassAccess.php">
-                    <div class="flex items-center gap-space-sm"><span
-                            class="material-symbols-outlined text-[18px] text-error">e911_emergency</span><span
-                            class="font-bold uppercase">Break-Glass Access</span></div><span
-                        class="material-symbols-outlined text-[16px] text-error">lock_open</span>
-                </a>
-                <a class="flex items-center justify-between px-space-sm py-space-xs rounded text-error hover:bg-error-container hover:text-on-error-container transition-all font-body-compact text-body-compact" data-path="emergency-lockdown" href="EmergencyLockdown.php">
-                    <div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[18px] text-error">lock</span><span class="font-bold uppercase">Emergency Lockdown</span></div><span class="font-telemetry-micro text-[10px] px-space-2xs bg-error text-on-error font-bold rounded">DEFCON-1</span>
-                </a>
-            </nav>
-            <div class="px-space-md mb-space-xs"><span
-                    class="font-label-uppercase text-label-uppercase text-on-primary-container tracking-wider">REGULATORY
-                    &amp; RISK</span></div>
-            <nav class="flex flex-col gap-[2px] px-space-xs mb-space-md"
-                data-active-classes="bg-primary-container text-on-primary font-semibold border-l-4 border-secondary-fixed">
-                <a class="flex items-center justify-between px-space-sm py-space-xs rounded text-on-primary-container hover:bg-primary-container hover:text-on-primary transition-all font-body-compact text-body-compact"
-                    data-path="enterprise-security-policies" href="SecurityPolicies.php">
-                    <div class="flex items-center gap-space-sm"><span
-                            class="material-symbols-outlined text-[18px]">policy</span><span>Security Policies</span>
-                    </div>
-                </a><a
-                    class="flex items-center justify-between px-space-sm py-space-xs rounded text-on-primary-container hover:bg-primary-container hover:text-on-primary transition-all font-body-compact text-body-compact"
-                    data-path="board-risk-register" href="BoardRiskRegister.php">
-                    <div class="flex items-center gap-space-sm"><span
-                            class="material-symbols-outlined text-[18px]">balance</span><span>Board Risk Register</span>
-                    </div><span
-                        class="font-telemetry-micro text-[9px] px-space-2xs bg-primary-container text-on-primary-container rounded">2026-015</span>
-                </a><a
-                    class="flex items-center justify-between px-space-sm py-space-xs rounded text-on-primary-container hover:bg-primary-container hover:text-on-primary transition-all font-body-compact text-body-compact"
-                    data-path="compliance-and-incident-oversight" href="ComplianceOversight.php">
-                    <div class="flex items-center gap-space-sm"><span
-                            class="material-symbols-outlined text-[18px]">gavel</span><span>Compliance Oversight</span>
-                    </div>
-                </a>
-            </nav>
-        </div>
-
-        <div class="p-space-md bg-primary-container/40 border-t border-outline/20 flex flex-col gap-space-2xs">
-            <div class="flex items-center justify-between"><span
-                    class="font-security-stamp text-[10px] text-secondary-fixed-dim uppercase tracking-wider">SEC-OPS
-                    FACILITY</span>
-                <div class="w-1.5 h-1.5 rounded-full bg-secondary-fixed"></div>
-            </div>
-            <div class="font-telemetry-micro text-telemetry-micro text-on-primary-container">ALMATY STATION • EST. 1968
-            </div>
-            <div
-                class="font-telemetry-data text-telemetry-data text-on-primary font-semibold tracking-wider pt-space-2xs">
-                <span class="station-live-clock">UTC+6 (ALMATY TIME)</span>
-            </div>
-        </div>
-    </aside>
+    <?= gov_renderSidebar('BoardRiskRegister.php') ?>
     <div class="pl-[260px]">
         <main class="relative pt-[60px] w-full min-h-screen bg-surface px-gutter-desktop py-space-lg">
             <div class="flex flex-col w-full">
@@ -236,12 +132,12 @@ $topRisk = $riskRegister[0] ?? null;
                             </p>
                         </div>
                         <div class="flex flex-wrap items-center gap-space-xs">
-                            <button
+                            <button id="btnExportRiskDossier"
                                 class="h-control-height-md px-space-md bg-surface-container hover:bg-surface-container-high text-primary font-body-compact text-body-compact font-semibold flex items-center gap-space-xs transition-colors shadow-sm">
                                 <span class="material-symbols-outlined text-[16px]">file_download</span>
                                 <span>Export Dossier (PDF/XBRL)</span>
                             </button>
-                            <button
+                            <button id="btnSubmitBoard"
                                 class="h-control-height-md px-space-md bg-secondary hover:bg-on-secondary-container text-on-secondary font-body-compact text-body-compact font-semibold flex items-center gap-space-xs transition-colors shadow-sm">
                                 <span class="material-symbols-outlined text-[16px]">verified</span>
                                 <span>Submit to Almaty Board</span>
@@ -596,25 +492,25 @@ $topRisk = $riskRegister[0] ?? null;
                             <!-- Table Control & Filter Tabs Bar -->
                             <div
                                 class="p-space-sm bg-surface-container-low flex flex-wrap items-center justify-between gap-space-sm">
-                                <div class="flex items-center gap-space-2xs overflow-x-auto">
-                                    <button
-                                        class="px-space-sm py-space-xs bg-primary text-on-primary font-label-uppercase text-label-uppercase">
+                                <div class="flex items-center gap-space-2xs overflow-x-auto" id="riskFilterTabs">
+                                    <button data-filter="ALL"
+                                        class="risk-tab-btn px-space-sm py-space-xs bg-primary text-on-primary font-label-uppercase text-label-uppercase font-bold cursor-pointer">
                                         ALL RISKS (24)
                                     </button>
-                                    <button
-                                        class="px-space-sm py-space-xs bg-surface-container hover:bg-surface-container-high text-primary font-label-uppercase text-label-uppercase transition-colors">
+                                    <button data-filter="CRITICAL"
+                                        class="risk-tab-btn px-space-sm py-space-xs bg-surface-container hover:bg-surface-container-high text-primary font-label-uppercase text-label-uppercase transition-colors cursor-pointer">
                                         CRITICAL / HIGH (3)
                                     </button>
-                                    <button
-                                        class="px-space-sm py-space-xs bg-surface-container hover:bg-surface-container-high text-primary font-label-uppercase text-label-uppercase transition-colors">
+                                    <button data-filter="MITIGATION"
+                                        class="risk-tab-btn px-space-sm py-space-xs bg-surface-container hover:bg-surface-container-high text-primary font-label-uppercase text-label-uppercase transition-colors cursor-pointer">
                                         ACTIVE MITIGATIONS (14)
                                     </button>
-                                    <button
-                                        class="px-space-sm py-space-xs bg-surface-container hover:bg-surface-container-high text-primary font-label-uppercase text-label-uppercase transition-colors">
+                                    <button data-filter="ATTESTED"
+                                        class="risk-tab-btn px-space-sm py-space-xs bg-surface-container hover:bg-surface-container-high text-primary font-label-uppercase text-label-uppercase transition-colors cursor-pointer">
                                         BOARD ATTESTED (7)
                                     </button>
-                                    <button
-                                        class="px-space-sm py-space-xs bg-surface-container hover:bg-surface-container-high text-primary font-label-uppercase text-label-uppercase transition-colors">
+                                    <button data-filter="RETIRED"
+                                        class="risk-tab-btn px-space-sm py-space-xs bg-surface-container hover:bg-surface-container-high text-primary font-label-uppercase text-label-uppercase transition-colors cursor-pointer">
                                         RETIRED (12)
                                     </button>
                                 </div>
@@ -622,9 +518,7 @@ $topRisk = $riskRegister[0] ?? null;
                                     <div class="relative">
                                         <span
                                             class="material-symbols-outlined absolute left-space-xs top-1/2 -translate-y-1/2 text-[14px] text-on-surface-variant">filter_list</span>
-                                        <input
-                                            class="h-control-height-sm pl-space-md pr-space-xs bg-surface-container text-on-surface font-telemetry-micro text-telemetry-micro focus:outline-none w-48"
-                                            placeholder="Filter by cluster or ID..." type="text" />
+                                        <input id="riskSearchInput" class="h-control-height-sm pl-space-md pr-space-xs bg-surface-container text-on-surface font-telemetry-micro text-telemetry-micro focus:outline-none w-56" placeholder="Filter by cluster or ID..." type="text" />
                                     </div>
                                 </div>
                             </div>
@@ -834,19 +728,19 @@ $topRisk = $riskRegister[0] ?? null;
                                 </div>
                                 <!-- Action Interlocks -->
                                 <div class="flex flex-col gap-space-xs pt-space-xs">
-                                    <button
-                                        class="h-control-height-md w-full bg-primary hover:bg-primary-container text-on-primary font-body-compact text-body-compact font-semibold flex items-center justify-center gap-space-xs transition-colors shadow-sm">
+                                    <button id="btnDispatchPatch"
+                                        class="h-control-height-md w-full bg-primary hover:bg-primary-container text-on-primary font-body-compact text-body-compact font-semibold flex items-center justify-center gap-space-xs transition-colors shadow-sm cursor-pointer">
                                         <span class="material-symbols-outlined text-[16px]">build_circle</span>
                                         <span>Dispatch Industrial Patch v4.9.1</span>
                                     </button>
                                     <div class="grid grid-cols-2 gap-space-xs">
-                                        <button
-                                            class="h-control-height-sm bg-surface-container hover:bg-surface-container-high text-primary font-label-uppercase text-[10px] flex items-center justify-center gap-1 transition-colors">
+                                        <button id="btnStateInspectorate"
+                                            class="h-control-height-sm bg-surface-container hover:bg-surface-container-high text-primary font-label-uppercase text-[10px] flex items-center justify-center gap-1 transition-colors cursor-pointer">
                                             <span class="material-symbols-outlined text-[14px]">send</span>
                                             <span>State Inspectorate</span>
                                         </button>
-                                        <button
-                                            class="h-control-height-sm bg-surface-container hover:bg-surface-container-high text-primary font-label-uppercase text-[10px] flex items-center justify-center gap-1 transition-colors">
+                                        <button id="btnAppendKeyHash"
+                                            class="h-control-height-sm bg-surface-container hover:bg-surface-container-high text-primary font-label-uppercase text-[10px] flex items-center justify-center gap-1 transition-colors cursor-pointer">
                                             <span class="material-symbols-outlined text-[14px]">lock_reset</span>
                                             <span>Append Key Hash</span>
                                         </button>

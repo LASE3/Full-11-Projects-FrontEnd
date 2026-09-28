@@ -379,18 +379,60 @@
     }
 
     // Export Compliance Dossier Button
-    const exportBtn = Array.from(document.querySelectorAll("button")).find(
-      (b) =>
-        b.textContent.includes("Export") || b.textContent.includes("Dossier"),
+    const exportBtn = document.getElementById("btnExportComplianceLedger") || Array.from(document.querySelectorAll("button")).find(
+      (b) => b.textContent.includes("Export") || b.textContent.includes("Dossier")
     );
-    if (exportBtn && !exportBtn.id) {
+    if (exportBtn) {
       exportBtn.addEventListener("click", () => {
+        const rows = document.querySelectorAll("#controlsTableBody tr.control-row");
+        const controls = [];
+        rows.forEach((r) => {
+          controls.push({
+            id: r.getAttribute("data-control-id"),
+            framework: r.getAttribute("data-framework"),
+            status: r.getAttribute("data-status"),
+            text: r.innerText.replace(/\s+/g, " ").trim()
+          });
+        });
+        const blob = new Blob([JSON.stringify({ station: "ALMATY-CENTRAL", framework: "ST RK ISO/IEC 27001", timestamp: new Date().toISOString(), controls: controls }, null, 2)], {
+          type: "application/json"
+        });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `VOSTOKPRIBOR_Compliance_Ledger_${Date.now()}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+
         window.showToast?.(
           "COMPLIANCE DOSSIER PREPARED",
           "Generated cryptographic audit package for State Inspectorate & Supervisory Board review.",
           "info",
           "description",
         );
+      });
+    }
+
+    // File Emergency Deviation Button
+    const deviationBtn = document.getElementById("btnFileEmergencyDeviation");
+    if (deviationBtn) {
+      deviationBtn.addEventListener("click", () => {
+        const reason = prompt("EMERGENCY STATUTORY DEVIATION:\nEnter operational justification for momentary compliance override (DOC-ACT-2026):");
+        if (reason) {
+          fetch("api/audit.php", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ action: "notarize_stamp", note: `Emergency Deviation Filed: ${reason}` })
+          });
+          window.showToast?.(
+            "DEVIATION FILED",
+            "Emergency deviation logged with cryptographic timestamp to state compliance registry.",
+            "error",
+            "warning"
+          );
+        }
       });
     }
   });

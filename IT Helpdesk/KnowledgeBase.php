@@ -4,7 +4,7 @@ require_once __DIR__ . '/../includes/auth_guard.php';
 requireAuth('IT');
 require_once __DIR__ . '/api/db_helper.php';
 $pdo = getItDb();
-$currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Alexey Ivanov', 'clearance_level' => 'L2'];
+$currUser = getItCurrentUser();
 
 // Query KB articles
 $stmt = $pdo->query("SELECT * FROM knowledge_base_articles ORDER BY updated_at DESC");
@@ -75,11 +75,11 @@ $slaPct = $sbStats['sla_pct'];
             </svg>
             <span class="badge-dot"></span>
           </button>
-          <div class="top-user-profile" onclick="window.hdApp.showToast('Active Tech Session', '<?= htmlspecialchars($currUser['full_name']) ?> · Lead IT Engineer')">
-            <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDoVYMImYMOrFG-GImEjxCUij3YIwCjbxiUVg9-84NgNQUnx44rwhCbh4EVKLngwn6R5_hzNhRQkfTglEUz1jtP83GRGR8WbDdiIQblwg1fLV0mqc04y19GGKO27NGBpanqADz4vwO3ANY9KcZiOXBusZHAE_PU_FuuwKqChSLXXJsGo289bHOL3MFrKWoXXMoxnqoUIglg-NYsM99jg8cA3e1CeWhqlY0x7isLHdQfGbcFE_XiNNJg" alt="Alexey Ivanov" class="user-avatar-top" />
+          <div class="top-user-profile" onclick="window.hdApp.showToast('Active Tech Session', '<?= addslashes(htmlspecialchars($currUser['full_name'])) ?> · <?= addslashes(htmlspecialchars($currUser['role_display'])) ?>')">
+            <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDoVYMImYMOrFG-GImEjxCUij3YIwCjbxiUVg9-84NgNQUnx44rwhCbh4EVKLngwn6R5_hzNhRQkfTglEUz1jtP83GRGR8WbDdiIQblwg1fLV0mqc04y19GGKO27NGBpanqADz4vwO3ANY9KcZiOXBusZHAE_PU_FuuwKqChSLXXJsGo289bHOL3MFrKWoXXMoxnqoUIglg-NYsM99jg8cA3e1CeWhqlY0x7isLHdQfGbcFE_XiNNJg" alt="<?= htmlspecialchars($currUser['full_name']) ?>" class="user-avatar-top" />
             <div class="user-details-top">
               <span class="user-name-top"><?= htmlspecialchars($currUser['full_name']) ?></span>
-              <span class="user-role-top">Lead IT Tech · Tier 3</span>
+              <span class="user-role-top"><?= htmlspecialchars($currUser['role_display']) ?></span>
             </div>
           </div>
         </div>
@@ -244,45 +244,45 @@ $slaPct = $sbStats['sla_pct'];
           <!-- Knowledge Cards Grid (Dynamic from DB) -->
           <div class="hd-grid-kb">
             <?php if (empty($articles)): ?>
-            <div style="grid-column: 1 / -1; padding: 32px; text-align: center; color: var(--hd-text-muted); background: var(--hd-navy-surface); border-radius: 8px;">
-              No knowledge base articles found. Click "+ Create Article" to add one.
-            </div>
+              <div style="grid-column: 1 / -1; padding: 32px; text-align: center; color: var(--hd-text-muted); background: var(--hd-navy-surface); border-radius: 8px;">
+                No knowledge base articles found. Click "+ Create Article" to add one.
+              </div>
             <?php else: ?>
-              <?php foreach ($articles as $index => $art): 
+              <?php foreach ($articles as $index => $art):
                 $cardStyles = ['hd-card-kb-orange', 'hd-card-kb-steel', 'hd-card-kb-success'];
                 $catStyles = ['hd-kb-cat-orange', 'hd-kb-cat-steel', 'hd-kb-cat-success'];
                 $styleIdx = $index % 3;
                 $cardClass = $cardStyles[$styleIdx];
                 $catClass = $catStyles[$styleIdx];
               ?>
-              <div class="hd-card <?= $cardClass ?>" style="display: flex; flex-direction: column; justify-content: space-between;">
-                <div>
-                  <div class="<?= $catClass ?>">
-                    <?= htmlspecialchars((string)($art['article_code'] ?? ('KB-' . $art['kb_id']))) ?> · <?= strtoupper(htmlspecialchars((string)($art['category'] ?? 'GENERAL'))) ?>
+                <div class="hd-card <?= $cardClass ?>" style="display: flex; flex-direction: column; justify-content: space-between;">
+                  <div>
+                    <div class="<?= $catClass ?>">
+                      <?= htmlspecialchars((string)($art['article_code'] ?? ('KB-' . $art['kb_id']))) ?> · <?= strtoupper(htmlspecialchars((string)($art['category'] ?? 'GENERAL'))) ?>
+                    </div>
+                    <h3 class="hd-kb-title" style="margin-top: 6px;"><?= htmlspecialchars((string)($art['title'] ?? 'Technical SOP')) ?></h3>
+                    <p class="hd-kb-desc">
+                      <?= htmlspecialchars((string)($art['summary'] ?: substr((string)($art['content'] ?? ''), 0, 160) . '...')) ?>
+                    </p>
                   </div>
-                  <h3 class="hd-kb-title" style="margin-top: 6px;"><?= htmlspecialchars((string)($art['title'] ?? 'Technical SOP')) ?></h3>
-                  <p class="hd-kb-desc">
-                    <?= htmlspecialchars((string)($art['summary'] ?: substr((string)($art['content'] ?? ''), 0, 160) . '...')) ?>
-                  </p>
-                </div>
-                <div>
-                  <?php if (!empty($art['tags'])): ?>
-                  <div style="margin-bottom: 12px; display: flex; gap: 4px; flex-wrap: wrap;">
-                    <?php foreach (explode(',', (string)$art['tags']) as $tag): ?>
-                      <span style="font-size: 10px; background: rgba(255,255,255,0.06); padding: 2px 6px; border-radius: 4px; color: var(--hd-text-muted);"><?= htmlspecialchars(trim($tag)) ?></span>
-                    <?php endforeach; ?>
-                  </div>
-                  <?php endif; ?>
-                  <div class="hd-kb-footer-meta" style="padding-top: 10px; border-top: 1px solid var(--hd-navy-border); display: flex; justify-content: space-between; align-items: center;">
-                    <span style="font-size: 11px; color: var(--hd-text-muted);">Views: <?= (int)($art['views_count'] ?? 0) ?></span>
-                    <div style="display: flex; gap: 6px; align-items: center;">
-                      <button class="btn btn-outline btn-sm" onclick="window.hdApp.viewKbArticle(<?= htmlspecialchars(json_encode($art), ENT_QUOTES, 'UTF-8') ?>)">Read SOP →</button>
-                      <button class="btn-crud-edit" onclick="window.hdApp.openEditKbModal(<?= htmlspecialchars(json_encode($art), ENT_QUOTES, 'UTF-8') ?>)" title="Edit Article">✎</button>
-                      <button class="btn-crud-delete" onclick="window.hdApp.deleteKbArticle(<?= (int)$art['kb_id'] ?>, '<?= htmlspecialchars((string)($art['article_code'] ?? ('KB-' . $art['kb_id'])), ENT_QUOTES) ?>')" title="Delete Article">🗑</button>
+                  <div>
+                    <?php if (!empty($art['tags'])): ?>
+                      <div style="margin-bottom: 12px; display: flex; gap: 4px; flex-wrap: wrap;">
+                        <?php foreach (explode(',', (string)$art['tags']) as $tag): ?>
+                          <span style="font-size: 10px; background: rgba(255,255,255,0.06); padding: 2px 6px; border-radius: 4px; color: var(--hd-text-muted);"><?= htmlspecialchars(trim($tag)) ?></span>
+                        <?php endforeach; ?>
+                      </div>
+                    <?php endif; ?>
+                    <div class="hd-kb-footer-meta" style="padding-top: 10px; border-top: 1px solid var(--hd-navy-border); display: flex; justify-content: space-between; align-items: center;">
+                      <span style="font-size: 11px; color: var(--hd-text-muted);">Views: <?= (int)($art['views_count'] ?? 0) ?></span>
+                      <div style="display: flex; gap: 6px; align-items: center;">
+                        <button class="btn btn-outline btn-sm" onclick="window.hdApp.viewKbArticle(<?= htmlspecialchars(json_encode($art), ENT_QUOTES, 'UTF-8') ?>)">Read SOP →</button>
+                        <button class="btn-crud-edit" onclick="window.hdApp.openEditKbModal(<?= htmlspecialchars(json_encode($art), ENT_QUOTES, 'UTF-8') ?>)" title="Edit Article">✎</button>
+                        <button class="btn-crud-delete" onclick="window.hdApp.deleteKbArticle(<?= (int)$art['kb_id'] ?>, '<?= htmlspecialchars((string)($art['article_code'] ?? ('KB-' . $art['kb_id'])), ENT_QUOTES) ?>')" title="Delete Article">🗑</button>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
               <?php endforeach; ?>
             <?php endif; ?>
           </div>

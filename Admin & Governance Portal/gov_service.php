@@ -18,10 +18,11 @@ function gov_getActiveUserProfile()
         return $_SESSION['vostok_user'];
     }
     return [
-        'full_name' => 'Timur Akhmetov',
-        'user_id' => 'EMP-1005',
+        'full_name' => 'System Administrator',
+        'user_id' => 'EMP-0001',
+        'emp_id' => 'EMP-0001',
         'clearance_level' => 'L4',
-        'role_name' => 'Chief Governance Officer'
+        'role_name' => 'Executive SuperAdmin'
     ];
 }
 
@@ -408,4 +409,223 @@ function gov_getRecertificationWindows()
         ORDER BY rw.window_id DESC
     ")->fetchAll(PDO::FETCH_ASSOC);
 }
+
+/**
+ * Get dynamic sidebar navigation badge indicators for System 11 views
+ */
+function gov_getSidebarBadges()
+{
+    $pdo = getDbConnection();
+    try {
+        $orphaned = (int)$pdo->query("SELECT COUNT(*) FROM employees WHERE employment_status IN ('Suspended', 'Terminated')")->fetchColumn();
+        $activeSessions = (int)$pdo->query("SELECT COUNT(DISTINCT ea.emp_id) FROM employee_accounts ea JOIN user_sessions us ON ea.account_id = us.employee_account_id WHERE us.status = 'Active'")->fetchColumn();
+        if ($activeSessions === 0) {
+            $activeSessions = (int)$pdo->query("SELECT COUNT(*) FROM employees WHERE clearance_level = 'L4' AND emp_id != 'EMP-0001'")->fetchColumn();
+        }
+        $auditCount = (int)$pdo->query("SELECT COUNT(*) FROM audit_logs")->fetchColumn();
+        $bridgeCount = (int)$pdo->query("SELECT COUNT(*) FROM system_integrations")->fetchColumn();
+        $isolatedCount = (int)$pdo->query("SELECT COUNT(*) FROM systems_catalog WHERE status = 'ISOLATED'")->fetchColumn();
+        $breakGlassCount = (int)$pdo->query("SELECT COUNT(*) FROM security_events WHERE event_type LIKE '%Break%' OR severity IN ('Critical', 'High')")->fetchColumn();
+        $policyCount = (int)$pdo->query("SELECT COUNT(*) FROM security_policies")->fetchColumn();
+        $riskCount = (int)$pdo->query("SELECT COUNT(*) FROM risk_register WHERE status != 'Resolved'")->fetchColumn();
+        $reviewCount = (int)$pdo->query("SELECT COUNT(*) FROM access_reviews WHERE action_taken LIKE '%Pending%' OR finding LIKE '%Breach%'")->fetchColumn();
+        if ($reviewCount === 0) {
+            $reviewCount = (int)$pdo->query("SELECT COUNT(*) FROM access_reviews")->fetchColumn();
+        }
+
+        return [
+            'dashboard' => 'KPI & Threat',
+            'access_matrix' => max(1, $orphaned) . ' Orphaned',
+            'privileged' => max(1, $activeSessions) . ' Active',
+            'audit_logs' => ($auditCount > 0 ? $auditCount . ' Events' : 'LIVE'),
+            'bridges' => ($bridgeCount > 0 ? sprintf('%02d Nodes', $bridgeCount) : '01-10'),
+            'break_glass' => max(1, $breakGlassCount) . ' Armed',
+            'lockdown' => ($isolatedCount > 0) ? 'DEFCON-1' : 'DEFCON-4',
+            'policies' => $policyCount . ' Active',
+            'risks' => $riskCount . ' Filed',
+            'compliance' => max(1, $reviewCount) . ' Reviews'
+        ];
+    } catch (Exception $e) {
+        return [
+            'dashboard' => 'KPI & Threat',
+            'access_matrix' => '1 Orphaned',
+            'privileged' => '7 Active',
+            'audit_logs' => 'LIVE',
+            'bridges' => '01-10',
+            'break_glass' => '4 Armed',
+            'lockdown' => 'DEFCON-4',
+            'policies' => '10 Active',
+            'risks' => '10 Filed',
+            'compliance' => '9 Reviews'
+        ];
+    }
+}
+
+/**
+ * Render the unified high-trust sidebar navigation with live badge counts and proper active indicators.
+ */
+function gov_renderSidebar($currentPage = '')
+{
+    if (empty($currentPage)) {
+        $currentPage = basename($_SERVER['SCRIPT_NAME'] ?? 'mainDashboard.php');
+    }
+    $currentPage = strtolower(basename($currentPage));
+
+    $badges = gov_getSidebarBadges();
+
+    $sections = [
+        'CORE GOVERNANCE' => [
+            [
+                'file' => 'maindashboard.php',
+                'href' => 'mainDashboard.php',
+                'path' => 'dashboard',
+                'icon' => 'dashboard',
+                'title' => 'Main Dashboard',
+                'badge' => $badges['dashboard'],
+                'badge_class' => 'font-telemetry-micro text-[10px] px-space-2xs bg-secondary-container/20 text-secondary-fixed rounded'
+            ],
+            [
+                'file' => 'accessmatrix.php',
+                'href' => 'accessMatrix.php',
+                'path' => 'access-matrix-and-role-review',
+                'icon' => 'grid_view',
+                'title' => 'Access Matrix',
+                'badge' => $badges['access_matrix'],
+                'badge_class' => 'font-telemetry-micro text-[10px] px-space-2xs bg-error-container text-on-error-container rounded font-bold'
+            ],
+            [
+                'file' => 'privilegedaccounts.php',
+                'href' => 'PrivilegedAccounts.php',
+                'path' => 'privileged-accounts-monitoring',
+                'icon' => 'admin_panel_settings',
+                'title' => 'Privileged Accounts',
+                'badge' => $badges['privileged'],
+                'badge_class' => 'font-telemetry-micro text-[10px] px-space-2xs bg-tertiary-container text-secondary-fixed rounded font-bold border border-secondary-fixed/40'
+            ]
+        ],
+        'AUDIT & INTELLIGENCE' => [
+            [
+                'file' => 'auditlogs.php',
+                'href' => 'AuditLogs.php',
+                'path' => 'audit-logs-and-event-streams',
+                'icon' => 'terminal',
+                'title' => 'Audit Logs',
+                'badge' => $badges['audit_logs'],
+                'badge_class' => 'font-telemetry-micro text-[10px] px-space-2xs bg-secondary-fixed text-on-secondary-fixed font-bold rounded animate-pulse'
+            ],
+            [
+                'file' => 'ingestionbridges.php',
+                'href' => 'IngestionBridges.php',
+                'path' => 'ingestion-bridges',
+                'icon' => 'cable',
+                'title' => 'Ingestion Bridges',
+                'badge' => $badges['bridges'],
+                'badge_class' => 'font-telemetry-micro text-[10px] text-on-primary-container'
+            ],
+            [
+                'file' => 'break-glassaccess.php',
+                'href' => 'Break-GlassAccess.php',
+                'path' => 'emergency-break-glass',
+                'icon' => 'e911_emergency',
+                'title' => 'Break-Glass Access',
+                'badge' => $badges['break_glass'],
+                'badge_class' => 'font-telemetry-micro text-[10px] px-space-2xs bg-error-container text-on-error-container font-bold rounded border border-error/50',
+                'is_break_glass' => true
+            ],
+            [
+                'file' => 'emergencylockdown.php',
+                'href' => 'EmergencyLockdown.php',
+                'path' => 'emergency-lockdown',
+                'icon' => 'lock',
+                'title' => 'Emergency Lockdown',
+                'badge' => $badges['lockdown'],
+                'badge_class' => 'font-telemetry-micro text-[10px] px-space-2xs bg-error text-on-error font-bold rounded',
+                'is_lockdown' => true
+            ]
+        ],
+        'REGULATORY & RISK' => [
+            [
+                'file' => 'securitypolicies.php',
+                'href' => 'SecurityPolicies.php',
+                'path' => 'enterprise-security-policies',
+                'icon' => 'policy',
+                'title' => 'Security Policies',
+                'badge' => $badges['policies'],
+                'badge_class' => 'font-telemetry-micro text-[10px] px-space-2xs bg-primary-container text-on-primary rounded border border-outline/30'
+            ],
+            [
+                'file' => 'boardriskregister.php',
+                'href' => 'BoardRiskRegister.php',
+                'path' => 'board-risk-register',
+                'icon' => 'balance',
+                'title' => 'Board Risk Register',
+                'badge' => $badges['risks'],
+                'badge_class' => 'font-telemetry-micro text-[9px] px-space-2xs bg-primary-container text-on-primary-container rounded border border-outline/30'
+            ],
+            [
+                'file' => 'complianceoversight.php',
+                'href' => 'ComplianceOversight.php',
+                'path' => 'compliance-and-incident-oversight',
+                'icon' => 'gavel',
+                'title' => 'Compliance Oversight',
+                'badge' => $badges['compliance'],
+                'badge_class' => 'font-telemetry-micro text-[10px] px-space-2xs bg-secondary-container/20 text-secondary-fixed rounded'
+            ]
+        ]
+    ];
+
+    $html = '<aside class="fixed left-0 top-[60px] h-[calc(100vh-60px)] w-[260px] bg-primary z-40 flex flex-col justify-between border-r border-outline/30 select-none overflow-y-auto">';
+    $html .= '<div class="py-space-md">';
+
+    foreach ($sections as $sectionTitle => $items) {
+        $html .= '<div class="px-space-md mb-space-xs"><span class="font-label-uppercase text-label-uppercase text-on-primary-container tracking-wider">' . htmlspecialchars($sectionTitle) . '</span></div>';
+        $html .= '<nav class="flex flex-col gap-[2px] px-space-xs mb-space-md" data-active-classes="bg-primary-container text-on-primary font-semibold border-l-4 border-secondary-fixed">';
+        
+        foreach ($items as $item) {
+            $isActive = ($currentPage === $item['file']);
+            $aria = $isActive ? ' aria-current="page"' : '';
+            
+            if (!empty($item['is_lockdown'])) {
+                if ($isActive) {
+                    $linkClass = 'flex items-center justify-between px-space-sm py-space-xs rounded transition-all bg-error text-on-error font-semibold border-l-4 border-white font-body-compact text-body-compact shadow-sm';
+                } else {
+                    $linkClass = 'flex items-center justify-between px-space-sm py-space-xs rounded text-error hover:bg-error-container hover:text-on-error-container transition-all font-body-compact text-body-compact';
+                }
+                $titleClass = 'font-bold uppercase';
+            } elseif (!empty($item['is_break_glass'])) {
+                if ($isActive) {
+                    $linkClass = 'flex items-center justify-between px-space-sm py-space-xs rounded transition-all bg-error-container text-on-error-container font-semibold border-l-4 border-error font-body-compact text-body-compact shadow-sm';
+                } else {
+                    $linkClass = 'flex items-center justify-between px-space-sm py-space-xs rounded text-error hover:bg-error-container hover:text-on-error-container transition-all font-body-compact text-body-compact';
+                }
+                $titleClass = 'font-bold uppercase text-error';
+            } else {
+                if ($isActive) {
+                    $linkClass = 'flex items-center justify-between px-space-sm py-space-xs rounded transition-all bg-primary-container text-on-primary font-semibold border-l-4 border-secondary-fixed font-body-compact text-body-compact shadow-sm';
+                } else {
+                    $linkClass = 'flex items-center justify-between px-space-sm py-space-xs rounded text-on-primary-container hover:bg-primary-container hover:text-on-primary transition-all font-body-compact text-body-compact';
+                }
+                $titleClass = '';
+            }
+
+            $html .= '<a' . $aria . ' class="' . $linkClass . '" data-path="' . htmlspecialchars($item['path']) . '" href="' . htmlspecialchars($item['href']) . '">';
+            $html .= '<div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[18px]">' . htmlspecialchars($item['icon']) . '</span><span class="' . $titleClass . '">' . htmlspecialchars($item['title']) . '</span></div>';
+            $html .= '<span class="' . $item['badge_class'] . '" data-nav-badge="' . htmlspecialchars($item['path']) . '">' . htmlspecialchars($item['badge']) . '</span>';
+            $html .= '</a>';
+        }
+        $html .= '</nav>';
+    }
+
+    $html .= '</div>';
+    $html .= '<div class="p-space-md bg-primary-container/40 border-t border-outline/20 flex flex-col gap-space-2xs">';
+    $html .= '<div class="flex items-center justify-between"><span class="font-security-stamp text-[10px] text-secondary-fixed-dim uppercase tracking-wider">SEC-OPS FACILITY</span><div class="w-1.5 h-1.5 rounded-full bg-secondary-fixed"></div></div>';
+    $html .= '<div class="font-telemetry-micro text-telemetry-micro text-on-primary-container">ALMATY STATION • EST. 1968</div>';
+    $html .= '<div class="font-telemetry-data text-telemetry-data text-on-primary font-semibold tracking-wider pt-space-2xs"><span class="station-live-clock">UTC+6 (ALMATY TIME)</span></div>';
+    $html .= '</div>';
+    $html .= '</aside>';
+
+    return $html;
+}
+
+
 

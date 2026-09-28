@@ -2,6 +2,10 @@
 require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/../includes/auth_guard.php';
 requireAuth('DEV');
+$pdo = getDbConnection();
+require_once __DIR__ . '/api/db_helper.php';
+ensureDeveloperTables($pdo);
+$currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clearance_level' => 'L2'];
 
 // Fetch all partner clearance applications dynamically from database
 $applications = [];

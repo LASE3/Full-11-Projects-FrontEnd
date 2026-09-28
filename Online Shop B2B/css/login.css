@@ -651,57 +651,16 @@ body {
   transition: all 0.3s ease !important;
 }
 
-/* Interactive Simulation Bar for live verification across themes */
-.theme-simulation-bar {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  margin: 1rem auto 0 auto;
-  padding: 0.5rem 0.75rem;
-  background: rgba(15, 36, 56, 0.75);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 6px;
-  max-width: 440px;
-  font-family: var(--font-mono, monospace);
-  font-size: 0.7rem;
-  color: #94a3b8;
-  -webkit-backdrop-filter: blur(8px);
-  backdrop-filter: blur(8px);
-}
 
-.theme-sim-btn {
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 4px;
-  color: #f8fafc;
-  padding: 0.25rem 0.5rem;
-  font-size: 0.68rem;
-  font-family: var(--font-mono, monospace);
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
 
-.theme-sim-btn:hover {
-  background: rgba(255, 255, 255, 0.2);
-}
 
-.theme-sim-btn.sim-blue:hover {
-  border-color: #3e7cb1;
-  color: #60a5fa;
-}
-.theme-sim-btn.sim-red:hover {
-  border-color: #b23a32;
-  color: #f87171;
-}
-.theme-sim-btn.sim-green:hover {
-  border-color: #1e7e4e;
-  color: #4ade80;
-}
-.theme-sim-btn.sim-yellow:hover {
-  border-color: #e8a33d;
-  color: #fbbf24;
-}
+
+
+
+
+
+
+
 
 /* Unified Top Sign-Out Button */
 .top-signout-btn {
@@ -742,4 +701,25 @@ body {
   font-size: 12px;
   color: var(--auth-text-muted);
   margin-top: 16px;
+}
+
+/* FORCEFULLY REMOVE THEME PREVIEW BARS */
+.theme-simulation-bar,
+.vp-sim-bar,
+.theme-sim-btn,
+.vp-sim-btn,
+.vp-sim-label,
+.vp-sim-status,
+[class*="vp-sim"],
+[class*="theme-sim"] {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  height: 0 !important;
+  width: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: none !important;
+  overflow: hidden !important;
+  pointer-events: none !important;
 }

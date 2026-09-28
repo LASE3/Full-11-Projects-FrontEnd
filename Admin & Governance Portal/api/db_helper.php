@@ -51,7 +51,7 @@ function getCurrentGovActor()
     if (!empty($_SESSION['vostok_user']['emp_id'])) {
         return $_SESSION['vostok_user']['emp_id'];
     }
-    return 'EMP-1005'; // Timur Akhmetov (Chief Governance Officer)
+    return 'EMP-0001'; // System Administrator (Executive SuperAdmin)
 }
 
 /**

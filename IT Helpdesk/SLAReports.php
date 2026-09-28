@@ -4,7 +4,7 @@ require_once __DIR__ . '/../includes/auth_guard.php';
 requireAuth('IT');
 require_once __DIR__ . '/api/db_helper.php';
 $pdo = getItDb();
-$currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Alexey Ivanov', 'clearance_level' => 'L2'];
+$currUser = getItCurrentUser();
 
 // Dynamic calculations
 $totalStmt = $pdo->query("SELECT COUNT(*) FROM tickets");
@@ -88,11 +88,11 @@ $slaPct = $sbStats['sla_pct'];
             </svg>
             <span class="badge-dot"></span>
           </button>
-          <div class="top-user-profile" onclick="window.hdApp.showToast('Active Tech Session', '<?= htmlspecialchars($currUser['full_name']) ?> · Lead IT Engineer')">
-            <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDoVYMImYMOrFG-GImEjxCUij3YIwCjbxiUVg9-84NgNQUnx44rwhCbh4EVKLngwn6R5_hzNhRQkfTglEUz1jtP83GRGR8WbDdiIQblwg1fLV0mqc04y19GGKO27NGBpanqADz4vwO3ANY9KcZiOXBusZHAE_PU_FuuwKqChSLXXJsGo289bHOL3MFrKWoXXMoxnqoUIglg-NYsM99jg8cA3e1CeWhqlY0x7isLHdQfGbcFE_XiNNJg" alt="Alexey Ivanov" class="user-avatar-top" />
+          <div class="top-user-profile" onclick="window.hdApp.showToast('Active Tech Session', '<?= addslashes(htmlspecialchars($currUser['full_name'])) ?> · <?= addslashes(htmlspecialchars($currUser['role_display'])) ?>')">
+            <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDoVYMImYMOrFG-GImEjxCUij3YIwCjbxiUVg9-84NgNQUnx44rwhCbh4EVKLngwn6R5_hzNhRQkfTglEUz1jtP83GRGR8WbDdiIQblwg1fLV0mqc04y19GGKO27NGBpanqADz4vwO3ANY9KcZiOXBusZHAE_PU_FuuwKqChSLXXJsGo289bHOL3MFrKWoXXMoxnqoUIglg-NYsM99jg8cA3e1CeWhqlY0x7isLHdQfGbcFE_XiNNJg" alt="<?= htmlspecialchars($currUser['full_name']) ?>" class="user-avatar-top" />
             <div class="user-details-top">
               <span class="user-name-top"><?= htmlspecialchars($currUser['full_name']) ?></span>
-              <span class="user-role-top">Lead IT Tech · Tier 3</span>
+              <span class="user-role-top"><?= htmlspecialchars($currUser['role_display']) ?></span>
             </div>
           </div>
         </div>
@@ -335,13 +335,13 @@ $slaPct = $sbStats['sla_pct'];
               </thead>
               <tbody>
                 <?php if (empty($policies)): ?>
-                <tr>
-                  <td colspan="6" style="text-align: center; padding: 24px; color: var(--hd-text-muted);">
-                    No SLA policies configured in database.
-                  </td>
-                </tr>
+                  <tr>
+                    <td colspan="6" style="text-align: center; padding: 24px; color: var(--hd-text-muted);">
+                      No SLA policies configured in database.
+                    </td>
+                  </tr>
                 <?php else: ?>
-                  <?php foreach ($policies as $p): 
+                  <?php foreach ($policies as $p):
                     $prio = $p['priority'] ?? ($p['priority_level'] ?? 'Medium');
                     $prioClass = 'priority-critical';
                     if ($prio === 'High') $prioClass = 'priority-high';
@@ -351,22 +351,22 @@ $slaPct = $sbStats['sla_pct'];
                     $resMins = (int)($p['resolution_time_minutes'] ?? (($p['resolution_time_hours'] ?? 2) * 60));
                     $esclMins = (int)($p['escalation_threshold_minutes'] ?? round($respMins * 0.5));
                   ?>
-                  <tr class="hd-table-row">
-                    <td><span class="priority-badge <?= $prioClass ?>"><?= strtoupper(htmlspecialchars($prio)) ?></span></td>
-                    <td><strong><?= $respMins ?> mins</strong></td>
-                    <td>
-                      <strong>
-                        <?php 
+                    <tr class="hd-table-row">
+                      <td><span class="priority-badge <?= $prioClass ?>"><?= strtoupper(htmlspecialchars($prio)) ?></span></td>
+                      <td><strong><?= $respMins ?> mins</strong></td>
+                      <td>
+                        <strong>
+                          <?php
                           echo $resMins >= 60 ? round($resMins / 60, 1) . ' hours (' . $resMins . 'm)' : $resMins . ' mins';
-                        ?>
-                      </strong>
-                    </td>
-                    <td><span class="hd-mono-orange-sm"><?= $esclMins ?> mins</span></td>
-                    <td><?= htmlspecialchars($p['description'] ?? 'Standard tier SLA policy') ?></td>
-                    <td class="hd-text-right">
-                      <button class="btn btn-outline btn-sm" onclick="window.hdApp.openEditSlaModal(<?= htmlspecialchars(json_encode($p), ENT_QUOTES, 'UTF-8') ?>)">Edit Policy</button>
-                    </td>
-                  </tr>
+                          ?>
+                        </strong>
+                      </td>
+                      <td><span class="hd-mono-orange-sm"><?= $esclMins ?> mins</span></td>
+                      <td><?= htmlspecialchars($p['description'] ?? 'Standard tier SLA policy') ?></td>
+                      <td class="hd-text-right">
+                        <button class="btn btn-outline btn-sm" onclick="window.hdApp.openEditSlaModal(<?= htmlspecialchars(json_encode($p), ENT_QUOTES, 'UTF-8') ?>)">Edit Policy</button>
+                      </td>
+                    </tr>
                   <?php endforeach; ?>
                 <?php endif; ?>
               </tbody>

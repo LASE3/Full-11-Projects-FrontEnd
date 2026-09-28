@@ -1,4 +1,7 @@
 <?php
+header("Cache-Control: no-cache, no-store, must-revalidate");
+header("Pragma: no-cache");
+header("Expires: 0");
 if (session_status() === PHP_SESSION_NONE) {
   session_start();
 }
@@ -12,7 +15,16 @@ $initError = $_GET['error'] ?? '';
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="VOSTOKPRIBOR Customer Portal - Client service login, telemetry monitoring, service tracking, and support ticket management.">
   <title>Customer Service Login · VOSTOKPRIBOR SYS-09</title>
-  <link rel="stylesheet" href="css/login.css">
+  <link rel="stylesheet" href="css/login.css?v=1790609011">
+  <style>
+  .vp-sim-bar, .theme-simulation-bar, [class*="vp-sim"], [class*="theme-sim"] {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    height: 0 !important;
+    pointer-events: none !important;
+  }
+</style>
 </head>
 
 <body>
@@ -136,8 +148,19 @@ $initError = $_GET['error'] ?? '';
     <p>&copy; 2026 VOSTOKPRIBOR Industrial Group · Client Self-Service Gateway · portal.vostokpribor.local</p>
   </footer>
 
-  <script src="js/dynamic-login-theme.js"></script>
+  <script src="js/dynamic-login-theme.js?v=1790609011"></script>
   <script src="../assets/js/auth-form.js"></script>
+<script>
+  (function(){
+    function purge(){
+      var b = document.querySelectorAll('.vp-sim-bar, .theme-simulation-bar, [class*="vp-sim"], [class*="theme-sim"]');
+      b.forEach(function(el){ el.remove(); });
+    }
+    purge();
+    document.addEventListener('DOMContentLoaded', purge);
+    window.addEventListener('load', purge);
+  })();
+</script>
 </body>
 
 </html>

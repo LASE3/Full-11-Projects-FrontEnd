@@ -2,6 +2,7 @@
 require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/../includes/auth_guard.php';
 requireAuth('EMP');
+$currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Elena Morozova', 'role_name' => 'Chief Tech Officer', 'department_code' => 'ITD', 'clearance_level' => 'L4'];
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -184,14 +185,15 @@ requireAuth('EMP');
                 </div>
 
                 <!-- Authenticated User Profile Avatar -->
-                <div class="intra-display-flex-align-items-f8dd" >
+                <div class="intra-display-flex-align-items-f8dd"
+                    >
                     <div class="avatar-circle intra-background-color-1a73e8-width-13e2">
-                        EM
+                        <?= htmlspecialchars(mb_substr($currUser['full_name'] ?? 'EM', 0, 2)) ?>
                         <span class="avatar-status-dot online"></span>
                     </div>
                     <div class="user-info-text intra-flex-col">
-                        <span class="intra-color-ffffff-font-weight-b287" >Elena Morozova</span>
-                        <span class="intra-mono-muted-xs" >CTO • L4 Clear</span>
+                        <span class="intra-color-ffffff-font-weight-b287" ><?= htmlspecialchars($currUser['full_name'] ?? 'Elena Morozova') ?></span>
+                        <span class="intra-mono-muted-xs" ><?= htmlspecialchars($currUser['role_name'] ?? 'CTO') ?> • <?= htmlspecialchars($currUser['clearance_level'] ?? 'L4') ?> Clear</span>
                     </div>
                 </div>
 
@@ -261,18 +263,23 @@ requireAuth('EMP');
         <div class="intra-padding-1rem-border-top-dd4e" >
             <div class="intra-flex-center-gap-md" >
                 <div class="avatar-circle intra-background-color-1a73e8-5fb8">
-                    EM
+                    <?= htmlspecialchars(mb_substr($currUser['full_name'] ?? 'EM', 0, 2)) ?>
                     <span class="avatar-status-dot online"></span>
                 </div>
                 <div class="user-info-text intra-flex-1-min-0">
                     <div class="intra-font-size-0-8125rem-863b" >
-                        Elena Morozova
+                        <?= htmlspecialchars($currUser['full_name'] ?? 'Elena Morozova') ?>
                     </div>
                     <div class="intra-font-size-0-6875rem-50ad" >
-                        <span class="dept-badge itd intra-padding-0-0-3rem-188d">ITD</span>
-                        <span>Chief Tech Officer</span>
+                        <span class="dept-badge itd intra-padding-0-0-3rem-188d"><?= htmlspecialchars($currUser['department_code'] ?? 'ITD') ?></span>
+                        <span><?= htmlspecialchars($currUser['role_name'] ?? 'Chief Tech Officer') ?></span>
                     </div>
                 </div>
+                <button class="intra-btn-icon-ghost" type="button"  title="Lock Session" onclick="window.showIntranetToast('Security Notice', 'Session verified under ISO-27001 Zero-Trust policy.', 'info')">
+                    <span class="material-symbols-outlined intra-text-11">lock</span>
+                </button>
+            </div>
+        </div>
                 <button class="intra-btn-icon-ghost" type="button"  title="Lock Session" onclick="window.showIntranetToast('Security Notice', 'Session verified under ISO-27001 Zero-Trust policy.', 'info')">
                     <span class="material-symbols-outlined intra-text-11">lock</span>
                 </button>

@@ -21,7 +21,7 @@ $stmt->execute([':id' => $tktId]);
 $ticket = $stmt->fetch(PDO::FETCH_ASSOC);
 
 if (!$ticket) {
-    $fallbackStmt = $pdo->query("
+  $fallbackStmt = $pdo->query("
         SELECT 
             t.*,
             COALESCE(e.full_name, t.assigned_emp_id, 'Unassigned') AS assigned_tech_name,
@@ -31,8 +31,8 @@ if (!$ticket) {
         ORDER BY t.created_at DESC 
         LIMIT 1
     ");
-    $ticket = $fallbackStmt->fetch(PDO::FETCH_ASSOC);
-    $tktId = $ticket['tkt_id'] ?? 'TICK-8819';
+  $ticket = $fallbackStmt->fetch(PDO::FETCH_ASSOC);
+  $tktId = $ticket['tkt_id'] ?? 'TICK-8819';
 }
 
 // Fetch comments
@@ -51,19 +51,19 @@ $comments = $cmtStmt->fetchAll(PDO::FETCH_ASSOC);
 
 $prio = $ticket['priority'] ?? 'Medium';
 $status = $ticket['status'] ?? 'Open';
-$prioClass = match($prio) {
-    'Critical' => 'priority-critical',
-    'High' => 'priority-high',
-    'Medium' => 'priority-medium',
-    'Low' => 'priority-low',
-    default => 'priority-medium'
+$prioClass = match ($prio) {
+  'Critical' => 'priority-critical',
+  'High' => 'priority-high',
+  'Medium' => 'priority-medium',
+  'Low' => 'priority-low',
+  default => 'priority-medium'
 };
-$statusClass = match($status) {
-    'Open' => 'status-open',
-    'InProgress' => 'status-in-progress',
-    'Escalated' => 'priority-critical',
-    'Resolved' => 'badge-green',
-    default => 'status-open'
+$statusClass = match ($status) {
+  'Open' => 'status-open',
+  'InProgress' => 'status-in-progress',
+  'Escalated' => 'priority-critical',
+  'Resolved' => 'badge-green',
+  default => 'status-open'
 };
 
 // Dynamic Sidebar Counts
@@ -73,6 +73,7 @@ $myTicketsCount = $sbStats['my_tickets_count'];
 $assetCount = $sbStats['asset_count'];
 $kbCount = $sbStats['kb_count'];
 $slaPct = $sbStats['sla_pct'];
+$currUser = getItCurrentUser();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -134,11 +135,11 @@ $slaPct = $sbStats['sla_pct'];
             <span class="badge-dot"></span>
           </button>
 
-          <div class="top-user-profile" onclick="window.hdApp.showToast('Active Tech Session', 'Alexey Ivanov · Tier 3 IT Operations Engineer')">
-            <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDoVYMImYMOrFG-GImEjxCUij3YIwCjbxiUVg9-84NgNQUnx44rwhCbh4EVKLngwn6R5_hzNhRQkfTglEUz1jtP83GRGR8WbDdiIQblwg1fLV0mqc04y19GGKO27NGBpanqADz4vwO3ANY9KcZiOXBusZHAE_PU_FuuwKqChSLXXJsGo289bHOL3MFrKWoXXMoxnqoUIglg-NYsM99jg8cA3e1CeWhqlY0x7isLHdQfGbcFE_XiNNJg" alt="Alexey Ivanov" class="user-avatar-top" />
+          <div class="top-user-profile" onclick="window.hdApp.showToast('Active Tech Session', '<?= addslashes(htmlspecialchars($currUser['full_name'])) ?> · <?= addslashes(htmlspecialchars($currUser['role_display'])) ?>')">
+            <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDoVYMImYMOrFG-GImEjxCUij3YIwCjbxiUVg9-84NgNQUnx44rwhCbh4EVKLngwn6R5_hzNhRQkfTglEUz1jtP83GRGR8WbDdiIQblwg1fLV0mqc04y19GGKO27NGBpanqADz4vwO3ANY9KcZiOXBusZHAE_PU_FuuwKqChSLXXJsGo289bHOL3MFrKWoXXMoxnqoUIglg-NYsM99jg8cA3e1CeWhqlY0x7isLHdQfGbcFE_XiNNJg" alt="<?= htmlspecialchars($currUser['full_name']) ?>" class="user-avatar-top" />
             <div class="user-details-top">
-              <span class="user-name-top">Alexey Ivanov</span>
-              <span class="user-role-top">Lead IT Tech · Tier 3</span>
+              <span class="user-name-top"><?= htmlspecialchars($currUser['full_name']) ?></span>
+              <span class="user-role-top"><?= htmlspecialchars($currUser['role_display']) ?></span>
             </div>
           </div>
         </div>
@@ -400,25 +401,25 @@ $slaPct = $sbStats['sla_pct'];
                 <!-- Chat Bubble Thread Container -->
                 <div class="chat-bubble-thread" id="chat-conversation-thread">
                   <?php if (empty($comments)): ?>
-                  <div style="text-align: center; color: var(--hd-text-muted); padding: 20px;">No communication logs in this thread yet. Send a message below.</div>
+                    <div style="text-align: center; color: var(--hd-text-muted); padding: 20px;">No communication logs in this thread yet. Send a message below.</div>
                   <?php else: ?>
-                  <?php foreach ($comments as $c): 
-                    $isTech = ($c['author_type'] === 'tech' || !empty($c['author_emp_id']));
-                    $msgRowClass = $isTech ? 'tech-msg' : 'requester-msg';
-                  ?>
-                  <div class="chat-msg-row <?= $msgRowClass ?>">
-                    <div class="hd-stat-column-box" style="width: 32px; height: 32px; border-radius: 50%; background: <?= $isTech ? '#C97A3D' : '#0f2438' ?>; color: #fff; font-size: 11px; font-weight: bold; flex-shrink: 0;">
-                      <?= strtoupper(substr($c['display_author'] ?: 'IT', 0, 2)) ?>
-                    </div>
-                    <div class="chat-bubble">
-                      <div class="chat-msg-header">
-                        <strong><?= htmlspecialchars($c['display_author']) ?> (<?= htmlspecialchars($c['display_role']) ?>)</strong>
-                        <span><?= date('H:i MSK', strtotime($c['created_at'])) ?></span>
+                    <?php foreach ($comments as $c):
+                      $isTech = ($c['author_type'] === 'tech' || !empty($c['author_emp_id']));
+                      $msgRowClass = $isTech ? 'tech-msg' : 'requester-msg';
+                    ?>
+                      <div class="chat-msg-row <?= $msgRowClass ?>">
+                        <div class="hd-stat-column-box" style="width: 32px; height: 32px; border-radius: 50%; background: <?= $isTech ? '#C97A3D' : '#0f2438' ?>; color: #fff; font-size: 11px; font-weight: bold; flex-shrink: 0;">
+                          <?= strtoupper(substr($c['display_author'] ?: 'IT', 0, 2)) ?>
+                        </div>
+                        <div class="chat-bubble">
+                          <div class="chat-msg-header">
+                            <strong><?= htmlspecialchars($c['display_author']) ?> (<?= htmlspecialchars($c['display_role']) ?>)</strong>
+                            <span><?= date('H:i MSK', strtotime($c['created_at'])) ?></span>
+                          </div>
+                          <p><?= nl2br(htmlspecialchars($c['comment_text'])) ?></p>
+                        </div>
                       </div>
-                      <p><?= nl2br(htmlspecialchars($c['comment_text'])) ?></p>
-                    </div>
-                  </div>
-                  <?php endforeach; ?>
+                    <?php endforeach; ?>
                   <?php endif; ?>
                 </div>
 
@@ -541,7 +542,7 @@ $slaPct = $sbStats['sla_pct'];
       </div>
       <div class="hd-modal-body">
         <input type="hidden" id="editTktId" value="<?= htmlspecialchars($ticket['tkt_id']) ?>">
-        
+
         <div class="hd-form-group">
           <label for="editTktTitle">Incident Title *</label>
           <input class="hd-form-input" id="editTktTitle" type="text" value="<?= htmlspecialchars($ticket['title'] ?: $ticket['source_system']) ?>" required>

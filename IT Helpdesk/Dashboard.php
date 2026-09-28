@@ -4,7 +4,7 @@ require_once __DIR__ . '/../includes/auth_guard.php';
 requireAuth('IT');
 require_once __DIR__ . '/api/db_helper.php';
 $pdo = getItDb();
-$currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Alexey Ivanov', 'clearance_level' => 'L2'];
+$currUser = getItCurrentUser();
 
 // Dynamic Statistics via centralized helper
 $sbStats = getItSidebarStats($pdo);
@@ -27,8 +27,8 @@ $attnStmt = $pdo->query("SELECT * FROM tickets WHERE priority IN ('Critical', 'H
 $attentionTickets = $attnStmt->fetchAll(PDO::FETCH_ASSOC);
 
 if (empty($attentionTickets)) {
-    $attnStmt = $pdo->query("SELECT * FROM tickets WHERE status != 'Resolved' ORDER BY created_at DESC LIMIT 6");
-    $attentionTickets = $attnStmt->fetchAll(PDO::FETCH_ASSOC);
+  $attnStmt = $pdo->query("SELECT * FROM tickets WHERE status != 'Resolved' ORDER BY created_at DESC LIMIT 6");
+  $attentionTickets = $attnStmt->fetchAll(PDO::FETCH_ASSOC);
 }
 ?>
 <!DOCTYPE html>
@@ -95,11 +95,11 @@ if (empty($attentionTickets)) {
             <span class="badge-dot"></span>
           </button>
 
-          <div class="top-user-profile" onclick="window.hdApp.showToast('Active Tech Session', '<?= htmlspecialchars($currUser['full_name']) ?> · Lead IT Engineer')">
-            <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDoVYMImYMOrFG-GImEjxCUij3YIwCjbxiUVg9-84NgNQUnx44rwhCbh4EVKLngwn6R5_hzNhRQkfTglEUz1jtP83GRGR8WbDdiIQblwg1fLV0mqc04y19GGKO27NGBpanqADz4vwO3ANY9KcZiOXBusZHAE_PU_FuuwKqChSLXXJsGo289bHOL3MFrKWoXXMoxnqoUIglg-NYsM99jg8cA3e1CeWhqlY0x7isLHdQfGbcFE_XiNNJg" alt="Tech" class="user-avatar-top" />
+          <div class="top-user-profile" onclick="window.hdApp.showToast('Active Tech Session', '<?= addslashes(htmlspecialchars($currUser['full_name'])) ?> · <?= addslashes(htmlspecialchars($currUser['role_display'])) ?>')">
+            <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDoVYMImYMOrFG-GImEjxCUij3YIwCjbxiUVg9-84NgNQUnx44rwhCbh4EVKLngwn6R5_hzNhRQkfTglEUz1jtP83GRGR8WbDdiIQblwg1fLV0mqc04y19GGKO27NGBpanqADz4vwO3ANY9KcZiOXBusZHAE_PU_FuuwKqChSLXXJsGo289bHOL3MFrKWoXXMoxnqoUIglg-NYsM99jg8cA3e1CeWhqlY0x7isLHdQfGbcFE_XiNNJg" alt="<?= htmlspecialchars($currUser['full_name']) ?>" class="user-avatar-top" />
             <div class="user-details-top">
               <span class="user-name-top"><?= htmlspecialchars($currUser['full_name']) ?></span>
-              <span class="user-role-top">Lead IT Tech · Tier 3</span>
+              <span class="user-role-top"><?= htmlspecialchars($currUser['role_display']) ?></span>
             </div>
           </div>
         </div>
@@ -282,13 +282,13 @@ if (empty($attentionTickets)) {
                 <span>+ Create Incident</span>
               </button>
               <?php if (!empty($attentionTickets)): ?>
-              <a href="TicketDetail.php?id=<?= urlencode($attentionTickets[0]['tkt_id']) ?>" class="btn btn-primary-amber">
-                <span>⚡ Triage Active P1 (<?= htmlspecialchars($attentionTickets[0]['tkt_id']) ?>)</span>
-              </a>
+                <a href="TicketDetail.php?id=<?= urlencode($attentionTickets[0]['tkt_id']) ?>" class="btn btn-primary-amber">
+                  <span>⚡ Triage Active P1 (<?= htmlspecialchars($attentionTickets[0]['tkt_id']) ?>)</span>
+                </a>
               <?php else: ?>
-              <a href="TicketQueue.php" class="btn btn-primary-amber">
-                <span>⚡ View All Tickets</span>
-              </a>
+                <a href="TicketQueue.php" class="btn btn-primary-amber">
+                  <span>⚡ View All Tickets</span>
+                </a>
               <?php endif; ?>
             </div>
           </div>
@@ -484,11 +484,11 @@ if (empty($attentionTickets)) {
 
             <div class="needs-attention-list">
               <?php if (empty($attentionTickets)): ?>
-              <div style="padding: 24px; text-align: center; color: var(--hd-text-muted);">
-                ✓ All high-priority operational incidents resolved. No immediate SLA breach risk.
-              </div>
+                <div style="padding: 24px; text-align: center; color: var(--hd-text-muted);">
+                  ✓ All high-priority operational incidents resolved. No immediate SLA breach risk.
+                </div>
               <?php else: ?>
-                <?php foreach ($attentionTickets as $t): 
+                <?php foreach ($attentionTickets as $t):
                   $prioClass = 'priority-critical';
                   $tierClass = '';
                   if ($t['priority'] === 'High') {
@@ -501,38 +501,38 @@ if (empty($attentionTickets)) {
                   }
                   $statusSlug = strtolower(str_replace(' ', '-', $t['status']));
                 ?>
-                <div class="attention-item <?= $tierClass ?>">
-                  <div class="hd-flex-gap-1">
-                    <div class="hd-stat-column-box">
-                      <span class="priority-badge <?= $prioClass ?>"><?= strtoupper(htmlspecialchars($t['priority'])) ?></span>
-                      <span class="<?= $t['priority'] === 'Critical' ? 'hd-mono-critical-sm' : 'hd-mono-orange-sm' ?>">
-                        <?= htmlspecialchars($t['sla_deadline'] ?? 'SLA Active') ?>
-                      </span>
-                    </div>
-                    <div>
-                      <div class="hd-flex-gap-sm">
-                        <a class="hd-title-link" href="TicketDetail.php?id=<?= urlencode((string)$t['tkt_id']) ?>">
-                          <?= htmlspecialchars((string)$t['tkt_id']) ?> · <?= htmlspecialchars((string)($t['title'] ?: ($t['description'] ?? 'General Incident'))) ?>
-                        </a>
-                        <span class="status-pill status-<?= $statusSlug ?>"><?= htmlspecialchars((string)($t['status'] ?? 'Open')) ?></span>
+                  <div class="attention-item <?= $tierClass ?>">
+                    <div class="hd-flex-gap-1">
+                      <div class="hd-stat-column-box">
+                        <span class="priority-badge <?= $prioClass ?>"><?= strtoupper(htmlspecialchars($t['priority'])) ?></span>
+                        <span class="<?= $t['priority'] === 'Critical' ? 'hd-mono-critical-sm' : 'hd-mono-orange-sm' ?>">
+                          <?= htmlspecialchars($t['sla_deadline'] ?? 'SLA Active') ?>
+                        </span>
                       </div>
-                      <div class="hd-meta-subtext">
-                        Requester: <strong><?= htmlspecialchars((string)($t['requester_name'] ?? 'Authorized Personnel')) ?></strong> (<?= htmlspecialchars((string)($t['requester_dept'] ?? 'Plant Operations')) ?>) · System: <strong><?= htmlspecialchars((string)($t['affected_system'] ?? ($t['source_system'] ?? 'General'))) ?></strong>
+                      <div>
+                        <div class="hd-flex-gap-sm">
+                          <a class="hd-title-link" href="TicketDetail.php?id=<?= urlencode((string)$t['tkt_id']) ?>">
+                            <?= htmlspecialchars((string)$t['tkt_id']) ?> · <?= htmlspecialchars((string)($t['title'] ?: ($t['description'] ?? 'General Incident'))) ?>
+                          </a>
+                          <span class="status-pill status-<?= $statusSlug ?>"><?= htmlspecialchars((string)($t['status'] ?? 'Open')) ?></span>
+                        </div>
+                        <div class="hd-meta-subtext">
+                          Requester: <strong><?= htmlspecialchars((string)($t['requester_name'] ?? 'Authorized Personnel')) ?></strong> (<?= htmlspecialchars((string)($t['requester_dept'] ?? 'Plant Operations')) ?>) · System: <strong><?= htmlspecialchars((string)($t['affected_system'] ?? ($t['source_system'] ?? 'General'))) ?></strong>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="hd-flex-gap-md">
+                      <div class="hd-text-right-11">
+                        <div class="hd-text-muted">Assigned Tech</div>
+                        <div class="hd-bold-navy"><?= htmlspecialchars((string)($t['assigned_emp_id'] ?: 'Unassigned')) ?></div>
+                      </div>
+                      <div style="display: flex; gap: 6px; align-items: center;">
+                        <a href="TicketDetail.php?id=<?= urlencode((string)$t['tkt_id']) ?>" class="btn btn-primary-amber btn-sm">Triage →</a>
+                        <button class="btn-crud-edit" onclick="window.hdApp.openEditTicketModal(<?= htmlspecialchars(json_encode($t), ENT_QUOTES, 'UTF-8') ?>)" title="Edit Ticket">✎</button>
+                        <button class="btn-crud-delete" onclick="window.hdApp.deleteTicket('<?= htmlspecialchars((string)$t['tkt_id'], ENT_QUOTES) ?>', '<?= htmlspecialchars((string)$t['tkt_id'], ENT_QUOTES) ?>')" title="Delete Ticket">🗑</button>
                       </div>
                     </div>
                   </div>
-                  <div class="hd-flex-gap-md">
-                    <div class="hd-text-right-11">
-                      <div class="hd-text-muted">Assigned Tech</div>
-                      <div class="hd-bold-navy"><?= htmlspecialchars((string)($t['assigned_emp_id'] ?: 'Unassigned')) ?></div>
-                    </div>
-                    <div style="display: flex; gap: 6px; align-items: center;">
-                      <a href="TicketDetail.php?id=<?= urlencode((string)$t['tkt_id']) ?>" class="btn btn-primary-amber btn-sm">Triage →</a>
-                      <button class="btn-crud-edit" onclick="window.hdApp.openEditTicketModal(<?= htmlspecialchars(json_encode($t), ENT_QUOTES, 'UTF-8') ?>)" title="Edit Ticket">✎</button>
-                      <button class="btn-crud-delete" onclick="window.hdApp.deleteTicket('<?= htmlspecialchars((string)$t['tkt_id'], ENT_QUOTES) ?>', '<?= htmlspecialchars((string)$t['tkt_id'], ENT_QUOTES) ?>')" title="Delete Ticket">🗑</button>
-                    </div>
-                  </div>
-                </div>
                 <?php endforeach; ?>
               <?php endif; ?>
             </div>

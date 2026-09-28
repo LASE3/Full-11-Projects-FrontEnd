@@ -237,17 +237,216 @@
       });
     }
 
-    // 3. Search filter
-    const searchInput = document.querySelector('input[placeholder*="Filter by cluster"]');
+    // 3. Risk Filter Tabs Engine
+    const filterTabs = document.querySelectorAll("#riskFilterTabs button, .risk-tab-btn");
+    const searchInput = document.getElementById("riskSearchInput") || document.querySelector('input[placeholder*="Filter by cluster"]');
     const rows = document.querySelectorAll(".risk-row");
-    if (searchInput && rows.length > 0) {
-      searchInput.addEventListener("input", (e) => {
-        const q = e.target.value.toLowerCase().trim();
-        rows.forEach((r) => {
-          const text = r.innerText.toLowerCase();
-          r.style.display = q === "" || text.includes(q) ? "" : "none";
-        });
+    let currentFilter = "ALL";
+
+    function applyRiskFilter() {
+      const q = (searchInput ? searchInput.value : "").toLowerCase().trim();
+      let matchCount = 0;
+
+      rows.forEach((r) => {
+        const text = r.innerText.toLowerCase();
+        const impact = (r.getAttribute("data-impact") || "").toLowerCase();
+        const status = (r.getAttribute("data-status") || "").toLowerCase();
+
+        let matchesTab = true;
+        if (currentFilter === "CRITICAL") {
+          matchesTab = impact === "critical" || impact === "high";
+        } else if (currentFilter === "MITIGATION") {
+          matchesTab = status.includes("action") || status.includes("review") || text.includes("remediation") || text.includes("mitigat");
+        } else if (currentFilter === "ATTESTED") {
+          matchesTab = status.includes("validated") || status.includes("attested") || text.includes("validated");
+        } else if (currentFilter === "RETIRED") {
+          matchesTab = status.includes("retired") || status.includes("resolved") || text.includes("retired");
+        }
+
+        let matchesSearch = true;
+        if (q !== "") {
+          matchesSearch = text.includes(q);
+        }
+
+        if (matchesTab && matchesSearch) {
+          r.style.display = "";
+          matchCount++;
+        } else {
+          r.style.display = "none";
+        }
       });
     }
+
+    if (searchInput) {
+      searchInput.addEventListener("input", applyRiskFilter);
+    }
+
+    filterTabs.forEach((tab) => {
+      tab.addEventListener("click", () => {
+        filterTabs.forEach((t) => {
+          t.className = "risk-tab-btn px-space-sm py-space-xs bg-surface-container hover:bg-surface-container-high text-primary font-label-uppercase text-label-uppercase transition-colors cursor-pointer";
+        });
+        tab.className = "risk-tab-btn px-space-sm py-space-xs bg-primary text-on-primary font-label-uppercase text-label-uppercase font-bold cursor-pointer shadow-sm";
+
+        currentFilter = tab.getAttribute("data-filter") || "ALL";
+        applyRiskFilter();
+
+        window.showToast?.(
+          "FILTER APPLIED",
+          `Displaying board risk register for category: ${tab.textContent.trim()}`,
+          "info",
+          "filter_alt"
+        );
+      });
+    });
+
+    // 4. 5x5 Heatmap Matrix Cells Interactivity
+    const heatmapCells = document.querySelectorAll(".grid-cols-5 > div");
+    heatmapCells.forEach((cell) => {
+      const codeSpan = cell.querySelector(".font-bold");
+      const codeText = codeSpan ? codeSpan.textContent.trim() : "";
+
+      if (codeText && codeText.startsWith("RR-")) {
+        cell.classList.add("hover:scale-105", "transition-transform", "cursor-pointer");
+        cell.setAttribute("title", `Inspect Risk ${codeText}`);
+
+        cell.addEventListener("click", () => {
+          heatmapCells.forEach((c) => c.classList.remove("ring-2", "ring-primary", "scale-105"));
+          cell.classList.add("ring-2", "ring-primary", "scale-105");
+
+          // Find row with matching code
+          const num = parseInt(codeText.replace("RR-", ""), 10);
+          let targetRow = Array.from(rows).find(r => (r.getAttribute("data-code") || "").includes(String(num)) || (r.getAttribute("data-id") || "") == num);
+          if (!targetRow && rows.length > 0) {
+            targetRow = rows[num % rows.length];
+          }
+
+          if (targetRow) {
+            const riskId = targetRow.getAttribute("data-id");
+            if (riskId && window.inspectRisk) {
+              window.inspectRisk(riskId);
+            }
+            targetRow.scrollIntoView({ behavior: "smooth", block: "center" });
+            targetRow.classList.add("ring-2", "ring-[#D9822B]");
+          }
+
+          window.showToast?.(
+            "HEATMAP CELL INSPECTION",
+            `Matrix coordinate inspected: ${codeText} loaded into Focused Dossier.`,
+            "info",
+            "grid_goldenratio"
+          );
+        });
+      }
+    });
+
+    // 5. Right Panel Action Interlocks
+    const btnPatch = document.getElementById("btnDispatchPatch");
+    if (btnPatch) {
+      btnPatch.addEventListener("click", () => {
+        const orig = btnPatch.innerHTML;
+        btnPatch.disabled = true;
+        btnPatch.innerHTML = '<span class="material-symbols-outlined text-[16px] animate-spin">sync</span><span>Deploying Kernel Patch v4.9.1...</span>';
+        setTimeout(() => {
+          btnPatch.innerHTML = '<span class="material-symbols-outlined text-[16px]">verified</span><span>PATCH DISPATCHED (FIPS-140-3 COMMITTED)</span>';
+          btnPatch.className = "h-control-height-md w-full bg-secondary text-white font-body-compact text-body-compact font-bold flex items-center justify-center gap-space-xs transition-colors shadow-sm cursor-default";
+          window.showToast?.(
+            "PATCH DEPLOYED",
+            "Industrial Patch v4.9.1 propagated to all SCADA nodes across 11 clusters.",
+            "success",
+            "build_circle"
+          );
+        }, 1200);
+      });
+    }
+
+    const btnInspectorate = document.getElementById("btnStateInspectorate");
+    if (btnInspectorate) {
+      btnInspectorate.addEventListener("click", () => {
+        window.showToast?.(
+          "INSPECTORATE NOTIFIED",
+          "Statutory dossier and cryptographic telemetry leaf transmitted to Astana State Inspectorate.",
+          "info",
+          "send"
+        );
+      });
+    }
+
+    const btnKeyHash = document.getElementById("btnAppendKeyHash");
+    if (btnKeyHash) {
+      btnKeyHash.addEventListener("click", () => {
+        window.showToast?.(
+          "KEY HASH NOTARIZED",
+          "ECDSA SHA-256 state seal appended to Risk Register Merkle leaf #4,921,809.",
+          "success",
+          "lock_reset"
+        );
+      });
+    }
+
+    // 6. Export Risk Dossier Button (JSON & CSV)
+    const exportRiskBtn = document.getElementById("btnExportRiskDossier");
+    if (exportRiskBtn) {
+      exportRiskBtn.addEventListener("click", () => {
+        const risks = [];
+        let csvContent = "Risk_ID,Code,Impact,Likelihood,Target_Apparatus,Custodian,Review_Date,Status,Description\n";
+
+        rows.forEach((r) => {
+          const id = r.getAttribute("data-id") || "";
+          const code = r.getAttribute("data-code") || "";
+          const desc = (r.getAttribute("data-desc") || "").replace(/"/g, '""');
+          const impact = r.getAttribute("data-impact") || "";
+          const likelihood = r.getAttribute("data-likelihood") || "";
+          const target = (r.getAttribute("data-target") || "").replace(/"/g, '""');
+          const owner = r.getAttribute("data-owner") || "";
+          const status = r.getAttribute("data-status") || "";
+          const date = r.getAttribute("data-date") || "";
+
+          risks.push({ id, code, desc, impact, likelihood, target, owner, status, date });
+          csvContent += `"${id}","${code}","${impact}","${likelihood}","${target}","${owner}","${date}","${status}","${desc}"\n`;
+        });
+
+        // Download JSON
+        const blob = new Blob([JSON.stringify({ station: "ALMATY-CENTRAL", framework: "ST RK 27001-2026", timestamp: new Date().toISOString(), risks: risks }, null, 2)], {
+          type: "application/json"
+        });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `VOSTOKPRIBOR_Board_Risk_Dossier_${Date.now()}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        window.showToast?.("DOSSIER EXPORTED", "Board Risk Register XBRL/JSON package downloaded.", "success", "file_download");
+      });
+    }
+
+    // 7. Submit to Almaty Board Button
+    const submitBoardBtn = document.getElementById("btnSubmitBoard");
+    if (submitBoardBtn) {
+      submitBoardBtn.addEventListener("click", () => {
+        const orig = submitBoardBtn.innerHTML;
+        submitBoardBtn.disabled = true;
+        submitBoardBtn.innerHTML = '<span class="material-symbols-outlined text-[14px] animate-spin">sync</span><span>Transmitting to Board...</span>';
+
+        setTimeout(() => {
+          submitBoardBtn.innerHTML = '<span class="material-symbols-outlined text-[14px]">done_all</span><span>Transmitted to Board</span>';
+          setTimeout(() => {
+            submitBoardBtn.innerHTML = orig;
+            submitBoardBtn.disabled = false;
+          }, 3000);
+          window.showToast?.("BOARD DISPATCH ACKNOWLEDGED", "Quarterly Risk Appraisal submitted to Supervisory Board Protocol Act #19.", "success", "verified");
+        }, 1000);
+      });
+    }
+
+    // 8. Pagination buttons
+    const paginationButtons = document.querySelectorAll(".p-space-xs.px-space-sm button");
+    paginationButtons.forEach((btn, index) => {
+      btn.addEventListener("click", () => {
+        window.showToast?.("PAGE ACCESSED", `Navigated to ledger page ${index + 1} of 5.`, "info", "navigate_next");
+      });
+    });
   });
 })();

@@ -4,33 +4,33 @@ require_once __DIR__ . '/../includes/auth_guard.php';
 requireAuth('IT');
 require_once __DIR__ . '/api/db_helper.php';
 $pdo = getItDb();
-$currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Alexey Ivanov', 'clearance_level' => 'L2'];
+$currUser = getItCurrentUser();
 
 $techFilter = $_GET['tech'] ?? 'Alexey Ivanov';
 
 // Query tickets for this tech or all assigned
 if ($techFilter === 'all') {
-    $stmt = $pdo->prepare("SELECT * FROM tickets WHERE assigned_emp_id IS NOT NULL ORDER BY FIELD(priority, 'Critical', 'High', 'Medium', 'Low'), created_at DESC");
-    $stmt->execute();
+  $stmt = $pdo->prepare("SELECT * FROM tickets WHERE assigned_emp_id IS NOT NULL ORDER BY FIELD(priority, 'Critical', 'High', 'Medium', 'Low'), created_at DESC");
+  $stmt->execute();
 } else {
-    $stmt = $pdo->prepare("SELECT * FROM tickets WHERE assigned_emp_id IS NOT NULL ORDER BY FIELD(priority, 'Critical', 'High', 'Medium', 'Low'), created_at DESC");
-    $stmt->execute();
+  $stmt = $pdo->prepare("SELECT * FROM tickets WHERE assigned_emp_id IS NOT NULL ORDER BY FIELD(priority, 'Critical', 'High', 'Medium', 'Low'), created_at DESC");
+  $stmt->execute();
 }
 $myTickets = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // If no tickets assigned to current filter, fallback to showing all open tickets
 if (empty($myTickets)) {
-    $stmt = $pdo->query("SELECT * FROM tickets ORDER BY FIELD(priority, 'Critical', 'High', 'Medium', 'Low'), created_at DESC LIMIT 10");
-    $myTickets = $stmt->fetchAll(PDO::FETCH_ASSOC);
+  $stmt = $pdo->query("SELECT * FROM tickets ORDER BY FIELD(priority, 'Critical', 'High', 'Medium', 'Low'), created_at DESC LIMIT 10");
+  $myTickets = $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
 // Counts
 $totalCount = count($myTickets);
 $critCount = 0;
 foreach ($myTickets as $t) {
-    if ($t['priority'] === 'Critical') {
-        $critCount++;
-    }
+  if ($t['priority'] === 'Critical') {
+    $critCount++;
+  }
 }
 
 // Global dynamic sidebar counts
@@ -97,11 +97,11 @@ $slaPct = $sbStats['sla_pct'];
             </svg>
             <span class="badge-dot"></span>
           </button>
-          <div class="top-user-profile" onclick="window.hdApp.showToast('Active Tech Session', '<?= htmlspecialchars($currUser['full_name']) ?> · Lead IT Engineer')">
-            <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDoVYMImYMOrFG-GImEjxCUij3YIwCjbxiUVg9-84NgNQUnx44rwhCbh4EVKLngwn6R5_hzNhRQkfTglEUz1jtP83GRGR8WbDdiIQblwg1fLV0mqc04y19GGKO27NGBpanqADz4vwO3ANY9KcZiOXBusZHAE_PU_FuuwKqChSLXXJsGo289bHOL3MFrKWoXXMoxnqoUIglg-NYsM99jg8cA3e1CeWhqlY0x7isLHdQfGbcFE_XiNNJg" alt="Alexey Ivanov" class="user-avatar-top" />
+          <div class="top-user-profile" onclick="window.hdApp.showToast('Active Tech Session', '<?= addslashes(htmlspecialchars($currUser['full_name'])) ?> · <?= addslashes(htmlspecialchars($currUser['role_display'])) ?>')">
+            <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDoVYMImYMOrFG-GImEjxCUij3YIwCjbxiUVg9-84NgNQUnx44rwhCbh4EVKLngwn6R5_hzNhRQkfTglEUz1jtP83GRGR8WbDdiIQblwg1fLV0mqc04y19GGKO27NGBpanqADz4vwO3ANY9KcZiOXBusZHAE_PU_FuuwKqChSLXXJsGo289bHOL3MFrKWoXXMoxnqoUIglg-NYsM99jg8cA3e1CeWhqlY0x7isLHdQfGbcFE_XiNNJg" alt="<?= htmlspecialchars($currUser['full_name']) ?>" class="user-avatar-top" />
             <div class="user-details-top">
               <span class="user-name-top"><?= htmlspecialchars($currUser['full_name']) ?></span>
-              <span class="user-role-top">Lead IT Tech · Tier 3</span>
+              <span class="user-role-top"><?= htmlspecialchars($currUser['role_display']) ?></span>
             </div>
           </div>
         </div>
@@ -267,9 +267,9 @@ $slaPct = $sbStats['sla_pct'];
                 <span>+ Create Incident</span>
               </button>
               <?php if (!empty($myTickets)): ?>
-              <a href="TicketDetail.php?id=<?= urlencode($myTickets[0]['tkt_id']) ?>" class="btn btn-primary-amber">
-                <span>⚡ Resume Top Incident (<?= htmlspecialchars($myTickets[0]['tkt_id']) ?>)</span>
-              </a>
+                <a href="TicketDetail.php?id=<?= urlencode($myTickets[0]['tkt_id']) ?>" class="btn btn-primary-amber">
+                  <span>⚡ Resume Top Incident (<?= htmlspecialchars($myTickets[0]['tkt_id']) ?>)</span>
+                </a>
               <?php endif; ?>
             </div>
           </div>
@@ -280,9 +280,9 @@ $slaPct = $sbStats['sla_pct'];
                 Assigned Incidents (<?= $totalCount ?>) · Live Database Queue
               </div>
               <?php if ($critCount > 0): ?>
-              <span class="priority-badge priority-critical"><?= $critCount ?> P1 Critical Requiring Action</span>
+                <span class="priority-badge priority-critical"><?= $critCount ?> P1 Critical Requiring Action</span>
               <?php else: ?>
-              <span class="status-pill status-resolved">No Active P1 Breaches</span>
+                <span class="status-pill status-resolved">No Active P1 Breaches</span>
               <?php endif; ?>
             </div>
 
@@ -300,44 +300,44 @@ $slaPct = $sbStats['sla_pct'];
               </thead>
               <tbody>
                 <?php if (empty($myTickets)): ?>
-                <tr>
-                  <td colspan="7" style="text-align: center; padding: 24px; color: var(--hd-text-muted);">
-                    No tickets currently assigned to this engineer.
-                  </td>
-                </tr>
+                  <tr>
+                    <td colspan="7" style="text-align: center; padding: 24px; color: var(--hd-text-muted);">
+                      No tickets currently assigned to this engineer.
+                    </td>
+                  </tr>
                 <?php else: ?>
-                  <?php foreach ($myTickets as $t): 
+                  <?php foreach ($myTickets as $t):
                     $prioClass = 'priority-critical';
                     if ($t['priority'] === 'High') $prioClass = 'priority-high';
                     if ($t['priority'] === 'Medium') $prioClass = 'priority-medium';
                     if ($t['priority'] === 'Low') $prioClass = 'priority-low';
                     $statusSlug = strtolower(str_replace(' ', '-', $t['status']));
                   ?>
-                  <tr class="hd-table-row">
-                    <td>
-                      <a href="TicketDetail.php?id=<?= urlencode($t['tkt_id']) ?>" style="text-decoration: none;">
-                        <strong class="hd-mono-navy"><?= htmlspecialchars($t['tkt_id']) ?></strong>
-                      </a>
-                    </td>
-                    <td>
-                      <div class="hd-font-semibold-navy"><?= htmlspecialchars((string)($t['requester_name'] ?? 'Authorized Personnel')) ?></div>
-                      <div class="hd-text-muted-11"><?= htmlspecialchars((string)($t['requester_dept'] ?? 'Plant Operations')) ?></div>
-                    </td>
-                    <td>
-                      <div class="hd-font-semibold"><?= htmlspecialchars((string)($t['affected_system'] ?? ($t['source_system'] ?? 'General Subsystem'))) ?></div>
-                      <div class="hd-text-muted-11"><?= htmlspecialchars((string)($t['title'] ?: ($t['description'] ?? 'General Support Incident'))) ?></div>
-                    </td>
-                    <td><span class="priority-badge <?= $prioClass ?>"><?= strtoupper(htmlspecialchars((string)($t['priority'] ?? 'MEDIUM'))) ?></span></td>
-                    <td><strong class="<?= $t['priority'] === 'Critical' ? 'hd-mono-critical' : 'hd-mono-navy' ?>"><?= htmlspecialchars((string)($t['sla_deadline'] ?? 'Active')) ?></strong></td>
-                    <td><span class="status-pill status-<?= $statusSlug ?>"><?= htmlspecialchars((string)($t['status'] ?? 'Open')) ?></span></td>
-                    <td class="hd-text-right">
-                      <div style="display: inline-flex; gap: 6px; align-items: center;">
-                        <a href="TicketDetail.php?id=<?= urlencode((string)$t['tkt_id']) ?>" class="btn btn-primary-amber btn-sm">Triage →</a>
-                        <button class="btn-crud-edit" onclick="window.hdApp.openEditTicketModal(<?= htmlspecialchars(json_encode($t), ENT_QUOTES, 'UTF-8') ?>)" title="Edit Ticket">✎</button>
-                        <button class="btn-crud-delete" onclick="window.hdApp.deleteTicket('<?= htmlspecialchars((string)$t['tkt_id'], ENT_QUOTES) ?>', '<?= htmlspecialchars((string)$t['tkt_id'], ENT_QUOTES) ?>')" title="Delete Ticket">🗑</button>
-                      </div>
-                    </td>
-                  </tr>
+                    <tr class="hd-table-row">
+                      <td>
+                        <a href="TicketDetail.php?id=<?= urlencode($t['tkt_id']) ?>" style="text-decoration: none;">
+                          <strong class="hd-mono-navy"><?= htmlspecialchars($t['tkt_id']) ?></strong>
+                        </a>
+                      </td>
+                      <td>
+                        <div class="hd-font-semibold-navy"><?= htmlspecialchars((string)($t['requester_name'] ?? 'Authorized Personnel')) ?></div>
+                        <div class="hd-text-muted-11"><?= htmlspecialchars((string)($t['requester_dept'] ?? 'Plant Operations')) ?></div>
+                      </td>
+                      <td>
+                        <div class="hd-font-semibold"><?= htmlspecialchars((string)($t['affected_system'] ?? ($t['source_system'] ?? 'General Subsystem'))) ?></div>
+                        <div class="hd-text-muted-11"><?= htmlspecialchars((string)($t['title'] ?: ($t['description'] ?? 'General Support Incident'))) ?></div>
+                      </td>
+                      <td><span class="priority-badge <?= $prioClass ?>"><?= strtoupper(htmlspecialchars((string)($t['priority'] ?? 'MEDIUM'))) ?></span></td>
+                      <td><strong class="<?= $t['priority'] === 'Critical' ? 'hd-mono-critical' : 'hd-mono-navy' ?>"><?= htmlspecialchars((string)($t['sla_deadline'] ?? 'Active')) ?></strong></td>
+                      <td><span class="status-pill status-<?= $statusSlug ?>"><?= htmlspecialchars((string)($t['status'] ?? 'Open')) ?></span></td>
+                      <td class="hd-text-right">
+                        <div style="display: inline-flex; gap: 6px; align-items: center;">
+                          <a href="TicketDetail.php?id=<?= urlencode((string)$t['tkt_id']) ?>" class="btn btn-primary-amber btn-sm">Triage →</a>
+                          <button class="btn-crud-edit" onclick="window.hdApp.openEditTicketModal(<?= htmlspecialchars(json_encode($t), ENT_QUOTES, 'UTF-8') ?>)" title="Edit Ticket">✎</button>
+                          <button class="btn-crud-delete" onclick="window.hdApp.deleteTicket('<?= htmlspecialchars((string)$t['tkt_id'], ENT_QUOTES) ?>', '<?= htmlspecialchars((string)$t['tkt_id'], ENT_QUOTES) ?>')" title="Delete Ticket">🗑</button>
+                        </div>
+                      </td>
+                    </tr>
                   <?php endforeach; ?>
                 <?php endif; ?>
               </tbody>

@@ -7,6 +7,7 @@ require_once __DIR__ . '/gov_service.php';
 $currentUser = gov_getActiveUserProfile();
 $rolesCatalog = gov_getRolesCatalog();
 $metrics = gov_getGovernanceMetrics();
+$sidebarBadges = gov_getSidebarBadges();
 ?>
 <!DOCTYPE html>
 
@@ -66,11 +67,9 @@ $metrics = gov_getGovernanceMetrics();
                 <div class="flex items-center gap-space-sm">
                     <div class="flex flex-col text-right">
                         <div class="flex items-center justify-end gap-space-xs"><span
-                                class="font-telemetry-micro text-telemetry-micro font-bold text-on-primary">Timur
-                                Akhmetov</span><span
-                                class="font-label-uppercase text-label-uppercase text-secondary-fixed bg-secondary-container/20 px-space-2xs rounded">EMP-1005</span>
-                        </div><span class="font-telemetry-micro text-[10px] text-on-primary-container">CLEARANCE: LEVEL
-                            5 (ALMATY CENTRAL)</span>
+                                class="font-telemetry-micro text-telemetry-micro font-bold text-on-primary"><?= htmlspecialchars((string)($currentUser['full_name'] ?? 'System Administrator')) ?></span><span
+                                class="font-label-uppercase text-label-uppercase text-secondary-fixed bg-secondary-container/20 px-space-2xs rounded"><?= htmlspecialchars((string)($currentUser['user_id'] ?? ($currentUser['emp_id'] ?? 'EMP-0001'))) ?></span>
+                        </div><span class="font-telemetry-micro text-[10px] text-on-primary-container">CLEARANCE: LEVEL <?= htmlspecialchars(substr((string)($currentUser['clearance_level'] ?? 'L4'), 1) ?: '4') ?> (<?= htmlspecialchars(strtoupper((string)($currentUser['role_name'] ?? 'EXECUTIVE ADMIN'))) ?>)</span>
                     </div>
                     <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span
                             class="material-symbols-outlined text-on-primary text-[18px]">person</span></div>
@@ -81,109 +80,7 @@ $metrics = gov_getGovernanceMetrics();
             <a href="../api/logout.php?system=Admin%20%26%20Governance%20Portal&redirect=../Admin%20%26%20Governance%20Portal/login.php" class="top-signout-btn" title="Sign Out of Admin &amp; Governance Portal" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" ><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
         </div>
     </header>
-    <aside
-        class="fixed left-0 top-[60px] h-[calc(100vh-60px)] w-[260px] bg-primary z-40 flex flex-col justify-between border-r border-outline/30 select-none overflow-y-auto">
-        <div class="py-space-md">
-            <div class="px-space-md mb-space-xs"><span
-                    class="font-label-uppercase text-label-uppercase text-on-primary-container tracking-wider">CORE
-                    GOVERNANCE</span></div>
-            <nav class="flex flex-col gap-[2px] px-space-xs mb-space-md"
-                data-active-classes="bg-primary-container text-on-primary font-semibold border-l-4 border-secondary-fixed">
-                <a class="flex items-center justify-between px-space-sm py-space-xs rounded text-on-primary-container hover:bg-primary-container hover:text-on-primary transition-all font-body-compact text-body-compact"
-                    data-path="dashboard" href="mainDashboard.php">
-                    <div class="flex items-center gap-space-sm"><span
-                            class="material-symbols-outlined text-[18px]">dashboard</span><span>Main Dashboard</span>
-                    </div><span
-                        class="font-telemetry-micro text-[10px] px-space-2xs bg-secondary-container/20 text-secondary-fixed rounded">KPI
-                        &amp; Threat</span>
-                </a><a aria-current="page"
-                    class="flex items-center justify-between px-space-sm py-space-xs rounded transition-all bg-primary-container text-on-primary font-semibold border-l-4 border-secondary-fixed"
-                    data-path="access-matrix-and-role-review" href="accessMatrix.php">
-                    <div class="flex items-center gap-space-sm"><span
-                            class="material-symbols-outlined text-[18px]">grid_view</span><span>Access Matrix</span>
-                    </div><span
-                        class="font-telemetry-micro text-[10px] px-space-2xs bg-error-container text-on-error-container rounded font-bold">2
-                        Orphaned</span>
-                </a><a
-                    class="flex items-center justify-between px-space-sm py-space-xs rounded text-on-primary-container hover:bg-primary-container hover:text-on-primary transition-all font-body-compact text-body-compact"
-                    data-path="privileged-accounts-monitoring" href="PrivilegedAccounts.php">
-                    <div class="flex items-center gap-space-sm"><span
-                            class="material-symbols-outlined text-[18px]">admin_panel_settings</span><span>Privileged
-                            Accounts</span></div><span
-                        class="font-telemetry-micro text-[10px] px-space-2xs bg-surface-variant/20 text-on-primary-container rounded">7
-                        Active</span>
-                </a>
-            </nav>
-            <div class="px-space-md mb-space-xs"><span
-                    class="font-label-uppercase text-label-uppercase text-on-primary-container tracking-wider">AUDIT
-                    &amp; INTELLIGENCE</span></div>
-            <nav class="flex flex-col gap-[2px] px-space-xs mb-space-md"
-                data-active-classes="bg-primary-container text-on-primary font-semibold border-l-4 border-secondary-fixed">
-                <a class="flex items-center justify-between px-space-sm py-space-xs rounded text-on-primary-container hover:bg-primary-container hover:text-on-primary transition-all font-body-compact text-body-compact"
-                    data-path="audit-logs-and-event-streams" href="AuditLogs.php">
-                    <div class="flex items-center gap-space-sm"><span
-                            class="material-symbols-outlined text-[18px]">terminal</span><span>Audit Logs</span></div>
-                    <span
-                        class="font-telemetry-micro text-[10px] px-space-2xs bg-secondary-fixed text-on-secondary-fixed font-bold rounded animate-pulse">LIVE</span>
-                </a><a
-                    class="flex items-center justify-between px-space-sm py-space-xs rounded text-on-primary-container hover:bg-primary-container hover:text-on-primary transition-all font-body-compact text-body-compact"
-                    data-path="ingestion-bridges" href="IngestionBridges.php">
-                    <div class="flex items-center gap-space-sm"><span
-                            class="material-symbols-outlined text-[18px]">cable</span><span>Ingestion Bridges</span>
-                    </div><span class="font-telemetry-micro text-[10px] text-on-primary-container">01-10</span>
-                </a><a
-                    class="flex items-center justify-between px-space-sm py-space-xs rounded text-error hover:bg-error-container hover:text-on-error-container transition-all font-body-compact text-body-compact"
-                    data-path="emergency-break-glass" href="Break-GlassAccess.php">
-                    <div class="flex items-center gap-space-sm"><span
-                            class="material-symbols-outlined text-[18px] text-error">e911_emergency</span><span
-                            class="font-bold uppercase">Break-Glass Access</span></div><span
-                        class="material-symbols-outlined text-[16px] text-error">lock_open</span>
-                </a>
-                <a class="flex items-center justify-between px-space-sm py-space-xs rounded text-error hover:bg-error-container hover:text-on-error-container transition-all font-body-compact text-body-compact" data-path="emergency-lockdown" href="EmergencyLockdown.php">
-                    <div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[18px] text-error">lock</span><span class="font-bold uppercase">Emergency Lockdown</span></div><span class="font-telemetry-micro text-[10px] px-space-2xs bg-error text-on-error font-bold rounded">DEFCON-1</span>
-                </a>
-            </nav>
-            <div class="px-space-md mb-space-xs"><span
-                    class="font-label-uppercase text-label-uppercase text-on-primary-container tracking-wider">REGULATORY
-                    &amp; RISK</span></div>
-            <nav class="flex flex-col gap-[2px] px-space-xs mb-space-md"
-                data-active-classes="bg-primary-container text-on-primary font-semibold border-l-4 border-secondary-fixed">
-                <a class="flex items-center justify-between px-space-sm py-space-xs rounded text-on-primary-container hover:bg-primary-container hover:text-on-primary transition-all font-body-compact text-body-compact"
-                    data-path="enterprise-security-policies" href="SecurityPolicies.php">
-                    <div class="flex items-center gap-space-sm"><span
-                            class="material-symbols-outlined text-[18px]">policy</span><span>Security Policies</span>
-                    </div>
-                </a><a
-                    class="flex items-center justify-between px-space-sm py-space-xs rounded text-on-primary-container hover:bg-primary-container hover:text-on-primary transition-all font-body-compact text-body-compact"
-                    data-path="board-risk-register" href="BoardRiskRegister.php">
-                    <div class="flex items-center gap-space-sm"><span
-                            class="material-symbols-outlined text-[18px]">balance</span><span>Board Risk Register</span>
-                    </div><span
-                        class="font-telemetry-micro text-[9px] px-space-2xs bg-primary-container text-on-primary-container rounded">2026-015</span>
-                </a><a
-                    class="flex items-center justify-between px-space-sm py-space-xs rounded text-on-primary-container hover:bg-primary-container hover:text-on-primary transition-all font-body-compact text-body-compact"
-                    data-path="compliance-and-incident-oversight" href="ComplianceOversight.php">
-                    <div class="flex items-center gap-space-sm"><span
-                            class="material-symbols-outlined text-[18px]">gavel</span><span>Compliance Oversight</span>
-                    </div>
-                </a>
-            </nav>
-        </div>
-
-        <div class="p-space-md bg-primary-container/40 border-t border-outline/20 flex flex-col gap-space-2xs">
-            <div class="flex items-center justify-between"><span
-                    class="font-security-stamp text-[10px] text-secondary-fixed-dim uppercase tracking-wider">SEC-OPS
-                    FACILITY</span>
-                <div class="w-1.5 h-1.5 rounded-full bg-secondary-fixed"></div>
-            </div>
-            <div class="font-telemetry-micro text-telemetry-micro text-on-primary-container">ALMATY STATION • EST. 1968
-            </div>
-            <div
-                class="font-telemetry-data text-telemetry-data text-on-primary font-semibold tracking-wider pt-space-2xs">
-                <span class="station-live-clock">UTC+6 (ALMATY TIME)</span>
-            </div>
-        </div>
-    </aside>
+    <?= gov_renderSidebar('accessMatrix.php') ?>
     <div class="pl-[260px]">
         <main class="relative pt-[60px] w-full min-h-screen bg-surface px-gutter-desktop py-space-lg">
             <div class="flex flex-col w-full gap-space-md">
@@ -240,21 +137,21 @@ $metrics = gov_getGovernanceMetrics();
                         </div>
                         <!-- Quick Action Console -->
                         <div class="flex items-center gap-space-xs flex-wrap self-start xl:self-center">
-                            <button
-                                class="h-control-height-sm px-space-sm bg-surface-container hover:bg-surface-container-high text-on-surface font-body-compact text-body-compact font-semibold rounded border border-outline-variant flex items-center gap-space-xs transition-colors shadow-sm"
+                            <button id="simulateEnforceBtn"
+                                class="h-control-height-sm px-space-sm bg-surface-container hover:bg-surface-container-high text-on-surface font-body-compact text-body-compact font-semibold rounded border border-outline-variant flex items-center gap-space-xs transition-colors shadow-sm cursor-pointer"
                                 type="button">
                                 <span class="material-symbols-outlined text-[16px] text-secondary">tune</span>
                                 <span>Simulate Enforcement</span>
                             </button>
-                            <button
-                                class="h-control-height-sm px-space-sm bg-surface-container hover:bg-surface-container-high text-on-surface font-body-compact text-body-compact font-semibold rounded border border-outline-variant flex items-center gap-space-xs transition-colors shadow-sm"
+                            <button id="exportMatrixBtn"
+                                class="h-control-height-sm px-space-sm bg-surface-container hover:bg-surface-container-high text-on-surface font-body-compact text-body-compact font-semibold rounded border border-outline-variant flex items-center gap-space-xs transition-colors shadow-sm cursor-pointer"
                                 type="button">
                                 <span
                                     class="material-symbols-outlined text-[16px] text-on-surface-variant">file_download</span>
                                 <span>Export Matrix (CSV/JSON)</span>
                             </button>
-                            <button
-                                class="h-control-height-sm px-space-md bg-primary hover:bg-primary-container text-on-primary font-body-compact text-body-compact font-semibold rounded flex items-center gap-space-xs transition-colors shadow-sm"
+                            <button id="commitAttestationBtn"
+                                class="h-control-height-sm px-space-md bg-primary hover:bg-primary-container text-on-primary font-body-compact text-body-compact font-semibold rounded flex items-center gap-space-xs transition-colors shadow-sm cursor-pointer"
                                 type="button">
                                 <span
                                     class="material-symbols-outlined text-[16px] text-secondary-fixed">encrypted</span>
@@ -425,47 +322,48 @@ $metrics = gov_getGovernanceMetrics();
                                 <div class="relative">
                                     <span
                                         class="material-symbols-outlined absolute left-space-xs top-1/2 -translate-y-1/2 text-[14px] text-on-surface-variant">filter_list</span>
-                                    <input
-                                        class="h-control-height-sm bg-surface pl-space-md pr-space-sm font-telemetry-micro text-telemetry-micro text-on-surface rounded border border-outline-variant focus:outline-none focus:border-primary text-xs w-56"
-                                        placeholder="Filter roles, nodes, enclaves..." type="text" />
+                                    <input id="roleSearchInput" class="h-control-height-sm bg-surface pl-space-md pr-space-sm font-telemetry-micro text-telemetry-micro text-on-surface rounded border border-outline-variant focus:outline-none focus:border-primary text-xs w-64 sm:w-80" placeholder="Filter roles, nodes, enclaves..." type="text" />
                                 </div>
-                                <button
-                                    class="h-control-height-sm px-space-sm bg-surface hover:bg-surface-container text-on-surface font-telemetry-micro text-telemetry-micro font-semibold rounded border border-outline-variant flex items-center gap-[2px]"
-                                    type="button">
-                                    <span>L1-L5+</span>
-                                    <span class="material-symbols-outlined text-[14px]">arrow_drop_down</span>
-                                </button>
+                                <div class="relative">
+                                    <button id="clearanceFilterBtn"
+                                        class="h-control-height-sm px-space-sm bg-surface hover:bg-surface-container text-on-surface font-telemetry-micro text-telemetry-micro font-semibold rounded border border-outline-variant flex items-center gap-[2px] cursor-pointer"
+                                        type="button">
+                                        <span id="clearanceBtnText">L1-L5+</span>
+                                        <span class="material-symbols-outlined text-[14px]">arrow_drop_down</span>
+                                    </button>
+                                    <div id="clearanceDropdownMenu" class="hidden absolute right-0 mt-1 w-44 bg-surface-container-lowest border border-outline-variant rounded shadow-lg z-30 py-1 font-telemetry-micro text-telemetry-micro">
+                                        <button type="button" data-clearance="ALL" class="clearance-opt w-full text-left px-3 py-1.5 hover:bg-surface-container text-on-surface flex items-center justify-between cursor-pointer">
+                                            <span>All Levels</span>
+                                            <span class="text-xs text-on-surface-variant font-mono">ALL</span>
+                                        </button>
+                                        <button type="button" data-clearance="L5+" class="clearance-opt w-full text-left px-3 py-1.5 hover:bg-surface-container text-error font-bold flex items-center justify-between cursor-pointer">
+                                            <span>Level 5+ Sovereign</span>
+                                            <span class="text-xs bg-error-container text-on-error-container px-1 rounded">L5+</span>
+                                        </button>
+                                        <button type="button" data-clearance="L4" class="clearance-opt w-full text-left px-3 py-1.5 hover:bg-surface-container text-[#D9822B] font-bold flex items-center justify-between cursor-pointer">
+                                            <span>Level 4 SCADA</span>
+                                            <span class="text-xs bg-tertiary-fixed text-on-tertiary-fixed-variant px-1 rounded">L4</span>
+                                        </button>
+                                        <button type="button" data-clearance="L2-L3" class="clearance-opt w-full text-left px-3 py-1.5 hover:bg-surface-container text-[#3E7CB1] font-bold flex items-center justify-between cursor-pointer">
+                                            <span>Level 2-3 Operator</span>
+                                            <span class="text-xs bg-primary-fixed/40 text-on-surface px-1 rounded">L2-L3</span>
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <!-- Node Filters Bar (SYS-01 to SYS-11 Quick Toggles) -->
                         <div
-                            class="px-space-md py-space-xs bg-surface-container-low/60 border-b border-outline-variant/40 flex items-center gap-space-xs overflow-x-auto">
-                            <span
-                                class="font-label-uppercase text-label-uppercase text-on-surface-variant uppercase whitespace-nowrap mr-space-xs">Nodes:</span>
-                            <button
-                                class="px-space-xs py-[2px] bg-primary text-on-primary font-telemetry-micro text-telemetry-micro rounded font-bold">ALL
-                                (11)</button>
-                            <button
-                                class="px-space-xs py-[2px] bg-surface hover:bg-surface-container text-on-surface font-telemetry-micro text-telemetry-micro rounded border border-outline-variant/70">SYS-01
-                                Smelting</button>
-                            <button
-                                class="px-space-xs py-[2px] bg-surface hover:bg-surface-container text-on-surface font-telemetry-micro text-telemetry-micro rounded border border-outline-variant/70">SYS-02
-                                Foundry</button>
-                            <button
-                                class="px-space-xs py-[2px] bg-surface hover:bg-surface-container text-on-surface font-telemetry-micro text-telemetry-micro rounded border border-outline-variant/70">SYS-03
-                                Lathes</button>
-                            <button
-                                class="px-space-xs py-[2px] bg-surface hover:bg-surface-container text-on-surface font-telemetry-micro text-telemetry-micro rounded border border-outline-variant/70">SYS-04
-                                Metrology</button>
-                            <button
-                                class="px-space-xs py-[2px] bg-surface hover:bg-surface-container text-on-surface font-telemetry-micro text-telemetry-micro rounded border border-outline-variant/70">SYS-05
-                                Power Grid</button>
-                            <button
-                                class="px-space-xs py-[2px] bg-surface hover:bg-surface-container text-on-surface font-telemetry-micro text-telemetry-micro rounded border border-outline-variant/70">SYS-07
-                                Logistics</button>
-                            <button
-                                class="px-space-xs py-[2px] bg-surface hover:bg-surface-container text-on-surface font-telemetry-micro text-telemetry-micro rounded border border-outline-variant/70">SYS-11
-                                Core</button>
+                            class="px-space-md py-space-xs bg-surface-container-low/60 border-b border-outline-variant/40 flex items-center gap-space-xs overflow-x-auto" id="nodeFilterContainer">
+                            <span class="font-label-uppercase text-label-uppercase text-on-surface-variant uppercase whitespace-nowrap mr-space-xs">Nodes:</span>
+                            <button data-node="ALL" class="node-pill-btn px-space-xs py-[2px] bg-primary text-on-primary font-telemetry-micro text-telemetry-micro rounded font-bold cursor-pointer">ALL (11)</button>
+                            <button data-node="SYS-01" class="node-pill-btn px-space-xs py-[2px] bg-surface hover:bg-surface-container text-on-surface font-telemetry-micro text-telemetry-micro rounded border border-outline-variant/70 cursor-pointer">SYS-01 Smelting</button>
+                            <button data-node="SYS-02" class="node-pill-btn px-space-xs py-[2px] bg-surface hover:bg-surface-container text-on-surface font-telemetry-micro text-telemetry-micro rounded border border-outline-variant/70 cursor-pointer">SYS-02 Foundry</button>
+                            <button data-node="SYS-03" class="node-pill-btn px-space-xs py-[2px] bg-surface hover:bg-surface-container text-on-surface font-telemetry-micro text-telemetry-micro rounded border border-outline-variant/70 cursor-pointer">SYS-03 Lathes</button>
+                            <button data-node="SYS-04" class="node-pill-btn px-space-xs py-[2px] bg-surface hover:bg-surface-container text-on-surface font-telemetry-micro text-telemetry-micro rounded border border-outline-variant/70 cursor-pointer">SYS-04 Metrology</button>
+                            <button data-node="SYS-05" class="node-pill-btn px-space-xs py-[2px] bg-surface hover:bg-surface-container text-on-surface font-telemetry-micro text-telemetry-micro rounded border border-outline-variant/70 cursor-pointer">SYS-05 Power Grid</button>
+                            <button data-node="SYS-07" class="node-pill-btn px-space-xs py-[2px] bg-surface hover:bg-surface-container text-on-surface font-telemetry-micro text-telemetry-micro rounded border border-outline-variant/70 cursor-pointer">SYS-07 Logistics</button>
+                            <button data-node="SYS-11" class="node-pill-btn px-space-xs py-[2px] bg-surface hover:bg-surface-container text-on-surface font-telemetry-micro text-telemetry-micro rounded border border-outline-variant/70 cursor-pointer">SYS-11 Core</button>
                         </div>
                         <!-- Dense Matrix Data Table -->
                         <div class="overflow-x-auto">
@@ -473,14 +371,14 @@ $metrics = gov_getGovernanceMetrics();
                                 <thead>
                                     <tr
                                         class="bg-surface-container border-b border-outline-variant font-label-uppercase text-label-uppercase text-on-surface-variant uppercase tracking-wider">
-                                        <th class="py-space-xs px-space-sm w-10 text-center">Ref</th>
-                                        <th class="py-space-xs px-space-sm">Role Identifier &amp; Description</th>
-                                        <th class="py-space-xs px-space-xs text-center w-16">Clearance</th>
-                                        <th class="py-space-xs px-space-sm">Authorized Industrial Nodes (01-11)</th>
-                                        <th class="py-space-xs px-space-sm">Isolation Enclave</th>
-                                        <th class="py-space-xs px-space-sm">SoD Invariant Rule</th>
-                                        <th class="py-space-xs px-space-xs text-center w-16">Assignees</th>
-                                        <th class="py-space-xs px-space-sm text-right w-24">Boundary</th>
+                                        <th class="py-space-xs px-space-sm w-12 text-center">Ref</th>
+                                        <th class="py-space-xs px-space-sm min-w-[200px]">Role Identifier &amp; Description</th>
+                                        <th class="py-space-xs px-space-xs text-center min-w-[90px]">Clearance</th>
+                                        <th class="py-space-xs px-space-sm min-w-[190px]">Authorized Industrial Nodes (01-11)</th>
+                                        <th class="py-space-xs px-space-sm min-w-[150px]">Isolation Enclave</th>
+                                        <th class="py-space-xs px-space-sm min-w-[160px]">SoD Invariant Rule</th>
+                                        <th class="py-space-xs px-space-xs text-center min-w-[80px]">Assignees</th>
+                                        <th class="py-space-xs px-space-sm text-right min-w-[100px]">Boundary</th>
                                     </tr>
                                 </thead>
                                 <tbody class="font-body-compact text-body-compact divide-y divide-outline-variant/50">
@@ -489,7 +387,7 @@ $metrics = gov_getGovernanceMetrics();
                                         $clearance = ($r['role_id'] == 1 || $sysCount >= 8) ? 'L5+' : (($sysCount >= 5) ? 'L4' : 'L2-L3');
                                         $borderClass = ($clearance === 'L5+') ? 'tier-strip-l5' : (($clearance === 'L4') ? 'tier-strip-l4' : 'tier-strip-default');
                                     ?>
-                                        <tr class="hover:bg-surface-container-low transition-colors group">
+                                        <tr class="role-row hover:bg-surface-container-low transition-colors group cursor-pointer" data-role-id="ROLE-<?= sprintf('%03d', $r['role_id']) ?>" data-role-name="<?= htmlspecialchars($r['role_name']) ?>" data-role-desc="<?= htmlspecialchars($r['description']) ?>" data-clearance="<?= $clearance ?>" data-systems="<?= implode(',', $r['systems'] ?? []) ?>">
                                             <td class="py-space-sm px-space-sm text-center border-l-4 font-telemetry-micro text-on-surface-variant font-mono <?= $borderClass ?>">
                                                 <?= sprintf('%02d', $idx + 1) ?>
                                             </td>
@@ -569,12 +467,8 @@ $metrics = gov_getGovernanceMetrics();
                                     class="font-telemetry-micro text-telemetry-micro text-secondary font-bold font-mono">SYS-03
                                     / SYS-05</span>
                             </div>
-                            <h2 class="font-headline-md text-headline-md text-primary font-bold">
-                                ROLE-AUT-02
-                            </h2>
-                            <p class="font-body-compact text-body-compact text-on-surface-variant">
-                                SCADA Automation Lead Engineer (Karaganda Node Cluster)
-                            </p>
+                            <h2 class="font-headline-md text-headline-md text-primary font-bold" id="inspectorRoleId">ROLE-AUT-02</h2>
+                            <p class="font-body-compact text-body-compact text-on-surface-variant" id="inspectorRoleName">SCADA Automation Lead Engineer (Karaganda Node Cluster)</p>
                         </div>
                         <!-- Inspector Core Body -->
                         <div class="p-space-md flex flex-col gap-space-md">

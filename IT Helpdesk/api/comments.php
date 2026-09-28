@@ -41,10 +41,11 @@ $action = trim((string)($_GET['action'] ?? ($payload['action'] ?? 'create')));
 if ($action === 'create') {
     $tktId = trim((string)($payload['tkt_id'] ?? ($payload['ticket_id'] ?? ($payload['id'] ?? ''))));
     $text = trim((string)($payload['comment_text'] ?? ($payload['message'] ?? '')));
-    $authorName = trim((string)($payload['author_name'] ?? 'Alexey Ivanov'));
-    $authorRole = trim((string)($payload['author_role'] ?? 'Lead IT Tech · Tier 3'));
+    $currUser = getItCurrentUser();
+    $authorName = trim((string)($payload['author_name'] ?? $currUser['full_name']));
+    $authorRole = trim((string)($payload['author_role'] ?? $currUser['role_display']));
     $authorType = trim((string)($payload['author_type'] ?? 'tech')); // 'tech', 'requester', 'system'
-    $authorEmpId = trim((string)($payload['author_emp_id'] ?? 'EMP-1018'));
+    $authorEmpId = trim((string)($payload['author_emp_id'] ?? $currUser['emp_id']));
 
     if ($tktId === '' || $text === '') {
         sendJsonError("Ticket ID and message text are required.");
