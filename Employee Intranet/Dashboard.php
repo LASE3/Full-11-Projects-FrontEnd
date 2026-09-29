@@ -91,8 +91,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
                     <button class="intra-background-rgba-255-255-87b8" type="button" id="notifications-toggle-btn"
                         >
                         <span class="material-symbols-outlined intra-text-xl">notifications</span>
-                        <span class="intra-position-absolute-top-3px-e466" id="notif-unread-count"
-                            >3</span>
+                        <span class="intra-position-absolute-top-3px-e466" id="notif-unread-count" style="display:none;">0</span>
                     </button>
 
                     <!-- Notifications Dropdown Popover -->
@@ -105,45 +104,8 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
                                 >Mark
                                 All Read</button>
                         </div>
-                        <div class="intra-max-height-18rem-overflow-db30" >
-                            <div class="intra-dropdown-item-border"
-                                >
-                                <span class="dept-dot itd intra-mt-5"></span>
-                                <div>
-                                    <div class="intra-text-white-600-sm" >MFA Hardware
-                                        Token Requisition</div>
-                                    <div class="intra-meta-subtitle" >Deadline
-                                        approaching for L3/L4 staff.</div>
-                                    <div class="intra-mono-dept-meta"
-                                        >
-                                        12m ago</div>
-                                </div>
-                            </div>
-                            <div class="intra-dropdown-item-border"
-                                >
-                                <span class="dept-dot hra intra-mt-5"></span>
-                                <div>
-                                    <div class="intra-text-white-600-sm" >Annual
-                                        Performance Review Cycle</div>
-                                    <div class="intra-meta-subtitle" >Self-assessment
-                                        form DOC-2026-009 is ready.</div>
-                                    <div class="intra-mono-dept-meta"
-                                        >
-                                        2h ago</div>
-                                </div>
-                            </div>
-                            <div class="intra-padding-0-75rem-1rem-beec" >
-                                <span class="dept-dot eng intra-mt-5"></span>
-                                <div>
-                                    <div class="intra-text-white-600-sm" >VP-900 Firmware
-                                        Release v4.2</div>
-                                    <div class="intra-meta-subtitle" >Testing suite
-                                        deployed to Almaty Lab 1.</div>
-                                    <div class="intra-mono-dept-meta"
-                                        >
-                                        5h ago</div>
-                                </div>
-                            </div>
+                        <div class="intra-max-height-18rem-overflow-db30" id="notifications-list">
+                            <div style="padding:20px;text-align:center;font-size:12px;opacity:.5;">No unread notifications</div>
                         </div>
                     </div>
                 </div>
@@ -269,7 +231,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
 
 
             <!-- Top Bar Sign Out -->
-            <a href="../api/logout.php?system=Employee%20Intranet&redirect=../Employee%20Intranet/login.php" class="top-signout-btn" title="Sign Out of Employee Intranet" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" ><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
+            <a href="./api/logout.php?redirect=../Employee%20Intranet/login.php" class="top-signout-btn" title="Sign Out of Employee Intranet" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" ><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
         </div>
     </header>
 
@@ -295,7 +257,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
             <a href="EmployeeDirectory.php" class="sidebar-link">
                 <span class="material-symbols-outlined intra-text-xl">badge</span>
                 <span class="sidebar-label">Employee Directory</span>
-                <span class="sidebar-badge intra-margin-left-auto-background-8fba">95</span>
+                <span class="sidebar-badge intra-margin-left-auto-background-8fba" id="intra-nav-dir-count">—</span>
             </a>
 
             <!-- Policies & Forms -->
@@ -478,207 +440,23 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
 
                 <!-- ==========================================================
                      LEFT COLUMN: ANNOUNCEMENT FEED
-                     ========================================================== -->
-                <div class="intra-display-flex-flex-direction-f48b" id="announcements-feed" >
+                     ==============================                <div class="intra-display-flex-flex-direction-f48b">
 
                     <!-- Feed Filter Tabs -->
-                    <div class="intra-display-flex-align-items-29ed"
-                        >
-                        <div class="intra-display-flex-gap-0-5fa1" >
-                            <span class="intra-font-weight-600-font-bc25" >All
-                                Updates</span>
-                            <span class="intra-background-var-neutral-100-9b42"
-                                >5
-                                New</span>
+                    <div class="intra-display-flex-align-items-29ed">
+                        <div class="intra-display-flex-gap-0-5fa1">
+                            <span class="intra-font-weight-600-font-bc25">All Updates</span>
+                            <span class="intra-background-var-neutral-100-9b42" id="announcements-badge">—</span>
                         </div>
-                        <span class="intra-font-size-0-75rem-db0e" >
+                        <span class="intra-font-size-0-75rem-db0e">
                             Live Feed • Synchronized
                         </span>
                     </div>
 
-                    <!-- Feed Card 1: ITD Zero Trust -->
-                    <article class="feed-card">
-                        <div class="intra-flex-between-mb-sm"
-                            >
-                            <div class="intra-flex-center-gap-sm" >
-                                <span class="dept-dot itd"></span>
-                                <span class="dept-badge itd">ITD</span>
-                                <span class="intra-text-neutral-sm" >• Information
-                                    Technology</span>
-                            </div>
-                            <span class="badge-classification confidential">Confidential</span>
-                        </div>
-
-                        <h3 class="intra-heading-h3"
-                            >
-                            Zero-Trust Boundary Implementation: VPN Access Migration Completed
-                        </h3>
-
-                        <p class="intra-desc-p"
-                            >
-                            All remote telemetry endpoints and staff laptops have now migrated to WireGuard encrypted
-                            tunnels with certificate pinning. Legacy OpenVPN profiles will be decommissioned this Friday
-                            at 22:00 Almaty time. Please review DOC-2026-001 for updated routing settings.
-                        </p>
-
-                        <div class="intra-card-footer-meta"
-                            >
-                            <div class="intra-flex-center-gap-sm" >
-                                <div class="avatar-circle intra-background-color-1a73e8-width-a329">
-                                    RK</div>
-                                <span class="intra-font-500-neutral" >Ruslan Kim</span>
-                                <span class="intra-color-neutral-400" >•</span>
-                                <span class="intra-color-neutral-500" >3 hours ago • 2 min read</span>
-                            </div>
-                            <div class="intra-flex-center-gap-neutral" >
-                                <span class="intra-flex-center-gap-xs-pointer" 
-                                    onclick="window.showIntranetToast('Feedback Logged', 'Acknowledgment registered.', 'info')">
-                                    <span class="material-symbols-outlined intra-text-base">thumb_up</span> 18
-                                </span>
-                                <span class="intra-flex-center-gap-xs-pointer" >
-                                    <span class="material-symbols-outlined intra-text-base">chat_bubble_outline</span> 4
-                                </span>
-                            </div>
-                        </div>
-                    </article>
-
-                    <!-- Feed Card 2: ENG Calibration Firmware -->
-                    <article class="feed-card">
-                        <div class="intra-flex-between-mb-sm"
-                            >
-                            <div class="intra-flex-center-gap-sm" >
-                                <span class="dept-dot eng"></span>
-                                <span class="dept-badge eng">ENG</span>
-                                <span class="intra-text-neutral-sm" >• Engineering & R&D</span>
-                            </div>
-                            <span class="badge-classification internal">Internal</span>
-                        </div>
-
-                        <h3 class="intra-heading-h3"
-                            >
-                            Almaty Calibration Cleanroom Lab 2 Achieves ±0.02% Precision Baseline
-                        </h3>
-
-                        <p class="intra-desc-p"
-                            >
-                            Through the integration of our VP-900 digital metrology suite, Cleanroom Lab 2 has
-                            officially passed Kazakhstan National Standard (KazInMetr) certification. The bench testing
-                            protocol for high-temperature turbine flow sensors is now available in the documentation
-                            archive.
-                        </p>
-
-                        <div class="intra-card-footer-meta"
-                            >
-                            <div class="intra-flex-center-gap-sm" >
-                                <div class="avatar-circle intra-background-color-137333-width-682f">
-                                    AZ</div>
-                                <span class="intra-font-500-neutral" >Arman Zhumabayev</span>
-                                <span class="intra-color-neutral-400" >•</span>
-                                <span class="intra-color-neutral-500" >Yesterday • 4 min read</span>
-                            </div>
-                            <div class="intra-flex-center-gap-neutral" >
-                                <span class="intra-flex-center-gap-xs-pointer" 
-                                    onclick="window.showIntranetToast('Feedback Logged', 'Acknowledgment registered.', 'info')">
-                                    <span class="material-symbols-outlined intra-text-base">thumb_up</span> 32
-                                </span>
-                                <span class="intra-flex-center-gap-xs-pointer" >
-                                    <span class="material-symbols-outlined intra-text-base">chat_bubble_outline</span> 9
-                                </span>
-                            </div>
-                        </div>
-                    </article>
-
-                    <!-- Feed Card 3: HRA Health & Benefits -->
-                    <article class="feed-card">
-                        <div class="intra-flex-between-mb-sm"
-                            >
-                            <div class="intra-flex-center-gap-sm" >
-                                <span class="dept-dot hra"></span>
-                                <span class="dept-badge hra">HRA</span>
-                                <span class="intra-text-neutral-sm" >• Human Resources</span>
-                            </div>
-                            <span class="badge-classification public">Public</span>
-                        </div>
-
-                        <h3 class="intra-heading-h3"
-                            >
-                            Annual Health Screening & Corporate Medical Package 2026-2027
-                        </h3>
-
-                        <p class="intra-desc-p"
-                            >
-                            All employees at the Almaty Central Facility and Regional Logistics Warehouses are eligible
-                            for comprehensive medical checkups starting October 1. Book your preferred clinical provider
-                            slot through the HR portal or visit Annex Suite 102.
-                        </p>
-
-                        <div class="intra-card-footer-meta"
-                            >
-                            <div class="intra-flex-center-gap-sm" >
-                                <div class="avatar-circle intra-background-color-6e4c7c-width-bec3">
-                                    GK</div>
-                                <span class="intra-font-500-neutral" >Gulnara Kassymova</span>
-                                <span class="intra-color-neutral-400" >•</span>
-                                <span class="intra-color-neutral-500" >2 days ago • 1 min read</span>
-                            </div>
-                            <div class="intra-flex-center-gap-neutral" >
-                                <span class="intra-flex-center-gap-xs-pointer" 
-                                    onclick="window.showIntranetToast('Feedback Logged', 'Acknowledgment registered.', 'info')">
-                                    <span class="material-symbols-outlined intra-text-base">thumb_up</span> 25
-                                </span>
-                                <span class="intra-flex-center-gap-xs-pointer" >
-                                    <span class="material-symbols-outlined intra-text-base">chat_bubble_outline</span> 2
-                                </span>
-                            </div>
-                        </div>
-                    </article>
-
-                    <!-- Feed Card 4: OPS Logistics Pipeline -->
-                    <article class="feed-card">
-                        <div class="intra-flex-between-mb-sm"
-                            >
-                            <div class="intra-flex-center-gap-sm" >
-                                <span class="dept-dot ops"></span>
-                                <span class="dept-badge ops">OPS</span>
-                                <span class="intra-text-neutral-sm" >• Operations &
-                                    Logistics</span>
-                            </div>
-                            <span class="badge-classification internal">Internal</span>
-                        </div>
-
-                        <h3 class="intra-heading-h3"
-                            >
-                            Cross-Border Freight Clearance Timetable: Aktau Port Corridor
-                        </h3>
-
-                        <p class="intra-desc-p"
-                            >
-                            Maritime container shipments carrying heavy automation actuators through Caspian Transit
-                            Corridor B have resumed full maritime schedules. Customs documentation manifests must be
-                            signed via System 06 (WMS) prior to dispatch.
-                        </p>
-
-                        <div class="intra-card-footer-meta"
-                            >
-                            <div class="intra-flex-center-gap-sm" >
-                                <div class="avatar-circle intra-background-color-00796b-width-b618">
-                                    SL</div>
-                                <span class="intra-font-500-neutral" >Sofia Lindqvist</span>
-                                <span class="intra-color-neutral-400" >•</span>
-                                <span class="intra-color-neutral-500" >3 days ago • 3 min read</span>
-                            </div>
-                            <div class="intra-flex-center-gap-neutral" >
-                                <span class="intra-flex-center-gap-xs-pointer" 
-                                    onclick="window.showIntranetToast('Feedback Logged', 'Acknowledgment registered.', 'info')">
-                                    <span class="material-symbols-outlined intra-text-base">thumb_up</span> 14
-                                </span>
-                                <span class="intra-flex-center-gap-xs-pointer" >
-                                    <span class="material-symbols-outlined intra-text-base">chat_bubble_outline</span> 1
-                                </span>
-                            </div>
-                        </div>
-                    </article>
-
+                    <!-- Live Dynamic Announcements Feed Container -->
+                    <div class="intra-display-flex-flex-direction-f48b" id="announcements-feed">
+                        <!-- Dynamically populated from MySQL database by intranet-data.js -->
+                    </div>
                 </div>
 
                 <!-- ==========================================================
@@ -957,7 +735,8 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
     <!-- Single Consolidated JavaScript Engine -->
     <script src="js/intranet.js"></script>
     <link rel="stylesheet" href="../assets/css/api-ui.css">
-    <script src="../assets/js/api-client.js"></script>
+    <script src="../assets/js/api-core.js"></script>
+    <script src="../assets/js/api-intranet.js"></script>
     <script src="js/intranet-data.js"></script>
 </body>
 

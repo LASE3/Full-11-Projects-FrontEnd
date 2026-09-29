@@ -1,7 +1,72 @@
-<?php
+﻿<?php
 require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/../includes/auth_guard.php';
 requireAuth('CUS');
+
+// Establish database connection and identify current logged-in customer
+$pdo = getDbConnection();
+$cusId = $_SESSION['cus_id'] ?? ($_SESSION['vostok_user']['user_id'] ?? null);
+
+$invoices = [];
+$kpis = [
+    'outstanding_balance' => 0.00,
+    'total_paid' => 0.00,
+    'under_dispute' => 0.00,
+    'pending_count' => 0,
+    'paid_count' => 0
+];
+$nextMilestone = null;
+
+if ($cusId) {
+    try {
+        // Fetch financial KPI metrics
+        $kpiStmt = $pdo->prepare("
+            SELECT 
+                COALESCE(SUM(CASE WHEN status IN ('Pending', 'Unpaid', 'Overdue') THEN total_amount ELSE 0 END), 0) AS outstanding_balance,
+                COALESCE(SUM(CASE WHEN status = 'Paid' THEN total_amount ELSE 0 END), 0) AS total_paid,
+                COALESCE(SUM(CASE WHEN status = 'Disputed' THEN total_amount ELSE 0 END), 0) AS under_dispute,
+                COUNT(CASE WHEN status IN ('Pending', 'Unpaid', 'Overdue') THEN 1 END) AS pending_count,
+                COUNT(CASE WHEN status = 'Paid' THEN 1 END) AS paid_count
+            FROM invoices 
+            WHERE cus_id = :cid
+        ");
+        $kpiStmt->execute([':cid' => $cusId]);
+        $kpis = $kpiStmt->fetch(PDO::FETCH_ASSOC);
+
+        // Fetch overall invoices ledger
+        $invStmt = $pdo->prepare("
+            SELECT 
+                i.invoice_id,
+                i.order_id,
+                i.issue_date,
+                i.due_date,
+                i.status,
+                i.total_amount,
+                i.tax_amount,
+                c.company_name AS facility_name
+            FROM invoices i
+            LEFT JOIN customers c ON i.cus_id = c.cus_id
+            WHERE i.cus_id = :cid
+            ORDER BY i.issue_date DESC
+        ");
+        $invStmt->execute([':cid' => $cusId]);
+        $invoices = $invStmt->fetchAll(PDO::FETCH_ASSOC);
+
+        // Fetch next upcoming maturity invoice milestone
+        $nextStmt = $pdo->prepare("
+            SELECT invoice_id, due_date, total_amount 
+            FROM invoices 
+            WHERE cus_id = :cid AND status IN ('Pending', 'Unpaid')
+            ORDER BY due_date ASC 
+            LIMIT 1
+        ");
+        $nextStmt->execute([':cid' => $cusId]);
+        $nextMilestone = $nextStmt->fetch(PDO::FETCH_ASSOC);
+
+    } catch (PDOException $e) {
+        error_log("Invoices Retrieval Error: " . $e->getMessage());
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -25,7 +90,8 @@ requireAuth('CUS');
     <script src="js/tailwind-config.js"></script>
     <script src="js/portal.js"></script>
     <link rel="stylesheet" href="../assets/css/api-ui.css">
-    <script src="../assets/js/api-client.js"></script>
+    <script src="../assets/js/api-core.js"></script>
+    <script src="../assets/js/api-customer.js"></script>
     <script src="js/portal-data.js"></script>
     <script src="js/invoices.js"></script>
 </head>
@@ -86,7 +152,7 @@ requireAuth('CUS');
             </div>
 
             <!-- Top Bar Sign Out -->
-            <a href="../api/logout.php?system=Customer%20Portal&redirect=../Customer%20Portal/login.php" class="top-signout-btn" title="Sign Out of Customer Portal" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" ><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
+            <a href="./api/logout.php?redirect=../Customer%20Portal/login.php" class="top-signout-btn" title="Sign Out of Customer Portal" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" ><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
         </div>
     </header>
     <aside id="portal-sidebar" class="fixed left-0 top-16 bottom-0 w-64 bg-primary-container z-40 flex flex-col justify-between shadow-sm">
@@ -241,6 +307,7 @@ requireAuth('CUS');
                         </button>
                     </div>
                 </div>
+
                 <!-- KPI Metrics Bento Grid -->
                 <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-unit-base">
                     <!-- KPI 1 -->
@@ -256,16 +323,15 @@ requireAuth('CUS');
                         <div class="my-unit-sm">
                             <div
                                 class="font-data-mono-lg text-display-lg text-on-surface font-bold tracking-tight leading-none">
-                                $248,600.00</div>
+                                $<?= number_format((float)$kpis['outstanding_balance'], 2) ?></div>
                             <div class="font-technical-tag text-technical-tag text-on-surface-variant mt-1">USD
                                 CURRENCY BASE</div>
                         </div>
                         <div
                             class="flex items-center justify-between text-body-sm pt-unit-xs bg-surface-container-low/60 px-unit-sm py-1 rounded">
-                            <span class="text-on-surface-variant">3 pending invoices</span>
+                            <span class="text-on-surface-variant"><?= (int)$kpis['pending_count'] ?> pending invoices</span>
                             <span
-                                class="font-technical-tag text-technical-tag font-semibold text-on-tertiary-container">2
-                                due &lt; 10 days</span>
+                                class="font-technical-tag text-technical-tag font-semibold text-on-tertiary-container">Active Ledger</span>
                         </div>
                     </div>
                     <!-- KPI 2 -->
@@ -274,14 +340,14 @@ requireAuth('CUS');
                         <div class="absolute left-0 top-0 bottom-0 w-1 bg-on-tertiary-container"></div>
                         <div class="flex items-start justify-between">
                             <span class="font-label-caps text-label-caps text-on-surface-variant uppercase">Total
-                                Capital Paid (FY 2024)</span>
+                                Capital Paid</span>
                             <span class="material-symbols-outlined text-base text-secondary">verified</span>
                         </div>
                         <div class="my-unit-sm">
                             <div
                                 class="font-data-mono-lg text-display-lg text-on-surface font-bold tracking-tight leading-none">
-                                $4,812,400.00</div>
-                            <div class="font-technical-tag text-technical-tag text-on-surface-variant mt-1">19
+                                $<?= number_format((float)$kpis['total_paid'], 2) ?></div>
+                            <div class="font-technical-tag text-technical-tag text-on-surface-variant mt-1"><?= (int)$kpis['paid_count'] ?>
                                 MILESTONES FULFILLED</div>
                         </div>
                         <div
@@ -303,7 +369,7 @@ requireAuth('CUS');
                         <div class="my-unit-sm">
                             <div
                                 class="font-data-mono-lg text-display-lg text-on-surface font-bold tracking-tight leading-none">
-                                $0.00</div>
+                                $<?= number_format((float)$kpis['under_dispute'], 2) ?></div>
                             <div class="font-technical-tag text-technical-tag text-on-surface-variant mt-1">ZERO
                                 FLAGGED DISCREPANCIES</div>
                         </div>
@@ -327,20 +393,21 @@ requireAuth('CUS');
                         <div class="my-unit-sm">
                             <div
                                 class="font-data-mono-lg text-headline-lg text-on-surface font-bold tracking-tight leading-snug">
-                                Nov 28, 2024</div>
+                                <?= $nextMilestone ? htmlspecialchars($nextMilestone['due_date']) : 'None Scheduled' ?></div>
                             <div
                                 class="font-technical-tag text-technical-tag text-on-surface-variant mt-1 font-semibold">
-                                PRJ-VP-7721 FAT SIGNOFF</div>
+                                <?= $nextMilestone ? 'INV-' . htmlspecialchars($nextMilestone['invoice_id']) : 'NO PENDING DISBURSEMENTS' ?></div>
                         </div>
                         <div
                             class="flex items-center justify-between text-body-sm pt-unit-xs bg-surface-container-low/60 px-unit-sm py-1 rounded">
-                            <span class="text-on-surface-variant">Blast Furnace #5</span>
+                            <span class="text-on-surface-variant">Primary Account</span>
                             <span
-                                class="font-technical-tag text-technical-tag text-on-tertiary-container font-semibold">$114,200.00
+                                class="font-technical-tag text-technical-tag text-on-tertiary-container font-semibold">$<?= number_format((float)($nextMilestone['total_amount'] ?? 0), 2) ?>
                                 DUE</span>
                         </div>
                     </div>
                 </div>
+
                 <!-- Active Financial Context Panel: Ledger Visualizer & Progress -->
                 <div class="grid grid-cols-1 xl:grid-cols-3 gap-unit-base">
                     <!-- SVG Disbursement Streamline -->
@@ -349,7 +416,7 @@ requireAuth('CUS');
                         <div class="flex items-center justify-between mb-unit-sm">
                             <div class="flex items-center gap-unit-xs">
                                 <span class="material-symbols-outlined text-secondary text-base">monitoring</span>
-                                <span class="font-headline-sm text-headline-sm text-on-surface">FY 2024 Capital
+                                <span class="font-headline-sm text-headline-sm text-on-surface">FY Capital
                                     Disbursement Trajectory</span>
                             </div>
                             <div class="flex items-center gap-unit-sm font-technical-tag text-technical-tag">
@@ -395,10 +462,10 @@ requireAuth('CUS');
                             </svg>
                             <div
                                 class="flex justify-between font-technical-tag text-technical-tag text-on-surface-variant pt-unit-xs">
-                                <span class="">Q1-2024 (Pre-Engineering)</span>
-                                <span class="">Q2-2024 (Hardware Delivery)</span>
-                                <span class="">Q3-2024 (Telemetry Install)</span>
-                                <span class="font-semibold text-on-surface">Q4-2024 (Commissioning &amp; FAT)</span>
+                                <span class="">Q1 (Pre-Engineering)</span>
+                                <span class="">Q2 (Hardware Delivery)</span>
+                                <span class="">Q3 (Telemetry Install)</span>
+                                <span class="font-semibold text-on-surface">Q4 (Commissioning &amp; FAT)</span>
                             </div>
                         </div>
                     </div>
@@ -415,7 +482,7 @@ requireAuth('CUS');
                                 class="flex justify-between items-center bg-surface-container-low p-unit-xs rounded">
                                 <span class="text-body-sm text-on-surface">Standard VAT (20% RU GOST):</span>
                                 <span
-                                    class="font-data-mono-md text-data-mono-md font-bold text-on-surface">$802,066.67
+                                    class="font-data-mono-md text-data-mono-md font-bold text-on-surface">$<?= number_format((float)($kpis['total_paid'] * 0.20), 2) ?>
                                     USD</span>
                             </div>
                             <div
@@ -440,6 +507,7 @@ requireAuth('CUS');
                         </div>
                     </div>
                 </div>
+
                 <!-- Filters, Tabs & Search Controls -->
                 <div class="flex flex-col gap-unit-sm bg-surface-container-lowest p-unit-base rounded-lg shadow-sm">
                     <div class="flex flex-wrap items-center justify-between gap-unit-base">
@@ -448,22 +516,22 @@ requireAuth('CUS');
                             <button onclick="filterInvoiceStatus(this, 'all')"
                                 class="invoice-filter-tab px-unit-base py-1 rounded bg-surface-container-lowest text-on-surface font-headline-sm text-body-md font-semibold shadow-sm">
                                 All Invoices <span
-                                    class="ml-1 font-technical-tag text-technical-tag text-on-surface-variant font-normal">24</span>
+                                    class="ml-1 font-technical-tag text-technical-tag text-on-surface-variant font-normal"><?= count($invoices) ?></span>
                             </button>
                             <button onclick="filterInvoiceStatus(this, 'pending')"
                                 class="invoice-filter-tab px-unit-base py-1 rounded text-on-surface-variant hover:text-on-surface font-body-md transition-colors">
                                 Pending Payment <span
-                                    class="ml-1 px-1.5 py-0.2 rounded bg-tertiary-fixed text-on-tertiary-fixed font-technical-tag text-technical-tag font-bold">3</span>
+                                    class="ml-1 px-1.5 py-0.2 rounded bg-tertiary-fixed text-on-tertiary-fixed font-technical-tag text-technical-tag font-bold"><?= (int)$kpis['pending_count'] ?></span>
                             </button>
                             <button onclick="filterInvoiceStatus(this, 'paid')"
                                 class="invoice-filter-tab px-unit-base py-1 rounded text-on-surface-variant hover:text-on-surface font-body-md transition-colors">
                                 Paid Archive <span
-                                    class="ml-1 font-technical-tag text-technical-tag text-on-surface-variant">19</span>
+                                    class="ml-1 font-technical-tag text-technical-tag text-on-surface-variant"><?= (int)$kpis['paid_count'] ?></span>
                             </button>
                             <button onclick="filterInvoiceStatus(this, 'credit')"
                                 class="invoice-filter-tab px-unit-base py-1 rounded text-on-surface-variant hover:text-on-surface font-body-md transition-colors">
                                 Credit Notes &amp; Adjustments <span
-                                    class="ml-1 font-technical-tag text-technical-tag text-on-surface-variant">2</span>
+                                    class="ml-1 font-technical-tag text-technical-tag text-on-surface-variant">0</span>
                             </button>
                         </div>
                         <!-- Right Tool Controls -->
@@ -495,7 +563,7 @@ requireAuth('CUS');
                             <div class="flex items-center gap-unit-xs text-on-surface-variant">
                                 <span class="material-symbols-outlined text-base">calendar_today</span>
                                 <span class="font-body-sm text-body-sm">Fiscal Period:</span>
-                                <span class="text-on-surface font-semibold font-body-sm">FY 2024 (Full Year)</span>
+                                <span class="text-on-surface font-semibold font-body-sm">All Periods</span>
                             </div>
                             <span
                                 class="material-symbols-outlined text-base text-on-surface-variant">arrow_drop_down</span>
@@ -519,6 +587,7 @@ requireAuth('CUS');
                         </div>
                     </div>
                 </div>
+
                 <!-- Main High-Density Financial Data Table -->
                 <div class="bg-surface-container-lowest rounded-lg shadow-sm overflow-hidden flex flex-col">
                     <div class="overflow-x-auto">
@@ -540,356 +609,98 @@ requireAuth('CUS');
                                 </tr>
                             </thead>
                             <tbody id="invoices-tbody" class="divide-y-0">
-                                <!-- Row 1: Confidential left border in amber-orange #D9822B -->
-                                <tr id="row-INV-2024-8819" data-status="pending"
-                                    class="invoice-row relative bg-surface-container-lowest hover:bg-surface-container-low transition-colors group">
-                                    <td class="relative py-3 px-unit-base text-center">
-                                        <div class="absolute left-0 top-0 bottom-0 w-1 bg-on-tertiary-container">
-                                        </div>
-                                        <input class="w-4 h-4 rounded bg-surface-container-lowest" type="checkbox">
-                                    </td>
-                                    <td class="py-3 px-unit-base">
-                                        <div class="flex flex-col">
-                                            <span
-                                                class="font-data-mono-lg text-data-mono-lg font-bold text-on-surface">INV-2024-8819</span>
-                                            <span
-                                                class="font-technical-tag text-technical-tag text-on-surface-variant">CTR-SVR-2024-08A</span>
-                                        </div>
-                                    </td>
-                                    <td class="py-3 px-unit-base max-w-xs">
-                                        <div class="flex flex-col">
-                                            <a href="ProjectListAndDetail.php?project=PRJ-VP-7721"
-                                                class="font-headline-sm text-body-md font-semibold text-on-surface hover:text-on-tertiary-container transition-colors truncate">PRJ-VP-7721:
-                                                Blast Furnace #5 Cold Commissioning</a>
-                                            <span
-                                                class="font-body-sm text-body-sm text-on-surface-variant truncate">Stage
-                                                4: Automated Pressure Transducers &amp; Gas Flue Calibrations</span>
-                                        </div>
-                                    </td>
-                                    <td class="py-3 px-unit-base">
-                                        <div class="flex flex-col font-data-mono-md text-data-mono-md">
-                                            <span class="text-on-surface-variant">04 Nov 2024</span>
-                                            <span class="text-on-tertiary-container font-semibold">Due 28 Nov 2024
-                                                (14d)</span>
-                                        </div>
-                                    </td>
-                                    <td
-                                        class="py-3 px-unit-base text-right font-data-mono-lg text-data-mono-lg font-bold text-on-surface">
-                                        $114,200.00
-                                    </td>
-                                    <td
-                                        class="py-3 px-unit-base text-right font-data-mono-md text-data-mono-md text-on-surface-variant">
-                                        $22,840.00
-                                    </td>
-                                    <td class="py-3 px-unit-base text-center">
-                                        <span
-                                            class="inline-flex items-center gap-1 px-unit-sm py-0.5 rounded bg-tertiary-fixed text-on-tertiary-fixed font-technical-tag text-technical-tag font-semibold">
-                                            <span class="w-1.5 h-1.5 rounded-full bg-on-tertiary-container"></span>
-                                            Pending / Due in 14d
-                                        </span>
-                                    </td>
-                                    <td class="py-3 px-unit-base">
-                                        <div class="flex items-center gap-unit-xs">
-                                            <a class="flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-surface-container font-technical-tag text-technical-tag text-on-surface hover:bg-surface-container-high cursor-pointer"
-                                                onclick="event.preventDefault(); window.previewDocument('INV-2024-8819', 'Commercial VAT Invoice & Stage 4 Calibrations', 'PDF Commercial Invoice')" href="#">
-                                                <span
-                                                    class="material-symbols-outlined text-xs">picture_as_pdf</span>
-                                                <span class="">PDF 1.4MB</span>
-                                            </a>
-                                            <a class="flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-surface-container font-technical-tag text-technical-tag text-on-surface hover:bg-surface-container-high cursor-pointer"
-                                                onclick="event.preventDefault(); window.previewDocument('TORG-12-8819', 'TORG-12 Consignment Acceptance Certificate', 'TORG-12 Legal Act')" href="#">
-                                                <span class="material-symbols-outlined text-xs">code</span>
-                                                <span class="">TORG-12</span>
-                                            </a>
-                                        </div>
-                                    </td>
-                                    <td class="py-3 px-unit-base text-right">
-                                        <button onclick="showPaymentModal('INV-2024-8819', 114200)"
-                                            class="px-unit-sm py-1 rounded bg-tertiary-fixed-dim text-on-tertiary-fixed hover:bg-tertiary-fixed font-label-caps text-label-caps font-semibold shadow-sm transition-colors">
-                                            Review &amp; Authorize
-                                        </button>
-                                    </td>
-                                </tr>
-                                <!-- Row 2 -->
-                                <tr id="row-INV-2024-7019" data-status="pending"
-                                    class="invoice-row relative bg-surface-container-low/30 hover:bg-surface-container-low transition-colors group">
-                                    <td class="relative py-3 px-unit-base text-center">
-                                        <div class="absolute left-0 top-0 bottom-0 w-1 bg-on-tertiary-container">
-                                        </div>
-                                        <input class="w-4 h-4 rounded bg-surface-container-lowest" type="checkbox">
-                                    </td>
-                                    <td class="py-3 px-unit-base">
-                                        <div class="flex flex-col">
-                                            <span
-                                                class="font-data-mono-lg text-data-mono-lg font-bold text-on-surface">INV-2024-7019</span>
-                                            <span
-                                                class="font-technical-tag text-technical-tag text-on-surface-variant">CTR-SVR-2024-03B</span>
-                                        </div>
-                                    </td>
-                                    <td class="py-3 px-unit-base max-w-xs">
-                                        <div class="flex flex-col">
-                                            <a href="ProjectListAndDetail.php?project=PRJ-VP-7804"
-                                                class="font-headline-sm text-body-md font-semibold text-on-surface hover:text-on-tertiary-container transition-colors truncate">PRJ-VP-7804:
-                                                Hydraulic Telemetry Phase 2</a>
-                                            <span
-                                                class="font-body-sm text-body-sm text-on-surface-variant truncate">Delivery
-                                                of Ex-d Rated Explosion Proof Enclosures (x40 Units)</span>
-                                        </div>
-                                    </td>
-                                    <td class="py-3 px-unit-base">
-                                        <div class="flex flex-col font-data-mono-md text-data-mono-md">
-                                            <span class="text-on-surface-variant">12 Oct 2024</span>
-                                            <span class="text-on-tertiary-container font-semibold">Due 12 Nov 2024
-                                                (Scheduled)</span>
-                                        </div>
-                                    </td>
-                                    <td
-                                        class="py-3 px-unit-base text-right font-data-mono-lg text-data-mono-lg font-bold text-on-surface">
-                                        $134,400.00
-                                    </td>
-                                    <td
-                                        class="py-3 px-unit-base text-right font-data-mono-md text-data-mono-md text-on-surface-variant">
-                                        $26,880.00
-                                    </td>
-                                    <td class="py-3 px-unit-base text-center">
-                                        <span
-                                            class="inline-flex items-center gap-1 px-unit-sm py-0.5 rounded bg-secondary-container text-on-secondary-container font-technical-tag text-technical-tag font-semibold">
-                                            <span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
-                                            Approved for Payment
-                                        </span>
-                                    </td>
-                                    <td class="py-3 px-unit-base">
-                                        <div class="flex items-center gap-unit-xs">
-                                            <a class="flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-surface-container font-technical-tag text-technical-tag text-on-surface hover:bg-surface-container-high cursor-pointer"
-                                                onclick="event.preventDefault(); window.previewDocument('INV-2024-7019', 'Commercial Invoice PRJ-VP-7804 Phase 2', 'PDF Commercial Invoice')" href="#">
-                                                <span
-                                                    class="material-symbols-outlined text-xs">picture_as_pdf</span>
-                                                <span class="">PDF 2.1MB</span>
-                                            </a>
-                                            <a class="flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-surface-container font-technical-tag text-technical-tag text-on-surface hover:bg-surface-container-high cursor-pointer"
-                                                onclick="event.preventDefault(); window.previewDocument('EDI-7019-SIG', 'Crypto-Pro EDS Signature Ledger Act', 'EDI XML Certificate')" href="#">
-                                                <span class="material-symbols-outlined text-xs">verified</span>
-                                                <span class="">EDI SIGNED</span>
-                                            </a>
-                                        </div>
-                                    </td>
-                                    <td class="py-3 px-unit-base text-right">
-                                        <button onclick="showPaymentModal('INV-2024-7019', 134400)"
-                                            class="px-unit-sm py-1 rounded bg-surface-container hover:bg-surface-container-high text-on-surface font-label-caps text-label-caps font-semibold transition-colors">
-                                            View Approval
-                                        </button>
-                                    </td>
-                                </tr>
-                                <!-- Row 3 -->
-                                <tr id="row-INV-2024-6410" data-status="paid"
-                                    class="invoice-row relative bg-surface-container-lowest hover:bg-surface-container-low transition-colors group">
-                                    <td class="relative py-3 px-unit-base text-center">
-                                        <div class="absolute left-0 top-0 bottom-0 w-1 bg-on-tertiary-container">
-                                        </div>
-                                        <input class="w-4 h-4 rounded bg-surface-container-lowest" type="checkbox">
-                                    </td>
-                                    <td class="py-3 px-unit-base">
-                                        <div class="flex flex-col">
-                                            <span
-                                                class="font-data-mono-lg text-data-mono-lg font-bold text-on-surface">INV-2024-6410</span>
-                                            <span
-                                                class="font-technical-tag text-technical-tag text-on-surface-variant">CTR-SVR-2023-99C</span>
-                                        </div>
-                                    </td>
-                                    <td class="py-3 px-unit-base max-w-xs">
-                                        <div class="flex flex-col">
-                                            <a href="ProjectListAndDetail.php?project=PRJ-VP-6945"
-                                                class="font-headline-sm text-body-md font-semibold text-on-surface hover:text-on-tertiary-container transition-colors truncate">PRJ-VP-6945:
-                                                Raw Materials Conveyor Calibration</a>
-                                            <span
-                                                class="font-body-sm text-body-sm text-on-surface-variant truncate">Telemetry
-                                                integration &amp; optical infrared sensor arrays</span>
-                                        </div>
-                                    </td>
-                                    <td class="py-3 px-unit-base">
-                                        <div class="flex flex-col font-data-mono-md text-data-mono-md">
-                                            <span class="text-on-surface-variant">18 Sep 2024</span>
-                                            <span class="text-on-surface">Paid 05 Oct 2024</span>
-                                        </div>
-                                    </td>
-                                    <td
-                                        class="py-3 px-unit-base text-right font-data-mono-lg text-data-mono-lg font-bold text-on-surface">
-                                        $370,000.00
-                                    </td>
-                                    <td
-                                        class="py-3 px-unit-base text-right font-data-mono-md text-data-mono-md text-on-surface-variant">
-                                        $74,000.00
-                                    </td>
-                                    <td class="py-3 px-unit-base text-center">
-                                        <span
-                                            class="inline-flex items-center gap-1 px-unit-sm py-0.5 rounded bg-surface-container-high text-on-surface font-technical-tag text-technical-tag font-semibold">
-                                            <span
-                                                class="material-symbols-outlined text-xs text-secondary">check_circle</span>
-                                            Paid / Reconciled
-                                        </span>
-                                    </td>
-                                    <td class="py-3 px-unit-base">
-                                        <div class="flex items-center gap-unit-xs">
-                                            <a class="flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-surface-container font-technical-tag text-technical-tag text-on-surface hover:bg-surface-container-high cursor-pointer"
-                                                onclick="event.preventDefault(); window.previewDocument('INV-2024-6410', 'Commercial Invoice PRJ-VP-6945', 'PDF Commercial Invoice')" href="#">
-                                                <span
-                                                    class="material-symbols-outlined text-xs">picture_as_pdf</span>
-                                                <span class="">PDF 3.8MB</span>
-                                            </a>
-                                            <a class="flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-surface-container font-technical-tag text-technical-tag text-on-surface hover:bg-surface-container-high cursor-pointer"
-                                                onclick="event.preventDefault(); window.previewDocument('ACT-44-6410', 'Acceptance Act #44 - Raw Materials Conveyor', 'Acceptance Act')" href="#">
-                                                <span class="material-symbols-outlined text-xs">receipt</span>
-                                                <span class="">ACT #44</span>
-                                            </a>
-                                        </div>
-                                    </td>
-                                    <td class="py-3 px-unit-base text-right">
-                                        <button onclick="window.previewDocument('RCP-6410-REC', 'Electronic Sberbank Settlement Slip #9921', 'Bank Wire Receipt')"
-                                            class="px-unit-sm py-1 rounded bg-surface-container-low hover:bg-surface-container text-on-surface font-label-caps text-label-caps font-semibold transition-colors">
-                                            Payment Receipt
-                                        </button>
-                                    </td>
-                                </tr>
-                                <!-- Row 4 -->
-                                <tr id="row-INV-2024-5890" data-status="paid"
-                                    class="invoice-row relative bg-surface-container-low/30 hover:bg-surface-container-low transition-colors group">
-                                    <td class="relative py-3 px-unit-base text-center">
-                                        <div class="absolute left-0 top-0 bottom-0 w-1 bg-on-tertiary-container">
-                                        </div>
-                                        <input class="w-4 h-4 rounded bg-surface-container-lowest" type="checkbox">
-                                    </td>
-                                    <td class="py-3 px-unit-base">
-                                        <div class="flex flex-col">
-                                            <span
-                                                class="font-data-mono-lg text-data-mono-lg font-bold text-on-surface">INV-2024-5890</span>
-                                            <span
-                                                class="font-technical-tag text-technical-tag text-on-surface-variant">CTR-SVR-2023-88X</span>
-                                        </div>
-                                    </td>
-                                    <td class="py-3 px-unit-base max-w-xs">
-                                        <div class="flex flex-col">
-                                            <a href="ProjectListAndDetail.php?project=PRJ-VP-6211"
-                                                class="font-headline-sm text-body-md font-semibold text-on-surface hover:text-on-tertiary-container transition-colors truncate">PRJ-VP-6211:
-                                                Slag Granulation Flow Rig Testing</a>
-                                            <span
-                                                class="font-body-sm text-body-sm text-on-surface-variant truncate">Full
-                                                hardware installation, sensor calibration certificates</span>
-                                        </div>
-                                    </td>
-                                    <td class="py-3 px-unit-base">
-                                        <div class="flex flex-col font-data-mono-md text-data-mono-md">
-                                            <span class="text-on-surface-variant">25 Jul 2024</span>
-                                            <span class="text-on-surface">Paid 10 Aug 2024</span>
-                                        </div>
-                                    </td>
-                                    <td
-                                        class="py-3 px-unit-base text-right font-data-mono-lg text-data-mono-lg font-bold text-on-surface">
-                                        $740,000.00
-                                    </td>
-                                    <td
-                                        class="py-3 px-unit-base text-right font-data-mono-md text-data-mono-md text-on-surface-variant">
-                                        $148,000.00
-                                    </td>
-                                    <td class="py-3 px-unit-base text-center">
-                                        <span
-                                            class="inline-flex items-center gap-1 px-unit-sm py-0.5 rounded bg-surface-container-high text-on-surface font-technical-tag text-technical-tag font-semibold">
-                                            <span
-                                                class="material-symbols-outlined text-xs text-secondary">check_circle</span>
-                                            Paid / Reconciled
-                                        </span>
-                                    </td>
-                                    <td class="py-3 px-unit-base">
-                                        <div class="flex items-center gap-unit-xs">
-                                            <a class="flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-surface-container font-technical-tag text-technical-tag text-on-surface hover:bg-surface-container-high cursor-pointer"
-                                                onclick="event.preventDefault(); window.previewDocument('INV-2024-5890', 'Commercial Invoice PRJ-VP-6211', 'PDF Commercial Invoice')" href="#">
-                                                <span
-                                                    class="material-symbols-outlined text-xs">picture_as_pdf</span>
-                                                <span class="">PDF 1.9MB</span>
-                                            </a>
-                                            <a class="flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-surface-container font-technical-tag text-technical-tag text-on-surface hover:bg-surface-container-high cursor-pointer"
-                                                onclick="event.preventDefault(); window.previewDocument('XML-ACT-5890', 'Slag Granulation Testing GOST Electronic Act', 'XML Commercial Act')" href="#">
-                                                <span class="material-symbols-outlined text-xs">code</span>
-                                                <span class="">XML ACT</span>
-                                            </a>
-                                        </div>
-                                    </td>
-                                    <td class="py-3 px-unit-base text-right">
-                                        <button onclick="window.previewDocument('RCP-5890-REC', 'Electronic Settlement Slip #5890', 'Bank Wire Receipt')"
-                                            class="px-unit-sm py-1 rounded bg-surface-container-low hover:bg-surface-container text-on-surface font-label-caps text-label-caps font-semibold transition-colors">
-                                            Payment Receipt
-                                        </button>
-                                    </td>
-                                </tr>
-                                <!-- Row 5 -->
-                                <tr
-                                    class="relative bg-surface-container-lowest hover:bg-surface-container-low transition-colors group">
-                                    <td class="relative py-3 px-unit-base text-center">
-                                        <div class="absolute left-0 top-0 bottom-0 w-1 bg-on-tertiary-container">
-                                        </div>
-                                        <input class="w-4 h-4 rounded bg-surface-container-lowest" type="checkbox">
-                                    </td>
-                                    <td class="py-3 px-unit-base">
-                                        <div class="flex flex-col">
-                                            <span
-                                                class="font-data-mono-lg text-data-mono-lg font-bold text-on-surface">INV-2024-4411</span>
-                                            <span
-                                                class="font-technical-tag text-technical-tag text-on-surface-variant">CTR-SVR-2023-70G</span>
-                                        </div>
-                                    </td>
-                                    <td class="py-3 px-unit-base max-w-xs">
-                                        <div class="flex flex-col">
-                                            <span
-                                                class="font-headline-sm text-body-md font-semibold text-on-surface truncate">PRJ-VP-5502:
-                                                Central Turboblower Automation Unit</span>
-                                            <span
-                                                class="font-body-sm text-body-sm text-on-surface-variant truncate">Turnkey
-                                                digital instrumentation delivery and field warranty protocol</span>
-                                        </div>
-                                    </td>
-                                    <td class="py-3 px-unit-base">
-                                        <div class="flex flex-col font-data-mono-md text-data-mono-md">
-                                            <span class="text-on-surface-variant">14 May 2024</span>
-                                            <span class="text-on-surface">Paid 28 May 2024</span>
-                                        </div>
-                                    </td>
-                                    <td
-                                        class="py-3 px-unit-base text-right font-data-mono-lg text-data-mono-lg font-bold text-on-surface">
-                                        $555,000.00
-                                    </td>
-                                    <td
-                                        class="py-3 px-unit-base text-right font-data-mono-md text-data-mono-md text-on-surface-variant">
-                                        $111,000.00
-                                    </td>
-                                    <td class="py-3 px-unit-base text-center">
-                                        <span
-                                            class="inline-flex items-center gap-1 px-unit-sm py-0.5 rounded bg-surface-container-high text-on-surface font-technical-tag text-technical-tag font-semibold">
-                                            <span
-                                                class="material-symbols-outlined text-xs text-secondary">check_circle</span>
-                                            Paid / Reconciled
-                                        </span>
-                                    </td>
-                                    <td class="py-3 px-unit-base">
-                                        <div class="flex items-center gap-unit-xs">
-                                            <a class="flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-surface-container font-technical-tag text-technical-tag text-on-surface hover:bg-surface-container-high cursor-pointer"
-                                                onclick="event.preventDefault(); window.previewDocument('INV-2024-5100', 'Commercial VAT Invoice - Blast Furnace Spares', 'PDF Commercial Invoice')">
-                                                <span
-                                                    class="material-symbols-outlined text-xs">picture_as_pdf</span>
-                                                <span class="">PDF 4.2MB</span>
-                                            </a>
-                                            <a class="flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-surface-container font-technical-tag text-technical-tag text-on-surface hover:bg-surface-container-high cursor-pointer"
-                                                onclick="event.preventDefault(); window.previewDocument('EDI-5100-SIG', 'Electronic Fiscal Registry Ledger', 'EDI XML Certificate')">
-                                                <span class="material-symbols-outlined text-xs">verified</span>
-                                                <span class="">EDI SIGNED</span>
-                                            </a>
-                                        </div>
-                                    </td>
-                                    <td class="py-3 px-unit-base text-right">
-                                        <button onclick="window.showToast('Payment receipt archive loaded for INV-2024-5100', 'info')"
-                                            class="px-unit-sm py-1 rounded bg-surface-container-low hover:bg-surface-container text-on-surface font-label-caps text-label-caps font-semibold transition-colors">
-                                            Payment Receipt
-                                        </button>
-                                    </td>
-                                </tr>
+                                <?php if (!empty($invoices)): ?>
+                                    <?php foreach ($invoices as $inv): 
+                                        $statusKey = strtolower($inv['status']) === 'paid' ? 'paid' : 'pending';
+                                        $taxAmount = $inv['tax_amount'] ?? ($inv['total_amount'] * 0.20);
+                                    ?>
+                                        <tr id="row-INV-<?= htmlspecialchars($inv['invoice_id']) ?>" data-status="<?= $statusKey ?>"
+                                            class="invoice-row relative bg-surface-container-lowest hover:bg-surface-container-low transition-colors group">
+                                            <td class="relative py-3 px-unit-base text-center">
+                                                <div class="absolute left-0 top-0 bottom-0 w-1 bg-on-tertiary-container"></div>
+                                                <input class="w-4 h-4 rounded bg-surface-container-lowest" type="checkbox">
+                                            </td>
+                                            <td class="py-3 px-unit-base">
+                                                <div class="flex flex-col">
+                                                    <span class="font-data-mono-lg text-data-mono-lg font-bold text-on-surface">INV-<?= htmlspecialchars($inv['invoice_id']) ?></span>
+                                                    <span class="font-technical-tag text-technical-tag text-on-surface-variant">ORD-<?= htmlspecialchars($inv['order_id']) ?></span>
+                                                </div>
+                                            </td>
+                                            <td class="py-3 px-unit-base max-w-xs">
+                                                <div class="flex flex-col">
+                                                    <a href="ProjectListAndDetail.php?order=<?= htmlspecialchars($inv['order_id']) ?>"
+                                                        class="font-headline-sm text-body-md font-semibold text-on-surface hover:text-on-tertiary-container transition-colors truncate">
+                                                        Order Contract #ORD-<?= htmlspecialchars($inv['order_id']) ?>
+                                                    </a>
+                                                    <span class="font-body-sm text-body-sm text-on-surface-variant truncate">
+                                                        <?= htmlspecialchars($inv['facility_name'] ?? 'Primary Plant Facility') ?>
+                                                    </span>
+                                                </div>
+                                            </td>
+                                            <td class="py-3 px-unit-base">
+                                                <div class="flex flex-col font-data-mono-md text-data-mono-md">
+                                                    <span class="text-on-surface-variant"><?= htmlspecialchars($inv['issue_date']) ?></span>
+                                                    <span class="<?= $statusKey === 'paid' ? 'text-on-surface' : 'text-on-tertiary-container font-semibold' ?>">
+                                                        <?= $statusKey === 'paid' ? 'Paid ' . htmlspecialchars($inv['due_date']) : 'Due ' . htmlspecialchars($inv['due_date']) ?>
+                                                    </span>
+                                                </div>
+                                            </td>
+                                            <td class="py-3 px-unit-base text-right font-data-mono-lg text-data-mono-lg font-bold text-on-surface">
+                                                $<?= number_format((float)$inv['total_amount'], 2) ?>
+                                            </td>
+                                            <td class="py-3 px-unit-base text-right font-data-mono-md text-data-mono-md text-on-surface-variant">
+                                                $<?= number_format((float)$taxAmount, 2) ?>
+                                            </td>
+                                            <td class="py-3 px-unit-base text-center">
+                                                <?php if ($statusKey === 'paid'): ?>
+                                                    <span class="inline-flex items-center gap-1 px-unit-sm py-0.5 rounded bg-surface-container-high text-on-surface font-technical-tag text-technical-tag font-semibold">
+                                                        <span class="material-symbols-outlined text-xs text-secondary">check_circle</span>
+                                                        Paid / Reconciled
+                                                    </span>
+                                                <?php else: ?>
+                                                    <span class="inline-flex items-center gap-1 px-unit-sm py-0.5 rounded bg-tertiary-fixed text-on-tertiary-fixed font-technical-tag text-technical-tag font-semibold">
+                                                        <span class="w-1.5 h-1.5 rounded-full bg-on-tertiary-container"></span>
+                                                        <?= htmlspecialchars($inv['status']) ?>
+                                                    </span>
+                                                <?php endif; ?>
+                                            </td>
+                                            <td class="py-3 px-unit-base">
+                                                <div class="flex items-center gap-unit-xs">
+                                                    <a class="flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-surface-container font-technical-tag text-technical-tag text-on-surface hover:bg-surface-container-high cursor-pointer"
+                                                        onclick="event.preventDefault(); window.previewDocument('INV-<?= htmlspecialchars($inv['invoice_id']) ?>', 'Commercial VAT Invoice', 'PDF Commercial Invoice')" href="#">
+                                                        <span class="material-symbols-outlined text-xs">picture_as_pdf</span>
+                                                        <span class="">PDF</span>
+                                                    </a>
+                                                    <a class="flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-surface-container font-technical-tag text-technical-tag text-on-surface hover:bg-surface-container-high cursor-pointer"
+                                                        onclick="event.preventDefault(); window.previewDocument('TORG-<?= htmlspecialchars($inv['invoice_id']) ?>', 'TORG-12 Certificate', 'TORG-12 Legal Act')" href="#">
+                                                        <span class="material-symbols-outlined text-xs">code</span>
+                                                        <span class="">TORG-12</span>
+                                                    </a>
+                                                </div>
+                                            </td>
+                                            <td class="py-3 px-unit-base text-right">
+                                                <?php if ($statusKey === 'paid'): ?>
+                                                    <button onclick="window.previewDocument('RCP-<?= htmlspecialchars($inv['invoice_id']) ?>-REC', 'Electronic Settlement Slip', 'Bank Wire Receipt')"
+                                                        class="px-unit-sm py-1 rounded bg-surface-container-low hover:bg-surface-container text-on-surface font-label-caps text-label-caps font-semibold transition-colors">
+                                                        Payment Receipt
+                                                    </button>
+                                                <?php else: ?>
+                                                    <button onclick="showPaymentModal('INV-<?= htmlspecialchars($inv['invoice_id']) ?>', <?= (float)$inv['total_amount'] ?>)"
+                                                        class="px-unit-sm py-1 rounded bg-tertiary-fixed-dim text-on-tertiary-fixed hover:bg-tertiary-fixed font-label-caps text-label-caps font-semibold shadow-sm transition-colors">
+                                                        Review &amp; Authorize
+                                                    </button>
+                                                <?php endif; ?>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                <?php else: ?>
+                                    <tr>
+                                        <td colspan="9" class="text-center py-12 text-on-surface-variant">
+                                            <span class="material-symbols-outlined text-4xl block mb-2 text-outline">receipt_long</span>
+                                            No commercial invoices or billing statements found for this account.
+                                        </td>
+                                    </tr>
+                                <?php endif; ?>
                             </tbody>
                         </table>
                     </div>
@@ -897,7 +708,7 @@ requireAuth('CUS');
                     <div
                         class="flex flex-wrap items-center justify-between p-unit-base bg-surface-container-low text-on-surface-variant font-body-sm">
                         <div class="flex items-center gap-unit-sm">
-                            <span class="">Displaying <span class="font-semibold text-on-surface">1 - 5</span> of 24
+                            <span class="">Displaying <span class="font-semibold text-on-surface">1 - <?= count($invoices) ?></span> of <?= count($invoices) ?>
                                 corporate statements</span>
                             <span class="text-outline-variant">|</span>
                             <span class="font-technical-tag text-technical-tag">LEDGER ENCRYPTION SHA-256
@@ -916,14 +727,6 @@ requireAuth('CUS');
                             </button>
                             <span
                                 class="px-unit-sm py-0.5 rounded bg-primary text-on-primary font-data-mono-md text-data-mono-md">1</span>
-                            <span
-                                class="px-unit-sm py-0.5 rounded hover:bg-surface-container font-data-mono-md text-data-mono-md cursor-pointer">2</span>
-                            <span
-                                class="px-unit-sm py-0.5 rounded hover:bg-surface-container font-data-mono-md text-data-mono-md cursor-pointer">3</span>
-                            <span
-                                class="px-unit-sm py-0.5 rounded hover:bg-surface-container font-data-mono-md text-data-mono-md cursor-pointer">4</span>
-                            <span
-                                class="px-unit-sm py-0.5 rounded hover:bg-surface-container font-data-mono-md text-data-mono-md cursor-pointer">5</span>
                             <button
                                 class="p-1 rounded bg-surface-container-lowest text-on-surface hover:text-on-surface">
                                 <span class="material-symbols-outlined text-base">chevron_right</span>
@@ -1044,11 +847,8 @@ requireAuth('CUS');
                     </div>
                 </div>
             </div>
+        </main>
     </div>
-
-    </main>
-    </div>
-
 </body>
 
 </html>

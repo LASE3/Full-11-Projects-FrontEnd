@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/../includes/auth_guard.php';
 requireAuth('EMP');
@@ -201,7 +201,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Elena Morozova', 'role_
 
 
             <!-- Top Bar Sign Out -->
-            <a href="../api/logout.php?system=Employee%20Intranet&redirect=../Employee%20Intranet/login.php" class="top-signout-btn" title="Sign Out of Employee Intranet" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" ><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
+            <a href="./api/logout.php?redirect=../Employee%20Intranet/login.php" class="top-signout-btn" title="Sign Out of Employee Intranet" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" ><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
         </div>
     </header>
 
@@ -407,7 +407,8 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Elena Morozova', 'role_
     <!-- Single Consolidated JavaScript Engine -->
     <script src="js/intranet.js"></script>
     <link rel="stylesheet" href="../assets/css/api-ui.css">
-    <script src="../assets/js/api-client.js"></script>
+    <script src="../assets/js/api-core.js"></script>
+    <script src="../assets/js/api-intranet.js"></script>
     <script src="js/intranet-data.js"></script>
 </body>
 

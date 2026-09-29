@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/../includes/auth_guard.php';
 requireAuth('CUS');
@@ -25,7 +25,8 @@ requireAuth('CUS');
     <script src="js/tailwind-config.js"></script>
     <script src="js/portal.js"></script>
     <link rel="stylesheet" href="../assets/css/api-ui.css">
-    <script src="../assets/js/api-client.js"></script>
+    <script src="../assets/js/api-core.js"></script>
+    <script src="../assets/js/api-customer.js"></script>
     <script src="js/portal-data.js"></script>
     <script src="js/account-settings.js"></script>
 </head>
@@ -86,7 +87,7 @@ requireAuth('CUS');
             </div>
 
             <!-- Top Bar Sign Out -->
-            <a href="../api/logout.php?system=Customer%20Portal&redirect=../Customer%20Portal/login.php" class="top-signout-btn" title="Sign Out of Customer Portal" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" ><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
+            <a href="./api/logout.php?redirect=../Customer%20Portal/login.php" class="top-signout-btn" title="Sign Out of Customer Portal" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" ><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
         </div>
     </header>
     <aside id="portal-sidebar" class="fixed left-0 top-16 bottom-0 w-64 bg-primary-container z-40 flex flex-col justify-between shadow-sm">

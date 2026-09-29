@@ -104,6 +104,44 @@ body.vostok-integrations-page {
     border-color: rgba(239, 68, 68, 0.3);
 }
 
+.vostok-user-badge-header {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.3rem 0.65rem;
+    background: rgba(15, 23, 42, 0.7);
+    border: 1px solid rgba(0, 229, 255, 0.2);
+    border-radius: 4px;
+    font-size: 0.8rem;
+    color: #CBD5E1;
+}
+
+.vostok-user-name {
+    font-weight: 500;
+    color: #F8FAFC;
+    max-width: 140px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.vostok-clearance-pill {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: #00E5FF;
+    background: rgba(0, 229, 255, 0.12);
+    padding: 0.1rem 0.35rem;
+    border-radius: 3px;
+    border: 1px solid rgba(0, 229, 255, 0.25);
+}
+
+@media (max-width: 640px) {
+    .vostok-user-name {
+        display: none;
+    }
+}
+
 .vostok-icon-sm {
     font-size: 1rem;
 }

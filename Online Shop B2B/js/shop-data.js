@@ -1,6 +1,6 @@
 /**
  * VOSTOKPRIBOR Online Shop B2B — Live Data Integration  (Class 2)
- * Requires: ../../assets/js/api-client.js
+ * Requires: assets/js/api-core.js and assets/js/api-shop.js loaded before this file.
  *
  * Pages covered:
  *  - Dashboard.php  → product catalogue + order history
@@ -10,7 +10,10 @@
 (function () {
   "use strict";
 
-  const { shop, ui, escHtml, handleApiError } = window.VostokAPI;
+  const core = window.VostokCore || window.VostokAPI || {};
+  const shop = window.VostokShop || window.VostokAPI?.shop;
+  const { ui = {}, escHtml = (s) => s } = core;
+  const handleApiError = core.handleApiError || console.error;
 
   /* ──────────────────────────────────────────────
    * PRODUCT CATALOGUE
@@ -112,25 +115,26 @@
           const style =
             statusStyle[o.status || o.order_status] ||
             "color:#aaa;background:rgba(170,170,170,.1)";
-          const ordId = "ORD-2026-" + String(o.order_id).padStart(4, "0");
-          const invId = "INV-2026-" + String(o.order_id).padStart(4, "0");
+          const ordId = "ORD-" + String(o.order_id).padStart(6, "0");
 
           return `
-          <tr class="confidential-row" style="cursor:pointer;" onclick="window.VostokAPI.ui.toast('Order Details', 'Order ${ordId} - Status: ${escHtml(o.status || "Processing")}', 'info')">
+          <tr class="confidential-row" style="cursor:pointer;" onclick="window.VostokAPI.ui.toast('Order Details', 'Order ${ordId} - Status: ${escHtml(o.status || 'Processing')}', 'info')">
             <td style="font-family:monospace;font-size:12px;">
               <span style="color:#00E5FF;font-weight:700;">${ordId}</span>
-              <div style="font-size:10px;opacity:0.6;">${invId}</div>
+              <div style="font-size:10px;opacity:0.6;">ID: ${escHtml(String(o.order_id))}</div>
             </td>
             <td style="font-family:monospace;font-size:11px;">
-              <span style="background:rgba(255,255,255,0.06);padding:2px 6px;border-radius:4px;">PRJ-2026-001</span>
+              <span style="background:rgba(255,255,255,0.06);padding:2px 6px;border-radius:4px;">
+                ${escHtml(o.cus_id || '—')}
+              </span>
             </td>
             <td>
-              <strong style="color:#fff;">Aral Geomatics Group</strong>
-              <div style="font-size:10.5px;opacity:0.6;font-family:monospace;">CUS-1001</div>
+              <strong style="color:#fff;">${escHtml(o.company_name || o.cus_id || '—')}</strong>
+              <div style="font-size:10.5px;opacity:0.6;font-family:monospace;">${escHtml(o.primary_contact_name || '')}</div>
             </td>
             <td>
-              <div style="font-weight:600;color:#fff;">Industrial Sensor Package</div>
-              <div style="font-size:11px;opacity:0.6;">${o.total_items ?? 2} package units</div>
+              <div style="font-weight:600;color:#fff;">${escHtml(o.sector || 'B2B Order')}</div>
+              <div style="font-size:11px;opacity:0.6;">${o.total_items ?? o.line_item_count ?? 0} line item(s) · ${o.total_units ?? 0} units</div>
             </td>
             <td style="font-family:monospace;">
               <strong style="color:#D9822B;font-size:13px;">${ui.currency(o.total_amount, "EUR")}</strong>
@@ -145,7 +149,7 @@
             </td>
             <td style="text-align:right;">
               <button class="btn-table-action" style="padding:4px 10px;background:rgba(0,229,255,0.1);border:1px solid rgba(0,229,255,0.4);color:#00E5FF;border-radius:4px;cursor:pointer;"
-                onclick="event.stopPropagation(); window.VostokAPI.ui.toast('Live Tracking', 'Tracking telemetry active for ${ordId}', 'info')">
+                onclick="event.stopPropagation(); window.VostokAPI.ui.toast('Live Tracking', 'Tracking active for ${ordId}', 'info')">
                 Inspect
               </button>
             </td>
@@ -154,6 +158,93 @@
         .join("");
     } catch (err) {
       handleApiError(err, "Order History");
+    }
+  }
+
+  /* ──────────────────────────────────────────────
+   * DASHBOARD KPIs + CUSTOMER CONTEXT HEADER
+   * Elements: #shop-kpi-*, #header-customer-*, #customer-dropdown-items
+   * ────────────────────────────────────────────── */
+  async function loadDashboard() {
+    try {
+      // ── Customer context (header dropdown) ──────────
+      const cusRes = await fetch("../api/v1/customers.php?limit=20");
+      const cusJson = await cusRes.json();
+      const customers = cusJson.data || [];
+
+      const activeCusId =
+        sessionStorage.getItem("vp_cus_id") ||
+        localStorage.getItem("vp_cus_id") ||
+        (customers[0] && (customers[0].cus_id || customers[0].id)) ||
+        "";
+
+      // Populate header chip with the active customer
+      const activeCus = customers.find((c) => (c.cus_id || c.id) === activeCusId) || customers[0];
+      if (activeCus) {
+        const code = activeCus.cus_id || activeCus.id || "—";
+        const name = activeCus.company_name || activeCus.name || "Enterprise Account";
+        const avatar = name.charAt(0).toUpperCase();
+        const elAvatar = document.getElementById("header-customer-avatar");
+        const elCode   = document.getElementById("header-customer-code");
+        const elName   = document.getElementById("header-customer-name");
+        if (elAvatar) elAvatar.textContent = avatar;
+        if (elCode)   elCode.textContent   = code;
+        if (elName)   elName.textContent   = name;
+      }
+
+      // Populate dropdown switcher items
+      const dropdownItems = document.getElementById("customer-dropdown-items");
+      if (dropdownItems && customers.length) {
+        dropdownItems.innerHTML = customers.map((c) => {
+          const code  = c.cus_id || c.id || "—";
+          const cname = c.company_name || c.name || code;
+          return `<div class="dropdown-customer-item" onclick="window.shopApp && window.shopApp.switchCustomer && window.shopApp.switchCustomer('${escHtml(code)}')" style="padding:8px 12px;cursor:pointer;display:flex;gap:10px;align-items:center;font-size:13px;border-bottom:1px solid rgba(255,255,255,0.05);">
+            <span style="font-family:monospace;color:#00E5FF;font-size:11px;">${escHtml(code)}</span>
+            <span style="color:#fff;">${escHtml(cname)}</span>
+          </div>`;
+        }).join("");
+      } else if (dropdownItems) {
+        dropdownItems.innerHTML = "<div style='padding:10px 12px;font-size:12px;opacity:0.5;'>No accounts found</div>";
+      }
+    } catch (err) {
+      /* customer header is optional — fail silently */
+    }
+
+    // ── KPI metrics from orders ──────────────────────
+    try {
+      const cusId =
+        sessionStorage.getItem("vp_cus_id") ||
+        localStorage.getItem("vp_cus_id") ||
+        "";
+      const params = cusId ? `?cus_id=${encodeURIComponent(cusId)}` : "";
+      const ordRes  = await fetch(`../api/v1/orders.php${params}&limit=200`);
+      const ordJson = await ordRes.json();
+      const orders  = ordJson.data || [];
+
+      const totalOrders = orders.length;
+      const totalValue  = orders.reduce((s, o) => s + parseFloat(o.total_amount || 0), 0);
+      const shipped     = orders.filter((o) => (o.status || o.order_status || "").toLowerCase() === "shipped").length;
+      const pending     = orders.filter((o) => (o.status || o.order_status || "").toLowerCase() === "pending").length;
+
+      const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+
+      set("shop-kpi-orders",    totalOrders || "—");
+      set("shop-kpi-orders-sub", totalOrders ? `${totalOrders} live order${totalOrders !== 1 ? "s" : ""}` : "No orders yet");
+
+      set("shop-kpi-value",    totalValue ? ui.currency(totalValue, "EUR") : "—");
+      set("shop-kpi-value-sub", totalOrders ? `${totalOrders} platform order${totalOrders !== 1 ? "s" : ""}` : "No data");
+
+      set("shop-kpi-shipments",    shipped || "—");
+      set("shop-kpi-shipments-sub", `${shipped} in-transit shipment${shipped !== 1 ? "s" : ""}`);
+
+      set("shop-kpi-rfqs",    pending || "—");
+      set("shop-kpi-rfqs-sub", `${pending} commercial RFQ${pending !== 1 ? "s" : ""}`);
+
+      // Nav badge (Quotes tab)
+      const navQuotes = document.getElementById("nav-quotes-count");
+      if (navQuotes) navQuotes.textContent = pending;
+    } catch (err) {
+      handleApiError(err, "Dashboard KPIs");
     }
   }
 
@@ -171,7 +262,7 @@
     }
 
     const count = cart.reduce((s, i) => s + i.qty, 0);
-    const badge = document.getElementById("cart-badge");
+    const badge = document.getElementById("header-cart-badge") || document.getElementById("cart-badge");
     if (badge) badge.textContent = count;
 
     ui.toast(
@@ -211,7 +302,7 @@
         "success",
       );
       cart.length = 0;
-      const badge = document.getElementById("cart-badge");
+      const badge = document.getElementById("header-cart-badge") || document.getElementById("cart-badge");
       if (badge) badge.textContent = "0";
       loadOrders();
     } catch (err) {
@@ -239,6 +330,7 @@
    * Boot
    * ────────────────────────────────────────────── */
   document.addEventListener("DOMContentLoaded", () => {
+    loadDashboard();
     loadProducts();
     loadOrders();
     initProductSearch();

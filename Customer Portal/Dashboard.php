@@ -28,7 +28,8 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
     <script src="js/tailwind-config.js"></script>
     <script src="js/portal.js"></script>
     <link rel="stylesheet" href="../assets/css/api-ui.css">
-    <script src="../assets/js/api-client.js"></script>
+    <script src="../assets/js/api-core.js"></script>
+    <script src="../assets/js/api-customer.js"></script>
     <script src="js/portal-data.js"></script>
     <script src="js/dashboard.js"></script>
 </head>
@@ -88,7 +89,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
             </div>
 
             <!-- Top Bar Sign Out -->
-            <a href="../api/logout.php?system=Customer%20Portal&redirect=../Customer%20Portal/login.php" class="top-signout-btn" title="Sign Out of Customer Portal" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" ><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
+            <a href="./api/logout.php?redirect=../Customer%20Portal/login.php" class="top-signout-btn" title="Sign Out of Customer Portal" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" ><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
         </div>
     </header>
     <aside id="portal-sidebar"
@@ -252,18 +253,17 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
                                     class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider">Active
                                     Projects</span>
                                 <span
-                                    class="font-display-lg text-display-lg text-primary font-bold tracking-tight mt-unit-xs" id="kpi-active-projects">14</span>
+                                    class="font-display-lg text-display-lg text-primary font-bold tracking-tight mt-unit-xs" id="kpi-active-projects">—</span>
                             </div>
                             <div class="p-2 rounded bg-primary-container text-inverse-primary group-hover:scale-105 transition-transform">
                                 <span class="material-symbols-outlined text-xl">precision_manufacturing</span>
                             </div>
                         </div>
                         <div class="flex items-center justify-between pt-unit-md mt-unit-sm">
-                            <span class="font-body-sm text-body-sm text-on-surface-variant">3 on-site integration, 2 in
-                                staging</span>
+                            <span class="font-body-sm text-body-sm text-on-surface-variant" id="kpi-active-projects-sub">—</span>
                             <span
                                 class="inline-flex items-center gap-1 font-technical-tag text-technical-tag font-semibold text-primary px-1.5 py-0.5 rounded bg-surface-container-high">
-                                <span class="material-symbols-outlined text-xs">trending_up</span>+2 Q/Q
+                                <span class="material-symbols-outlined text-xs">trending_up</span>Live
                             </span>
                         </div>
                     </a>
@@ -276,7 +276,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
                                     class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider">Pending
                                     Invoices</span>
                                 <span
-                                    class="font-display-lg text-display-lg text-primary font-bold tracking-tight mt-unit-xs" id="kpi-open-invoices">3</span>
+                                    class="font-display-lg text-display-lg text-primary font-bold tracking-tight mt-unit-xs" id="kpi-open-invoices">—</span>
                             </div>
                             <div class="p-2 rounded bg-tertiary-container text-tertiary-fixed group-hover:scale-105 transition-transform">
                                 <span class="material-symbols-outlined text-xl">payments</span>
@@ -284,11 +284,10 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
                         </div>
                         <div class="flex items-center justify-between pt-unit-md mt-unit-sm pl-unit-xs">
                             <span
-                                class="font-data-mono-md text-data-mono-md text-on-surface-variant font-medium">$248,600.00
-                                USD total</span>
+                                class="font-data-mono-md text-data-mono-md text-on-surface-variant font-medium" id="kpi-open-invoices-sub">—</span>
                             <span
                                 class="font-technical-tag text-technical-tag font-semibold text-on-tertiary-fixed-variant bg-tertiary-fixed/30 px-1.5 py-0.5 rounded">
-                                2 due ≤ 10d
+                                Financial
                             </span>
                         </div>
                     </a>
@@ -301,18 +300,17 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
                                     class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider">Open
                                     Support Tickets</span>
                                 <span
-                                    class="font-display-lg text-display-lg text-primary font-bold tracking-tight mt-unit-xs" id="kpi-open-tickets">5</span>
+                                    class="font-display-lg text-display-lg text-primary font-bold tracking-tight mt-unit-xs" id="kpi-open-tickets">—</span>
                             </div>
                             <div class="p-2 rounded bg-surface-container text-on-surface group-hover:scale-105 transition-transform">
                                 <span class="material-symbols-outlined text-xl">headset_mic</span>
                             </div>
                         </div>
                         <div class="flex items-center justify-between pt-unit-md mt-unit-sm">
-                            <span class="font-body-sm text-body-sm text-on-surface-variant">2 High • 2 Med</span>
+                            <span class="font-body-sm text-body-sm text-on-surface-variant" id="kpi-open-tickets-sub">—</span>
                             <span
                                 class="inline-flex items-center gap-1.5 font-technical-tag text-technical-tag font-bold text-on-error bg-error px-2 py-0.5 rounded">
-                                <span class="w-1.5 h-1.5 rounded-full bg-surface-container-lowest animate-ping"></span>
-                                1 CRITICAL (P1)
+                                Support
                             </span>
                         </div>
                     </a>
@@ -325,18 +323,17 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
                                     class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider">Approved
                                     Documents</span>
                                 <span
-                                    class="font-display-lg text-display-lg text-primary font-bold tracking-tight mt-unit-xs">48</span>
+                                    class="font-display-lg text-display-lg text-primary font-bold tracking-tight mt-unit-xs" id="kpi-approved-docs">—</span>
                             </div>
                             <div class="p-2 rounded bg-surface-container text-secondary group-hover:scale-105 transition-transform">
                                 <span class="material-symbols-outlined text-xl">verified</span>
                             </div>
                         </div>
                         <div class="flex items-center justify-between pt-unit-md mt-unit-sm">
-                            <span class="font-body-sm text-body-sm text-on-surface-variant">100% passports &amp;
-                                certs</span>
+                            <span class="font-body-sm text-body-sm text-on-surface-variant" id="kpi-approved-docs-sub">—</span>
                             <span
                                 class="font-technical-tag text-technical-tag font-medium text-secondary bg-secondary-fixed/50 px-1.5 py-0.5 rounded">
-                                6 pending signature
+                                Verified
                             </span>
                         </div>
                     </a>
@@ -365,148 +362,11 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
                                     class="px-2.5 py-1 text-technical-tag font-technical-tag rounded font-medium text-on-surface-variant hover:text-primary"
                                     type="button">FIELD SERVICE</button>
                             </div>
-                        </div>
-                        <div class="flex flex-col">
-                            <div
-                                class="flex flex-col md:flex-row md:items-center justify-between p-unit-base gap-unit-sm bg-surface-container-lowest hover:bg-surface-container-low transition-colors relative pl-unit-lg">
-                                <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-secondary"></div>
-                                <div class="flex flex-col gap-0.5 pr-unit-md">
-                                    <div class="flex items-center gap-unit-xs">
-                                        <span
-                                            class="font-label-caps text-label-caps text-secondary font-bold uppercase tracking-wider">Calibration
-                                            Certificate</span>
-                                        <span
-                                            class="font-technical-tag text-technical-tag text-on-surface-variant">ROSTEST-CONFIRMED</span>
-                                    </div>
-                                    <p class="font-body-md text-body-md text-on-surface font-medium">
-                                        High-Pressure Flowmeter HPF-900X (SN: <span
-                                            class="font-data-mono-md text-data-mono-md">VP-2024-91823</span>). Verified
-                                        by Rostest Inspectorate.
-                                    </p>
-                                    <span class="font-data-mono-md text-data-mono-md text-on-surface-variant">Today,
-                                        11:42 AM • Protocol #VP-CAL-0994</span>
-                                </div>
-                                <div class="flex items-center gap-unit-xs shrink-0 self-end md:self-center">
-                                    <button
-                                        class="px-unit-sm py-1 rounded bg-surface-container-high hover:bg-surface-container-highest text-primary font-technical-tag text-technical-tag font-medium"
-                                        onclick="window.previewDocument('CERT-2024-HPF-0994', 'High-Pressure Flowmeter HPF-900X Calibration Certificate', 'ROSTEST CERTIFIED')"
-                                        type="button">View PDF</button>
-                                    <button
-                                        class="px-unit-sm py-1 rounded bg-surface-container-high hover:bg-surface-container-highest text-primary font-technical-tag text-technical-tag font-medium"
-                                        onclick="window.showToast('SHA-256 Hash Valid', 'Signature 0x8F9A83BC902E4D2 matched state cadastre.', 'info')"
-                                        type="button">Verify Hash</button>
-                                </div>
-                            </div>
-                            <div
-                                class="flex flex-col md:flex-row md:items-center justify-between p-unit-base gap-unit-sm bg-surface-container-lowest hover:bg-surface-container-low transition-colors relative pl-unit-lg">
-                                <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-tertiary-fixed-dim"></div>
-                                <div class="flex flex-col gap-0.5 pr-unit-md">
-                                    <div class="flex items-center gap-unit-xs">
-                                        <span
-                                            class="font-label-caps text-label-caps text-on-tertiary-fixed-variant font-bold uppercase tracking-wider">Commercial
-                                            Invoice</span>
-                                        <span
-                                            class="font-technical-tag text-technical-tag text-on-surface-variant">#INV-2024-8819</span>
-                                        <span
-                                            class="font-technical-tag text-technical-tag bg-tertiary-fixed/30 text-on-tertiary-fixed-variant px-1.5 rounded">PENDING
-                                            APPROVAL</span>
-                                    </div>
-                                    <p class="font-body-md text-body-md text-on-surface font-medium">
-                                        Phase 3 Automation Sensors delivery batch. Amount: <span
-                                            class="font-data-mono-md text-data-mono-md text-primary font-bold">$114,200.00
-                                            USD</span>. Terms: Net 30.
-                                    </p>
-                                    <span class="font-data-mono-md text-data-mono-md text-on-surface-variant">Today,
-                                        09:15 AM • Billing Unit Severstal-FIN-02</span>
-                                </div>
-                                <div class="flex items-center gap-unit-xs shrink-0 self-end md:self-center">
-                                    <button
-                                        class="px-unit-sm py-1 rounded bg-tertiary-fixed text-primary-container font-technical-tag text-technical-tag font-semibold hover:bg-tertiary-fixed-dim"
-                                        onclick="window.location.href='Invoices.php?invoice=INV-2024-6102'"
-                                        type="button">Review Invoice</button>
-                                </div>
-                            </div>
-                            <div
-                                class="flex flex-col md:flex-row md:items-center justify-between p-unit-base gap-unit-sm bg-surface-container-lowest hover:bg-surface-container-low transition-colors relative pl-unit-lg cursor-pointer"
-                                onclick="window.location.href='ProjectListAndDetail.php?project=PRJ-VP-7721'">
-                                <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-primary-container"></div>
-                                <div class="flex flex-col gap-0.5 pr-unit-md">
-                                    <div class="flex items-center gap-unit-xs">
-                                        <span
-                                            class="font-label-caps text-label-caps text-primary-container font-bold uppercase tracking-wider">Project
-                                            Milestone Completed</span>
-                                        <span
-                                            class="font-technical-tag text-technical-tag text-on-surface-variant">PRJ-VP-7721</span>
-                                    </div>
-                                    <p class="font-body-md text-body-md text-on-surface font-medium">
-                                        Automated Gas Chromatography Skid #4 FAT (Factory Acceptance Test) passed with
-                                        zero non-conformances.
-                                    </p>
-                                    <span class="font-data-mono-md text-data-mono-md text-on-surface-variant">Yesterday,
-                                        16:30 PM • Lead Inspector: K. Savin</span>
-                                </div>
-                                <div class="flex items-center gap-unit-xs shrink-0 self-end md:self-center">
-                                    <span
-                                        class="inline-flex items-center gap-1 font-technical-tag text-technical-tag text-secondary bg-secondary-fixed/30 px-unit-sm py-1 rounded font-medium">
-                                        <span class="material-symbols-outlined text-xs">check_circle</span> FAT PASSED
-                                    </span>
-                                </div>
-                            </div>
-                            <div
-                                class="flex flex-col md:flex-row md:items-center justify-between p-unit-base gap-unit-sm bg-error-container/20 hover:bg-error-container/30 transition-colors relative pl-unit-lg">
-                                <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-error"></div>
-                                <div class="flex flex-col gap-0.5 pr-unit-md">
-                                    <div class="flex items-center gap-unit-xs">
-                                        <span
-                                            class="font-label-caps text-label-caps text-error font-bold uppercase tracking-wider">Field
-                                            Incident Alert #INC-3091</span>
-                                        <span
-                                            class="font-technical-tag text-technical-tag bg-error text-on-error px-1.5 rounded font-bold">CRITICAL
-                                            ESCALATION</span>
-                                    </div>
-                                    <p class="font-body-md text-body-md text-primary font-medium">
-                                        Vibration telemetry anomaly on Turbine Bearing #2 (&gt;8.4 mm/s RMS). Dispatched
-                                        Tier-3 Field Specialist.
-                                    </p>
-                                    <span class="font-data-mono-md text-data-mono-md text-on-surface-variant">Oct 24,
-                                        14:10 PM • SLA Clock: 42m remaining</span>
-                                </div>
-                                <div class="flex items-center gap-unit-xs shrink-0 self-end md:self-center">
-                                    <button
-                                        class="px-unit-sm py-1 rounded bg-error text-on-error font-technical-tag text-technical-tag font-semibold"
-                                        onclick="window.location.href='SupportTicketView.php?ticket=TCK-9482'"
-                                        type="button">Track Dispatch</button>
-                                </div>
-                            </div>
-                            <div
-                                class="flex flex-col md:flex-row md:items-center justify-between p-unit-base gap-unit-sm bg-surface-container-lowest hover:bg-surface-container-low transition-colors relative pl-unit-lg">
-                                <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-tertiary-fixed-dim"></div>
-                                <div class="flex flex-col gap-0.5 pr-unit-md">
-                                    <div class="flex items-center gap-unit-xs">
-                                        <span
-                                            class="font-label-caps text-label-caps text-on-tertiary-fixed-variant font-bold uppercase tracking-wider">Contract
-                                            Addendum</span>
-                                        <span
-                                            class="font-technical-tag text-technical-tag text-on-surface-variant">#CA-402</span>
-                                    </div>
-                                    <p class="font-body-md text-body-md text-on-surface font-medium">
-                                        Spare parts consignment inventory agreement revision uploaded for Q4 2024 - Q2
-                                        2025.
-                                    </p>
-                                    <span class="font-data-mono-md text-data-mono-md text-on-surface-variant">Oct 23,
-                                        10:05 AM • Procurement Dept</span>
-                                </div>
-                                <div class="flex items-center gap-unit-xs shrink-0 self-end md:self-center">
-                                    <button
-                                        class="px-unit-sm py-1 rounded bg-surface-container-high hover:bg-surface-container-highest text-primary font-technical-tag text-technical-tag font-semibold"
-                                        onclick="window.location.href='Documents.php?doc=4'"
-                                        type="button">Sign Document</button>
-                                </div>
-                            </div>
+                                  <div class="flex flex-col" id="dash-portal-activity-feed">
+                            <!-- Dynamically populated from database by portal-data.js -->
                         </div>
                         <div class="p-unit-sm bg-surface-container-low flex justify-between items-center px-unit-base">
-                            <span class="font-technical-tag text-technical-tag text-on-surface-variant">Showing 5 of 184
-                                system events</span>
+                            <span class="font-technical-tag text-technical-tag text-on-surface-variant" id="dash-portal-events-count">Recent Account Activity</span>
                             <button
                                 class="text-secondary hover:text-primary font-technical-tag text-technical-tag font-bold inline-flex items-center gap-1"
                                 type="button">

@@ -6,6 +6,25 @@ if (empty($_SESSION['vostok_authenticated']) || empty($_SESSION['vostok_system_S
   header("Location: login.php");
   exit;
 }
+require_once __DIR__ . '/shop_service.php';
+
+$cusId = shop_getCurrentCustomerId();
+$customer = null;
+if ($cusId) {
+    $stmtC = getDbConnection()->prepare("SELECT * FROM customers WHERE cus_id = ?");
+    $stmtC->execute([$cusId]);
+    $customer = $stmtC->fetch(PDO::FETCH_ASSOC);
+}
+
+$kpis = shop_getDashboardMetrics($cusId);
+$products = shop_getProducts($cusId);
+$orders = shop_getOrders($cusId);
+$projects = [];
+if ($cusId) {
+    $stmtP = getDbConnection()->prepare("SELECT prj_id, project_name, budget FROM projects WHERE cus_id = ? ORDER BY prj_id ASC");
+    $stmtP->execute([$cusId]);
+    $projects = $stmtP->fetchAll(PDO::FETCH_ASSOC);
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -77,7 +96,7 @@ if (empty($_SESSION['vostok_authenticated']) || empty($_SESSION['vostok_system_S
             <line x1="16" y1="17" x2="8" y2="17" />
           </svg>
           <span>My Quotes</span>
-          <span class="nav-badge-count" id="nav-quotes-count">2</span>
+          <span class="nav-badge-count" id="nav-quotes-count">0</span>
         </a>
 
         <a class="nav-link" data-screen="tracking" onclick="window.shopApp.navigateTo('tracking')">
@@ -115,10 +134,10 @@ if (empty($_SESSION['vostok_authenticated']) || empty($_SESSION['vostok_system_S
       <div class="header-actions">
         <!-- Account / Customer Context Switcher -->
         <div class="customer-context-selector" onclick="window.shopApp.toggleCustomerDropdown(event)">
-          <div class="customer-avatar" id="header-customer-avatar">1005</div>
+          <div class="customer-avatar" id="header-customer-avatar">—</div>
           <div class="customer-info">
-            <span class="customer-code" id="header-customer-code">CUS-1005</span>
-            <span class="customer-name" id="header-customer-name">Tashkent Precision Controls</span>
+            <span class="customer-code" id="header-customer-code">—</span>
+            <span class="customer-name" id="header-customer-name">Enterprise Account</span>
           </div>
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
             class="shop-text-muted-dark">
@@ -128,70 +147,8 @@ if (empty($_SESSION['vostok_authenticated']) || empty($_SESSION['vostok_system_S
           <!-- Dropdown Account Switcher Menu -->
           <div class="customer-dropdown-menu" id="customer-dropdown-menu">
             <div class="dropdown-header-label">Switch Enterprise Account</div>
-
-            <div class="customer-option-item selected" data-customer-id="CUS-1005"
-              onclick="window.shopApp.selectCustomer('CUS-1005')">
-              <div>
-                <strong class="shop-customer-company">Tashkent Precision
-                  Controls</strong>
-                <span class="shop-customer-id">CUS-1005 ·
-                  Manufacturing</span>
-              </div>
-              <span
-                class="shop-customer-tier">Tier
-                A (-12%)</span>
-            </div>
-
-            <div class="customer-option-item" data-customer-id="CUS-1001"
-              onclick="window.shopApp.selectCustomer('CUS-1001')">
-              <div>
-                <strong class="shop-customer-company">Aral Geomatics
-                  Group</strong>
-                <span class="shop-customer-id">CUS-1001 ·
-                  Geomatics & GIS</span>
-              </div>
-              <span
-                class="shop-customer-tier">Tier
-                A (-12%)</span>
-            </div>
-
-            <div class="customer-option-item" data-customer-id="CUS-1002"
-              onclick="window.shopApp.selectCustomer('CUS-1002')">
-              <div>
-                <strong class="shop-customer-company">BaltNord Process
-                  Systems</strong>
-                <span class="shop-customer-id">CUS-1002 ·
-                  Process Automation</span>
-              </div>
-              <span
-                class="shop-customer-tier">Partner
-                (-15%)</span>
-            </div>
-
-            <div class="customer-option-item" data-customer-id="CUS-1003"
-              onclick="window.shopApp.selectCustomer('CUS-1003')">
-              <div>
-                <strong class="shop-customer-company">Steppe Mining
-                  Technologies</strong>
-                <span class="shop-customer-id">CUS-1003 ·
-                  Mining</span>
-              </div>
-              <span
-                class="shop-customer-tier">Tier
-                B (-8%)</span>
-            </div>
-
-            <div class="customer-option-item" data-customer-id="CUS-1007"
-              onclick="window.shopApp.selectCustomer('CUS-1007')">
-              <div>
-                <strong class="shop-customer-company">Caspian Industrial
-                  Robotics</strong>
-                <span class="shop-customer-id">CUS-1007 ·
-                  Robotics</span>
-              </div>
-              <span
-                class="shop-customer-tier">Partner
-                (-15%)</span>
+            <div id="customer-dropdown-items">
+              <!-- Dynamically populated from MySQL database by shop-data.js -->
             </div>
           </div>
         </div>
@@ -203,7 +160,7 @@ if (empty($_SESSION['vostok_authenticated']) || empty($_SESSION['vostok_system_S
             <circle cx="20" cy="21" r="1" />
             <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
           </svg>
-          <span class="cart-count-badge" id="header-cart-badge">6</span>
+          <span class="cart-count-badge" id="header-cart-badge">0</span>
         </div>
 
         <!-- Quick RFQ CTA Button -->
@@ -216,7 +173,7 @@ if (empty($_SESSION['vostok_authenticated']) || empty($_SESSION['vostok_system_S
       </div>
 
       <!-- Top Bar Sign Out -->
-      <a href="../api/logout.php?system=Online%20Shop%20B2B&redirect=../Online%20Shop%20B2B/login.php" class="top-signout-btn" title="Sign Out of Online Shop B2B" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" ><span class="material-symbols-outlined">Sign Out</span></a>
+      <a href="./api/logout.php?redirect=../Online%20Shop%20B2B/login.php" class="top-signout-btn" title="Sign Out of Online Shop B2B" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" ><span class="material-symbols-outlined">Sign Out</span></a>
     </div>
   </header>
 
@@ -236,7 +193,7 @@ if (empty($_SESSION['vostok_authenticated']) || empty($_SESSION['vostok_system_S
         </div>
         <div class="telemetry-tag">
           <span>Account Manager:</span>
-          <strong>EMP-1008 (Bekzod Rakhimov)</strong>
+          <strong><?= htmlspecialchars(!empty($customer['account_manager_emp_id']) ? $customer['account_manager_emp_id'] : 'Dedicated Account Specialist') ?></strong>
         </div>
         <div class="telemetry-tag">
           <span>Security Classification:</span>
@@ -273,7 +230,6 @@ if (empty($_SESSION['vostok_authenticated']) || empty($_SESSION['vostok_system_S
           <div class="filter-group">
             <div class="filter-title">
               <span>Category</span>
-              <span class="filter-count-badge">5</span>
             </div>
             <div class="filter-option-list">
               <label class="filter-checkbox-label">
@@ -281,7 +237,6 @@ if (empty($_SESSION['vostok_authenticated']) || empty($_SESSION['vostok_system_S
                   data-filter-value="Optical Sensors">
                 <span class="custom-checkbox"></span>
                 <span class="filter-label-text">Optical Sensors</span>
-                <span class="filter-item-qty">(2)</span>
               </label>
 
               <label class="filter-checkbox-label">
@@ -289,7 +244,6 @@ if (empty($_SESSION['vostok_authenticated']) || empty($_SESSION['vostok_system_S
                   data-filter-value="Measurement Kits">
                 <span class="custom-checkbox"></span>
                 <span class="filter-label-text">Measurement Kits</span>
-                <span class="filter-item-qty">(1)</span>
               </label>
 
               <label class="filter-checkbox-label">
@@ -297,7 +251,6 @@ if (empty($_SESSION['vostok_authenticated']) || empty($_SESSION['vostok_system_S
                   data-filter-value="PLC Integration">
                 <span class="custom-checkbox"></span>
                 <span class="filter-label-text">PLC Integration</span>
-                <span class="filter-item-qty">(2)</span>
               </label>
 
               <label class="filter-checkbox-label">
@@ -305,7 +258,6 @@ if (empty($_SESSION['vostok_authenticated']) || empty($_SESSION['vostok_system_S
                   data-filter-value="Monitoring Gateways">
                 <span class="custom-checkbox"></span>
                 <span class="filter-label-text">Monitoring Gateways</span>
-                <span class="filter-item-qty">(3)</span>
               </label>
 
               <label class="filter-checkbox-label">
@@ -313,7 +265,6 @@ if (empty($_SESSION['vostok_authenticated']) || empty($_SESSION['vostok_system_S
                   data-filter-value="Calibration Stations">
                 <span class="custom-checkbox"></span>
                 <span class="filter-label-text">Calibration Stations</span>
-                <span class="filter-item-qty">(2)</span>
               </label>
             </div>
           </div>
@@ -322,7 +273,6 @@ if (empty($_SESSION['vostok_authenticated']) || empty($_SESSION['vostok_system_S
           <div class="filter-group">
             <div class="filter-title">
               <span>Target Sector</span>
-              <span class="filter-count-badge">6</span>
             </div>
             <div class="filter-option-list">
               <label class="filter-checkbox-label">
@@ -330,7 +280,6 @@ if (empty($_SESSION['vostok_authenticated']) || empty($_SESSION['vostok_system_S
                   data-filter-value="Geomatics & GIS">
                 <span class="custom-checkbox"></span>
                 <span class="filter-label-text">Geomatics & GIS</span>
-                <span class="filter-item-qty">(3)</span>
               </label>
 
               <label class="filter-checkbox-label">
@@ -338,7 +287,6 @@ if (empty($_SESSION['vostok_authenticated']) || empty($_SESSION['vostok_system_S
                   data-filter-value="Process Automation">
                 <span class="custom-checkbox"></span>
                 <span class="filter-label-text">Process Automation</span>
-                <span class="filter-item-qty">(4)</span>
               </label>
 
               <label class="filter-checkbox-label">
@@ -346,7 +294,6 @@ if (empty($_SESSION['vostok_authenticated']) || empty($_SESSION['vostok_system_S
                   data-filter-value="Mining">
                 <span class="custom-checkbox"></span>
                 <span class="filter-label-text">Mining</span>
-                <span class="filter-item-qty">(3)</span>
               </label>
 
               <label class="filter-checkbox-label">
@@ -354,7 +301,6 @@ if (empty($_SESSION['vostok_authenticated']) || empty($_SESSION['vostok_system_S
                   data-filter-value="Industrial Metrology">
                 <span class="custom-checkbox"></span>
                 <span class="filter-label-text">Industrial Metrology</span>
-                <span class="filter-item-qty">(2)</span>
               </label>
 
               <label class="filter-checkbox-label">
@@ -362,7 +308,6 @@ if (empty($_SESSION['vostok_authenticated']) || empty($_SESSION['vostok_system_S
                   data-filter-value="Robotics">
                 <span class="custom-checkbox"></span>
                 <span class="filter-label-text">Robotics</span>
-                <span class="filter-item-qty">(3)</span>
               </label>
 
               <label class="filter-checkbox-label">
@@ -370,7 +315,6 @@ if (empty($_SESSION['vostok_authenticated']) || empty($_SESSION['vostok_system_S
                   data-filter-value="Water Infrastructure">
                 <span class="custom-checkbox"></span>
                 <span class="filter-label-text">Water Infrastructure</span>
-                <span class="filter-item-qty">(2)</span>
               </label>
             </div>
           </div>
@@ -386,7 +330,6 @@ if (empty($_SESSION['vostok_authenticated']) || empty($_SESSION['vostok_system_S
                   data-filter-value="in-stock">
                 <span class="custom-checkbox"></span>
                 <span class="filter-label-text">In Stock (Dispatches 24h)</span>
-                <span class="filter-item-qty">(6)</span>
               </label>
 
               <label class="filter-checkbox-label">
@@ -394,7 +337,6 @@ if (empty($_SESSION['vostok_authenticated']) || empty($_SESSION['vostok_system_S
                   data-filter-value="lead-time">
                 <span class="custom-checkbox"></span>
                 <span class="filter-label-text">Lead Time &lt; 3 Wks</span>
-                <span class="filter-item-qty">(2)</span>
               </label>
 
               <label class="filter-checkbox-label">
@@ -402,7 +344,6 @@ if (empty($_SESSION['vostok_authenticated']) || empty($_SESSION['vostok_system_S
                   data-filter-value="custom">
                 <span class="custom-checkbox"></span>
                 <span class="filter-label-text">Custom Engineering Order</span>
-                <span class="filter-item-qty">(2)</span>
               </label>
             </div>
           </div>
@@ -480,8 +421,7 @@ if (empty($_SESSION['vostok_authenticated']) || empty($_SESSION['vostok_system_S
             </div>
 
             <div class="toolbar-meta">
-              <span class="results-count" id="catalog-results-count">Showing <strong>10</strong> industrial equipment
-                packages</span>
+              <span class="results-count" id="catalog-results-count">—</span>
 
               <div class="sort-group">
                 <label for="sort-select-input">Sort:</label>
@@ -555,36 +495,33 @@ if (empty($_SESSION['vostok_authenticated']) || empty($_SESSION['vostok_system_S
         <div class="dashboard-kpi-grid">
           <div class="kpi-card">
             <span class="kpi-title">Active Platform Orders</span>
-            <div class="kpi-value">8 Active</div>
-            <span class="kpi-trend positive">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
-                <polyline points="18 15 12 9 6 15" />
-              </svg>
-              100% on schedule
+            <div class="kpi-value" id="shop-kpi-orders">—</div>
+            <span class="kpi-trend positive" id="shop-kpi-orders-sub">
+              Live orders
             </span>
           </div>
 
           <div class="kpi-card">
             <span class="kpi-title">Total Pipeline Value</span>
-            <div class="kpi-value">€596,083</div>
-            <span class="kpi-trend neutral">
-              <span>Across PRJ-2026-001 to 015</span>
+            <div class="kpi-value" id="shop-kpi-value">—</div>
+            <span class="kpi-trend neutral" id="shop-kpi-value-sub">
+              <span>Platform orders</span>
             </span>
           </div>
 
           <div class="kpi-card">
             <span class="kpi-title">In-Transit Freight</span>
-            <div class="kpi-value">3 Shipments</div>
-            <span class="kpi-trend positive">
-              <span>Rail & Air Freight Corridor</span>
+            <div class="kpi-value" id="shop-kpi-shipments">—</div>
+            <span class="kpi-trend positive" id="shop-kpi-shipments-sub">
+              <span>Shipments</span>
             </span>
           </div>
 
           <div class="kpi-card">
             <span class="kpi-title">Pending Quotes (RFQ)</span>
-            <div class="kpi-value">2 Open RFQs</div>
-            <span class="kpi-trend neutral">
-              <span>SAL Review by EMP-1008</span>
+            <div class="kpi-value" id="shop-kpi-rfqs">—</div>
+            <span class="kpi-trend neutral" id="shop-kpi-rfqs-sub">
+              <span>Commercial RFQs</span>
             </span>
           </div>
         </div>
@@ -796,7 +733,8 @@ if (empty($_SESSION['vostok_authenticated']) || empty($_SESSION['vostok_system_S
   <!-- Consolidated JavaScript Application -->
   <script src="js/app.js"></script>
   <link rel="stylesheet" href="../assets/css/api-ui.css">
-  <script src="../assets/js/api-client.js"></script>
+  <script src="../assets/js/api-core.js"></script>
+  <script src="../assets/js/api-shop.js"></script>
   <script src="js/shop-data.js"></script>
 </body>
 

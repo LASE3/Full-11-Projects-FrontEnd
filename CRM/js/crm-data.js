@@ -1,6 +1,6 @@
 /**
  * VOSTOKPRIBOR CRM — Live Data Integration  (Class 5)
- * Requires: ../../assets/js/api-client.js loaded before this file.
+ * Requires: assets/js/api-core.js and assets/js/api-crm.js loaded before this file.
  *
  * What this module does:
  *  - Customers.php  → replaces static table rows with live DB data
@@ -16,8 +16,10 @@
 (function () {
   'use strict';
 
-  const api = window.VostokAPI;
-  const { ui, crm, escHtml } = api;
+  const core = window.VostokCore || window.VostokAPI || {};
+  const crm = window.VostokCRM || window.VostokAPI?.crm;
+  const { ui = {}, escHtml = (s) => s } = core;
+  const api = { handleApiError: core.handleApiError || console.error, ui, crm, escHtml };
 
   /* ──────────────────────────────────────────────
    * CUSTOMERS PAGE
@@ -328,6 +330,143 @@
   }
 
   /* ──────────────────────────────────────────────
+   * DASHBOARD — KPI Cards, Funnel, Accounts, Activity
+   * Elements: #dash-kpi-leads, #dash-kpi-opps, #dash-kpi-pipeline, #dash-kpi-winrate
+   *           #dash-funnel-container, #dash-accounts-tbody, #dash-activity-feed
+   * ────────────────────────────────────────────── */
+  async function loadDashboard() {
+    const kpiLeads    = document.getElementById('dash-kpi-leads');
+    const kpiOpps     = document.getElementById('dash-kpi-opps');
+    const kpiPipeline = document.getElementById('dash-kpi-pipeline');
+    const kpiWinrate  = document.getElementById('dash-kpi-winrate');
+    const funnelEl    = document.getElementById('dash-funnel-container');
+    const accountsTbody = document.getElementById('dash-accounts-tbody');
+    const activityFeed  = document.getElementById('dash-activity-feed');
+
+    if (!kpiLeads && !funnelEl && !accountsTbody && !activityFeed) return;
+
+    try {
+      const res = await crm.dashboard();
+      const d   = res.data || {};
+
+      // ── KPI Cards ──
+      if (kpiLeads)    kpiLeads.textContent    = d.lead_count    ?? d.new_leads    ?? '—';
+      if (kpiOpps)     kpiOpps.textContent     = d.opp_count     ?? d.open_deals   ?? '—';
+      if (kpiPipeline) {
+        const pval = d.pipeline_value ?? d.gross_pipeline ?? null;
+        kpiPipeline.textContent = pval != null ? ui.currency(pval, 'USD') : '—';
+      }
+      if (kpiWinrate)  kpiWinrate.textContent  = d.win_rate != null ? d.win_rate + '%' : '—';
+
+      // Sub-text updates
+      const leadSub   = document.getElementById('dash-kpi-leads-sub');
+      const oppSub    = document.getElementById('dash-kpi-opps-sub');
+      const pipeSub   = document.getElementById('dash-kpi-pipeline-sub');
+      if (leadSub  && d.qualified_this_week != null) leadSub.textContent  = d.qualified_this_week + ' Qualified this week';
+      if (oppSub   && d.late_negotiation    != null) oppSub.textContent   = d.late_negotiation + ' in Late Negotiation';
+      if (pipeSub  && d.weighted_pipeline   != null) pipeSub.innerHTML    = 'Weighted: <strong>' + ui.currency(d.weighted_pipeline, 'USD') + '</strong>';
+
+      // All Accounts link counter
+      const accLink = document.getElementById('dash-accounts-link');
+      if (accLink && d.customer_count != null) accLink.textContent = 'All Accounts (' + d.customer_count + ')';
+
+      // Nav badges
+      const navLeads = document.getElementById('dash-nav-leads');
+      const navCust  = document.getElementById('dash-nav-customers');
+      const navOpps  = document.getElementById('dash-nav-opps');
+      if (navLeads && d.lead_count != null)     navLeads.textContent = d.lead_count;
+      if (navCust  && d.customer_count != null) navCust.textContent  = d.customer_count;
+      if (navOpps  && d.opp_count != null)      navOpps.textContent   = d.opp_count;
+
+      // ── Funnel ──
+      if (funnelEl && Array.isArray(d.funnel_stages) && d.funnel_stages.length) {
+        const maxVal = Math.max(...d.funnel_stages.map(s => parseFloat(s.total_val || 0)), 1);
+        funnelEl.innerHTML = d.funnel_stages.map((s, i) => {
+          const pct = Math.round((parseFloat(s.total_val || 0) / maxVal) * 100);
+          return `
+            <div class="funnel-stage">
+              <div class="funnel-stage-header">
+                <span class="funnel-stage-name">${i + 1}. ${escHtml(s.stage)}</span>
+                <span class="funnel-stage-count">${s.count} Deal${s.count !== 1 ? 's' : ''}</span>
+              </div>
+              <div class="funnel-stage-val">${ui.currency(s.total_val || 0, 'USD')}</div>
+              <div class="funnel-bar-track">
+                <div class="funnel-bar-fill" style="width:${pct}%"></div>
+              </div>
+              <div class="funnel-conversion-rate">
+                <span>${i === 0 ? 'Entry' : 'Step Conv.'}</span>
+                <strong>${s.conversion_rate ?? (i === 0 ? '100%' : '—')}</strong>
+              </div>
+            </div>`;
+        }).join('');
+      } else if (funnelEl) {
+        funnelEl.innerHTML = '<div style="padding:24px;text-align:center;opacity:.5;">No pipeline data available.</div>';
+      }
+
+      // ── Top Accounts Table ──
+      if (accountsTbody) {
+        const accs = d.top_accounts || [];
+        if (!accs.length) {
+          accountsTbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:28px;opacity:.5;">No customer accounts found.</td></tr>';
+        } else {
+          accountsTbody.innerHTML = accs.map(c => {
+            const tierClass = c.account_tier === 'Strategic' ? 'tier-badge strategic'
+              : c.account_tier === 'Enterprise' ? 'tier-badge tier-1' : 'tier-badge tier-2';
+            return `
+              <tr class="account-row account-row-tagged" onclick="window.location.href='CustomerDetail.php?id=${encodeURIComponent(c.cus_id)}'">
+                <td>
+                  <div class="account-name-cell">
+                    <span class="account-name-title">${escHtml(c.company_name)}</span>
+                    <span class="account-name-sub">${escHtml(c.industry || '')} · ${escHtml(c.cus_id)}</span>
+                  </div>
+                </td>
+                <td><span class="${tierClass}">${escHtml(c.account_tier || c.industry || '—')}</span></td>
+                <td><strong class="crm-mono-navy">${ui.currency(c.total_contract_value || 0, 'USD')}</strong></td>
+                <td>
+                  <span class="crm-mono-bold-indigo">${c.open_opps ?? 0} Deal${(c.open_opps ?? 0) !== 1 ? 's' : ''}</span>
+                </td>
+                <td><a href="CustomerDetail.php?id=${encodeURIComponent(c.cus_id)}" class="btn btn-outline btn-sm">Inspect →</a></td>
+              </tr>`;
+          }).join('');
+        }
+      }
+
+      // ── Activity Feed ──
+      if (activityFeed) {
+        const acts = d.recent_activities || [];
+        if (!acts.length) {
+          activityFeed.innerHTML = '<div style="padding:24px;opacity:.5;text-align:center;">No recent activity recorded.</div>';
+        } else {
+          const iconMap = { contract: '✓', deal: '⚡', quote: '📑', meeting: '🤝', call: '📞', email: '✉️' };
+          activityFeed.innerHTML = acts.map(a => {
+            const typeKey = (a.activity_type || '').toLowerCase();
+            const icon    = iconMap[typeKey] || '●';
+            return `
+              <div class="activity-item">
+                <div class="activity-icon-container ${escHtml(typeKey || 'deal')}">${icon}</div>
+                <div class="activity-content">
+                  <div class="activity-title">${escHtml(a.title || a.activity_type || 'Activity')}</div>
+                  <div class="activity-desc">${escHtml(a.notes || a.description || '')}</div>
+                  <span class="activity-timestamp">${ui.date(a.activity_date || a.created_at)} · ${escHtml(a.company_name || a.cus_id || '')}</span>
+                </div>
+              </div>`;
+          }).join('');
+        }
+      }
+
+    } catch (err) {
+      api.handleApiError(err, 'CRM Dashboard');
+      if (kpiLeads)    kpiLeads.textContent    = '—';
+      if (kpiOpps)     kpiOpps.textContent     = '—';
+      if (kpiPipeline) kpiPipeline.textContent = '—';
+      if (kpiWinrate)  kpiWinrate.textContent  = '—';
+      if (funnelEl)    funnelEl.innerHTML      = '<div style="padding:24px;color:#e74c3c;text-align:center;">Pipeline unavailable.</div>';
+      if (accountsTbody) accountsTbody.innerHTML = '<tr><td colspan="5" style="color:#e74c3c;padding:24px;text-align:center;">Failed to load accounts.</td></tr>';
+      if (activityFeed)  activityFeed.innerHTML  = '<div style="padding:24px;color:#e74c3c;">Failed to load activity.</div>';
+    }
+  }
+
+  /* ──────────────────────────────────────────────
    * Omni-search filter (client-side, post-load)
    * ────────────────────────────────────────────── */
   function initSearch() {
@@ -355,6 +494,7 @@
    * Boot
    * ────────────────────────────────────────────── */
   document.addEventListener('DOMContentLoaded', () => {
+    loadDashboard();
     loadCustomers();
     loadLeads();
     loadOpportunities();
