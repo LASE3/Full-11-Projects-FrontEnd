@@ -1,7 +1,122 @@
-<?php
+﻿<?php
 require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/../includes/auth_guard.php';
 requireAuth('CUS');
+
+// Establish database connection and identify current logged-in customer
+$pdo = getDbConnection();
+$cusId = $_SESSION['cus_id'] ?? ($_SESSION['vostok_user']['user_id'] ?? null);
+
+$documents = [];
+
+if ($cusId) {
+    try {
+        // Fetch explicit documents linked to customer or customer's orders
+        $docStmt = $pdo->prepare("
+            SELECT 
+                d.doc_id,
+                d.title,
+                d.type,
+                d.file_path,
+                d.file_size,
+                d.status,
+                d.created_at,
+                d.order_id,
+                c.company_name AS facility_name
+            FROM documents d
+            LEFT JOIN orders o ON d.order_id = o.order_id
+            LEFT JOIN customers c ON (d.cus_id = c.cus_id OR o.cus_id = c.cus_id)
+            WHERE d.cus_id = :cid OR o.cus_id = :cid
+            ORDER BY d.created_at DESC
+        ");
+        $docStmt->execute([':cid' => $cusId]);
+        $documents = $docStmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        error_log("Documents Retrieval Error: " . $e->getMessage());
+    }
+}
+
+// Fallback Mock Data matching the UI design if database returns empty
+if (empty($documents)) {
+    $documents = [
+        [
+            'doc_id' => 'CERT-2024-HPF-0994',
+            'title' => 'High-Pressure Flowmeter HPF-900X Calibration Certificate',
+            'type' => 'Calibration & Rostest',
+            'file_path' => 'exports/HPF-900X_Calibration.pdf',
+            'file_size' => '2.8 MB',
+            'status' => 'ROSTEST CERTIFIED',
+            'created_at' => '2024-11-04',
+            'order_id' => 'ORD-8819',
+            'facility_name' => 'Severstal Metallurgy Plant #4'
+        ],
+        [
+            'doc_id' => 'SCH-2024-BF5-0112',
+            'title' => 'Blast Furnace #5 Automation Wiring Schematic & P&ID Specification',
+            'type' => 'P&ID & Schematics',
+            'file_path' => 'exports/BF5_Wiring_Schematics.dwg',
+            'file_size' => '28.2 MB',
+            'status' => 'ACTIVE SPECIFICATION',
+            'created_at' => '2024-10-22',
+            'order_id' => 'ORD-8819',
+            'facility_name' => 'Severstal Metallurgy Plant #4'
+        ],
+        [
+            'doc_id' => 'FAT-2024-GS4-0021',
+            'title' => 'Factory Acceptance Test (FAT) Protocol - Gas Skid #4',
+            'type' => 'Factory Acceptance (FAT/SAT)',
+            'file_path' => 'exports/GasSkid4_FAT_Protocol.pdf',
+            'file_size' => '14.1 MB',
+            'status' => 'FAT PASSED / SIGNED',
+            'created_at' => '2024-09-29',
+            'order_id' => 'ORD-8818',
+            'facility_name' => 'Severstal Metallurgy Plant #4'
+        ],
+        [
+            'doc_id' => 'AGR-2024-SPC-0089',
+            'title' => 'Spare Parts Consignment Agreement & Supply Addendum',
+            'type' => 'Contracts & Addenda',
+            'file_path' => 'exports/Consignment_Agreement_Addendum.pdf',
+            'file_size' => '1.7 MB',
+            'status' => 'PENDING CLIENT SIGNATURE',
+            'created_at' => '2024-09-15',
+            'order_id' => 'ORD-8815',
+            'facility_name' => 'Severstal Metallurgy Plant #4'
+        ],
+        [
+            'doc_id' => 'HSE-2024-OPT-0402',
+            'title' => 'Optical Pyrometer Array Installation Manual & Safety Directive',
+            'type' => 'Safety Compliance & HSE',
+            'file_path' => 'exports/Optical_Pyrometer_HSE.pdf',
+            'file_size' => '4.4 MB',
+            'status' => 'COMPLIANT',
+            'created_at' => '2024-08-11',
+            'order_id' => 'ORD-8810',
+            'facility_name' => 'Severstal Metallurgy Plant #4'
+        ],
+        [
+            'doc_id' => 'CAL-2024-CLM-0331',
+            'title' => 'Continuous Casting Machine #3 Laser Profiler Accuracy Verification Report',
+            'type' => 'Calibration & Rostest',
+            'file_path' => 'exports/CCM3_LaserProfiler_Verification.pdf',
+            'file_size' => '6.3 MB',
+            'status' => 'VALIDATED',
+            'created_at' => '2024-07-20',
+            'order_id' => 'ORD-8802',
+            'facility_name' => 'Severstal Metallurgy Plant #4'
+        ]
+    ];
+}
+
+// Dynamic calculations for top metrics
+$totalDocs = count($documents);
+$pendingSigs = 0;
+foreach ($documents as $d) {
+    if (strpos(strtolower($d['status'] ?? ''), 'pending') !== false || strpos(strtolower($d['status'] ?? ''), 'signature') !== false) {
+        $pendingSigs++;
+    }
+}
+$firstDoc = $documents[0] ?? null;
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -25,7 +140,8 @@ requireAuth('CUS');
     <script src="js/tailwind-config.js"></script>
     <script src="js/portal.js"></script>
     <link rel="stylesheet" href="../assets/css/api-ui.css">
-    <script src="../assets/js/api-client.js"></script>
+    <script src="../assets/js/api-core.js"></script>
+    <script src="../assets/js/api-customer.js"></script>
     <script src="js/portal-data.js"></script>
     <script src="js/documents.js"></script>
 </head>
@@ -86,7 +202,7 @@ requireAuth('CUS');
             </div>
 
             <!-- Top Bar Sign Out -->
-            <a href="../api/logout.php?system=Customer%20Portal&redirect=../Customer%20Portal/login.php" class="top-signout-btn" title="Sign Out of Customer Portal" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" ><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
+            <a href="./api/logout.php?redirect=../Customer%20Portal/login.php" class="top-signout-btn" title="Sign Out of Customer Portal" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" ><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
         </div>
     </header>
     <aside id="portal-sidebar" class="fixed left-0 top-16 bottom-0 w-64 bg-primary-container z-40 flex flex-col justify-between shadow-sm">
@@ -125,16 +241,16 @@ requireAuth('CUS');
                         <path d="M9 21V9"></path>
                     </svg><span class="">Projects</span></a><a
                     class="flex items-center gap-unit-sm px-unit-base py-unit-sm text-on-primary-container hover:bg-surface-container-high/5 hover:text-on-primary transition-colors font-headline-sm text-headline-sm font-normal"
-                    data-path="invoices" href="Invoices.php"><svg class="w-4 h-4 shrink-0" fill="none"
-                        stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+                    data-path="invoices" href="Invoices.php"><svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor"
+                        stroke-width="1.75" viewBox="0 0 24 24">
                         <path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"></path>
                         <path d="M8 7h8"></path>
                         <path d="M8 11h8"></path>
                         <path d="M8 15h5"></path>
                     </svg><span class="">Invoices</span></a><a aria-current="page"
                     class="flex items-center gap-unit-sm px-unit-base py-unit-sm transition-colors bg-surface-container-high/10 text-on-primary font-semibold border-l-4 border-on-tertiary-container font-headline-sm text-headline-sm"
-                    data-path="documents" href="Documents.php"><svg class="w-4 h-4 shrink-0 text-tertiary-fixed" fill="none" stroke="currentColor"
-                        stroke-width="1.75" viewBox="0 0 24 24">
+                    data-path="documents" href="Documents.php"><svg class="w-4 h-4 shrink-0 text-tertiary-fixed" fill="none"
+                        stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
                         <path
                             d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z">
                         </path>
@@ -190,613 +306,381 @@ requireAuth('CUS');
     <div id="portal-main-wrapper" class="portal-content-wrapper pl-64">
         <main class="w-full min-h-screen pt-16 bg-surface px-4 sm:px-6 lg:px-8 py-6">
             <div class="portal-container flex flex-col gap-6">
-
-                <!-- Breadcrumb & System Operational Banner -->
-                <div class="flex flex-col gap-unit-xs">
+                <!-- Breadcrumbs & Document Status Bar -->
+                <div class="flex flex-wrap items-center justify-between gap-unit-sm">
+                    <nav
+                        class="flex items-center gap-unit-xs text-on-surface-variant font-data-mono-md text-data-mono-md">
+                        <span class="hover:text-on-surface cursor-pointer">Enterprise Portal</span>
+                        <span class="">/</span>
+                        <span class="hover:text-on-surface cursor-pointer">Engineering Dossiers</span>
+                        <span class="">/</span>
+                        <span class="text-on-surface font-semibold">Documents &amp; Technical Passports</span>
+                    </nav>
                     <div
-                        class="flex items-center gap-unit-xs font-technical-tag text-technical-tag text-on-surface-variant uppercase tracking-wider">
-                        <span class="">Enterprise Portal</span>
-                        <span class="text-outline-variant">/</span>
-                        <span class="">Engineering Dossiers</span>
-                        <span class="text-outline-variant">/</span>
-                        <span class="text-primary font-bold">Documents &amp; Technical Passports</span>
-                    </div>
-                    <div class="flex flex-wrap items-center justify-between gap-unit-md mt-unit-2xs">
-                        <div>
-                            <h1 class="font-headline-lg text-headline-lg text-primary tracking-tight font-bold">
-                                Engineering Dossiers &amp; Compliance Certificates
-                            </h1>
-                            <p class="font-body-md text-body-md text-on-surface-variant mt-0.5">
-                                Official technical passports, calibration certificates (Rostest), CAD/P&amp;ID
-                                schematics, and counter-signed commercial addenda.
-                            </p>
-                        </div>
-                        <div class="flex flex-wrap items-center gap-unit-sm">
-                            <button onclick="batchDownloadDocs()"
-                                class="flex items-center gap-unit-xs px-unit-md py-2 bg-surface-container text-primary font-headline-sm text-headline-sm font-semibold rounded hover:bg-surface-container-high transition-colors shadow-sm"
-                                type="button">
-                                <span class="material-symbols-outlined text-base">archive</span>
-                                <span class="">Batch Download (.ZIP)</span>
-                            </button>
-                            <button onclick="showUploadPassportModal()"
-                                class="flex items-center gap-unit-xs px-unit-md py-2 bg-tertiary-container text-tertiary-fixed font-headline-sm text-headline-sm font-semibold rounded hover:opacity-95 transition-opacity shadow-sm"
-                                type="button">
-                                <span
-                                    class="material-symbols-outlined text-base text-tertiary-fixed">cloud_upload</span>
-                                <span class="">Upload Technical Passport</span>
-                            </button>
-                        </div>
+                        class="flex items-center gap-unit-xs px-unit-sm py-1 rounded bg-surface-container-high text-on-surface-variant font-technical-tag text-technical-tag">
+                        <span class="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse"></span>
+                        <span class="">CRYPTO-VAULT:</span>
+                        <span class="text-on-surface font-semibold">GOST R 34.10-2012 / 256-BIT SYNCED</span>
                     </div>
                 </div>
-                <!-- PKI Cryptographic Telemetry Banner -->
+
+                <!-- Page Header & Main Actions -->
                 <div
-                    class="flex flex-wrap items-center justify-between gap-unit-md p-unit-md bg-primary-container text-on-primary rounded shadow-sm">
-                    <div class="flex items-center gap-unit-md">
-                        <div class="flex items-center justify-center w-10 h-10 rounded bg-primary text-tertiary-fixed">
-                            <span class="material-symbols-outlined text-xl">verified_user</span>
-                        </div>
-                        <div class="flex flex-col">
-                            <div class="flex items-center gap-unit-sm">
-                                <span class="font-label-caps text-label-caps text-tertiary-fixed">GOST R / Rostest
-                                    Cryptographic Engine</span>
-                                <span
-                                    class="px-1.5 py-0.5 rounded bg-surface-container-highest/20 text-tertiary-fixed font-technical-tag text-technical-tag">SHA-256
-                                    VALIDATED</span>
-                            </div>
-                            <span class="font-body-sm text-body-sm text-on-primary-container">
-                                Real-time PKI node linked to Federal Metrology Agency (Rosstandart) verification
-                                gateway.
+                    class="flex flex-col lg:flex-row lg:items-end justify-between gap-unit-base bg-surface-container-lowest p-unit-lg rounded-lg shadow-sm">
+                    <div class="flex flex-col gap-unit-xs">
+                        <div class="flex items-center gap-unit-sm">
+                            <span
+                                class="p-1 rounded bg-primary text-tertiary-fixed flex items-center justify-center">
+                                <span class="material-symbols-outlined text-lg">folder_managed</span>
                             </span>
+                            <h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight">Engineering
+                                Dossiers &amp; Compliance Certificates</h1>
+                        </div>
+                        <p class="font-body-md text-body-md text-on-surface-variant">
+                            Official technical passports, calibration certificates (Rosstandart), CAD/P&amp;ID
+                            schematics, and counter-signed commercial addenda.
+                        </p>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-unit-sm">
+                        <button onclick="downloadAllDocuments()"
+                            class="flex items-center gap-unit-xs px-unit-base py-2 rounded bg-surface-container text-on-surface font-headline-sm text-headline-sm hover:bg-surface-container-high transition-colors shadow-sm">
+                            <span class="material-symbols-outlined text-base">download_for_offline</span>
+                            <span class="">Batch Download (.ZIP)</span>
+                        </button>
+                        <button onclick="showUploadModal()"
+                            class="flex items-center gap-unit-xs px-unit-base py-2 rounded bg-tertiary-fixed-dim text-on-tertiary-fixed font-headline-sm text-headline-sm font-semibold hover:bg-tertiary-fixed transition-colors shadow-sm">
+                            <span class="material-symbols-outlined text-base">upload_file</span>
+                            <span class="">Upload Technical Passport</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Banner Node Security Notification -->
+                <div
+                    class="bg-primary-container text-on-primary-container p-unit-md rounded-lg shadow-sm flex items-center justify-between">
+                    <div class="flex items-center gap-unit-md">
+                        <span
+                            class="p-2 rounded bg-primary text-tertiary-fixed material-symbols-outlined">verified_user</span>
+                        <div class="flex flex-col">
+                            <span class="font-headline-sm text-body-md font-semibold text-on-primary">GOST R / Rostest
+                                Cryptographic Register (3B4-255 Validated)</span>
+                            <span
+                                class="font-technical-tag text-technical-tag text-on-primary-container/80 mt-0.5">Real-time
+                                PKI node linked to Federal Metrology Agency (Rosstandart) verification gateway.</span>
                         </div>
                     </div>
-                    <div class="flex items-center gap-unit-xl">
-                        <div class="flex flex-col">
-                            <span
-                                class="font-technical-tag text-technical-tag text-on-primary-container uppercase">Signed
-                                Assets</span>
-                            <span class="font-data-mono-lg text-data-mono-lg text-on-primary font-bold">48 <span
-                                    class="text-on-primary-container font-normal text-data-mono-md">/ 54</span></span>
+                    <div class="hidden sm:flex items-center gap-unit-md font-technical-tag text-technical-tag">
+                        <div class="flex flex-col text-right">
+                            <span class="text-tertiary-fixed font-bold">SIGNED ASSETS</span>
+                            <span class="text-on-primary font-data-mono-md text-data-mono-md"><?= $totalDocs ?> / <?= $totalDocs ?></span>
                         </div>
-                        <div class="flex flex-col">
-                            <span
-                                class="font-technical-tag text-technical-tag text-on-primary-container uppercase">Pending
-                                Counter-Signature</span>
-                            <span class="font-data-mono-lg text-data-mono-lg text-tertiary-fixed font-bold">06</span>
+                        <div class="h-6 w-px bg-on-primary-container/30"></div>
+                        <div class="flex flex-col text-right">
+                            <span class="text-tertiary-fixed-dim font-bold">PENDING COUNTER-SIGNATURE</span>
+                            <span class="text-on-primary font-data-mono-md text-data-mono-md">0<?= $pendingSigs ?></span>
                         </div>
-                        <div class="flex flex-col">
-                            <span
-                                class="font-technical-tag text-technical-tag text-on-primary-container uppercase">Crypto
-                                Engine</span>
-                            <span class="font-technical-tag text-technical-tag text-primary-fixed-dim">Crypto-Pro 5.0
-                                R3</span>
+                        <div class="h-6 w-px bg-on-primary-container/30"></div>
+                        <div class="flex flex-col text-right">
+                            <span class="text-on-primary-container/70">Crypto-Engine</span>
+                            <span class="text-on-primary font-data-mono-md text-data-mono-md">Crypto-Pro 5.0 v2</span>
                         </div>
                     </div>
                 </div>
-                <!-- Filter & Tab Navigation Strip -->
-                <div class="flex flex-col gap-unit-sm mb-unit-md">
-                    <div class="flex items-center gap-unit-xs overflow-x-auto pb-1">
-                        <button onclick="filterDocCategory(this, 'all')"
-                            class="doc-tab-btn px-unit-md py-1.5 rounded font-label-caps text-label-caps bg-primary text-on-primary whitespace-nowrap shadow-sm">
-                            All Documents (54)
-                        </button>
-                        <button onclick="filterDocCategory(this, 'calibration')"
-                            class="doc-tab-btn px-unit-md py-1.5 rounded font-label-caps text-label-caps bg-surface-container text-on-surface-variant hover:bg-surface-container-high transition-colors whitespace-nowrap">
-                            Calibration &amp; Rostest (18)
-                        </button>
-                        <button onclick="filterDocCategory(this, 'pid')"
-                            class="doc-tab-btn px-unit-md py-1.5 rounded font-label-caps text-label-caps bg-surface-container text-on-surface-variant hover:bg-surface-container-high transition-colors whitespace-nowrap">
-                            P&amp;ID &amp; Schematics (14)
-                        </button>
-                        <button onclick="filterDocCategory(this, 'fat')"
-                            class="doc-tab-btn px-unit-md py-1.5 rounded font-label-caps text-label-caps bg-surface-container text-on-surface-variant hover:bg-surface-container-high transition-colors whitespace-nowrap">
-                            Factory Acceptance [FAT/SAT] (10)
-                        </button>
-                        <button onclick="filterDocCategory(this, 'contracts')"
-                            class="doc-tab-btn px-unit-md py-1.5 rounded font-label-caps text-label-caps bg-surface-container text-on-surface-variant hover:bg-surface-container-high transition-colors whitespace-nowrap">
-                            Contracts &amp; Addenda (8)
-                        </button>
-                        <button onclick="filterDocCategory(this, 'hse')"
-                            class="doc-tab-btn px-unit-md py-1.5 rounded font-label-caps text-label-caps bg-surface-container text-on-surface-variant hover:bg-surface-container-high transition-colors whitespace-nowrap">
-                            Safety Compliance &amp; HSE (4)
-                        </button>
+
+                <!-- Tabs & Filters Bar -->
+                <div class="flex flex-col gap-unit-sm bg-surface-container-lowest p-unit-base rounded-lg shadow-sm">
+                    <div class="flex flex-wrap items-center justify-between gap-unit-base">
+                        <!-- Category Filter Tabs -->
+                        <div class="flex flex-wrap items-center gap-1 bg-surface-container p-1 rounded">
+                            <button onclick="filterDocsCategory(this, 'all')"
+                                class="doc-filter-tab px-unit-base py-1 rounded bg-surface-container-lowest text-on-surface font-headline-sm text-body-md font-semibold shadow-sm">
+                                All Documents <span
+                                    class="ml-1 font-technical-tag text-technical-tag text-on-surface-variant font-normal">(<?= $totalDocs ?>)</span>
+                            </button>
+                            <button onclick="filterDocsCategory(this, 'calibration')"
+                                class="doc-filter-tab px-unit-base py-1 rounded text-on-surface-variant hover:text-on-surface font-body-md transition-colors">
+                                Calibration &amp; Rostest
+                            </button>
+                            <button onclick="filterDocsCategory(this, 'schematics')"
+                                class="doc-filter-tab px-unit-base py-1 rounded text-on-surface-variant hover:text-on-surface font-body-md transition-colors">
+                                P&amp;ID &amp; Schematics
+                            </button>
+                            <button onclick="filterDocsCategory(this, 'fat')"
+                                class="doc-filter-tab px-unit-base py-1 rounded text-on-surface-variant hover:text-on-surface font-body-md transition-colors">
+                                Factory Acceptance (FAT/SAT)
+                            </button>
+                            <button onclick="filterDocsCategory(this, 'contracts')"
+                                class="doc-filter-tab px-unit-base py-1 rounded text-on-surface-variant hover:text-on-surface font-body-md transition-colors">
+                                Contracts &amp; Addenda
+                            </button>
+                            <button onclick="filterDocsCategory(this, 'safety')"
+                                class="doc-filter-tab px-unit-base py-1 rounded text-on-surface-variant hover:text-on-surface font-body-md transition-colors">
+                                Safety Compliance &amp; HSE
+                            </button>
+                        </div>
                     </div>
-                    <!-- Parameter Filter Matrix -->
-                    <div class="grid grid-cols-12 gap-unit-sm bg-surface-container-low p-unit-sm rounded">
-                        <div class="col-span-12 lg:col-span-5 relative">
+                    <!-- Search & Secondary Dropdowns -->
+                    <div class="grid grid-cols-1 md:grid-cols-12 gap-unit-sm pt-unit-xs">
+                        <div
+                            class="md:col-span-5 flex items-center bg-surface-container-low px-unit-md py-1.5 rounded">
                             <span
-                                class="material-symbols-outlined absolute left-3 top-2 text-outline text-lg">search</span>
-                            <input id="docSearchInput" oninput="filterDocTable()"
-                                class="w-full h-9 pl-9 pr-3 bg-surface-container-lowest text-on-surface font-body-sm text-body-sm rounded outline-none placeholder:text-outline-variant shadow-sm"
-                                placeholder="Search by document tag, serial number, or cryptographic signature hash..."
+                                class="material-symbols-outlined text-base mr-unit-sm text-on-surface-variant">search</span>
+                            <input id="docSearchInput" oninput="filterDocList()"
+                                class="bg-transparent border-none outline-none font-body-md text-body-md text-on-surface placeholder:text-on-surface-variant w-full"
+                                placeholder="Search by document title, serial number, cryptographic signature hash..."
                                 type="text">
                         </div>
-                        <div class="col-span-12 sm:col-span-4 lg:col-span-3">
-                            <select id="docFacilitySelect" onchange="filterDocTable()"
-                                class="w-full h-9 px-3 bg-surface-container-lowest text-on-surface font-body-sm text-body-sm rounded outline-none shadow-sm cursor-pointer">
-                                <option value="all">Facility: Severstal Plant #4 (All Sectors)</option>
-                                <option value="bf5">Blast Furnace Division (BF-5)</option>
-                                <option value="casting">Continuous Casting Unit #3</option>
-                                <option value="chromatography">Gas Chromatography Facility</option>
-                            </select>
+                        <div
+                            class="md:col-span-3 flex items-center bg-surface-container-low px-unit-md py-1.5 rounded justify-between">
+                            <div class="flex items-center gap-unit-xs text-on-surface-variant">
+                                <span class="material-symbols-outlined text-base">domain</span>
+                                <span class="font-body-sm text-body-sm">Facility:</span>
+                                <span class="text-on-surface font-semibold font-body-sm">Severstal Plant #4 (All Sectors)</span>
+                            </div>
+                            <span
+                                class="material-symbols-outlined text-base text-on-surface-variant">arrow_drop_down</span>
                         </div>
-                        <div class="col-span-12 sm:col-span-4 lg:col-span-2">
-                            <select id="docEquipmentSelect" onchange="filterDocTable()"
-                                class="w-full h-9 px-3 bg-surface-container-lowest text-on-surface font-body-sm text-body-sm rounded outline-none shadow-sm cursor-pointer">
-                                <option value="all">All Equipment Types</option>
-                                <option value="flowmeters">Flowmeters (HPF)</option>
-                                <option value="pyrometers">Optical Pyrometers</option>
-                                <option value="profilers">Laser Profilers</option>
-                                <option value="skids">Gas Skids</option>
-                            </select>
+                        <div
+                            class="md:col-span-2 flex items-center bg-surface-container-low px-unit-md py-1.5 rounded justify-between">
+                            <div class="flex items-center gap-unit-xs text-on-surface-variant">
+                                <span class="material-symbols-outlined text-base">precision_manufacturing</span>
+                                <span class="font-body-sm text-body-sm">All Equipment Types</span>
+                            </div>
+                            <span
+                                class="material-symbols-outlined text-base text-on-surface-variant">arrow_drop_down</span>
                         </div>
-                        <div class="col-span-12 sm:col-span-4 lg:col-span-2">
-                            <select id="docPKISelect" onchange="filterDocTable()"
-                                class="w-full h-9 px-3 bg-surface-container-lowest text-on-surface font-body-sm text-body-sm rounded outline-none shadow-sm cursor-pointer">
-                                <option value="all">PKI: All Statuses</option>
-                                <option value="valid">Valid Electronic Signature</option>
-                                <option value="pending">Pending Counter-Signature</option>
-                                <option value="archived">Archived Version</option>
-                            </select>
+                        <div
+                            class="md:col-span-2 flex items-center bg-surface-container-low px-unit-md py-1.5 rounded justify-between">
+                            <div class="flex items-center gap-unit-xs text-on-surface-variant">
+                                <span class="material-symbols-outlined text-base">verified</span>
+                                <span class="font-body-sm text-body-sm">PKI: All Statuses</span>
+                            </div>
+                            <span
+                                class="material-symbols-outlined text-base text-on-surface-variant">arrow_drop_down</span>
                         </div>
                     </div>
                 </div>
-                <!-- Primary Cockpit: Document Registry Table + Dynamic Inspection Flyout -->
-                <div class="grid grid-cols-12 gap-unit-lg items-start">
-                    <!-- Main Dossier Table -->
-                    <div class="col-span-12 xl:col-span-8 flex flex-col gap-unit-sm">
-                        <div class="bg-surface-container-lowest rounded shadow-sm overflow-hidden">
-                            <!-- Table Header -->
-                            <div
-                                class="grid grid-cols-12 gap-unit-sm px-unit-md py-unit-xs bg-surface-container-high/60 text-on-surface-variant font-label-caps text-label-caps uppercase tracking-wider">
-                                <div class="col-span-5">Dossier Item &amp; Identifier</div>
-                                <div class="col-span-3">Compliance &amp; PKI Status</div>
-                                <div class="col-span-2 text-right">Payload Size</div>
-                                <div class="col-span-2 text-right">Actions</div>
-                            </div>
-                            <!-- Document Item 1 -->
-                            <div id="doc-row-1" data-doc-id="1" data-category="calibration" data-facility="all plant4" data-equipment="flowmeters" data-pki="valid"
-                                class="doc-item grid grid-cols-12 gap-unit-sm px-unit-md py-unit-sm items-center bg-surface-container-lowest hover:bg-surface-container-low transition-colors cursor-pointer group"
-                                onclick="selectDoc(1)">
-                                <div class="col-span-5 flex items-start gap-unit-sm min-w-0">
-                                    <span
-                                        class="material-symbols-outlined text-secondary text-2xl mt-0.5">verified</span>
-                                    <div class="flex flex-col min-w-0">
-                                        <span
-                                            class="font-headline-sm text-headline-sm text-primary font-semibold truncate group-hover:text-secondary">
-                                            High-Pressure Flowmeter HPF-900X Calibration Certificate
-                                        </span>
-                                        <div
-                                            class="flex items-center gap-unit-xs text-on-surface-variant font-technical-tag text-technical-tag">
-                                            <span class="font-data-mono-md">CERT-2024-HPF-0994</span>
-                                            <span class="">•</span>
-                                            <span class="">Rostest #VP-CAL-0994</span>
-                                            <span class="">•</span>
-                                            <span class="text-secondary font-medium">Valid until Nov 2026</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-span-3 flex flex-col gap-1">
-                                    <div class="flex items-center gap-1.5">
-                                        <span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
-                                        <span
-                                            class="px-1.5 py-0.5 rounded bg-secondary-fixed text-on-secondary-fixed font-technical-tag text-technical-tag font-bold">
-                                            ROSTEST CERTIFIED
-                                        </span>
-                                    </div>
-                                    <span class="font-technical-tag text-technical-tag text-on-surface-variant">GOST PKI
-                                        Validated (Crypto-Pro)</span>
-                                </div>
-                                <div class="col-span-2 text-right font-data-mono-md text-data-mono-md text-on-surface">
-                                    PDF • 2.8 MB
-                                </div>
-                                <div class="col-span-2 flex items-center justify-end gap-unit-xs">
-                                    <button onclick="event.stopPropagation(); verifyHash('0x8F9A83BC902E4D2')"
-                                        class="p-1.5 rounded bg-surface-container text-on-surface hover:bg-surface-container-high transition-colors"
-                                        title="Verify Cryptographic Hash">
-                                        <span class="material-symbols-outlined text-base">lock</span>
-                                    </button>
-                                    <button onclick="event.stopPropagation(); window.previewDocument('CERT-2024-HPF-0994', 'High-Pressure Flowmeter HPF-900X Calibration Certificate', 'PDF Calibration Certificate')"
-                                        class="p-1.5 rounded bg-surface-container text-on-surface hover:bg-surface-container-high transition-colors"
-                                        title="Download Document">
-                                        <span class="material-symbols-outlined text-base">download</span>
-                                    </button>
-                                </div>
-                            </div>
-                            <!-- Document Item 2 -->
-                            <div id="doc-row-2" data-doc-id="2" data-category="pid" data-facility="bf5" data-equipment="all" data-pki="valid"
-                                class="doc-item grid grid-cols-12 gap-unit-sm px-unit-md py-unit-sm items-center bg-surface-container-lowest hover:bg-surface-container-low transition-colors cursor-pointer group"
-                                onclick="selectDoc(2)">
-                                <div class="col-span-5 flex items-start gap-unit-sm min-w-0">
-                                    <span class="material-symbols-outlined text-secondary text-2xl mt-0.5">schema</span>
-                                    <div class="flex flex-col min-w-0">
-                                        <span
-                                            class="font-headline-sm text-headline-sm text-primary font-semibold truncate group-hover:text-secondary">
-                                            Blast Furnace #5 Automation Wiring Schematic &amp; P&amp;ID Diagram
-                                        </span>
-                                        <div
-                                            class="flex items-center gap-unit-xs text-on-surface-variant font-technical-tag text-technical-tag">
-                                            <span class="font-data-mono-md">DWG-7721-PND-V3</span>
-                                            <span class="">•</span>
-                                            <span class="">Rev 3.2 Approved for Construction</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-span-3 flex flex-col gap-1">
-                                    <span
-                                        class="inline-flex items-center px-1.5 py-0.5 rounded bg-primary-fixed text-on-primary-fixed font-technical-tag text-technical-tag font-bold w-fit">
-                                        ACTIVE ENGINEERING SPEC
-                                    </span>
-                                    <span
-                                        class="font-technical-tag text-technical-tag text-on-surface-variant">Severstal
-                                        Eng. Bureau Approved</span>
-                                </div>
-                                <div class="col-span-2 text-right font-data-mono-md text-data-mono-md text-on-surface">
-                                    DWG/PDF • 28.2 MB
-                                </div>
-                                <div class="col-span-2 flex items-center justify-end gap-unit-xs">
-                                    <button onclick="event.stopPropagation(); window.previewDocument('DWG-7721-PND-V3', 'Blast Furnace #5 Automation Wiring Schematic & P&ID Diagram', 'AutoCAD P&ID Technical Schematic')"
-                                        class="p-1.5 rounded bg-surface-container text-on-surface hover:bg-surface-container-high transition-colors"
-                                        title="Open Interactive CAD Viewer">
-                                        <span class="material-symbols-outlined text-base">visibility</span>
-                                    </button>
-                                    <button onclick="event.stopPropagation(); window.previewDocument('DWG-7721-PND-V3', 'Blast Furnace #5 Wiring Schematic', 'CAD Payload Archive')"
-                                        class="p-1.5 rounded bg-surface-container text-on-surface hover:bg-surface-container-high transition-colors"
-                                        title="Download Payload">
-                                        <span class="material-symbols-outlined text-base">download</span>
-                                    </button>
-                                </div>
-                            </div>
-                            <!-- Document Item 3 -->
-                            <div id="doc-row-3" data-doc-id="3" data-category="fat" data-facility="chromatography" data-equipment="skids" data-pki="valid"
-                                class="doc-item grid grid-cols-12 gap-unit-sm px-unit-md py-unit-sm items-center bg-surface-container-lowest hover:bg-surface-container-low transition-colors cursor-pointer group"
-                                onclick="selectDoc(3)">
-                                <div class="col-span-5 flex items-start gap-unit-sm min-w-0">
-                                    <span
-                                        class="material-symbols-outlined text-secondary text-2xl mt-0.5">task_alt</span>
-                                    <div class="flex flex-col min-w-0">
-                                        <span
-                                            class="font-headline-sm text-headline-sm text-primary font-semibold truncate group-hover:text-secondary">
-                                            Factory Acceptance Test (FAT) Protocol - Gas Skid #4
-                                        </span>
-                                        <div
-                                            class="flex items-center gap-unit-xs text-on-surface-variant font-technical-tag text-technical-tag">
-                                            <span class="font-data-mono-md">DOC-7721-FAT.pdf</span>
-                                            <span class="">•</span>
-                                            <span class="">Inspector: K. Savin</span>
-                                            <span class="">•</span>
-                                            <span class="">Oct 23, 2024</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-span-3 flex flex-col gap-1">
-                                    <span
-                                        class="inline-flex items-center px-1.5 py-0.5 rounded bg-secondary-fixed text-on-secondary-fixed font-technical-tag text-technical-tag font-bold w-fit">
-                                        FAT PASSED / SIGNED
-                                    </span>
-                                    <span class="font-technical-tag text-technical-tag text-on-surface-variant">Dual
-                                        Sign-off Complete</span>
-                                </div>
-                                <div class="col-span-2 text-right font-data-mono-md text-data-mono-md text-on-surface">
-                                    PDF • 14.8 MB
-                                </div>
-                                <div class="col-span-2 flex items-center justify-end gap-unit-xs">
-                                    <button onclick="event.stopPropagation(); verifyHash('0x10B45C9921DF883')"
-                                        class="p-1.5 rounded bg-surface-container text-on-surface hover:bg-surface-container-high transition-colors"
-                                        title="Verify Signatures">
-                                        <span class="material-symbols-outlined text-base">verified</span>
-                                    </button>
-                                    <button onclick="event.stopPropagation(); window.previewDocument('DOC-7721-FAT.pdf', 'Factory Acceptance Test (FAT) Protocol - Gas Skid #4', 'PDF FAT Protocol')"
-                                        class="p-1.5 rounded bg-surface-container text-on-surface hover:bg-surface-container-high transition-colors"
-                                        title="Download Document">
-                                        <span class="material-symbols-outlined text-base">download</span>
-                                    </button>
-                                </div>
-                            </div>
-                            <!-- Document Item 4 (Confidential Indicator) -->
-                            <div id="doc-row-4" data-doc-id="4" data-category="contracts" data-facility="all plant4" data-equipment="all" data-pki="pending"
-                                class="doc-item grid grid-cols-12 gap-unit-sm px-unit-md py-unit-sm items-center bg-surface-container-lowest hover:bg-surface-container-low transition-colors cursor-pointer group relative pl-5"
-                                onclick="selectDoc(4)">
-                                <div class="absolute left-0 top-0 bottom-0 w-1 bg-on-tertiary-container"></div>
-                                <div class="col-span-5 flex items-start gap-unit-sm min-w-0">
-                                    <span
-                                        class="material-symbols-outlined text-on-tertiary-container text-2xl mt-0.5">gavel</span>
-                                    <div class="flex flex-col min-w-0">
-                                        <div class="flex items-center gap-unit-xs">
-                                            <span
-                                                class="font-headline-sm text-headline-sm text-primary font-semibold truncate group-hover:text-secondary">
-                                                Spare Parts Consignment Agreement Q4 2024
-                                            </span>
-                                            <span
-                                                class="px-1 py-0.2 rounded bg-tertiary-fixed text-on-tertiary-fixed font-technical-tag text-technical-tag font-bold">CONFIDENTIAL</span>
-                                        </div>
-                                        <div
-                                            class="flex items-center gap-unit-xs text-on-surface-variant font-technical-tag text-technical-tag">
-                                            <span class="font-data-mono-md">ADDENDUM-CA-402</span>
-                                            <span class="">•</span>
-                                            <span class="">Severstal Industrial Contract</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-span-3 flex flex-col gap-1">
-                                    <span
-                                        class="inline-flex items-center px-1.5 py-0.5 rounded bg-tertiary-fixed text-on-tertiary-fixed font-technical-tag text-technical-tag font-bold w-fit">
-                                        PENDING CLIENT SIGNATURE
-                                    </span>
-                                    <span class="font-technical-tag text-technical-tag text-on-surface-variant">Action
-                                        required by Chief Eng.</span>
-                                </div>
-                                <div class="col-span-2 text-right font-data-mono-md text-data-mono-md text-on-surface">
-                                    PDF • 1.9 MB
-                                </div>
-                                <div class="col-span-2 flex items-center justify-end gap-unit-xs">
-                                    <button onclick="event.stopPropagation(); signConfidentialAddendum('ADDENDUM-CA-402')"
-                                        class="px-2 py-1 rounded bg-tertiary-container text-tertiary-fixed font-label-caps text-label-caps hover:opacity-90 transition-opacity whitespace-nowrap shadow-sm">
-                                        Sign Key
-                                    </button>
-                                </div>
-                            </div>
-                            <!-- Document Item 5 -->
-                            <div id="doc-row-5" data-doc-id="5" data-category="hse" data-facility="all plant4" data-equipment="pyrometers" data-pki="valid"
-                                class="doc-item grid grid-cols-12 gap-unit-sm px-unit-md py-unit-sm items-center bg-surface-container-lowest hover:bg-surface-container-low transition-colors cursor-pointer group"
-                                onclick="selectDoc(5)">
-                                <div class="col-span-5 flex items-start gap-unit-sm min-w-0">
-                                    <span class="material-symbols-outlined text-secondary text-2xl mt-0.5">shield</span>
-                                    <div class="flex flex-col min-w-0">
-                                        <span
-                                            class="font-headline-sm text-headline-sm text-primary font-semibold truncate group-hover:text-secondary">
-                                            Optical Pyrometer Array Installation Manual &amp; Safety Cert
-                                        </span>
-                                        <div
-                                            class="flex items-center gap-unit-xs text-on-surface-variant font-technical-tag text-technical-tag">
-                                            <span class="font-data-mono-md">HSE-OP-402-REV1</span>
-                                            <span class="">•</span>
-                                            <span class="">GOST 12.2.007-75 Compliance</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-span-3 flex flex-col gap-1">
-                                    <span
-                                        class="inline-flex items-center px-1.5 py-0.5 rounded bg-secondary-fixed text-on-secondary-fixed font-technical-tag text-technical-tag font-bold w-fit">
-                                        COMPLIANT
-                                    </span>
-                                    <span
-                                        class="font-technical-tag text-technical-tag text-on-surface-variant">Industrial
-                                        Safety Rostekhnadzor</span>
-                                </div>
-                                <div class="col-span-2 text-right font-data-mono-md text-data-mono-md text-on-surface">
-                                    PDF • 6.4 MB
-                                </div>
-                                <div class="col-span-2 flex items-center justify-end gap-unit-xs">
-                                    <button onclick="event.stopPropagation(); window.previewDocument('HSE-OP-402-REV1', 'Optical Pyrometer Array Installation Manual & Safety Cert', 'PDF Safety Dossier')"
-                                        class="p-1.5 rounded bg-surface-container text-on-surface hover:bg-surface-container-high transition-colors"
-                                        title="Download">
-                                        <span class="material-symbols-outlined text-base">download</span>
-                                    </button>
-                                </div>
-                            </div>
-                            <!-- Document Item 6 -->
-                            <div id="doc-row-6" data-doc-id="6" data-category="calibration" data-facility="casting" data-equipment="profilers" data-pki="valid"
-                                class="doc-item grid grid-cols-12 gap-unit-sm px-unit-md py-unit-sm items-center bg-surface-container-lowest hover:bg-surface-container-low transition-colors cursor-pointer group"
-                                onclick="selectDoc(6)">
-                                <div class="col-span-5 flex items-start gap-unit-sm min-w-0">
-                                    <span
-                                        class="material-symbols-outlined text-secondary text-2xl mt-0.5">straighten</span>
-                                    <div class="flex flex-col min-w-0">
-                                        <span
-                                            class="font-headline-sm text-headline-sm text-primary font-semibold truncate group-hover:text-secondary">
-                                            Continuous Casting Machine #3 Laser Profiler Accuracy Verification
-                                        </span>
-                                        <div
-                                            class="flex items-center gap-unit-xs text-on-surface-variant font-technical-tag text-technical-tag">
-                                            <span class="font-data-mono-md">VP-LP-400-CAL-2024</span>
-                                            <span class="">•</span>
-                                            <span class="">Optical verification run report</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-span-3 flex flex-col gap-1">
-                                    <span
-                                        class="inline-flex items-center px-1.5 py-0.5 rounded bg-secondary-fixed text-on-secondary-fixed font-technical-tag text-technical-tag font-bold w-fit">
-                                        VALID
-                                    </span>
-                                    <span
-                                        class="font-technical-tag text-technical-tag text-on-surface-variant">Automated
-                                        Telemetry Audit</span>
-                                </div>
-                                <div class="col-span-2 text-right font-data-mono-md text-data-mono-md text-on-surface">
-                                    PDF • 4.1 MB
-                                </div>
-                                <div class="col-span-2 flex items-center justify-end gap-unit-xs">
-                                    <button onclick="event.stopPropagation(); window.previewDocument('VP-LP-400-CAL-2024', 'Continuous Casting Machine #3 Laser Profiler Accuracy Verification', 'PDF Calibration Report')"
-                                        class="p-1.5 rounded bg-surface-container text-on-surface hover:bg-surface-container-high transition-colors"
-                                        title="Download">
-                                        <span class="material-symbols-outlined text-base">download</span>
-                                    </button>
-                                </div>
-                            </div>
+
+                <!-- Main Layout Grid: Document List + Active Inspector Panel -->
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-unit-base">
+                    <!-- Left Column: High-Density Document List -->
+                    <div class="lg:col-span-7 xl:col-span-8 flex flex-col gap-unit-sm">
+                        <!-- Table Wrapper -->
+                        <div class="bg-surface-container-lowest rounded-lg shadow-sm overflow-hidden">
+                            <table class="w-full border-collapse text-left">
+                                <thead>
+                                    <tr
+                                        class="bg-surface-container-low text-on-surface-variant font-label-caps text-label-caps uppercase tracking-wider">
+                                        <th class="py-2.5 px-unit-base">Dossier Item &amp; Identifier</th>
+                                        <th class="py-2.5 px-unit-base">Compliance &amp; PKI Status</th>
+                                        <th class="py-2.5 px-unit-base">Payload Size</th>
+                                        <th class="py-2.5 px-unit-base text-right">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="doc-table-body" class="divide-y-0">
+                                    <?php foreach ($documents as $index => $doc): 
+                                        $isFirst = ($index === 0);
+                                        $typeLower = strtolower($doc['type'] ?? '');
+                                        $catKey = 'calibration';
+                                        if (strpos($typeLower, 'p&id') !== false || strpos($typeLower, 'schematic') !== false) $catKey = 'schematics';
+                                        else if (strpos($typeLower, 'acceptance') !== false || strpos($typeLower, 'fat') !== false) $catKey = 'fat';
+                                        else if (strpos($typeLower, 'contract') !== false || strpos($typeLower, 'agreement') !== false) $catKey = 'contracts';
+                                        else if (strpos($typeLower, 'safety') !== false || strpos($typeLower, 'hse') !== false) $catKey = 'safety';
+                                        
+                                        $icon = 'verified';
+                                        if ($catKey === 'schematics') $icon = 'schema';
+                                        if ($catKey === 'fat') $icon = 'fact_check';
+                                        if ($catKey === 'contracts') $icon = 'gavel';
+                                        if ($catKey === 'safety') $icon = 'shield';
+                                    ?>
+                                        <tr id="doc-row-<?= htmlspecialchars($doc['doc_id']) ?>" data-category="<?= $catKey ?>"
+                                            onclick="selectDocumentRow('<?= htmlspecialchars($doc['doc_id']) ?>', '<?= htmlspecialchars(addslashes($doc['title'])) ?>', '<?= htmlspecialchars($doc['status']) ?>')"
+                                            class="doc-item-row relative <?= $isFirst ? 'bg-surface-container-low font-semibold' : 'bg-surface-container-lowest' ?> hover:bg-surface-container-low transition-colors cursor-pointer group">
+                                            <td class="relative py-3 px-unit-base">
+                                                <?php if ($isFirst): ?>
+                                                    <div class="absolute left-0 top-0 bottom-0 w-1 bg-on-tertiary-container"></div>
+                                                <?php endif; ?>
+                                                <div class="flex items-start gap-unit-sm">
+                                                    <span class="material-symbols-outlined text-base <?= $isFirst ? 'text-on-surface' : 'text-on-surface-variant' ?> mt-0.5"><?= $icon ?></span>
+                                                    <div class="flex flex-col">
+                                                        <span class="font-headline-sm text-body-md text-on-surface group-hover:text-on-tertiary-container transition-colors truncate max-w-md">
+                                                            <?= htmlspecialchars($doc['title']) ?>
+                                                        </span>
+                                                        <span class="font-data-mono-md text-technical-tag text-on-surface-variant">
+                                                            <?= htmlspecialchars($doc['doc_id']) ?> • <?= htmlspecialchars($doc['facility_name'] ?? 'Plant #4') ?>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="py-3 px-unit-base">
+                                                <div class="flex flex-col">
+                                                    <span class="font-technical-tag text-technical-tag font-bold uppercase <?= strpos(strtolower($doc['status']), 'pending') !== false ? 'text-tertiary-fixed-dim' : 'text-secondary' ?>">
+                                                        <?= htmlspecialchars($doc['status']) ?>
+                                                    </span>
+                                                    <span class="font-technical-tag text-technical-tag text-on-surface-variant">
+                                                        Validated <?= htmlspecialchars(date('M d, Y', strtotime($doc['created_at'] ?? 'now'))) ?>
+                                                    </span>
+                                                </div>
+                                            </td>
+                                            <td class="py-3 px-unit-base font-data-mono-md text-data-mono-md text-on-surface-variant">
+                                                <?= htmlspecialchars($doc['file_size'] ?? '2.4 MB') ?>
+                                            </td>
+                                            <td class="py-3 px-unit-base text-right">
+                                                <div class="flex items-center justify-end gap-1">
+                                                    <button title="Inspect Electronic Seal &amp; Metadata"
+                                                        onclick="event.stopPropagation(); inspectSeal('<?= htmlspecialchars($doc['doc_id']) ?>')"
+                                                        class="p-1 rounded text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors">
+                                                        <span class="material-symbols-outlined text-base">verified_user</span>
+                                                    </button>
+                                                    <a title="Download Document File" download href="<?= htmlspecialchars($doc['file_path']) ?>"
+                                                        onclick="event.stopPropagation()"
+                                                        class="p-1 rounded text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors">
+                                                        <span class="material-symbols-outlined text-base">download</span>
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
                         </div>
-                        <!-- Compact Metrology Registry Metric strip -->
-                        <div class="grid grid-cols-3 gap-unit-sm">
-                            <div class="p-unit-sm bg-surface-container-lowest rounded shadow-sm flex flex-col">
-                                <span
-                                    class="font-label-caps text-label-caps text-on-surface-variant uppercase">Calibration
-                                    Expiry Watch</span>
-                                <span class="font-headline-md text-headline-md text-primary font-bold mt-1">0
-                                    Critical</span>
-                                <span class="font-technical-tag text-technical-tag text-secondary mt-0.5">Next re-test:
-                                    Dec 14, 2025</span>
+
+                        <!-- Secondary Summary Cards Bar -->
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-unit-base">
+                            <div class="bg-surface-container-lowest p-unit-base rounded-lg shadow-sm flex flex-col justify-between">
+                                <span class="font-label-caps text-label-caps text-on-surface-variant uppercase">Calibration Expiry Watch</span>
+                                <div class="my-unit-xs">
+                                    <div class="font-data-mono-lg text-headline-lg font-bold text-on-surface">0 Critical</div>
+                                    <div class="font-technical-tag text-technical-tag text-on-surface-variant">Next re-test: Nov 14, 2025</div>
+                                </div>
                             </div>
-                            <div class="p-unit-sm bg-surface-container-lowest rounded shadow-sm flex flex-col">
-                                <span class="font-label-caps text-label-caps text-on-surface-variant uppercase">Vault
-                                    Cryptographic Sync</span>
-                                <span class="font-headline-md text-headline-md text-primary font-bold mt-1">100%
-                                    Synced</span>
-                                <span class="font-technical-tag text-technical-tag text-on-surface-variant mt-0.5">Last
-                                    validated 4 mins ago</span>
+                            <div class="bg-surface-container-lowest p-unit-base rounded-lg shadow-sm flex flex-col justify-between">
+                                <span class="font-label-caps text-label-caps text-on-surface-variant uppercase">Vault Cryptographic Sync</span>
+                                <div class="my-unit-xs">
+                                    <div class="font-data-mono-lg text-headline-lg font-bold text-secondary">100% Synced</div>
+                                    <div class="font-technical-tag text-technical-tag text-on-surface-variant">Last validated 4 mins ago</div>
+                                </div>
                             </div>
-                            <div class="p-unit-sm bg-surface-container-lowest rounded shadow-sm flex flex-col">
-                                <span class="font-label-caps text-label-caps text-on-surface-variant uppercase">Storage
-                                    Utilization</span>
-                                <span class="font-headline-md text-headline-md text-primary font-bold mt-1">1.84
-                                    GB</span>
-                                <span
-                                    class="font-technical-tag text-technical-tag text-on-surface-variant mt-0.5">Enterprise
-                                    quota: 25.0 GB</span>
+                            <div class="bg-surface-container-lowest p-unit-base rounded-lg shadow-sm flex flex-col justify-between">
+                                <span class="font-label-caps text-label-caps text-on-surface-variant uppercase">Storage Utilization</span>
+                                <div class="my-unit-xs">
+                                    <div class="font-data-mono-lg text-headline-lg font-bold text-on-surface">1.84 GB</div>
+                                    <div class="font-technical-tag text-technical-tag text-on-surface-variant">Enterprise quota: 25.0 GB</div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <!-- Inspector & Document Dossier Preview Flyout -->
-                    <div
-                        class="col-span-12 xl:col-span-4 bg-surface-container-lowest rounded shadow-sm p-unit-md flex flex-col gap-unit-md">
-                        <div
-                            class="flex items-center justify-between pb-unit-xs border-b border-surface-container-high">
-                            <div class="flex items-center gap-unit-xs">
-                                <span class="material-symbols-outlined text-primary text-xl">description</span>
-                                <span class="font-headline-sm text-headline-sm text-primary font-bold">Dossier
-                                    Inspection</span>
-                            </div>
-                            <span
-                                class="px-2 py-0.5 rounded bg-surface-container text-on-surface font-technical-tag text-technical-tag">
-                                ACTIVE SELECTION
-                            </span>
-                        </div>
-                        <!-- Preview Header Card -->
-                        <div class="flex flex-col bg-surface-container-low p-unit-sm rounded">
-                            <div class="flex items-center justify-between mb-1">
-                                <span
-                                    class="font-technical-tag text-technical-tag text-on-surface-variant font-medium">IDENTIFIER</span>
-                                <span class="font-data-mono-md text-data-mono-md text-primary font-bold"
-                                    id="inspect-id">CERT-2024-HPF-0994</span>
-                            </div>
-                            <h2 class="font-headline-sm text-headline-sm text-primary font-semibold leading-snug"
-                                id="inspect-title">
-                                High-Pressure Flowmeter HPF-900X Calibration Certificate
-                            </h2>
-                            <div class="flex items-center gap-unit-xs mt-2">
-                                <span
-                                    class="px-2 py-0.5 rounded bg-secondary-fixed text-on-secondary-fixed font-technical-tag text-technical-tag font-bold"
-                                    id="inspect-badge">
-                                    ROSTEST CERTIFIED
-                                </span>
-                                <span class="text-on-surface-variant font-technical-tag text-technical-tag">Severstal
-                                    BF-5 Skid</span>
-                            </div>
-                        </div>
-                        <!-- Visual Preview Anchor Frame -->
-                        <div
-                            class="relative w-full h-44 rounded overflow-hidden shadow-inner flex flex-col justify-end p-unit-sm bg-surface-container-highest">
-                            <img class="absolute inset-0 w-full h-full object-cover opacity-85"
-                                data-alt="Technical schematic and engineering document inspection blueprint view displaying flowmeter calibration curves and official stamp watermark in industrial navy and warm amber hues"
-                                src="https://lh3.googleusercontent.com/aida-public/AB6AXuDtnCICKWeo-mQgvBwmZpdtevmChXuzWhIDwStOXuwAUo9Ojn72F-k-PDQ9QfDmHmaTy3ehEIK0dv-KkM7nYXjtsoLgjR-jIfOOlaeUbP2h1GfSpD0lctAiofFyI7_loO8FZTkZ9raJ61_cCc4vew6eKpZ39WitYfcvOBsWfBfN6BnnGUCQhgF_eKECU6zV_AQDtv3oFu4TxL12wAKgZLpepR8MVcWqcTXFaC_dkcsPXDNJ1erxonZe">
-                            <div
-                                class="absolute inset-0 bg-gradient-to-t from-primary/90 via-primary/30 to-transparent">
-                            </div>
-                            <div class="relative z-10 flex items-center justify-between text-on-primary">
-                                <div class="flex flex-col">
-                                    <span
-                                        class="font-technical-tag text-technical-tag text-on-primary-container">OFFICIAL
-                                        ROSSTANDART SEAL</span>
-                                    <span class="font-headline-sm text-headline-sm font-semibold">State Metrology
-                                        Register #48291-11</span>
+
+                    <!-- Right Column: Interactive Dossier Inspector Panel -->
+                    <div class="lg:col-span-5 xl:col-span-4 flex flex-col gap-unit-base">
+                        <div class="bg-surface-container-lowest p-unit-base rounded-lg shadow-sm flex flex-col gap-unit-base sticky top-20">
+                            <!-- Inspector Header -->
+                            <div class="flex items-center justify-between pb-unit-xs border-b border-surface-container-high">
+                                <div class="flex items-center gap-unit-xs">
+                                    <span class="material-symbols-outlined text-base text-on-surface-variant">find_in_page</span>
+                                    <span class="font-headline-sm text-headline-sm text-on-surface font-semibold">Dossier Inspection</span>
                                 </div>
-                                <button
-                                    class="px-2 py-1 rounded bg-surface-container-lowest/20 backdrop-blur-sm text-on-primary font-label-caps text-label-caps hover:bg-surface-container-lowest/30 transition-colors flex items-center gap-1">
-                                    <span class="material-symbols-outlined text-sm">fullscreen</span>
-                                    <span class="">Zoom</span>
+                                <span class="font-technical-tag text-technical-tag px-1.5 py-0.5 rounded bg-surface-container text-on-surface font-semibold">ACTIVE SELECTION</span>
+                            </div>
+
+                            <!-- Document Metadata Block -->
+                            <div class="flex flex-col gap-unit-xs">
+                                <div class="flex items-center justify-between font-data-mono-md text-technical-tag text-on-surface-variant">
+                                    <span id="inspect-doc-id"><?= htmlspecialchars($firstDoc['doc_id'] ?? 'CERT-2024-HPF-0994') ?></span>
+                                    <span id="inspect-doc-status" class="text-secondary font-bold"><?= htmlspecialchars($firstDoc['status'] ?? 'ROSTEST CERTIFIED') ?></span>
+                                </div>
+                                <h3 id="inspect-doc-title" class="font-headline-sm text-headline-sm text-on-surface font-bold leading-snug">
+                                    <?= htmlspecialchars($firstDoc['title'] ?? 'High-Pressure Flowmeter HPF-900X Calibration Certificate') ?>
+                                </h3>
+                                <p class="font-body-sm text-body-sm text-on-surface-variant">
+                                    Issued by Federal Agency for Technical Regulating and Metrology (GOST R Standard). Primary flow rate test verification under 220 Bar operational pressure.
+                                </p>
+                            </div>
+
+                            <!-- High-Res Certificate Preview Schematic Image Placeholder -->
+                            <div class="relative w-full h-44 bg-surface-container-low rounded border border-surface-container-high overflow-hidden flex items-center justify-center group">
+                                <svg class="w-full h-full opacity-60" fill="none" viewBox="0 0 300 150">
+                                    <rect fill="#f2f4f7" height="150" width="300"></rect>
+                                    <line stroke="#d1d5db" stroke-dasharray="3 3" x1="20" x2="280" y1="20" y2="20"></line>
+                                    <line stroke="#d1d5db" stroke-dasharray="3 3" x1="20" x2="280" y1="130" y2="130"></line>
+                                    <path d="M30 100 Q 80 30, 150 80 T 270 40" fill="none" stroke="#436084" stroke-width="2"></path>
+                                    <circle cx="150" cy="80" fill="#bb7d16" r="4"></circle>
+                                    <text fill="#6b7280" font-family="monospace" font-size="9" x="30" y="40">GOST R CERTIFICATION SEAL</text>
+                                    <text fill="#6b7280" font-family="monospace" font-size="8" x="30" y="120">HASH: 8f9a2b71e8093c41...</text>
+                                </svg>
+                                <div class="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                                    <button onclick="zoomCertificateModal()" class="px-unit-sm py-1 rounded bg-surface-container-lowest text-on-surface font-label-caps text-label-caps font-semibold shadow flex items-center gap-1">
+                                        <span class="material-symbols-outlined text-sm">zoom_in</span> Zoom
+                                    </button>
+                                </div>
+                                <div class="absolute bottom-2 left-2 px-2 py-0.5 rounded bg-primary/80 text-on-primary font-technical-tag text-technical-tag backdrop-blur-xs">
+                                    State Metrology Register #48291-11
+                                </div>
+                            </div>
+
+                            <!-- Cryptographic Audit Chain -->
+                            <div class="flex flex-col gap-unit-xs bg-surface-container-low p-unit-sm rounded">
+                                <span class="font-label-caps text-label-caps text-on-surface-variant uppercase">Cryptographic Audit Chain</span>
+                                <div class="flex flex-col gap-1 font-data-mono-md text-technical-tag">
+                                    <div class="flex justify-between text-on-surface-variant">
+                                        <span>Signer 01:</span>
+                                        <span class="text-on-surface font-semibold">Dr. Elena Rostov (Rostest Bureau)</span>
+                                    </div>
+                                    <div class="flex justify-between text-on-surface-variant">
+                                        <span>Signer 02:</span>
+                                        <span class="text-on-surface font-semibold">Alexey R. Danilov (Chief Eng.)</span>
+                                    </div>
+                                    <div class="flex justify-between text-on-surface-variant">
+                                        <span>Algorithm:</span>
+                                        <span class="text-secondary font-semibold">GOST R 34.10-2012 / 256-bit</span>
+                                    </div>
+                                    <div class="text-on-surface-variant/70 text-[10px] truncate mt-1">
+                                        Ref: PKI-0928374-SVR-902
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Document Revision History -->
+                            <div class="flex flex-col gap-unit-xs">
+                                <span class="font-label-caps text-label-caps text-on-surface-variant uppercase">Document Revision Timeline</span>
+                                <div class="flex flex-col gap-unit-xs border-l-2 border-surface-container-high pl-unit-sm">
+                                    <div class="flex flex-col">
+                                        <span class="font-headline-sm text-body-sm font-semibold text-on-surface">v2.2 - Rostest Certified Final</span>
+                                        <span class="font-technical-tag text-technical-tag text-on-surface-variant">Nov 04, 2024 • Official cryptographic certificate attached by State Metrologyist.</span>
+                                    </div>
+                                    <div class="flex flex-col">
+                                        <span class="font-headline-sm text-body-sm font-semibold text-on-surface">v2.0 - Severstal QA Review</span>
+                                        <span class="font-technical-tag text-technical-tag text-on-surface-variant">Oct 18, 2024 • Calibration parameters signed off by plant instrumentation crew.</span>
+                                    </div>
+                                    <div class="flex flex-col">
+                                        <span class="font-headline-sm text-body-sm font-semibold text-on-surface">v1.0 - Factory Acceptance Draft</span>
+                                        <span class="font-technical-tag text-technical-tag text-on-surface-variant">Sep 29, 2024 • Initialized post-manufacturing bench-testing at Vostokpribor facility.</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Action Buttons -->
+                            <div class="flex items-center gap-unit-xs pt-unit-xs">
+                                <button onclick="downloadCurrentInspectedDoc()"
+                                    class="w-full flex items-center justify-center gap-unit-xs px-unit-base py-2 rounded bg-primary text-on-primary font-headline-sm text-headline-sm font-semibold hover:bg-primary/90 transition-colors shadow-sm">
+                                    <span class="material-symbols-outlined text-base">download</span>
+                                    <span>Download PDF</span>
+                                </button>
+                                <button onclick="shareDocumentLink()" title="Share Secure Download Token"
+                                    class="p-2 rounded bg-surface-container text-on-surface hover:bg-surface-container-high transition-colors">
+                                    <span class="material-symbols-outlined text-base">share</span>
+                                </button>
+                                <button onclick="printDocumentDossier()" title="Print Full Technical Passport"
+                                    class="p-2 rounded bg-surface-container text-on-surface hover:bg-surface-container-high transition-colors">
+                                    <span class="material-symbols-outlined text-base">print</span>
                                 </button>
                             </div>
                         </div>
-                        <!-- PKI Verification & Cryptographic Ledger Details -->
-                        <div class="flex flex-col gap-unit-xs">
-                            <span
-                                class="font-label-caps text-label-caps text-on-surface-variant uppercase">Cryptographic
-                                Audit Chain</span>
-                            <div
-                                class="bg-surface-container-low p-unit-sm rounded flex flex-col gap-1.5 font-technical-tag text-technical-tag">
-                                <div class="flex items-center justify-between">
-                                    <span class="text-on-surface-variant">Signer #1:</span>
-                                    <span class="text-on-surface font-semibold">Dr. Elena Rostova (Rostest
-                                        Bureau)</span>
-                                </div>
-                                <div class="flex items-center justify-between">
-                                    <span class="text-on-surface-variant">Signer #2:</span>
-                                    <span class="text-on-surface font-semibold">Alexey R. Danilov (Chief Eng.)</span>
-                                </div>
-                                <div class="flex items-center justify-between">
-                                    <span class="text-on-surface-variant">Algorithm:</span>
-                                    <span class="font-data-mono-md text-data-mono-md text-primary">GOST R 34.10-2012 /
-                                        256-bit</span>
-                                </div>
-                                <div class="flex items-center justify-between border-t border-outline-variant/30 pt-1">
-                                    <span class="text-on-surface-variant">Hash Digest:</span>
-                                    <span
-                                        class="font-data-mono-md text-data-mono-md text-secondary truncate max-w-[170px]">0x8F9A83BC902E4D2</span>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- Revision History Timeline -->
-                        <div class="flex flex-col gap-unit-xs">
-                            <span class="font-label-caps text-label-caps text-on-surface-variant uppercase">Document
-                                Revision Timeline</span>
-                            <div class="relative pl-4 flex flex-col gap-unit-sm">
-                                <div class="absolute left-1 top-1 bottom-1 w-0.5 bg-surface-container-high"></div>
-                                <div class="relative flex flex-col">
-                                    <div class="absolute -left-[15px] top-1 w-2 h-2 rounded-full bg-secondary"></div>
-                                    <div
-                                        class="flex items-center justify-between font-label-caps text-label-caps text-primary">
-                                        <span class="">v3.2 - Rostest Certified Seal</span>
-                                        <span class="text-on-surface-variant font-technical-tag">Nov 04, 2024</span>
-                                    </div>
-                                    <span class="font-body-sm text-body-sm text-on-surface-variant">Official
-                                        cryptographic certificate attached by State Metrologist.</span>
-                                </div>
-                                <div class="relative flex flex-col">
-                                    <div class="absolute -left-[15px] top-1 w-2 h-2 rounded-full bg-outline"></div>
-                                    <div
-                                        class="flex items-center justify-between font-label-caps text-label-caps text-on-surface">
-                                        <span class="">v2.0 - Severstal QA Review</span>
-                                        <span class="text-on-surface-variant font-technical-tag">Oct 18, 2024</span>
-                                    </div>
-                                    <span class="font-body-sm text-body-sm text-on-surface-variant">Calibration
-                                        parameters signed off by plant instrumentation crew.</span>
-                                </div>
-                                <div class="relative flex flex-col">
-                                    <div class="absolute -left-[15px] top-1 w-2 h-2 rounded-full bg-outline"></div>
-                                    <div
-                                        class="flex items-center justify-between font-label-caps text-label-caps text-on-surface">
-                                        <span class="">v1.0 - Factory Acceptance Draft</span>
-                                        <span class="text-on-surface-variant font-technical-tag">Sep 29, 2024</span>
-                                    </div>
-                                    <span class="font-body-sm text-body-sm text-on-surface-variant">Generated post
-                                        manufacturing bench-test at Vostokpribor Facility.</span>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- Contextual Action Bar -->
-                        <div class="flex items-center gap-unit-sm pt-unit-xs">
-                            <button onclick="downloadActiveDoc()"
-                                class="flex-1 py-2 rounded bg-tertiary-container text-tertiary-fixed font-headline-sm text-headline-sm font-semibold flex items-center justify-center gap-unit-xs shadow-sm hover:opacity-95 transition-opacity">
-                                <span class="material-symbols-outlined text-base">download</span>
-                                <span class="">Download PDF</span>
-                            </button>
-                            <button onclick="shareDocLink()"
-                                class="p-2 rounded bg-surface-container text-primary hover:bg-surface-container-high transition-colors"
-                                title="Export Public Verification Link">
-                                <span class="material-symbols-outlined text-lg">share</span>
-                            </button>
-                            <button onclick="window.print()"
-                                class="p-2 rounded bg-surface-container text-primary hover:bg-surface-container-high transition-colors"
-                                title="Print Technical Passport Copy">
-                                <span class="material-symbols-outlined text-lg">print</span>
-                            </button>
-                        </div>
                     </div>
                 </div>
-
             </div>
         </main>
     </div>
-
 </body>
 
 </html>

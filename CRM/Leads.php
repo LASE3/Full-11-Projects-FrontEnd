@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/../includes/auth_guard.php';
 requireAuth('CRM');
@@ -72,7 +72,7 @@ requireAuth('CRM');
         </div>
 
         <!-- Top Bar Sign Out -->
-        <a href="../api/logout.php?system=CRM&redirect=../CRM/login.php" class="top-signout-btn" title="Sign Out of CRM" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" ><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
+        <a href="./api/logout.php?redirect=../CRM/login.php" class="top-signout-btn" title="Sign Out of CRM" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" ><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
       </div>
     </header>
 
@@ -589,7 +589,8 @@ requireAuth('CRM');
   <div id="toast-container"></div>
   <script src="js/app.js"></script>
   <link rel="stylesheet" href="../assets/css/api-ui.css">
-  <script src="../assets/js/api-client.js"></script>
+  <script src="../assets/js/api-core.js"></script>
+  <script src="../assets/js/api-crm.js"></script>
   <script src="js/crm-data.js"></script>
 </body>
 

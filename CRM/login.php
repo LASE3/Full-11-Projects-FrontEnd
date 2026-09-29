@@ -69,7 +69,7 @@ $initError = $_GET['error'] ?? '';
         </div>
 
         <!-- Login Form -->
-        <form id="login-form" data-recovery-msg="Contact VP Enterprise Sales Operations Admin for account recovery." class="auth-form" action="../api/auth.php" method="POST" novalidate>
+        <form id="login-form" data-recovery-msg="Contact VP Enterprise Sales Operations Admin for account recovery." class="auth-form" action="./api/auth.php" method="POST" novalidate>
           <input type="hidden" name="systemId" value="CRM">
           <input type="hidden" name="redirect" value="Dashboard.php">
           <div class="form-group">

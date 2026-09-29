@@ -1,6 +1,6 @@
 /**
  * VOSTOKPRIBOR Employee Intranet — Live Data Integration  (Class 4)
- * Requires: ../../assets/js/api-client.js
+ * Requires: assets/js/api-core.js and assets/js/api-intranet.js loaded before this file.
  *
  * Pages covered:
  *  - Dashboard.php        → announcements feed
@@ -11,7 +11,10 @@
 (function () {
   "use strict";
 
-  const { intranet, ui, escHtml, handleApiError } = window.VostokAPI;
+  const core = window.VostokCore || window.VostokAPI || {};
+  const intranet = window.VostokIntranet || window.VostokAPI?.intranet;
+  const { ui = {}, escHtml = (s) => s } = core;
+  const handleApiError = core.handleApiError || console.error;
 
   /* ──────────────────────────────────────────────
    * ANNOUNCEMENTS
@@ -19,6 +22,17 @@
    * ────────────────────────────────────────────── */
   async function loadAnnouncements() {
     const feed = document.getElementById("announcements-feed");
+    const badge = document.getElementById("announcements-badge");
+    const navDirCount = document.getElementById("intra-nav-dir-count");
+
+    if (navDirCount) {
+      intranet.directory().then(dres => {
+        if (dres && Array.isArray(dres.data)) {
+          navDirCount.textContent = dres.data.length;
+        }
+      }).catch(() => { navDirCount.textContent = '—'; });
+    }
+
     if (!feed) return;
 
     feed.innerHTML =
@@ -26,11 +40,37 @@
 
     try {
       const res = await intranet.announcements();
-      const items = res.data;
+      const items = res.data || [];
+
+      if (badge) {
+        badge.textContent = `${items.length} New`;
+      }
+
+      // Update Carousel with latest announcement if present
+      const carTitle  = document.getElementById("carousel-slide-title");
+      const carDesc   = document.getElementById("carousel-slide-desc");
+      const carDate   = document.getElementById("carousel-slide-date");
+      const carBadge  = document.getElementById("carousel-slide-badge");
+      const carAuthor = document.getElementById("carousel-slide-author");
+
+      if (items.length > 0) {
+        const topItem = items[0];
+        if (carTitle)  carTitle.textContent  = topItem.title || '';
+        if (carDesc)   carDesc.textContent   = (topItem.body || topItem.content || '').substring(0, 240);
+        if (carDate)   carDate.textContent   = ui.date(topItem.posted_at || topItem.published_at || topItem.created_at);
+        if (carBadge)  carBadge.textContent  = topItem.audience_dept || topItem.announcement_type || 'DIRECTIVE';
+        if (carAuthor) carAuthor.textContent = `${topItem.posted_by_name || topItem.author_name || 'Executive Staff'} • ${topItem.posted_by_role || 'Enterprise'}`;
+      } else {
+        if (carTitle)  carTitle.textContent  = 'No Active Directives';
+        if (carDesc)   carDesc.textContent   = 'Company-wide updates and plant operational notices will appear here once published.';
+        if (carDate)   carDate.textContent   = '—';
+        if (carBadge)  carBadge.textContent  = 'ANNOUNCEMENT';
+        if (carAuthor) carAuthor.textContent = 'Corporate Communications';
+      }
 
       if (!items.length) {
         feed.innerHTML =
-          '<div style="padding:24px;opacity:.5;text-align:center;">No announcements at this time.</div>';
+          '<div style="padding:32px;opacity:.5;text-align:center;">No announcements at this time.</div>';
         return;
       }
 
@@ -40,11 +80,21 @@
         Safety: "#e74c3c",
         IT: "#2ecc71",
         HR: "#f39c12",
+        ENG: "#137333",
+        ITD: "#1a73e8",
+        HRA: "#6e4c7c",
+        OPS: "#00796b"
       };
 
       feed.innerHTML = items
         .map((a) => {
-          const color = typeColor[a.announcement_type] || "#3498db";
+          const dept = a.audience_dept || a.announcement_type || "General";
+          const color = typeColor[dept] || typeColor[a.announcement_type] || "#3498db";
+          const dateStr = ui.date(a.posted_at || a.published_at || a.created_at);
+          const author = a.posted_by_name || a.author_name || a.emp_id || "Enterprise Staff";
+          const role = a.posted_by_role ? ` • ${a.posted_by_role}` : "";
+          const targetDept = a.target_department_display || a.target_department_name || a.target_departments || "";
+
           return `
           <div class="announcement-card" style="border-left:3px solid ${color};
             background:${color}08;border-radius:8px;padding:16px 20px;margin-bottom:12px;">
@@ -53,18 +103,18 @@
                 <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
                   <span style="padding:2px 8px;border-radius:20px;font-size:10px;font-weight:800;
                     background:${color}20;color:${color};text-transform:uppercase;letter-spacing:.5px;">
-                    ${escHtml(a.announcement_type || "General")}
+                    ${escHtml(dept)}
                   </span>
                   ${a.is_pinned ? '<span style="font-size:10px;font-weight:700;color:#f39c12;">📌 PINNED</span>' : ""}
                 </div>
                 <div style="font-size:15px;font-weight:700;margin-bottom:6px;">${escHtml(a.title)}</div>
-                <div style="font-size:13px;opacity:.7;line-height:1.5;">${escHtml((a.body || a.content || "").substring(0, 200))}${(a.body || a.content || "").length > 200 ? "…" : ""}</div>
+                <div style="font-size:13px;opacity:.7;line-height:1.5;">${escHtml((a.body || a.content || "").substring(0, 240))}${(a.body || a.content || "").length > 240 ? "…" : ""}</div>
               </div>
-              <div style="font-size:11px;opacity:.5;white-space:nowrap;">${ui.date(a.published_at || a.created_at)}</div>
+              <div style="font-size:11px;opacity:.5;white-space:nowrap;">${dateStr}</div>
             </div>
             <div style="margin-top:10px;font-size:11px;opacity:.5;">
-              By: ${escHtml(a.author_name || a.emp_id || "—")}
-              ${a.target_departments ? " · Dept: " + escHtml(a.target_departments) : ""}
+              By: ${escHtml(author)}${escHtml(role)}
+              ${targetDept ? " · Target: " + escHtml(targetDept) : ""}
             </div>
           </div>`;
         })

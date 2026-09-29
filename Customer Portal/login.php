@@ -59,7 +59,7 @@ $initError = $_GET['error'] ?? '';
           <span id="alert-message"><?= !empty($initError) ? htmlspecialchars($initError) : 'Authentication failed. Please verify credentials.' ?></span>
         </div>
 
-        <form id="login-form" data-recovery-msg="Security Advisory: Contact your dedicated VP Client Representative for account recovery." class="auth-form" action="../api/auth.php" method="POST" novalidate>
+        <form id="login-form" data-recovery-msg="Security Advisory: Contact your dedicated VP Client Representative for account recovery." class="auth-form" action="./api/auth.php" method="POST" novalidate>
           <input type="hidden" name="systemId" value="CUS">
           <input type="hidden" name="redirect" value="Dashboard.php">
           <div class="form-group">

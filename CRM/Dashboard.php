@@ -90,7 +90,7 @@ $custCount = (int)($pdo->query("SELECT COUNT(*) FROM customers")->fetchColumn() 
         </div>
 
         <!-- Top Bar Sign Out -->
-        <a href="../api/logout.php?system=CRM&redirect=../CRM/login.php" class="top-signout-btn" title="Sign Out of CRM" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" ><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
+        <a href="./api/logout.php?redirect=../CRM/login.php" class="top-signout-btn" title="Sign Out of CRM" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" ><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
       </div>
     </header>
 
@@ -130,7 +130,7 @@ $custCount = (int)($pdo->query("SELECT COUNT(*) FROM customers")->fetchColumn() 
                 </span>
                 <span>Leads</span>
               </div>
-              <span class="sidebar-badge">28</span>
+              <span class="sidebar-badge" id="dash-nav-leads">—</span>
             </a>
 
             <!-- Screen 3: Customers -->
@@ -148,7 +148,7 @@ $custCount = (int)($pdo->query("SELECT COUNT(*) FROM customers")->fetchColumn() 
                 </span>
                 <span>Customers</span>
               </div>
-              <span class="sidebar-badge">14</span>
+              <span class="sidebar-badge" id="dash-nav-customers">—</span>
             </a>
 
             <!-- Screen 4: Opportunities -->
@@ -162,7 +162,7 @@ $custCount = (int)($pdo->query("SELECT COUNT(*) FROM customers")->fetchColumn() 
                 </span>
                 <span>Opportunities</span>
               </div>
-              <span class="sidebar-badge">42</span>
+              <span class="sidebar-badge" id="dash-nav-opps">—</span>
             </a>
 
             <!-- Screen 5: Quotes & Contracts -->
@@ -178,7 +178,7 @@ $custCount = (int)($pdo->query("SELECT COUNT(*) FROM customers")->fetchColumn() 
                 </span>
                 <span>Quotes &amp; Contracts</span>
               </div>
-              <span class="sidebar-badge">19</span>
+              <span class="sidebar-badge" id="dash-nav-quotes">—</span>
             </a>
 
             <!-- Screen 6: Projects -->
@@ -193,7 +193,7 @@ $custCount = (int)($pdo->query("SELECT COUNT(*) FROM customers")->fetchColumn() 
                 </span>
                 <span>Projects</span>
               </div>
-              <span class="sidebar-badge">14</span>
+              <span class="sidebar-badge" id="dash-nav-projects">—</span>
             </a>
 
             <!-- Screen 7: Sales Forecast -->
@@ -318,12 +318,12 @@ $custCount = (int)($pdo->query("SELECT COUNT(*) FROM customers")->fetchColumn() 
                 <div class="kpi-icon-pill indigo">👥</div>
               </div>
               <div class="kpi-value-row">
-                <span class="kpi-value kpi-value-mono">28</span>
+                <span class="kpi-value kpi-value-mono" id="dash-kpi-leads">—</span>
                 <span class="crm-text-muted-md" >Leads</span>
               </div>
               <div class="kpi-footer">
-                <span>6 Qualified this week</span>
-                <span class="kpi-trend up">▲ +12% MoM</span>
+                <span id="dash-kpi-leads-sub"> </span>
+                <span class="kpi-trend up" id="dash-kpi-leads-trend"> </span>
               </div>
             </div>
 
@@ -334,12 +334,12 @@ $custCount = (int)($pdo->query("SELECT COUNT(*) FROM customers")->fetchColumn() 
                 <div class="kpi-icon-pill amber">⚡</div>
               </div>
               <div class="kpi-value-row">
-                <span class="kpi-value kpi-value-mono">42</span>
+                <span class="kpi-value kpi-value-mono" id="dash-kpi-opps">—</span>
                 <span class="crm-text-muted-md" >Active Deals</span>
               </div>
               <div class="kpi-footer">
-                <span>18 in Late Negotiation</span>
-                <span class="kpi-trend amber">Avg 45d cycle</span>
+                <span id="dash-kpi-opps-sub"> </span>
+                <span class="kpi-trend amber" id="dash-kpi-opps-trend"> </span>
               </div>
             </div>
 
@@ -350,12 +350,12 @@ $custCount = (int)($pdo->query("SELECT COUNT(*) FROM customers")->fetchColumn() 
                 <div class="kpi-icon-pill steel">💼</div>
               </div>
               <div class="kpi-value-row">
-                <span class="kpi-value kpi-value-mono">$18.45M</span>
+                <span class="kpi-value kpi-value-mono" id="dash-kpi-pipeline">—</span>
                 <span class="crm-text-muted-12" >USD</span>
               </div>
               <div class="kpi-footer">
-                <span>Weighted: <strong>$12.80M</strong></span>
-                <span class="kpi-trend up">▲ +18.4% YoY</span>
+                <span id="dash-kpi-pipeline-sub"> </span>
+                <span class="kpi-trend up" id="dash-kpi-pipeline-trend"> </span>
               </div>
             </div>
 
@@ -366,12 +366,12 @@ $custCount = (int)($pdo->query("SELECT COUNT(*) FROM customers")->fetchColumn() 
                 <div class="kpi-icon-pill success">🎯</div>
               </div>
               <div class="kpi-value-row">
-                <span class="kpi-value kpi-value-mono">68.4%</span>
+                <span class="kpi-value kpi-value-mono" id="dash-kpi-winrate">—</span>
                 <span class="crm-text-muted-12" >Close Ratio</span>
               </div>
               <div class="kpi-footer">
-                <span>Industry Benchmark: 45%</span>
-                <span class="kpi-trend up">▲ +4.2%</span>
+                <span id="dash-kpi-winrate-sub"> </span>
+                <span class="kpi-trend up" id="dash-kpi-winrate-trend"> </span>
               </div>
             </div>
           </div>
@@ -390,86 +390,8 @@ $custCount = (int)($pdo->query("SELECT COUNT(*) FROM customers")->fetchColumn() 
               </a>
             </div>
 
-            <div class="funnel-container">
-              <!-- Stage 1 -->
-              <div class="funnel-stage">
-                <div class="funnel-stage-header">
-                  <span class="funnel-stage-name">1. Qualification</span>
-                  <span class="funnel-stage-count">14 Deals</span>
-                </div>
-                <div class="funnel-stage-val">$4,750,000</div>
-                <div class="funnel-bar-track">
-                  <div class="funnel-bar-fill"></div>
-                </div>
-                <div class="funnel-conversion-rate">
-                  <span>Conversion Rate</span>
-                  <strong>100% Base</strong>
-                </div>
-              </div>
-
-              <!-- Stage 2 -->
-              <div class="funnel-stage">
-                <div class="funnel-stage-header">
-                  <span class="funnel-stage-name">2. Proposal &amp; Spec</span>
-                  <span class="funnel-stage-count">11 Deals</span>
-                </div>
-                <div class="funnel-stage-val">$3,840,000</div>
-                <div class="funnel-bar-track">
-                  <div class="funnel-bar-fill"></div>
-                </div>
-                <div class="funnel-conversion-rate">
-                  <span>Step Conv.</span>
-                  <strong>78.5%</strong>
-                </div>
-              </div>
-
-              <!-- Stage 3 -->
-              <div class="funnel-stage">
-                <div class="funnel-stage-header">
-                  <span class="funnel-stage-name">3. Negotiation</span>
-                  <span class="funnel-stage-count">8 Deals</span>
-                </div>
-                <div class="funnel-stage-val">$5,890,000</div>
-                <div class="funnel-bar-track">
-                  <div class="funnel-bar-fill"></div>
-                </div>
-                <div class="funnel-conversion-rate">
-                  <span>Step Conv.</span>
-                  <strong>72.7%</strong>
-                </div>
-              </div>
-
-              <!-- Stage 4 -->
-              <div class="funnel-stage">
-                <div class="funnel-stage-header">
-                  <span class="funnel-stage-name">4. Contract Review</span>
-                  <span class="funnel-stage-count">5 Deals</span>
-                </div>
-                <div class="funnel-stage-val">$2,480,000</div>
-                <div class="funnel-bar-track">
-                  <div class="funnel-bar-fill"></div>
-                </div>
-                <div class="funnel-conversion-rate">
-                  <span>Step Conv.</span>
-                  <strong>62.5%</strong>
-                </div>
-              </div>
-
-              <!-- Stage 5 -->
-              <div class="funnel-stage">
-                <div class="funnel-stage-header">
-                  <span class="funnel-stage-name">5. Closed / Won</span>
-                  <span class="funnel-stage-count">4 Deals</span>
-                </div>
-                <div class="funnel-stage-val">$1,490,000</div>
-                <div class="funnel-bar-track">
-                  <div class="funnel-bar-fill"></div>
-                </div>
-                <div class="funnel-conversion-rate">
-                  <span>Step Conv.</span>
-                  <strong>80.0%</strong>
-                </div>
-              </div>
+            <div class="funnel-container" id="dash-funnel-container">
+              <!-- Dynamically populated by crm-data.js -->
             </div>
           </div>
 
@@ -484,7 +406,7 @@ $custCount = (int)($pdo->query("SELECT COUNT(*) FROM customers")->fetchColumn() 
                     Confidential customer data tagged with amber-orange (#D9822B) boundary
                   </p>
                 </div>
-                <a href="Customers.php" class="btn btn-outline btn-sm">All Accounts (14)</a>
+                <a href="Customers.php" class="btn btn-outline btn-sm" id="dash-accounts-link">All Accounts</a>
               </div>
 
               <table class="accounts-table">
@@ -497,116 +419,8 @@ $custCount = (int)($pdo->query("SELECT COUNT(*) FROM customers")->fetchColumn() 
                     <th>Actions</th>
                   </tr>
                 </thead>
-                <tbody>
-                  <tr class="account-row account-row-tagged" onclick="window.location.href='CustomerDetail.php'">
-                    <td>
-                      <div class="account-name-cell">
-                        <span class="account-name-title">Severstal Metallurgy PJSC</span>
-                        <span class="account-name-sub">Cherepovets Steel Complex · ID #VP-90214</span>
-                      </div>
-                    </td>
-                    <td>
-                      <span class="tier-badge strategic">Strategic Tier-1</span>
-                    </td>
-                    <td>
-                      <strong class="crm-mono-navy" >$6,850,000</strong>
-                    </td>
-                    <td>
-                      <span class="crm-mono-bold-indigo" >3 Deals</span>
-                      <span class="crm-text-muted-sm" >($2.9M)</span>
-                    </td>
-                    <td>
-                      <a href="CustomerDetail.php" class="btn btn-outline btn-sm">Inspect →</a>
-                    </td>
-                  </tr>
-
-                  <tr class="account-row account-row-tagged" onclick="window.location.href='CustomerDetail.php'">
-                    <td>
-                      <div class="account-name-cell">
-                        <span class="account-name-title">NLMK Group Lipetsk</span>
-                        <span class="account-name-sub">Blast Furnace &amp; Strip Mill · ID #VP-88412</span>
-                      </div>
-                    </td>
-                    <td>
-                      <span class="tier-badge tier-1">Tier-1 Enterprise</span>
-                    </td>
-                    <td>
-                      <strong class="crm-mono-navy" >$4,200,000</strong>
-                    </td>
-                    <td>
-                      <span class="crm-mono-bold-indigo" >2 Deals</span>
-                      <span class="crm-text-muted-sm" >($1.3M)</span>
-                    </td>
-                    <td>
-                      <a href="CustomerDetail.php" class="btn btn-outline btn-sm">Inspect →</a>
-                    </td>
-                  </tr>
-
-                  <tr class="account-row account-row-tagged" onclick="window.location.href='CustomerDetail.php'">
-                    <td>
-                      <div class="account-name-cell">
-                        <span class="account-name-title">Norilsk Nickel Mining</span>
-                        <span class="account-name-sub">Talnakh Concentrator Division · ID #VP-66102</span>
-                      </div>
-                    </td>
-                    <td>
-                      <span class="tier-badge strategic">Strategic Tier-1</span>
-                    </td>
-                    <td>
-                      <strong class="crm-mono-navy" >$8,400,000</strong>
-                    </td>
-                    <td>
-                      <span class="crm-mono-bold-indigo" >1 Deal</span>
-                      <span class="crm-text-muted-sm" >($2.4M)</span>
-                    </td>
-                    <td>
-                      <a href="CustomerDetail.php" class="btn btn-outline btn-sm">Inspect →</a>
-                    </td>
-                  </tr>
-
-                  <tr class="account-row account-row-tagged" onclick="window.location.href='CustomerDetail.php'">
-                    <td>
-                      <div class="account-name-cell">
-                        <span class="account-name-title">EVRAZ Consolidated</span>
-                        <span class="account-name-sub">Nizhny Tagil Rail Mill · ID #VP-77190</span>
-                      </div>
-                    </td>
-                    <td>
-                      <span class="tier-badge tier-2">Tier-2 Enterprise</span>
-                    </td>
-                    <td>
-                      <strong class="crm-mono-navy" >$2,100,000</strong>
-                    </td>
-                    <td>
-                      <span class="crm-mono-bold-indigo" >1 Deal</span>
-                      <span class="crm-text-muted-sm" >($1.65M)</span>
-                    </td>
-                    <td>
-                      <a href="CustomerDetail.php" class="btn btn-outline btn-sm">Inspect →</a>
-                    </td>
-                  </tr>
-
-                  <tr class="account-row account-row-tagged" onclick="window.location.href='CustomerDetail.php'">
-                    <td>
-                      <div class="account-name-cell">
-                        <span class="account-name-title">PhosAgro Chemical</span>
-                        <span class="account-name-sub">Apatity Fertilizer Complex · ID #VP-31088</span>
-                      </div>
-                    </td>
-                    <td>
-                      <span class="tier-badge tier-2">Tier-2 Enterprise</span>
-                    </td>
-                    <td>
-                      <strong class="crm-mono-navy" >$1,950,000</strong>
-                    </td>
-                    <td>
-                      <span class="crm-mono-bold-indigo" >1 Won</span>
-                      <span class="crm-text-muted-sm" >($418K)</span>
-                    </td>
-                    <td>
-                      <a href="CustomerDetail.php" class="btn btn-outline btn-sm">Inspect →</a>
-                    </td>
-                  </tr>
+                <tbody id="dash-accounts-tbody">
+                  <!-- Dynamically populated by crm-data.js -->
                 </tbody>
               </table>
             </div>
@@ -625,46 +439,8 @@ $custCount = (int)($pdo->query("SELECT COUNT(*) FROM customers")->fetchColumn() 
                 </button>
               </div>
 
-              <div class="activity-feed-list">
-                <!-- Activity Item 1 -->
-                <div class="activity-item">
-                  <div class="activity-icon-container contract">✓</div>
-                  <div class="activity-content">
-                    <div class="activity-title">Master Contract MSA-2024-SVST Counter-Signed</div>
-                    <div class="activity-desc">P. V. Cherepanov (Severstal VP Proc.) ratified the 3-Year Automation SLA.</div>
-                    <span class="activity-timestamp">Today at 14:32 MSK · Severstal Metallurgy PJSC</span>
-                  </div>
-                </div>
-
-                <!-- Activity Item 2 -->
-                <div class="activity-item">
-                  <div class="activity-icon-container deal">⚡</div>
-                  <div class="activity-content">
-                    <div class="activity-title">Opportunity Advanced to Negotiation</div>
-                    <div class="activity-desc">Talnakh Concentrator Flotation Telemetry ($2.40M) passed Phase 2 FAT review.</div>
-                    <span class="activity-timestamp">Today at 11:15 MSK · Norilsk Nickel</span>
-                  </div>
-                </div>
-
-                <!-- Activity Item 3 -->
-                <div class="activity-item">
-                  <div class="activity-icon-container quote">📑</div>
-                  <div class="activity-content">
-                    <div class="activity-title">Engineering Quotation Delivered (#QUO-9912)</div>
-                    <div class="activity-desc">Spec sheet for 16x High-Pressure Flowmeters HPF-900X dispatched to NLMK Lipetsk.</div>
-                    <span class="activity-timestamp">Yesterday at 16:45 MSK · Mikhail Sorokin</span>
-                  </div>
-                </div>
-
-                <!-- Activity Item 4 -->
-                <div class="activity-item">
-                  <div class="activity-icon-container meeting">🤝</div>
-                  <div class="activity-content">
-                    <div class="activity-title">On-Site Technical Audit Completed</div>
-                    <div class="activity-desc">Dr. Elena Rostova completed sensor calibration walkthrough at Cherepovets Blast Furnace #5.</div>
-                    <span class="activity-timestamp">Nov 08, 2024 at 10:00 MSK · Severstal Field Team</span>
-                  </div>
-                </div>
+              <div class="activity-feed-list" id="dash-activity-feed">
+                <!-- Dynamically populated by crm-data.js -->
               </div>
             </div>
           </div>
@@ -781,7 +557,8 @@ $custCount = (int)($pdo->query("SELECT COUNT(*) FROM customers")->fetchColumn() 
   <div id="toast-container"></div>
   <script src="js/app.js"></script>
   <link rel="stylesheet" href="../assets/css/api-ui.css">
-  <script src="../assets/js/api-client.js"></script>
+  <script src="../assets/js/api-core.js"></script>
+  <script src="../assets/js/api-crm.js"></script>
   <script src="js/crm-data.js"></script>
 </body>
 
