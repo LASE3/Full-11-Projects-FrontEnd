@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/../includes/auth_guard.php';
 requireAuth('CRM');
@@ -22,6 +22,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
       <div class="top-nav__accent-stripe"></div>
       <div class="top-nav__content">
         <div class="brand-section">
+          <button class="mobile-nav-toggle" id="crm-sidebar-toggle" onclick="document.body.classList.toggle('sidebar-open')" title="Toggle Menu"><span class="material-symbols-outlined">menu</span></button>
           <a href="Dashboard.php" class="brand-logo-container">
             <img alt="VOSTOKPRIBOR Official Mark" class="brand-logo-img" src="assets/logo.svg" />
             <div class="brand-divider"></div>
@@ -42,7 +43,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
 
         <div class="top-search-bar">
           <div class="search-input-wrapper">
-            <span class="search-icon">🔍</span>
+            <span class="search-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span>
             <input type="text" class="search-input" id="global-omni-search" placeholder="Search master contracts, NDAs, quotes (e.g. MSA-2024, Severstal)..." />
             <span class="search-kbd">Ctrl+K</span>
           </div>
@@ -56,12 +57,11 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
           <button class="btn btn-primary-amber btn-sm" onclick="window.crmApp.openModal('modal-new-quote')">
             <span>+ Create Quote</span>
           </button>
-          <button class="icon-button" title="Telemetry" onclick="window.crmApp.showToast('Contract Sealed', 'MSA-2024-SVST-088 encrypted EDS seal verified by GOST key.')">
+          <button class="icon-button notifications-btn" id="notifications-toggle-btn" title="Live Sales Telemetry & Notifications">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
               <path d="M13.73 21a2 2 0 0 1-3.46 0" />
             </svg>
-            <span class="badge-dot"></span>
           </button>
           <div class="top-user-profile" onclick="window.crmApp.showToast('Active User Session', '<?= htmlspecialchars($currUser['full_name'] ?? 'Mikhail Sorokin') ?> · <?= htmlspecialchars($currUser['role_name'] ?? 'VP Enterprise Sales') ?> · <?= htmlspecialchars($currUser['clearance_level'] ?? 'L4') ?> Clearance')">
             <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDoVYMImYMOrFG-GImEjxCUij3YIwCjbxiUVg9-84NgNQUnx44rwhCbh4EVKLngwn6R5_hzNhRQkfTglEUz1jtP83GRGR8WbDdiIQblwg1fLV0mqc04y19GGKO27NGBpanqADz4vwO3ANY9KcZiOXBusZHAE_PU_FuuwKqChSLXXJsGo289bHOL3MFrKWoXXMoxnqoUIglg-NYsM99jg8cA3e1CeWhqlY0x7isLHdQfGbcFE_XiNNJg" alt="<?= htmlspecialchars($currUser['full_name'] ?? 'User') ?>" class="user-avatar-top" />
@@ -269,7 +269,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
             <div class="crm-card kpi-card crm-border-t-confidential" >
               <div class="kpi-header">
                 <span class="kpi-title">Governed Contract Value</span>
-                <div class="kpi-icon-pill crm-badge-confidential" >🔒</div>
+                <div class="kpi-icon-pill crm-badge-confidential" ><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
               </div>
               <div class="kpi-value-row">
                 <span class="kpi-value kpi-value-mono">$32.4M</span>
@@ -299,7 +299,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
             <div class="crm-card kpi-card">
               <div class="kpi-header">
                 <span class="kpi-title">Pending Quotes</span>
-                <div class="kpi-icon-pill amber">⚡</div>
+                <div class="kpi-icon-pill amber"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
               </div>
               <div class="kpi-value-row">
                 <span class="kpi-value kpi-value-mono">8</span>
@@ -314,7 +314,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
             <div class="crm-card kpi-card">
               <div class="kpi-header">
                 <span class="kpi-title">Renewals in Q1 2025</span>
-                <div class="kpi-icon-pill indigo">📅</div>
+                <div class="kpi-icon-pill indigo"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
               </div>
               <div class="kpi-value-row">
                 <span class="kpi-value kpi-value-mono">4</span>
@@ -332,7 +332,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
             <div class="confidential-badge-banner">
               <div class="crm-flex-gap-md" >
                 <span class="confidential-pill">
-                  <span>🔒</span>
+                  <span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>
                   <span>HIGHLY CONFIDENTIAL LEGAL REGISTRY</span>
                 </span>
                 <span class="crm-text-secondary-12" >Tier-4 Commercial Governance (GOST Electronic Signature Verified)</span>
@@ -367,7 +367,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
                   <td><strong class="crm-mono-navy-lg" >$14,250,000.00</strong></td>
                   <td><span class="tier-badge crm-badge-success" >✓ Counter-Signed</span></td>
                   <td>
-                    <button class="btn btn-outline btn-sm" onclick="window.crmApp.showToast('Secure Download', 'Decrypted document MSA-2024-SVST-088.pdf downloaded.')">Download 🔒</button>
+                    <button class="btn btn-outline btn-sm" onclick="window.crmApp.showToast('Secure Download', 'Decrypted document MSA-2024-SVST-088.pdf downloaded.')">Download <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></button>
                   </td>
                 </tr>
 
@@ -384,7 +384,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
                   <td><strong class="crm-mono-navy-lg" >$8,400,000.00</strong></td>
                   <td><span class="tier-badge crm-badge-success" >✓ Counter-Signed</span></td>
                   <td>
-                    <button class="btn btn-outline btn-sm" onclick="window.crmApp.showToast('Secure Download', 'Decrypted document MSA-2023-NN-014.pdf downloaded.')">Download 🔒</button>
+                    <button class="btn btn-outline btn-sm" onclick="window.crmApp.showToast('Secure Download', 'Decrypted document MSA-2023-NN-014.pdf downloaded.')">Download <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></button>
                   </td>
                 </tr>
 
@@ -401,7 +401,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
                   <td><strong class="crm-mono-navy-lg" >$850,000.00 / yr</strong></td>
                   <td><span class="tier-badge crm-badge-success" >✓ Active SLA</span></td>
                   <td>
-                    <button class="btn btn-outline btn-sm" onclick="window.crmApp.showToast('Secure Download', 'Decrypted document SLA-2024-TIER1.pdf downloaded.')">Download 🔒</button>
+                    <button class="btn btn-outline btn-sm" onclick="window.crmApp.showToast('Secure Download', 'Decrypted document SLA-2024-TIER1.pdf downloaded.')">Download <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></button>
                   </td>
                 </tr>
 
@@ -418,7 +418,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
                   <td><strong class="crm-mono-navy-lg" >Unlimited Scope</strong></td>
                   <td><span class="tier-badge crm-badge-indigo" >✓ Electronic Seal</span></td>
                   <td>
-                    <button class="btn btn-outline btn-sm" onclick="window.crmApp.showToast('Secure Download', 'Decrypted document NDA-VP-SVR-90214.pdf downloaded.')">Download 🔒</button>
+                    <button class="btn btn-outline btn-sm" onclick="window.crmApp.showToast('Secure Download', 'Decrypted document NDA-VP-SVR-90214.pdf downloaded.')">Download <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></button>
                   </td>
                 </tr>
               </tbody>
@@ -520,6 +520,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
   <script src="../assets/js/api-core.js"></script>
   <script src="../assets/js/api-crm.js"></script>
   <script src="js/crm-data.js"></script>
+  <script src="../assets/js/notifications-hub.js" defer></script>
 </body>
 
 </html>

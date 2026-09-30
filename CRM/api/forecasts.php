@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 /**
  * Class 5: CRM Platform - Sales Forecasts API

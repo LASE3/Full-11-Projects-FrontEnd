@@ -219,11 +219,33 @@
    */
   document.addEventListener("DOMContentLoaded", () => {
     const params = new URLSearchParams(window.location.search);
+    const invParam = params.get("invoice") || params.get("invoice_id") || params.get("id");
+
     if (params.get("pay") === "true") {
       setTimeout(() => window.showPaymentModal(), 400);
-    } else if (params.get("invoice")) {
-      const inv = params.get("invoice");
-      setTimeout(() => window.showPaymentModal(inv), 400);
+    } else if (invParam) {
+      setTimeout(() => {
+        const cleanInv = invParam.replace(/^INV-?/i, "").trim();
+        const targetRow = document.getElementById(`row-INV-${cleanInv}`) ||
+                          document.getElementById(`row-INV-${invParam}`) ||
+                          document.querySelector(`tr[id*="${cleanInv}"]`);
+
+        if (targetRow) {
+          targetRow.scrollIntoView({ behavior: "smooth", block: "center" });
+          targetRow.style.transition = "outline 0.3s, background-color 0.3s";
+          targetRow.style.outline = "2px solid #3b82f6";
+          targetRow.style.backgroundColor = "rgba(59, 130, 246, 0.08)";
+
+          const actionBtn = targetRow.querySelector('button[onclick*="showPaymentModal"], button[onclick*="previewDocument"]');
+          if (actionBtn) {
+            actionBtn.click();
+          } else {
+            window.showPaymentModal(`INV-${cleanInv}`);
+          }
+        } else {
+          window.showPaymentModal(invParam.startsWith("INV-") ? invParam : `INV-${invParam}`);
+        }
+      }, 350);
     }
   });
 })();

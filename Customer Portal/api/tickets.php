@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 /**
  * Class 3: Customer Portal - Support Tickets API

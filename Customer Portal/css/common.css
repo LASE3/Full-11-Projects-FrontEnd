@@ -263,7 +263,103 @@ body.sidebar-collapsed #sidebar-hover-trigger {
   pointer-events: auto;
 }
 
-@media (max-width: 1023px) {
+/* ==========================================================================
+   Desktop Hover-to-Open Sidebar (Compact Rail -> Smooth Expand on Mouseover)
+   ========================================================================== */
+@media (min-width: 769px) {
+  #portal-sidebar,
+  aside#portal-sidebar {
+    width: 68px !important;
+    overflow-x: hidden;
+    transition: width 0.28s cubic-bezier(0.2, 0, 0, 1), box-shadow 0.28s ease !important;
+    z-index: 950 !important;
+  }
+
+  #portal-sidebar:hover,
+  aside#portal-sidebar:hover {
+    width: 16rem !important;
+    box-shadow: 14px 0 36px rgba(0, 0, 0, 0.5) !important;
+  }
+
+  .portal-content-wrapper,
+  .pl-64 {
+    padding-left: 68px !important;
+    transition: padding-left 0.28s cubic-bezier(0.2, 0, 0, 1) !important;
+  }
+
+  #portal-sidebar a {
+    justify-content: flex-start;
+    padding: 10px 14px;
+    gap: 0;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+
+  #portal-sidebar a svg,
+  #portal-sidebar a .material-symbols-outlined {
+    min-width: 20px;
+    width: 20px;
+    margin: 0;
+  }
+
+  #portal-sidebar a span:not(.material-symbols-outlined) {
+    opacity: 0;
+    max-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    pointer-events: none;
+    margin-left: 0;
+    transition: opacity 0.2s ease, max-width 0.28s cubic-bezier(0.2, 0, 0, 1), margin-left 0.2s ease;
+  }
+
+  #portal-sidebar div:first-child > div:first-child {
+    opacity: 0;
+    height: 0;
+    overflow: hidden;
+    padding: 0;
+    margin: 0;
+    transition: opacity 0.2s ease, height 0.28s ease;
+  }
+
+  #portal-sidebar .p-unit-base.m-unit-sm {
+    opacity: 0;
+    max-height: 0;
+    overflow: hidden;
+    padding: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease, max-height 0.28s ease;
+  }
+
+  /* When mouse moves on sidebar -> it opens smoothly */
+  #portal-sidebar:hover a {
+    gap: 0.75rem;
+    padding: 0.625rem 1rem;
+  }
+
+  #portal-sidebar:hover a span:not(.material-symbols-outlined) {
+    opacity: 1;
+    max-width: 180px;
+    margin-left: 0.75rem;
+    pointer-events: auto;
+  }
+
+  #portal-sidebar:hover div:first-child > div:first-child {
+    opacity: 1;
+    height: auto;
+    padding: 0 1rem;
+    margin-bottom: 0.5rem;
+  }
+
+  #portal-sidebar:hover .p-unit-base.m-unit-sm {
+    opacity: 1;
+    max-height: 250px;
+    padding: 1rem;
+    pointer-events: auto;
+  }
+}
+
+/* Mobile Off-Canvas Drawer Mode & Backdrop (<= 768px) */
+@media (max-width: 768px) {
   aside,
   #portal-sidebar {
     transform: translateX(-100%);

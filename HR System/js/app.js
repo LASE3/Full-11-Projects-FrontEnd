@@ -21,7 +21,7 @@
       let icon = "ℹ️";
       if (type === "success") icon = "✓";
       if (type === "alert" || type === "error") icon = "⚠";
-      if (type === "amber") icon = "⚡";
+      if (type === "amber") icon = "<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>";
 
       toast.innerHTML = `
         <div class="toast-icon">${icon}</div>
@@ -122,7 +122,7 @@
           if (clearanceEl) {
             const cNum = (emp.clearance_level || "L1").replace("L", "");
             clearanceEl.className = `clearance-badge clearance-l${cNum}`;
-            clearanceEl.innerHTML = `<span>🔒</span><span>Level ${cNum} · ${cNum === "4" ? "Top Secret" : cNum === "3" ? "Secret SCADA" : cNum === "2" ? "Confidential" : "General"}</span>`;
+            clearanceEl.innerHTML = `<span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span><span>Level ${cNum} · ${cNum === "4" ? "Top Secret" : cNum === "3" ? "Secret SCADA" : cNum === "2" ? "Confidential" : "General"}</span>`;
           }
 
           if (statusEl) {

@@ -218,27 +218,17 @@ $systems = [
 
                         <!-- Action Buttons -->
                         <div class="flex items-center gap-2 pt-2 border-t border-brand-border/40">
-                            <?php if ($sys['code'] === 'WEB'): ?>
-                                <a href="<?= rawurlencode($sys['dir']) ?>/index.php"
-                                    class="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded text-xs font-semibold text-white transition-colors"
-                                    style="background-color: <?= $sys['accent'] ?>; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">
-                                    <span class="material-symbols-outlined text-sm">public</span>
-                                    <span>View Corporate Site</span>
-                                </a>
-                            <?php else: ?>
-                                <a href="<?= rawurlencode($sys['dir']) ?>/login.php"
-                                    class="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded text-xs font-semibold text-white transition-colors"
-                                    style="background-color: <?= $sys['accent'] ?>; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">
-                                    <span class="material-symbols-outlined text-sm">login</span>
-                                    <span>Open Login</span>
-                                </a>
-                                <a href="<?= rawurlencode($sys['dir']) ?>/"
-                                    class="inline-flex items-center justify-center gap-1 px-3 py-2 rounded text-xs font-mono text-slate-300 bg-brand-panel hover:bg-brand-border border border-brand-border transition-colors"
-                                    title="Launch system root entry (opens login first)">
-                                    <span class="material-symbols-outlined text-sm">open_in_new</span>
-                                    <span>Run</span>
-                                </a>
-                            <?php endif; ?>
+                            <a href="<?= rawurlencode($sys['dir']) ?>/login.php" target="_blank" rel="noopener noreferrer" class="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded text-xs font-semibold text-white transition-colors shadow-sm"
+                                style="background-color: <?= $sys['accent'] ?>;" title="Open <?= htmlspecialchars($sys['name']) ?> Login in a new tab">
+                                <span class="material-symbols-outlined text-sm">login</span>
+                                <span>Open Login</span>
+                            </a>
+                            <a href="<?= rawurlencode($sys['dir']) ?>/login.php" target="_blank" rel="noopener noreferrer"
+                                class="inline-flex items-center justify-center gap-1 px-3 py-2 rounded text-xs font-mono font-semibold text-slate-200 bg-brand-panel hover:bg-brand-border hover:text-white border border-brand-border transition-colors shadow-sm"
+                                title="Run <?= htmlspecialchars($sys['name']) ?> (Opens Login page in new tab)">
+                                <span class="material-symbols-outlined text-sm text-emerald-400">play_arrow</span>
+                                <span>Run</span>
+                            </a>
                         </div>
                     </div>
                 </div>

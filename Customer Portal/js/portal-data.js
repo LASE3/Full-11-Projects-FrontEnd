@@ -42,22 +42,30 @@
       const res = await customer.dashboard();
       const d = res.data || {};
 
-      if (kpiProjects) kpiProjects.textContent = d.active_projects ?? d.total_projects ?? "—";
-      if (kpiProjectsSub) kpiProjectsSub.textContent = (d.active_projects ?? 0) + " Active, " + (d.total_projects ?? 0) + " Total";
-      if (kpiInvoices) kpiInvoices.textContent = d.open_invoices ?? d.pending_invoices ?? d.total_invoices ?? "—";
-      if (kpiInvoicesSub) {
-        kpiInvoicesSub.textContent = d.pending_balance_eur != null
-          ? ui.currency(d.pending_balance_eur, d.currency || "USD") + " pending"
-          : "$0.00 USD total";
+      if (kpiProjects && (d.active_projects != null || d.total_projects != null)) {
+        kpiProjects.textContent = d.active_projects ?? d.total_projects;
       }
-      if (kpiTickets) kpiTickets.textContent = d.open_tickets ?? "—";
-      if (kpiTicketsSub) kpiTicketsSub.textContent = (d.open_tickets ?? 0) + " open / pending response";
-      if (kpiApprovedDocs) kpiApprovedDocs.textContent = d.total_projects != null ? String(d.total_projects * 4) : "—";
-      if (kpiApprovedDocsSub) kpiApprovedDocsSub.textContent = "Verified specifications";
-      if (kpiContract)
-        kpiContract.textContent = (d.total_contract_value || d.pending_balance_eur)
-          ? ui.currency(d.total_contract_value || d.pending_balance_eur, d.currency || "USD")
-          : "—";
+      if (kpiProjectsSub && (d.active_projects != null || d.total_projects != null)) {
+        kpiProjectsSub.textContent = (d.active_projects ?? 0) + " Active, " + (d.total_projects ?? 0) + " Total";
+      }
+      if (kpiInvoices && (d.open_invoices != null || d.pending_invoices != null || d.total_invoices != null)) {
+        kpiInvoices.textContent = d.open_invoices ?? d.pending_invoices ?? d.total_invoices;
+      }
+      if (kpiInvoicesSub && d.pending_balance_eur != null) {
+        kpiInvoicesSub.textContent = ui.currency(d.pending_balance_eur, d.currency || "USD") + " pending";
+      }
+      if (kpiTickets && d.open_tickets != null) {
+        kpiTickets.textContent = d.open_tickets;
+      }
+      if (kpiTicketsSub && d.open_tickets != null) {
+        kpiTicketsSub.textContent = (d.open_tickets ?? 0) + " open / pending response";
+      }
+      if (kpiApprovedDocs && d.total_projects != null) {
+        kpiApprovedDocs.textContent = String(d.total_projects * 4);
+      }
+      if (kpiContract && (d.total_contract_value || d.pending_balance_eur)) {
+        kpiContract.textContent = ui.currency(d.total_contract_value || d.pending_balance_eur, d.currency || "USD");
+      }
 
       // Activity Feed rendering
       if (activityFeed) {
@@ -66,7 +74,7 @@
         (d.recent_projects || []).forEach(p => {
           activities.push({
             type: "Project Milestone",
-            title: `Project ${p.prj_id} • Status: ${p.status_display || p.status}`,
+            title: `${p.project_name || ('Project ' + p.prj_id)} • Status: ${p.status_display || p.status || 'Active'}`,
             desc: `Project budget: ${ui.currency(p.budget || 0, p.currency || 'USD')}. Timeline: ${p.start_date || '—'} to ${p.end_date || '—'}`,
             time: p.start_date ? ui.date(p.start_date) : 'Recently',
             accent: 'primary-container',
@@ -99,10 +107,8 @@
           });
         });
 
-        if (!activities.length) {
-          activityFeed.innerHTML = '<div style="padding:32px;text-align:center;opacity:0.5;font-size:14px;">No recent account activities recorded.</div>';
-          if (eventsCount) eventsCount.textContent = 'Showing 0 events';
-        } else {
+        // Only replace pre-rendered activity feed if dynamic activities were fetched
+        if (activities.length > 0) {
           if (eventsCount) eventsCount.textContent = `Showing ${activities.length} recent system events`;
           activityFeed.innerHTML = activities.map(a => `
             <div class="flex flex-col md:flex-row md:items-center justify-between p-unit-base gap-unit-sm bg-surface-container-lowest hover:bg-surface-container-low transition-colors relative pl-unit-lg">
@@ -140,6 +146,9 @@
     const tbody = document.getElementById("projects-tbody");
     if (!tbody) return;
 
+    // Preserve existing server-side rendered rows
+    if (tbody.querySelectorAll("tr").length > 0) return;
+
     tbody.innerHTML =
       '<tr><td colspan="7" style="text-align:center;padding:28px;"><span class="vp-spinner"></span> Loading projects…</td></tr>';
 
@@ -165,7 +174,7 @@
         .map((p) => {
           const color = statusColor[p.status] || "#aaa";
           return `
-          <tr class="project-row">
+          <tr class="project-row" data-project-id="${escHtml(p.prj_id)}">
             <td>
               <strong>${escHtml(p.prj_id)}</strong>
             </td>
@@ -212,6 +221,9 @@
   async function loadInvoices() {
     const tbody = document.getElementById("invoices-tbody");
     if (!tbody) return;
+
+    // Preserve existing server-side rendered rows
+    if (tbody.querySelectorAll("tr").length > 0) return;
 
     tbody.innerHTML =
       '<tr><td colspan="6" style="text-align:center;padding:28px;"><span class="vp-spinner"></span></td></tr>';

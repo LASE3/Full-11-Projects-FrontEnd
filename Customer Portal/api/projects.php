@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 /**
  * Class 3: Customer Portal - Projects API (with Anti-IDOR Tenant Enforcement)
@@ -50,7 +50,8 @@ try {
         // 2. Fetch Project Detail
         $stmt = $pdo->prepare("
             SELECT 
-                p.prj_id, p.budget, p.currency, p.status, p.start_date, p.end_date,
+                p.prj_id, p.project_name, p.facility_location, p.scope_summary, p.progress_percent,
+                p.budget, p.currency, p.status, p.start_date, p.end_date,
                 e.full_name AS project_manager_name,
                 e.email AS project_manager_email,
                 e.job_title AS project_manager_title
@@ -101,12 +102,18 @@ try {
         $stmt = $pdo->prepare("
             SELECT 
                 p.prj_id,
+                p.project_name,
+                p.facility_location,
+                p.scope_summary AS description,
                 p.budget,
                 p.currency,
                 p.status,
                 p.start_date,
                 p.end_date,
+                p.end_date AS expected_completion,
+                p.progress_percent AS completion_pct,
                 e.full_name AS project_manager_name,
+                e.full_name AS project_manager,
                 (SELECT COUNT(*) FROM invoices WHERE prj_id = p.prj_id) AS invoices_count,
                 (SELECT COUNT(*) FROM billing_cycles WHERE prj_id = p.prj_id) AS milestones_count
             FROM projects p

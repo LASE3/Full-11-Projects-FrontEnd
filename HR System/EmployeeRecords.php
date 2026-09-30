@@ -37,6 +37,7 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
       <div class="top-nav__content">
         <!-- Brand -->
         <div class="brand-section">
+          <button class="mobile-nav-toggle" id="hr-sidebar-toggle" onclick="document.body.classList.toggle('sidebar-open')" title="Toggle Menu"><span class="material-symbols-outlined">menu</span></button>
           <a href="Dashboard.php" class="brand-logo-container">
             <img alt="VOSTOKPRIBOR Official Mark" class="brand-logo-img" src="assets/logo.svg" />
             <div class="brand-divider"></div>
@@ -58,7 +59,7 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
         <!-- Global Omni Search -->
         <div class="top-search-bar">
           <div class="search-input-wrapper">
-            <span class="search-icon">🔍</span>
+            <span class="search-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span>
             <input type="text" class="search-input" id="global-omni-search" placeholder="Search employee records, EMP-ID, clearance level, department..." />
             <span class="search-kbd">Ctrl+K</span>
           </div>
@@ -67,11 +68,17 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
         <!-- Right User Actions -->
         <div class="top-nav__actions">
           <div class="confidential-system-pill" title="Restricted Personnel & Security Clearance System (GOST Class 1G)">
-            <span>🔒</span>
+            <span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>
             <span>HIGHLY CONFIDENTIAL SYSTEM</span>
           </div>
 
           <!-- Dynamic Active User Profile -->
+          <button class="icon-button notifications-btn" id="notifications-toggle-btn" title="Live Enterprise Notifications">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+              <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+            </svg>
+          </button>
           <div class="top-user-profile" title="Active User: <?= htmlspecialchars($currUser['full_name']) ?> (<?= htmlspecialchars($currUser['clearance_level'] ?? 'L1') ?>)">
             <div class="hr-avatar-circle-glow" >
               <?= $initials ?>
@@ -104,14 +111,14 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
             </a>
             <a href="EmployeeRecords.php" class="sidebar-nav-item active">
               <div class="sidebar-item-left">
-                <span class="sidebar-icon">👥</span>
+                <span class="sidebar-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>
                 <span>Employee Records</span>
               </div>
               <span class="sidebar-pill"><?= count($employees) ?></span>
             </a>
             <a href="OnboardingTracker.php" class="sidebar-nav-item">
               <div class="sidebar-item-left">
-                <span class="sidebar-icon">⚡</span>
+                <span class="sidebar-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span>
                 <span>Onboarding Pipeline</span>
               </div>
               <?php if ($metrics['active_onboarding'] > 0): ?>
@@ -120,7 +127,7 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
             </a>
             <a href="Offboarding.php" class="sidebar-nav-item">
               <div class="sidebar-item-left">
-                <span class="sidebar-icon">🔒</span>
+                <span class="sidebar-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>
                 <span>Offboarding &amp; Revocation</span>
               </div>
               <?php if ($metrics['active_offboarding'] > 0): ?>
@@ -129,7 +136,7 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
             </a>
             <a href="LeaveManagement.php" class="sidebar-nav-item">
               <div class="sidebar-item-left">
-                <span class="sidebar-icon">📅</span>
+                <span class="sidebar-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></span>
                 <span>Leave Management</span>
               </div>
               <?php if ($metrics['pending_leaves'] > 0): ?>
@@ -138,7 +145,7 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
             </a>
             <a href="OrgStructure.php" class="sidebar-nav-item">
               <div class="sidebar-item-left">
-                <span class="sidebar-icon">🏛️</span>
+                <span class="sidebar-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="2" y1="20" x2="22" y2="20"/><line x1="4" y1="10" x2="4" y2="20"/><line x1="9" y1="10" x2="9" y2="20"/><line x1="15" y1="10" x2="15" y2="20"/><line x1="20" y1="10" x2="20" y2="20"/><polygon points="12 2 2 7 22 7 12 2"/></svg>️</span>
                 <span>Org Hierarchy</span>
               </div>
             </a>
@@ -231,7 +238,7 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
             <div class="hr-table-header-bar-wrap" >
               <!-- Search Bar -->
               <div class="hr-search-container" >
-                <span class="hr-search-icon" >🔍</span>
+                <span class="hr-search-icon" ><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span>
                 <input class="hr-search-input"
                   type="text"
                   id="employee-table-search"
@@ -325,7 +332,7 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
                     </td>
                     <td>
                       <span class="clearance-badge clearance-l<?= $cNum ?>">
-                        <span>🔒</span>
+                        <span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>
                         <span>Level <?= $cNum ?> · <?= $cNum == '4' ? 'Top Secret' : ($cNum == '3' ? 'Secret SCADA' : ($cNum == '2' ? 'Confidential' : 'General')) ?></span>
                       </span>
                     </td>
@@ -335,7 +342,7 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
                     <td class="hr-text-right"  onclick="event.stopPropagation()">
                       <div class="hr-inline-gap-xs" >
                         <button class="btn btn-outline btn-sm" onclick="window.hrApp.inspectEmployee('<?= htmlspecialchars($emp['emp_id']) ?>')">
-                          Dossier 🔒
+                          Dossier <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
                         </button>
                         <?php if ($canManage): ?>
                           <button class="btn btn-outline btn-sm hr-btn-border-red-40" 
@@ -384,7 +391,7 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
             <div class="hr-title-14-navy" id="drawer-emp-title" >Job Title</div>
             <div class="hr-meta-desc-muted" id="drawer-emp-dept" >Department</div>
             <div class="hr-mt-2" >
-              <span id="drawer-emp-clearance" class="clearance-badge clearance-l3">🔒 Level 3 Clearance</span>
+              <span id="drawer-emp-clearance" class="clearance-badge clearance-l3"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Level 3 Clearance</span>
             </div>
           </div>
         </div>
@@ -407,10 +414,10 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
             </div>
             <div class="hr-flex-wrap-gap" >
               <button class="btn btn-outline btn-sm" onclick="window.hrApp.elevateClearancePrompt()">
-                <span>🛡️ Modify Clearance Tier</span>
+                <span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> Modify Clearance Tier</span>
               </button>
               <button class="btn btn-outline btn-sm hr-btn-confidential-action"  onclick="window.hrApp.triggerOffboardingFromDossier()">
-                <span>🔒 Initiate Offboarding</span>
+                <span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Initiate Offboarding</span>
               </button>
               <button class="btn btn-outline btn-sm hr-btn-danger-soft"  onclick="window.hrApp.deleteEmployee(currentDossierEmpId, document.getElementById('drawer-emp-name').textContent)">
                 <span>🗑️ Purge / Terminate Record</span>
@@ -518,6 +525,7 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
 
   <div id="toast-container"></div>
   <script src="js/app.js"></script>
+  <script src="../assets/js/notifications-hub.js" defer></script>
 </body>
 
 </html>

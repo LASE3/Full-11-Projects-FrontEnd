@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 /**
  * Class 2: Online Shop B2B - Orders API

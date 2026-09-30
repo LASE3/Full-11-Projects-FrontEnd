@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/../includes/auth_guard.php';
 requireAuth('CRM');
@@ -22,6 +22,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
       <div class="top-nav__accent-stripe"></div>
       <div class="top-nav__content">
         <div class="brand-section">
+          <button class="mobile-nav-toggle" id="crm-sidebar-toggle" onclick="document.body.classList.toggle('sidebar-open')" title="Toggle Menu"><span class="material-symbols-outlined">menu</span></button>
           <a href="Dashboard.php" class="brand-logo-container">
             <img alt="VOSTOKPRIBOR Official Mark" class="brand-logo-img" src="assets/logo.svg" />
             <div class="brand-divider"></div>
@@ -42,7 +43,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
 
         <div class="top-search-bar">
           <div class="search-input-wrapper">
-            <span class="search-icon">🔍</span>
+            <span class="search-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span>
             <input type="text" class="search-input" id="global-omni-search" placeholder="Search leads by plant, engineer, or RFQ scope..." />
             <span class="search-kbd">Ctrl+K</span>
           </div>
@@ -56,12 +57,11 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
           <button class="btn btn-primary-amber btn-sm" onclick="window.crmApp.openModal('modal-new-lead')">
             <span>+ Log New Lead</span>
           </button>
-          <button class="icon-button" title="Telemetry" onclick="window.crmApp.showToast('Lead Telemetry', '3 inbound RFQs received from Chelyabinsk Metallurgical Plant.')">
+          <button class="icon-button notifications-btn" id="notifications-toggle-btn" title="Live Sales Telemetry & Notifications">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
               <path d="M13.73 21a2 2 0 0 1-3.46 0" />
             </svg>
-            <span class="badge-dot"></span>
           </button>
           <div class="top-user-profile" onclick="window.crmApp.showToast('Active User Session', '<?= htmlspecialchars($currUser['full_name'] ?? 'Mikhail Sorokin') ?> · <?= htmlspecialchars($currUser['role_name'] ?? 'VP Enterprise Sales') ?> · <?= htmlspecialchars($currUser['clearance_level'] ?? 'L4') ?> Clearance')">
             <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDoVYMImYMOrFG-GImEjxCUij3YIwCjbxiUVg9-84NgNQUnx44rwhCbh4EVKLngwn6R5_hzNhRQkfTglEUz1jtP83GRGR8WbDdiIQblwg1fLV0mqc04y19GGKO27NGBpanqADz4vwO3ANY9KcZiOXBusZHAE_PU_FuuwKqChSLXXJsGo289bHOL3MFrKWoXXMoxnqoUIglg-NYsM99jg8cA3e1CeWhqlY0x7isLHdQfGbcFE_XiNNJg" alt="<?= htmlspecialchars($currUser['full_name'] ?? 'User') ?>" class="user-avatar-top" />
@@ -256,7 +256,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
             </div>
             <div class="page-header-actions">
               <button class="btn btn-outline" onclick="window.crmApp.showToast('Lead Export', 'Exported 28 lead records with GOST compliance tags.')">
-                <span>📥 Export Leads</span>
+                <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Export Leads</span>
               </button>
               <button class="btn btn-primary-amber" onclick="window.crmApp.openModal('modal-new-lead')">
                 <span>+ Log New Lead</span>
@@ -269,7 +269,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
             <div class="crm-card kpi-card">
               <div class="kpi-header">
                 <span class="kpi-title">Active Intake Leads</span>
-                <div class="kpi-icon-pill indigo">👥</div>
+                <div class="kpi-icon-pill indigo"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
               </div>
               <div class="kpi-value-row">
                 <span class="kpi-value kpi-value-mono">28</span>
@@ -284,7 +284,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
             <div class="crm-card kpi-card">
               <div class="kpi-header">
                 <span class="kpi-title">Qualification Ratio</span>
-                <div class="kpi-icon-pill amber">⚡</div>
+                <div class="kpi-icon-pill amber"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
               </div>
               <div class="kpi-value-row">
                 <span class="kpi-value kpi-value-mono">64.2%</span>
@@ -593,6 +593,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
   <script src="../assets/js/api-core.js"></script>
   <script src="../assets/js/api-crm.js"></script>
   <script src="js/crm-data.js"></script>
+  <script src="../assets/js/notifications-hub.js" defer></script>
 </body>
 
 </html>

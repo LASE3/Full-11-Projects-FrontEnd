@@ -1303,7 +1303,7 @@
     }
 
     // Update main nav active indicators
-    document.querySelectorAll(".nav-link").forEach((el) => {
+    document.querySelectorAll(".nav-link, .sidebar-nav-item").forEach((el) => {
       el.classList.remove("active");
       if (el.dataset.screen === screenName) {
         el.classList.add("active");

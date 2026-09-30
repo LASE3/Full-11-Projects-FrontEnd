@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/../includes/auth_guard.php';
 requireAuth('EMP');
@@ -293,8 +293,9 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Elena Morozova', 'role_
 
     <!-- Left-edge hover detection strip for collapsed rail state -->
     <div id="sidebar-hover-trigger" title="Hover to expand menu"></div>
-    MAIN CONTENT WRAPPER
-    ====================================================================== -->
+    <!-- ======================================================================
+         MAIN CONTENT WRAPPER
+         ====================================================================== -->
     <main class="intranet-content-wrapper" id="intranet-content-wrapper">
         <div class="intra-padding-1-5rem-max-53c0" >
 
@@ -376,7 +377,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Elena Morozova', 'role_
                     <div class="intra-display-flex-align-items-45d4" >
                         <div class="intra-position-relative-flex-1-c6bc" >
                             <span class="material-symbols-outlined intra-position-absolute-left-0-1c5c">search</span>
-                            <input type="text" id="policy-search-input" class="form-input" placeholder="Filter documents by ID, title, author, or keyword..." >
+                            <input type="text" id="policy-search-input" class="form-input" style="padding-left: 2.5rem;" placeholder="Filter documents by ID, title, author, or keyword..." >
                         </div>
                         <span class="badge-classification internal" id="policies-count-label">
                             Loading Documents...

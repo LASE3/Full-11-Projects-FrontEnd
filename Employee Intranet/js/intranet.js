@@ -648,64 +648,14 @@
 
     if (!sidebar) return;
 
-    let hoverCloseTimer = null;
-
-    // Restore state from localStorage if available
-    const isCollapsed =
-      localStorage.getItem("vostok_intranet_sidebar_collapsed") === "true";
-    if (isCollapsed && window.innerWidth >= 1024) {
-      sidebar.classList.add("collapsed");
-      document.body.classList.add("sidebar-collapsed");
-      if (contentWrapper) contentWrapper.classList.add("compact-rail");
-    }
-
-    function handleHoverEnter() {
-      if (window.innerWidth < 1024) return;
-      // Expand on hover if collapsed or rail
-      const isCurrentlyCollapsed =
-        sidebar.classList.contains("collapsed") ||
-        document.body.classList.contains("sidebar-collapsed");
-      if (!isCurrentlyCollapsed) return;
-
-      if (hoverCloseTimer) {
-        clearTimeout(hoverCloseTimer);
-        hoverCloseTimer = null;
-      }
-      document.body.classList.add("sidebar-hover-open");
-    }
-
-    function handleHoverLeave() {
-      if (window.innerWidth < 1024) return;
-      if (hoverCloseTimer) clearTimeout(hoverCloseTimer);
-      hoverCloseTimer = setTimeout(() => {
-        document.body.classList.remove("sidebar-hover-open");
-      }, 240);
-    }
-
-    // Wire hover events to menu button, sidebar, and left edge trigger
+    // Wire click events to menu toggle button
     if (sidebarToggleBtn) {
-      sidebarToggleBtn.addEventListener("mouseenter", handleHoverEnter);
-      sidebarToggleBtn.addEventListener("mouseleave", handleHoverLeave);
-
       sidebarToggleBtn.addEventListener("click", (e) => {
         e.stopPropagation();
-        if (hoverCloseTimer) {
-          clearTimeout(hoverCloseTimer);
-          hoverCloseTimer = null;
-        }
-        document.body.classList.remove("sidebar-hover-open");
-
-        if (window.innerWidth >= 1024) {
+        if (window.innerWidth > 768) {
           const willCollapse = !sidebar.classList.contains("collapsed");
           sidebar.classList.toggle("collapsed", willCollapse);
           document.body.classList.toggle("sidebar-collapsed", willCollapse);
-          if (contentWrapper) {
-            contentWrapper.classList.toggle("compact-rail", willCollapse);
-          }
-          localStorage.setItem(
-            "vostok_intranet_sidebar_collapsed",
-            willCollapse ? "true" : "false",
-          );
         } else {
           // Mobile overlay toggle
           sidebar.classList.toggle("show-mobile");
@@ -714,18 +664,9 @@
       });
     }
 
-    sidebar.addEventListener("mouseenter", handleHoverEnter);
-    sidebar.addEventListener("mouseleave", handleHoverLeave);
+    const existingHoverTrigger = document.getElementById("sidebar-hover-trigger");
+    if (existingHoverTrigger) existingHoverTrigger.remove();
 
-    // Edge hover trigger strip
-    let hoverTrigger = document.getElementById("sidebar-hover-trigger");
-    if (!hoverTrigger) {
-      hoverTrigger = document.createElement("div");
-      hoverTrigger.id = "sidebar-hover-trigger";
-      document.body.appendChild(hoverTrigger);
-    }
-    hoverTrigger.addEventListener("mouseenter", handleHoverEnter);
-    hoverTrigger.addEventListener("mouseleave", handleHoverLeave);
 
     // Global hotkey Ctrl+B to toggle sidebar
     document.addEventListener("keydown", (e) => {
@@ -746,11 +687,49 @@
     const notifPopover = document.getElementById("notifications-popover");
     const clearNotifsBtn = document.getElementById("clear-notifications-btn");
     const notifBadge = document.getElementById("notif-unread-count");
+    const notifList = document.getElementById("notifications-list");
+
+    function fetchIntranetNotifications() {
+      fetch("../api/notifications.php")
+        .then(r => r.json())
+        .then(d => {
+          if (d && d.success) {
+            if (notifBadge) {
+              if (d.unread_count > 0) {
+                notifBadge.textContent = d.unread_count > 99 ? '99+' : d.unread_count;
+                notifBadge.style.display = "inline-flex";
+              } else {
+                notifBadge.style.display = "none";
+              }
+            }
+            if (notifList && Array.isArray(d.notifications)) {
+              if (d.notifications.length === 0) {
+                notifList.innerHTML = '<div style="padding:20px;text-align:center;font-size:12px;opacity:.5;">No unread notifications</div>';
+              } else {
+                notifList.innerHTML = d.notifications.map(n => `
+                  <div class="notification-item ${n.is_read == 0 ? 'unread' : ''}" style="padding:10px 14px;border-bottom:1px solid rgba(255,255,255,0.06);display:flex;gap:10px;align-items:flex-start;">
+                    <span class="material-symbols-outlined" style="font-size:18px;color:${n.severity === 'warning' ? '#f59e0b' : (n.severity === 'error' ? '#ef4444' : '#38bdf8')};">notifications</span>
+                    <div style="flex:1;min-width:0;">
+                      <div style="font-size:12px;font-weight:600;color:#fff;">${escapeHtml(n.title)}</div>
+                      <div style="font-size:11px;color:#bdc6cf;margin-top:2px;">${escapeHtml(n.message)}</div>
+                      <div style="font-size:10px;color:#687482;margin-top:4px;">${escapeHtml(n.time_ago || '')}</div>
+                    </div>
+                  </div>
+                `).join('');
+              }
+            }
+          }
+        })
+        .catch(() => {});
+    }
+
+    fetchIntranetNotifications();
 
     if (ecoBtn && ecoDropdown) {
       ecoBtn.addEventListener("click", (e) => {
         e.stopPropagation();
         if (notifPopover) notifPopover.classList.remove("show");
+        document.querySelectorAll('.vstk-notif-dropdown.show, .notifications-popover.show').forEach(d => d.classList.remove('show'));
         ecoDropdown.classList.toggle("show");
       });
     }
@@ -759,18 +738,24 @@
       notifBtn.addEventListener("click", (e) => {
         e.stopPropagation();
         if (ecoDropdown) ecoDropdown.classList.remove("show");
+        document.querySelectorAll('.ecosystem-dropdown.show, #ecosystem-dropdown.show').forEach(d => d.classList.remove('show'));
         notifPopover.classList.toggle("show");
+        if (notifPopover.classList.contains("show")) {
+          fetchIntranetNotifications();
+        }
       });
     }
 
-    if (clearNotifsBtn && notifBadge) {
+    if (clearNotifsBtn) {
       clearNotifsBtn.addEventListener("click", () => {
-        notifBadge.style.display = "none";
-        showToast(
-          "Notifications Cleared",
-          "All pending intranet alerts marked as read.",
-          "info",
-        );
+        fetch("../api/notifications.php", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ action: "mark_all_read" })
+        }).catch(() => {});
+        if (notifBadge) notifBadge.style.display = "none";
+        document.querySelectorAll(".notification-item.unread").forEach(el => el.classList.remove("unread"));
+        showToast("Notifications Cleared", "All pending intranet alerts marked as read.", "info");
       });
     }
 
@@ -779,14 +764,16 @@
       if (
         ecoDropdown &&
         !ecoDropdown.contains(e.target) &&
-        e.target !== ecoBtn
+        e.target !== ecoBtn &&
+        !ecoBtn?.contains(e.target)
       ) {
         ecoDropdown.classList.remove("show");
       }
       if (
         notifPopover &&
         !notifPopover.contains(e.target) &&
-        e.target !== notifBtn
+        e.target !== notifBtn &&
+        !notifBtn?.contains(e.target)
       ) {
         notifPopover.classList.remove("show");
       }
@@ -1346,9 +1333,163 @@
       document.body.appendChild(modal);
     }
 
-    const isLeave = type === "leave";
-
-    if (isLeave) {
+    if (type === "expense") {
+      modal.innerHTML = `
+        <div class="intranet-modal-container" style="max-width: 520px; background: #fff; border-radius: var(--radius-md); overflow: hidden; box-shadow: 0 12px 36px rgba(0,0,0,0.3);">
+          <div style="background-color: var(--brand-primary-dark); padding: 1.25rem 1.5rem; color: #FFFFFF; position: relative; border-bottom: 3px solid var(--system-accent);">
+            <button type="button" onclick="document.getElementById('request-modal').classList.remove('show')" style="position: absolute; top: 1.25rem; right: 1.25rem; background: transparent; border: none; color: #BDC6CF; cursor: pointer; padding: 0;">
+              <span class="material-symbols-outlined">close</span>
+            </button>
+            <div style="display: flex; align-items: center; gap: 0.75rem;">
+              <span class="material-symbols-outlined" style="font-size: 1.75rem; color: #34d399;">receipt_long</span>
+              <div>
+                <h3 style="margin: 0; font-size: 1.1rem; font-weight: 600; color: #FFFFFF;">Submit Expense Reimbursement</h3>
+                <p style="margin: 0.2rem 0 0; font-size: 0.75rem; color: #BDC6CF;">Finance & Accounts Payable Requisition</p>
+              </div>
+            </div>
+          </div>
+          <form id="quick-action-form" style="padding: 1.5rem;" onsubmit="event.preventDefault(); window.submitQuickAction('expense')">
+            <div class="form-group" style="margin-bottom: 1rem;">
+              <label class="form-label" style="display:block;font-size:0.75rem;font-weight:600;margin-bottom:0.25rem;">Expense Category *</label>
+              <select name="expense_cat" class="form-select" style="width:100%;padding:0.5rem;border:1px solid var(--neutral-300);border-radius:var(--radius-sm);" required>
+                <option value="Travel & Lodging">Field Deployment Travel & Lodging</option>
+                <option value="Calibration Equipment">Laboratory & Calibration Tools</option>
+                <option value="Client Relations">Client Meeting & Hospitality</option>
+                <option value="Technical Materials">Prototyping & Sensor Materials</option>
+              </select>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+              <div>
+                <label class="form-label" style="display:block;font-size:0.75rem;font-weight:600;margin-bottom:0.25rem;">Amount (USD) *</label>
+                <input type="number" step="0.01" name="amount" class="form-input" style="width:100%;padding:0.5rem;border:1px solid var(--neutral-300);border-radius:var(--radius-sm);" placeholder="350.00" required />
+              </div>
+              <div>
+                <label class="form-label" style="display:block;font-size:0.75rem;font-weight:600;margin-bottom:0.25rem;">Project / Cost Ref</label>
+                <input type="text" name="project_ref" class="form-input" style="width:100%;padding:0.5rem;border:1px solid var(--neutral-300);border-radius:var(--radius-sm);" placeholder="PRJ-VP-5510 or OPS-ENG" />
+              </div>
+            </div>
+            <div class="form-group" style="margin-bottom: 1.25rem;">
+              <label class="form-label" style="display:block;font-size:0.75rem;font-weight:600;margin-bottom:0.25rem;">Justification / Vendor Notes *</label>
+              <textarea name="description" rows="3" class="form-textarea" style="width:100%;padding:0.5rem;border:1px solid var(--neutral-300);border-radius:var(--radius-sm);" placeholder="Receipt details, merchant name, business rationale..." required></textarea>
+            </div>
+            <div style="display: flex; align-items: center; justify-content: flex-end; gap: 0.75rem; padding-top: 1rem; border-top: 1px solid var(--neutral-200);">
+              <button type="button" class="btn btn-secondary" onclick="document.getElementById('request-modal').classList.remove('show')">Cancel</button>
+              <button type="submit" class="btn btn-primary" style="background: #059669; border-color: #059669;">
+                <span class="material-symbols-outlined" style="font-size: 1rem; margin-right: 0.25rem;">check_circle</span>
+                Submit Expense Claim
+              </button>
+            </div>
+          </form>
+        </div>
+      `;
+    } else if (type === "room") {
+      const today = new Date().toISOString().split("T")[0];
+      modal.innerHTML = `
+        <div class="intranet-modal-container" style="max-width: 520px; background: #fff; border-radius: var(--radius-md); overflow: hidden; box-shadow: 0 12px 36px rgba(0,0,0,0.3);">
+          <div style="background-color: var(--brand-primary-dark); padding: 1.25rem 1.5rem; color: #FFFFFF; position: relative; border-bottom: 3px solid var(--system-accent);">
+            <button type="button" onclick="document.getElementById('request-modal').classList.remove('show')" style="position: absolute; top: 1.25rem; right: 1.25rem; background: transparent; border: none; color: #BDC6CF; cursor: pointer; padding: 0;">
+              <span class="material-symbols-outlined">close</span>
+            </button>
+            <div style="display: flex; align-items: center; gap: 0.75rem;">
+              <span class="material-symbols-outlined" style="font-size: 1.75rem; color: #38bdf8;">domain</span>
+              <div>
+                <h3 style="margin: 0; font-size: 1.1rem; font-weight: 600; color: #FFFFFF;">Executive Room Booking</h3>
+                <p style="margin: 0.2rem 0 0; font-size: 0.75rem; color: #BDC6CF;">Calendar Integration • Conference Alpha & Beta</p>
+              </div>
+            </div>
+          </div>
+          <form id="quick-action-form" style="padding: 1.5rem;" onsubmit="event.preventDefault(); window.submitQuickAction('room')">
+            <div class="form-group" style="margin-bottom: 1rem;">
+              <label class="form-label" style="display:block;font-size:0.75rem;font-weight:600;margin-bottom:0.25rem;">Conference Facility *</label>
+              <select name="room_name" class="form-select" style="width:100%;padding:0.5rem;border:1px solid var(--neutral-300);border-radius:var(--radius-sm);" required>
+                <option value="Conference Room Alpha">Conference Room Alpha (4K Telepresence - 16 Seats)</option>
+                <option value="Conference Room Beta">Conference Room Beta (Acoustic Shielded - 8 Seats)</option>
+                <option value="Optical Metrology Suite">Cleanroom Metrology Briefing Room (6 Seats)</option>
+              </select>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+              <div>
+                <label class="form-label" style="display:block;font-size:0.75rem;font-weight:600;margin-bottom:0.25rem;">Date *</label>
+                <input type="date" name="book_date" class="form-input" style="width:100%;padding:0.5rem;border:1px solid var(--neutral-300);border-radius:var(--radius-sm);" value="${today}" required />
+              </div>
+              <div>
+                <label class="form-label" style="display:block;font-size:0.75rem;font-weight:600;margin-bottom:0.25rem;">Time Slot *</label>
+                <select name="time_slot" class="form-select" style="width:100%;padding:0.5rem;border:1px solid var(--neutral-300);border-radius:var(--radius-sm);">
+                  <option value="09:00 - 10:30">09:00 - 10:30 Morning</option>
+                  <option value="11:00 - 12:30">11:00 - 12:30 Midday</option>
+                  <option value="14:00 - 15:30">14:00 - 15:30 Afternoon</option>
+                  <option value="16:00 - 17:30">16:00 - 17:30 Evening</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group" style="margin-bottom: 1.25rem;">
+              <label class="form-label" style="display:block;font-size:0.75rem;font-weight:600;margin-bottom:0.25rem;">Meeting Agenda *</label>
+              <input type="text" name="agenda" class="form-input" style="width:100%;padding:0.5rem;border:1px solid var(--neutral-300);border-radius:var(--radius-sm);" placeholder="e.g. Q3 Pipeline Review & Engineering Calibration Sync" required />
+            </div>
+            <div style="display: flex; align-items: center; justify-content: flex-end; gap: 0.75rem; padding-top: 1rem; border-top: 1px solid var(--neutral-200);">
+              <button type="button" class="btn btn-secondary" onclick="document.getElementById('request-modal').classList.remove('show')">Cancel</button>
+              <button type="submit" class="btn btn-primary" style="background: #0284c7; border-color: #0284c7;">
+                <span class="material-symbols-outlined" style="font-size: 1rem; margin-right: 0.25rem;">event</span>
+                Confirm Reservation
+              </button>
+            </div>
+          </form>
+        </div>
+      `;
+    } else if (type === "safety") {
+      modal.innerHTML = `
+        <div class="intranet-modal-container" style="max-width: 520px; background: #fff; border-radius: var(--radius-md); overflow: hidden; box-shadow: 0 12px 36px rgba(0,0,0,0.3);">
+          <div style="background-color: var(--brand-primary-dark); padding: 1.25rem 1.5rem; color: #FFFFFF; position: relative; border-bottom: 3px solid #ef4444;">
+            <button type="button" onclick="document.getElementById('request-modal').classList.remove('show')" style="position: absolute; top: 1.25rem; right: 1.25rem; background: transparent; border: none; color: #BDC6CF; cursor: pointer; padding: 0;">
+              <span class="material-symbols-outlined">close</span>
+            </button>
+            <div style="display: flex; align-items: center; gap: 0.75rem;">
+              <span class="material-symbols-outlined" style="font-size: 1.75rem; color: #f87171;">warning</span>
+              <div>
+                <h3 style="margin: 0; font-size: 1.1rem; font-weight: 600; color: #FFFFFF;">HSE Safety Incident Report</h3>
+                <p style="margin: 0.2rem 0 0; font-size: 0.75rem; color: #BDC6CF;">ISO 45001 Workplace Safety & Incident Notification</p>
+              </div>
+            </div>
+          </div>
+          <form id="quick-action-form" style="padding: 1.5rem;" onsubmit="event.preventDefault(); window.submitQuickAction('safety')">
+            <div class="form-group" style="margin-bottom: 1rem;">
+              <label class="form-label" style="display:block;font-size:0.75rem;font-weight:600;margin-bottom:0.25rem;">Hazard / Incident Category *</label>
+              <select name="incident_type" class="form-select" style="width:100%;padding:0.5rem;border:1px solid var(--neutral-300);border-radius:var(--radius-sm);" required>
+                <option value="Near Miss">Near Miss / Proactive Hazard Notice</option>
+                <option value="Cleanroom Contamination">Cleanroom Environmental Threshold Exceeded</option>
+                <option value="Equipment Interlock Failure">SCADA Interlock / Sensor Safety Trip</option>
+                <option value="Chemical / Material Storage">Chemical Handling or Compressed Gas Line</option>
+              </select>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+              <div>
+                <label class="form-label" style="display:block;font-size:0.75rem;font-weight:600;margin-bottom:0.25rem;">Location *</label>
+                <input type="text" name="location" class="form-input" style="width:100%;padding:0.5rem;border:1px solid var(--neutral-300);border-radius:var(--radius-sm);" placeholder="Bay 3 / Almaty Lab" required />
+              </div>
+              <div>
+                <label class="form-label" style="display:block;font-size:0.75rem;font-weight:600;margin-bottom:0.25rem;">Severity *</label>
+                <select name="severity" class="form-select" style="width:100%;padding:0.5rem;border:1px solid var(--neutral-300);border-radius:var(--radius-sm);">
+                  <option value="Low">Low (Informational / Precaution)</option>
+                  <option value="Medium">Medium (Attention Required)</option>
+                  <option value="High">High (Immediate Action)</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group" style="margin-bottom: 1.25rem;">
+              <label class="form-label" style="display:block;font-size:0.75rem;font-weight:600;margin-bottom:0.25rem;">Observation & Mitigation Action *</label>
+              <textarea name="description" rows="3" class="form-textarea" style="width:100%;padding:0.5rem;border:1px solid var(--neutral-300);border-radius:var(--radius-sm);" placeholder="Describe conditions observed and immediate safeguards taken..." required></textarea>
+            </div>
+            <div style="display: flex; align-items: center; justify-content: flex-end; gap: 0.75rem; padding-top: 1rem; border-top: 1px solid var(--neutral-200);">
+              <button type="button" class="btn btn-secondary" onclick="document.getElementById('request-modal').classList.remove('show')">Cancel</button>
+              <button type="submit" class="btn btn-primary" style="background: #dc2626; border-color: #dc2626;">
+                <span class="material-symbols-outlined" style="font-size: 1rem; margin-right: 0.25rem;">send</span>
+                File HSE Report
+              </button>
+            </div>
+          </form>
+        </div>
+      `;
+    } else if (type === "leave") {
       modal.innerHTML = `
                 <div class="intranet-modal-container">
                     <div style="background-color: var(--brand-primary-dark); padding: 1.25rem 1.5rem; color: #FFFFFF; position: relative; border-bottom: 3px solid var(--system-accent);">
@@ -1723,23 +1864,29 @@
     el.classList.add("active");
   };
 
-  window.submitQuickAction = function (type) {
+    window.submitQuickAction = function (type) {
     const modal = document.getElementById("request-modal");
-    if (modal) modal.classList.remove("show");
+    const form = document.getElementById("quick-action-form");
 
-    if (type === "leave") {
-      showToast(
-        "Leave Request Submitted",
-        "Absence form transmitted to HRA and supervisor. Tracking ID: LR-2026-4481",
-        "success",
-      );
+    if (type === "expense") {
+      const amount = form ? (form.querySelector('[name="amount"]')?.value || "350.00") : "350.00";
+      const cat = form ? (form.querySelector('[name="expense_cat"]')?.value || "Travel & Lodging") : "Travel & Lodging";
+      showToast("Expense Requisition Submitted", `Claim for $${amount} (${cat}) filed with Finance.`, "success");
+    } else if (type === "room") {
+      const room = form ? (form.querySelector('[name="room_name"]')?.value || "Conference Room Alpha") : "Conference Room Alpha";
+      const date = form ? (form.querySelector('[name="book_date"]')?.value || "Today") : "Today";
+      showToast("Room Booking Confirmed", `${room} reserved for ${date}. CalDAV sync active.`, "success");
+    } else if (type === "safety") {
+      const sev = form ? (form.querySelector('[name="severity"]')?.value || "Notice") : "Notice";
+      const itype = form ? (form.querySelector('[name="incident_type"]')?.value || "Safety Notice") : "Safety Notice";
+      showToast("HSE Safety Report Logged", `${itype} (${sev} severity) filed with safety audit log.`, "success");
+    } else if (type === "leave") {
+      showToast("Leave Request Submitted", "Absence form transmitted to HRA and supervisor. Tracking ID: LR-2026-4481", "success");
     } else {
-      showToast(
-        "Support Incident Logged",
-        "IT Ticket INC-2026-9044 assigned to Leonid Volkov (ITD). Resolution SLA: 15 mins.",
-        "success",
-      );
+      showToast("Support Incident Logged", "IT Ticket INC-2026-9044 assigned to Leonid Volkov (ITD). Resolution SLA: 15 mins.", "success");
     }
+
+    if (modal) modal.classList.remove("show");
   };
 
   /* Utility escape */

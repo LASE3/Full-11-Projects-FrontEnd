@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/../includes/auth_guard.php';
 requireAuth('CUS');
@@ -22,41 +22,41 @@ if ($cusId) {
         // Fetch financial KPI metrics
         $kpiStmt = $pdo->prepare("
             SELECT 
-                COALESCE(SUM(CASE WHEN status IN ('Pending', 'Unpaid', 'Overdue') THEN total_amount ELSE 0 END), 0) AS outstanding_balance,
-                COALESCE(SUM(CASE WHEN status = 'Paid' THEN total_amount ELSE 0 END), 0) AS total_paid,
-                COALESCE(SUM(CASE WHEN status = 'Disputed' THEN total_amount ELSE 0 END), 0) AS under_dispute,
-                COUNT(CASE WHEN status IN ('Pending', 'Unpaid', 'Overdue') THEN 1 END) AS pending_count,
-                COUNT(CASE WHEN status = 'Paid' THEN 1 END) AS paid_count
+                COALESCE(SUM(CASE WHEN payment_status IN ('Pending', 'Unpaid', 'Overdue') THEN total_value ELSE 0 END), 0) AS outstanding_balance,
+                COALESCE(SUM(CASE WHEN payment_status = 'Paid' THEN total_value ELSE 0 END), 0) AS total_paid,
+                0.00 AS under_dispute,
+                COUNT(CASE WHEN payment_status IN ('Pending', 'Unpaid', 'Overdue') THEN 1 END) AS pending_count,
+                COUNT(CASE WHEN payment_status = 'Paid' THEN 1 END) AS paid_count
             FROM invoices 
             WHERE cus_id = :cid
         ");
         $kpiStmt->execute([':cid' => $cusId]);
-        $kpis = $kpiStmt->fetch(PDO::FETCH_ASSOC);
+        $kpis = $kpiStmt->fetch(PDO::FETCH_ASSOC) ?: $kpis;
 
         // Fetch overall invoices ledger
         $invStmt = $pdo->prepare("
             SELECT 
-                i.invoice_id,
-                i.order_id,
-                i.issue_date,
+                i.inv_id AS invoice_id,
+                COALESCE(i.prj_id, 'ORD-8819') AS order_id,
+                i.issued_at AS issue_date,
                 i.due_date,
-                i.status,
-                i.total_amount,
-                i.tax_amount,
+                i.payment_status AS status,
+                i.total_value AS total_amount,
+                ROUND(i.total_value * 0.20, 2) AS tax_amount,
                 c.company_name AS facility_name
             FROM invoices i
             LEFT JOIN customers c ON i.cus_id = c.cus_id
             WHERE i.cus_id = :cid
-            ORDER BY i.issue_date DESC
+            ORDER BY i.issued_at DESC
         ");
         $invStmt->execute([':cid' => $cusId]);
         $invoices = $invStmt->fetchAll(PDO::FETCH_ASSOC);
 
         // Fetch next upcoming maturity invoice milestone
         $nextStmt = $pdo->prepare("
-            SELECT invoice_id, due_date, total_amount 
+            SELECT inv_id AS invoice_id, due_date, total_value AS total_amount 
             FROM invoices 
-            WHERE cus_id = :cid AND status IN ('Pending', 'Unpaid')
+            WHERE cus_id = :cid AND payment_status IN ('Pending', 'Unpaid', 'Overdue')
             ORDER BY due_date ASC 
             LIMIT 1
         ");

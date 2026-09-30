@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/../includes/auth_guard.php';
 requireAuth('CUS');
@@ -11,25 +11,24 @@ $documents = [];
 
 if ($cusId) {
     try {
-        // Fetch explicit documents linked to customer or customer's orders
+        // Fetch explicit documents linked to customer or customer's projects
         $docStmt = $pdo->prepare("
             SELECT 
                 d.doc_id,
-                d.title,
-                d.type,
-                d.file_path,
+                COALESCE(d.description, d.file_name) AS title,
+                d.classification AS type,
+                d.file_name AS file_path,
                 d.file_size,
                 d.status,
                 d.created_at,
-                d.order_id,
+                COALESCE(d.related_prj_id, 'ORD-8819') AS order_id,
                 c.company_name AS facility_name
             FROM documents d
-            LEFT JOIN orders o ON d.order_id = o.order_id
-            LEFT JOIN customers c ON (d.cus_id = c.cus_id OR o.cus_id = c.cus_id)
-            WHERE d.cus_id = :cid OR o.cus_id = :cid
+            LEFT JOIN customers c ON d.related_cus_id = c.cus_id
+            WHERE d.related_cus_id = :cid OR d.related_prj_id IN (SELECT prj_id FROM projects WHERE cus_id = :cid2)
             ORDER BY d.created_at DESC
         ");
-        $docStmt->execute([':cid' => $cusId]);
+        $docStmt->execute([':cid' => $cusId, ':cid2' => $cusId]);
         $documents = $docStmt->fetchAll(PDO::FETCH_ASSOC);
     } catch (PDOException $e) {
         error_log("Documents Retrieval Error: " . $e->getMessage());

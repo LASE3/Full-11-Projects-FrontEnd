@@ -66,6 +66,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
         <?php renderSystemIntegrationView('SYS08', 'standalone'); ?>
     </main>
 
+  <script src="../assets/js/notifications-hub.js" defer></script>
 </body>
 
 </html>

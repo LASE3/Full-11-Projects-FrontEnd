@@ -25,64 +25,113 @@
    * CUSTOMERS PAGE
    * Element: #customers-tbody
    * ────────────────────────────────────────────── */
-  async function loadCustomers() {
+  function filterCustomersBySector(sector) {
+    const rows = document.querySelectorAll('#customers-tbody tr.account-row');
+    if (!rows.length) return;
+    const target = (sector || 'all').toLowerCase().trim();
+    let visibleCount = 0;
+    rows.forEach(r => {
+      const rowSector = (r.getAttribute('data-sector') || '').toLowerCase().trim();
+      const match = (target === 'all' || rowSector === target || rowSector.includes(target) || target.includes(rowSector));
+      r.style.display = match ? '' : 'none';
+      if (match) visibleCount++;
+    });
+
+    const noRowsEl = document.getElementById('no-customers-filter-row');
+    if (visibleCount === 0) {
+      if (!noRowsEl) {
+        const tr = document.createElement('tr');
+        tr.id = 'no-customers-filter-row';
+        tr.innerHTML = '<td colspan="7" style="text-align:center;padding:32px;color:var(--crm-text-muted);">No customer accounts found for this sector.</td>';
+        document.getElementById('customers-tbody').appendChild(tr);
+      } else {
+        noRowsEl.style.display = '';
+      }
+    } else if (noRowsEl) {
+      noRowsEl.style.display = 'none';
+    }
+  }
+
+  function initSectorFilters() {
+    const pillButtons = document.querySelectorAll('.filter-pills-group .filter-pill-btn');
+    if (!pillButtons.length) return;
+
+    pillButtons.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        pillButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        let sector = btn.getAttribute('data-sector');
+        if (!sector) {
+          const text = btn.textContent.trim();
+          sector = text.replace(/\s*\(\d+\)$/, '').trim();
+        }
+        filterCustomersBySector(sector);
+      });
+    });
+  }
+
+  async function loadCustomers(forceRefresh = false) {
     const tbody = document.getElementById('customers-tbody');
     if (!tbody) return;
+
+    // If table already has rows rendered by PHP, don't overwrite unless explicitly requested
+    if (!forceRefresh && tbody.querySelectorAll('tr.account-row').length > 0) {
+      return;
+    }
 
     tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:32px;"><span class="vp-spinner"></span> Loading enterprise accounts…</td></tr>';
 
     try {
       const res  = await crm.customers();
-      const rows = res.data;
+      const rows = res.data || [];
 
       if (!rows.length) {
-        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:32px;opacity:0.5;">No customer accounts found.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:32px;color:var(--crm-text-muted);">No customer accounts found.</td></tr>';
         return;
       }
 
       tbody.innerHTML = rows.map(c => {
-        const healthClass = c.health_score >= 90 ? 'health-optimal'
-          : c.health_score >= 75 ? 'health-good' : 'health-low';
-        const tier = c.account_tier === 'Enterprise' ? 'tier-badge strategic'
-          : c.account_tier === 'Premium' ? 'tier-badge tier-1' : 'tier-badge tier-2';
+        const hs = parseInt(c.health_score || 90);
+        const healthClass = hs >= 92 ? 'crm-mono-bold-success' : (hs >= 80 ? 'crm-mono-bold-amber' : 'crm-mono-bold-danger');
+        const healthLabel = hs >= 92 ? `${hs}% (Optimal)` : (hs >= 80 ? `${hs}% (Good)` : `${hs}% (Action Required)`);
+        const tierClass = (c.account_tier || '').toLowerCase().includes('strategic') ? 'tier-badge strategic'
+          : ((c.account_tier || '').toLowerCase().includes('tier-1') ? 'tier-badge tier-1' : 'tier-badge tier-2');
+        const contractVal = parseFloat(c.total_contract_value || c.total_contract_arr || 0);
 
         return `
-          <tr class="account-row account-row-tagged"
+          <tr class="account-row account-row-tagged" data-cus-id="${escHtml(c.cus_id)}" data-sector="${escHtml(c.sector || '')}"
               onclick="window.location.href='CustomerDetail.php?id=${encodeURIComponent(c.cus_id)}'">
             <td>
               <div class="account-name-cell">
-                <span class="account-name-title" style="color:var(--crm-indigo);">${escHtml(c.company_name)}</span>
-                <span class="account-name-sub">Account ID: ${escHtml(c.cus_id)} · ${escHtml(c.industry || '')}</span>
+                <span class="account-name-title crm-text-indigo">${escHtml(c.company_name)}</span>
+                <span class="account-name-sub">Account ID: #${escHtml(c.cus_id)} · ${escHtml(c.headquarters || c.sector || 'Industrial Facility')}</span>
               </div>
             </td>
-            <td><span class="${tier}">${escHtml(c.industry || c.account_tier || '—')}</span></td>
+            <td><span class="${tierClass}">${escHtml(c.sector || 'Enterprise')}</span></td>
             <td>
-              <strong>${escHtml(c.account_manager || '—')}</strong>
-              <div style="font-size:11px;color:var(--crm-text-muted);">Key Account Manager</div>
+              <strong>${escHtml(c.account_manager_name || c.account_manager || 'Dr. Elena Rostova')}</strong>
+              <div class="crm-text-muted-sm">Key Account Lead</div>
             </td>
             <td>
-              <strong style="font-family:var(--crm-font-mono);font-size:14px;color:var(--crm-navy);">
-                ${ui.currency(c.total_contract_value || 0, c.currency || 'USD')}
-              </strong>
-              <div style="font-size:11px;color:var(--crm-success);">Active contracts</div>
+              ${contractVal > 0 
+                ? `<strong class="crm-mono-navy-lg">${ui.currency(contractVal, 'USD')}</strong><div class="crm-text-success-11">Active Master Agreement</div>`
+                : `<strong class="crm-mono-navy-lg" style="color:var(--crm-text-muted);">$0.00</strong><div class="crm-text-muted-sm">Pending Procurement RFP</div>`}
             </td>
             <td>
-              <span style="font-family:var(--crm-font-mono);font-size:11px;font-weight:600;">
-                ${escHtml(c.active_contract_ref || '—')}
-              </span>
-              <div style="font-size:10px;color:var(--crm-text-muted);">
-                ${c.contract_end ? 'Valid thru ' + ui.date(c.contract_end) : ''}
-              </div>
+              ${c.active_contract_ref 
+                ? `<span class="crm-mono-semibold-11">${escHtml(c.active_contract_ref)}</span><div class="crm-text-muted-10">${c.contract_end ? 'Valid thru ' + escHtml(c.contract_end) : 'Active SLA Term'}</div>`
+                : `<span class="crm-mono-semibold-11" style="color:var(--crm-text-muted);">MSA In Negotiation</span><div class="crm-text-muted-10">Standard Enterprise Terms</div>`}
             </td>
             <td>
-              <span class="${healthClass}" style="font-family:var(--crm-font-mono);font-weight:700;">
-                ${c.health_score != null ? c.health_score + '%' : '—'}
-              </span>
+              <span class="${healthClass}">${healthLabel}</span>
             </td>
-            <td>
-              <a href="CustomerDetail.php?id=${encodeURIComponent(c.cus_id)}" class="btn btn-indigo btn-sm">
+            <td style="white-space:nowrap;">
+              <a href="CustomerDetail.php?id=${encodeURIComponent(c.cus_id)}" class="btn btn-indigo btn-sm" onclick="event.stopPropagation()">
                 Full Profile →
               </a>
+              <button class="btn btn-outline btn-sm" style="color:#ef4444;border-color:rgba(239,68,68,0.3);margin-left:4px;padding:4px 8px;" title="Delete Account" onclick="event.stopPropagation(); window.crmApp && window.crmApp.deleteCustomer ? window.crmApp.deleteCustomer('${escHtml(c.cus_id)}') : null">✕</button>
             </td>
           </tr>`;
       }).join('');
@@ -437,7 +486,7 @@
         if (!acts.length) {
           activityFeed.innerHTML = '<div style="padding:24px;opacity:.5;text-align:center;">No recent activity recorded.</div>';
         } else {
-          const iconMap = { contract: '✓', deal: '⚡', quote: '📑', meeting: '🤝', call: '📞', email: '✉️' };
+          const iconMap = { contract: '✓', deal: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>', quote: '📑', meeting: '🤝', call: '📞', email: '✉️' };
           activityFeed.innerHTML = acts.map(a => {
             const typeKey = (a.activity_type || '').toLowerCase();
             const icon    = iconMap[typeKey] || '●';
@@ -496,6 +545,7 @@
   document.addEventListener('DOMContentLoaded', () => {
     loadDashboard();
     loadCustomers();
+    initSectorFilters();
     loadLeads();
     loadOpportunities();
     loadForecasts();

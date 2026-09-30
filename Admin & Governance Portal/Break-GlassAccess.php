@@ -26,7 +26,9 @@ $sidebarBadges = gov_getSidebarBadges();
 <body class="bg-surface font-body-default text-on-surface antialiased">
     <header class="fixed top-0 left-0 right-0 z-50 bg-primary text-on-primary border-b-4 border-error">
         <div class="h-[60px] w-full px-gutter-desktop flex items-center justify-between gap-space-md">
-            <div class="flex items-center gap-space-md"><img alt="VOSTOKPRIBOR System 11 Logo"
+            <div class="flex items-center gap-space-md">
+                <button class="mobile-nav-toggle" id="gov-sidebar-toggle" onclick="document.body.classList.toggle('sidebar-open')" title="Toggle Menu"><span class="material-symbols-outlined text-[20px]">menu</span></button>
+                <img alt="VOSTOKPRIBOR System 11 Logo"
                     class="h-8 w-auto object-contain"
                     src="assets/logo.svg" />
                 <div class="h-6 w-[1px] bg-outline-variant/40"></div>
@@ -59,10 +61,9 @@ $sidebarBadges = gov_getSidebarBadges();
                     class="hidden lg:flex items-center gap-space-xs px-space-sm py-space-2xs bg-surface-container-lowest/10 rounded font-telemetry-micro text-telemetry-micro text-on-primary">
                     <span class="material-symbols-outlined text-[14px] text-secondary-fixed">hub</span><span>10/10
                         Ingestion Nodes Active</span>
-                </div><button
-                    class="relative p-space-xs text-on-primary hover:text-secondary-fixed transition-colors"><span
-                        class="material-symbols-outlined text-[20px]">notifications</span><span
-                        class="absolute top-0 right-0 w-4 h-4 bg-error text-on-error font-telemetry-micro text-[10px] leading-4 text-center font-bold rounded-full">3</span></button>
+                </div><button id="notifications-toggle-btn" class="relative p-space-xs text-on-primary hover:text-secondary-fixed transition-colors notifications-btn" title="Live Enterprise Notifications">
+                    <span class="material-symbols-outlined text-[20px]">notifications</span>
+                </button>
                 <div class="h-6 w-[1px] bg-outline-variant/40"></div>
                 <div class="flex items-center gap-space-sm">
                     <div class="flex flex-col text-right">
@@ -770,6 +771,7 @@ $sidebarBadges = gov_getSidebarBadges();
     </div>
     <script src="js/common.js"></script>
     <script src="js/breakGlass.js"></script>
+  <script src="../assets/js/notifications-hub.js" defer></script>
 </body>
 
 </html>

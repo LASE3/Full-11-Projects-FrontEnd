@@ -40,6 +40,7 @@ if ($cusId) {
   <link
     href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
     rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 
   <!-- Consolidated Stylesheet (Strict System Tokens & UI Components) -->
   <link rel="stylesheet" href="css/style.css">
@@ -57,6 +58,9 @@ if ($cusId) {
     <div class="top-nav__content">
       <!-- Brand & System Identifier -->
       <div class="brand-section">
+        <button class="mobile-nav-toggle" id="b2b-sidebar-toggle" onclick="document.body.classList.toggle('sidebar-open')" title="Toggle Sidebar Navigation" style="background:transparent;border:none;color:#fff;cursor:pointer;padding:6px;display:none;align-items:center;justify-content:center;border-radius:4px;margin-right:8px;">
+          <span class="material-symbols-outlined" style="font-size:22px;">menu</span>
+        </button>
         <div class="brand-logo-container" onclick="window.shopApp.navigateTo('catalog')">
           <img alt="VOSTOKPRIBOR Official Mark" class="brand-logo-img"
             src="assets/logo.svg" />
@@ -76,59 +80,7 @@ if ($cusId) {
         </div>
       </div>
 
-      <!-- Main Navigation Links -->
-      <nav class="main-navigation">
-        <a class="nav-link active" data-screen="catalog" onclick="window.shopApp.navigateTo('catalog')">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="3" y="3" width="7" height="7" />
-            <rect x="14" y="3" width="7" height="7" />
-            <rect x="14" y="14" width="7" height="7" />
-            <rect x="3" y="14" width="7" height="7" />
-          </svg>
-          <span>Catalog</span>
-        </a>
-
-        <a class="nav-link" data-screen="quotes" onclick="window.shopApp.openRfqDrawer()">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-            <polyline points="14 2 14 8 20 8" />
-            <line x1="16" y1="13" x2="8" y2="13" />
-            <line x1="16" y1="17" x2="8" y2="17" />
-          </svg>
-          <span>My Quotes</span>
-          <span class="nav-badge-count" id="nav-quotes-count">0</span>
-        </a>
-
-        <a class="nav-link" data-screen="tracking" onclick="window.shopApp.navigateTo('tracking')">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="1" y="3" width="15" height="13" />
-            <polygon points="16 8 20 8 23 11 23 16 16 16 16 8" />
-            <circle cx="5.5" cy="18.5" r="2.5" />
-            <circle cx="18.5" cy="18.5" r="2.5" />
-          </svg>
-          <span>Order Tracking</span>
-        </a>
-
-        <a class="nav-link" data-screen="orders" onclick="window.shopApp.navigateTo('tracking')">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <line x1="8" y1="6" x2="21" y2="6" />
-            <line x1="8" y1="12" x2="21" y2="12" />
-            <line x1="8" y1="18" x2="21" y2="18" />
-            <line x1="3" y1="6" x2="3.01" y2="6" />
-            <line x1="3" y1="12" x2="3.01" y2="12" />
-            <line x1="3" y1="18" x2="3.01" y2="18" />
-          </svg>
-          <span>Orders</span>
-        </a>
-        <a class="nav-link shop-nav-integrations" href="Integrations.php">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#00E5FF" stroke-width="2">
-            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
-            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
-          </svg>
-          <span class="shop-nav-integrations-label">Integrations</span>
-          <span class="nav-badge-count">SYS10</span>
-        </a>
-      </nav>
+      <!-- (Navigation links moved to left sidebar) -->
 
       <!-- Right Header Actions (Customer Context, Cart, RFQ Button) -->
       <div class="header-actions">
@@ -163,6 +115,14 @@ if ($cusId) {
           <span class="cart-count-badge" id="header-cart-badge">0</span>
         </div>
 
+        <!-- Live Enterprise Notifications Bell -->
+        <button class="icon-button notifications-btn" id="notifications-toggle-btn" title="Live B2B Notifications & Telemetry" style="background:transparent;border:none;color:#bdc6cf;cursor:pointer;padding:6px;display:flex;align-items:center;justify-content:center;position:relative;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+            <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+          </svg>
+        </button>
+
         <!-- Quick RFQ CTA Button -->
         <button class="rfq-quick-btn" onclick="window.shopApp.openRfqDrawer()">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
@@ -173,9 +133,61 @@ if ($cusId) {
       </div>
 
       <!-- Top Bar Sign Out -->
-      <a href="./api/logout.php?redirect=../Online%20Shop%20B2B/login.php" class="top-signout-btn" title="Sign Out of Online Shop B2B" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" ><span class="material-symbols-outlined">Sign Out</span></a>
+      <a href="./api/logout.php?redirect=../Online%20Shop%20B2B/login.php" class="top-signout-btn" title="Sign Out of Online Shop B2B" onclick="(function(){sessionStorage.clear();localStorage.clear();})()"><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
     </div>
   </header>
+
+  <!-- ========================================================================
+       LEFT SIDEBAR NAVIGATION (Hover-to-Open & Hover-to-Close)
+       ======================================================================== -->
+  <aside class="sidebar b2b-sidebar" id="b2b-sidebar">
+    <div class="sidebar-section-title">E-Commerce Navigation</div>
+    <nav class="sidebar-nav">
+      <a class="sidebar-nav-item active" data-screen="catalog" onclick="window.shopApp.navigateTo('catalog')">
+        <div class="sidebar-item-left">
+          <span class="sidebar-icon material-symbols-outlined">grid_view</span>
+          <span class="sidebar-label">Product Catalog</span>
+        </div>
+      </a>
+
+      <a class="sidebar-nav-item" data-screen="quotes" onclick="window.shopApp.openRfqDrawer()">
+        <div class="sidebar-item-left">
+          <span class="sidebar-icon material-symbols-outlined">request_quote</span>
+          <span class="sidebar-label">My Quotes</span>
+        </div>
+        <span class="sidebar-badge" id="nav-quotes-count">0</span>
+      </a>
+
+      <a class="sidebar-nav-item" data-screen="tracking" onclick="window.shopApp.navigateTo('tracking')">
+        <div class="sidebar-item-left">
+          <span class="sidebar-icon material-symbols-outlined">local_shipping</span>
+          <span class="sidebar-label">Order Tracking</span>
+        </div>
+      </a>
+
+      <a class="sidebar-nav-item" data-screen="orders" onclick="window.shopApp.navigateTo('tracking')">
+        <div class="sidebar-item-left">
+          <span class="sidebar-icon material-symbols-outlined">receipt_long</span>
+          <span class="sidebar-label">Orders &amp; Invoices</span>
+        </div>
+      </a>
+
+      <a class="sidebar-nav-item" href="Integrations.php">
+        <div class="sidebar-item-left">
+          <span class="sidebar-icon material-symbols-outlined" style="color:#00E5FF;">hub</span>
+          <span class="sidebar-label" style="color:#00E5FF;">Integrations</span>
+        </div>
+        <span class="sidebar-badge" style="background:rgba(0,229,255,0.2); color:#00E5FF;">SYS10</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="b2b-account-badge" style="background:rgba(255,255,255,0.05); padding:10px; border-radius:8px; border:1px solid rgba(255,255,255,0.1);">
+        <div style="font-size:10px; font-family:'JetBrains Mono',monospace; color:#94a3b8; text-transform:uppercase;">Account Mode</div>
+        <div style="font-size:12px; font-weight:600; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" id="sidebar-customer-name"><?= htmlspecialchars($customer['company_name'] ?? 'Enterprise Account') ?></div>
+      </div>
+    </div>
+  </aside>
 
   <!-- ========================================================================
        SUB-HEADER BAR: Breadcrumbs & Telemetry Baseline Status
@@ -736,6 +748,7 @@ if ($cusId) {
   <script src="../assets/js/api-core.js"></script>
   <script src="../assets/js/api-shop.js"></script>
   <script src="js/shop-data.js"></script>
+  <script src="../assets/js/notifications-hub.js" defer></script>
 </body>
 
 </html>

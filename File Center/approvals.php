@@ -81,6 +81,7 @@ $currentStage = $appInfo['stage'] ?? ($isApproved ? 3 : 2);
     <!-- TOP NAVIGATION BAR -->
     <header class="vk-top-navbar">
         <div class="fc-flex-center-gap-24">
+            <button class="mobile-nav-toggle" id="fc-sidebar-toggle" onclick="document.body.classList.toggle('sidebar-open')" title="Toggle Menu"><span class="material-symbols-outlined">menu</span></button>
             <a class="vk-brand-section" href="Dashboard.php">
                 <img alt="VOSTOKPRIBOR Official Mark" class="brand-logo-img fc-logo-img" src="assets/logo.svg" />
                 <div class="fc-flex-col">
@@ -98,6 +99,9 @@ $currentStage = $appInfo['stage'] ?? ($isApproved ? 3 : 2);
         </div>
 
         <div class="fc-flex-center-gap-16">
+<button class="icon-button notifications-btn" id="notifications-toggle-btn" title="Live Enterprise Notifications" style="background:transparent;border:none;color:#bdc6cf;cursor:pointer;padding:6px;display:flex;align-items:center;justify-content:center;position:relative;">
+                <span class="material-symbols-outlined text-[20px]">notifications</span>
+            </button>
             <button class="search-trigger-btn" type="button">
                 <span class="material-symbols-outlined text-[16px]">search</span>
                 <span>Search documents, DOC-IDs...</span>
@@ -426,6 +430,7 @@ $currentStage = $appInfo['stage'] ?? ($isApproved ? 3 : 2);
     <!-- DOCKED ENTERPRISE STATUS BAR -->
     <footer class="vk-status-bar">
         <div class="fc-flex-center-gap-16">
+
             <div class="fc-flex-center-gap-8">
                 <span class="status-dot-pulse"></span>
                 <span>ALMATY-VAULT-01 // HSM CLUSTER SYNCHRONIZED</span>
@@ -475,6 +480,7 @@ $currentStage = $appInfo['stage'] ?? ($isApproved ? 3 : 2);
 
     <script src="js/fc-common.js"></script>
     <script src="js/fc-approvals.js"></script>
+  <script src="../assets/js/notifications-hub.js" defer></script>
 </body>
 
 </html>

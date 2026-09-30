@@ -580,19 +580,14 @@
       }
     });
 
-    // Initialize state from localStorage (desktop)
-    if (window.innerWidth >= 1024) {
-      const savedCollapsed = localStorage.getItem("vstk_sidebar_collapsed");
-      if (savedCollapsed === "true") {
-        document.body.classList.add("sidebar-collapsed");
-      }
-    }
+    // Ensure default desktop state is OPEN and visible
+    document.body.classList.remove("sidebar-collapsed");
     updateToggleIcon();
 
     // Handle resize events
     window.addEventListener("resize", () => {
       if (
-        window.innerWidth >= 1024 &&
+        window.innerWidth > 768 &&
         document.body.classList.contains("sidebar-mobile-open")
       ) {
         document.body.classList.remove("sidebar-mobile-open");

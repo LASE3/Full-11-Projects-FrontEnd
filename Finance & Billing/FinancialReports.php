@@ -65,6 +65,7 @@ $avgBudgetBurn = (float)$pdo->query("SELECT AVG((spent_amount / NULLIF(allocated
       <div class="top-nav__accent-stripe"></div>
       <div class="top-nav__content">
         <div class="brand-section">
+          <button class="mobile-nav-toggle" id="fin-sidebar-toggle" onclick="document.body.classList.toggle('sidebar-open')" title="Toggle Menu"><span class="material-symbols-outlined">menu</span></button>
           <a href="Dashboard.php" class="brand-logo-container">
             <img alt="VOSTOKPRIBOR Official Mark" class="brand-logo-img" src="assets/logo.svg" />
             <div class="brand-divider"></div>
@@ -97,12 +98,11 @@ $avgBudgetBurn = (float)$pdo->query("SELECT AVG((spent_amount / NULLIF(allocated
             <span>HIGHLY CONFIDENTIAL</span>
           </div>
 
-          <button class="icon-button" onclick="window.finApp.showToast('Audit Log', 'Annual statutory audit reports verified against vostokpribor database ledger.')">
+          <button class="icon-button notifications-btn" id="notifications-toggle-btn" title="Live Financial Alerts & Telemetry">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
               <path d="M13.73 21a2 2 0 0 1-3.46 0" />
             </svg>
-            <span class="badge-dot"></span>
           </button>
 
           <div class="top-user-profile" onclick="window.finApp.showToast('Active Controller', '<?= $userFullName ?> · <?= $userTitle ?>')">
@@ -384,6 +384,7 @@ $avgBudgetBurn = (float)$pdo->query("SELECT AVG((spent_amount / NULLIF(allocated
 
   <div id="toast-container"></div>
   <script src="js/app.js"></script>
+  <script src="../assets/js/notifications-hub.js" defer></script>
 </body>
 
 </html>

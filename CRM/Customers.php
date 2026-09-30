@@ -1,8 +1,40 @@
-﻿<?php
+<?php
 require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/../includes/auth_guard.php';
 requireAuth('CRM');
 $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role_name' => 'VP Enterprise Sales', 'clearance_level' => 'L4'];
+
+$pdo = getDbConnection();
+$custCount = (int)$pdo->query("SELECT COUNT(*) FROM `customers`")->fetchColumn();
+$totalArr = (float)$pdo->query("SELECT COALESCE(SUM(contract_value), 0) FROM `contracts` WHERE status = 'Active'")->fetchColumn();
+$oppCount = (int)$pdo->query("SELECT COUNT(*) FROM `opportunities` WHERE stage NOT IN ('Won', 'Lost')")->fetchColumn();
+$pipelineVal = (float)$pdo->query("SELECT COALESCE(SUM(estimated_value), 0) FROM `opportunities` WHERE stage NOT IN ('Won', 'Lost')")->fetchColumn();
+
+// Unique dynamic sectors from live database
+$sectors = $pdo->query("SELECT sector, COUNT(*) as cnt FROM `customers` WHERE sector IS NOT NULL AND sector != '' GROUP BY sector ORDER BY cnt DESC")->fetchAll(PDO::FETCH_ASSOC);
+
+// Full Customers Matrix
+$customers = $pdo->query("
+    SELECT 
+        c.cus_id,
+        c.company_name,
+        c.sector,
+        c.primary_contact_name,
+        c.headquarters,
+        c.health_score,
+        c.account_tier,
+        c.status,
+        e.full_name AS account_manager_name,
+        COALESCE((SELECT SUM(contract_value) FROM `contracts` WHERE cus_id = c.cus_id AND status = 'Active'), 0) AS total_contract_value,
+        (SELECT contract_ref FROM `contracts` WHERE cus_id = c.cus_id AND status = 'Active' ORDER BY contract_value DESC LIMIT 1) AS active_contract_ref,
+        (SELECT end_date FROM `contracts` WHERE cus_id = c.cus_id AND status = 'Active' ORDER BY contract_value DESC LIMIT 1) AS contract_end
+    FROM `customers` c
+    LEFT JOIN `employees` e ON c.account_manager_emp_id = e.emp_id
+    ORDER BY total_contract_value DESC, c.company_name ASC
+")->fetchAll(PDO::FETCH_ASSOC);
+
+$firstCusId = !empty($customers) ? $customers[0]['cus_id'] : 'CUS-1001';
+$firstCusName = !empty($customers) ? $customers[0]['company_name'] : 'Severstal Metallurgy PJSC';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -22,6 +54,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
       <div class="top-nav__accent-stripe"></div>
       <div class="top-nav__content">
         <div class="brand-section">
+          <button class="mobile-nav-toggle" id="crm-sidebar-toggle" onclick="document.body.classList.toggle('sidebar-open')" title="Toggle Menu"><span class="material-symbols-outlined">menu</span></button>
           <a href="Dashboard.php" class="brand-logo-container">
             <img alt="VOSTOKPRIBOR Official Mark" class="brand-logo-img" src="assets/logo.svg" />
             <div class="brand-divider"></div>
@@ -42,7 +75,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
 
         <div class="top-search-bar">
           <div class="search-input-wrapper">
-            <span class="search-icon">🔍</span>
+            <span class="search-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span>
             <input type="text" class="search-input" id="global-omni-search" placeholder="Search enterprise clients (e.g. Severstal, NLMK, Norilsk)..." />
             <span class="search-kbd">Ctrl+K</span>
           </div>
@@ -56,12 +89,11 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
           <button class="btn btn-primary-amber btn-sm" onclick="window.location.href='CustomerDetail.php'">
             <span>Inspect Key Client</span>
           </button>
-          <button class="icon-button" title="Telemetry" onclick="window.crmApp.showToast('Account Updates', 'Severstal telemetry nodes reporting 100% FAT uptime.')">
+          <button class="icon-button notifications-btn" id="notifications-toggle-btn" title="Live Sales Telemetry & Notifications">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
               <path d="M13.73 21a2 2 0 0 1-3.46 0" />
             </svg>
-            <span class="badge-dot"></span>
           </button>
           <div class="top-user-profile" onclick="window.crmApp.showToast('Active User Session', '<?= htmlspecialchars($currUser['full_name'] ?? 'Mikhail Sorokin') ?> · <?= htmlspecialchars($currUser['role_name'] ?? 'VP Enterprise Sales') ?> · <?= htmlspecialchars($currUser['clearance_level'] ?? 'L4') ?> Clearance')">
             <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDoVYMImYMOrFG-GImEjxCUij3YIwCjbxiUVg9-84NgNQUnx44rwhCbh4EVKLngwn6R5_hzNhRQkfTglEUz1jtP83GRGR8WbDdiIQblwg1fLV0mqc04y19GGKO27NGBpanqADz4vwO3ANY9KcZiOXBusZHAE_PU_FuuwKqChSLXXJsGo289bHOL3MFrKWoXXMoxnqoUIglg-NYsM99jg8cA3e1CeWhqlY0x7isLHdQfGbcFE_XiNNJg" alt="<?= htmlspecialchars($currUser['full_name'] ?? 'User') ?>" class="user-avatar-top" />
@@ -256,7 +288,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
             </div>
             <div class="page-header-actions">
               <button class="btn btn-outline" onclick="window.crmApp.showToast('Dossier Export', 'All 14 customer dossiers packaged with cryptographic seal.')">
-                <span>📥 Export Client Matrix</span>
+                <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Export Client Matrix</span>
               </button>
               <a href="CustomerDetail.php" class="btn btn-primary-amber">
                 <span>View Severstal Profile →</span>
@@ -269,7 +301,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
             <div class="crm-card kpi-card">
               <div class="kpi-header">
                 <span class="kpi-title">Active Accounts</span>
-                <div class="kpi-icon-pill indigo">🏢</div>
+                <div class="kpi-icon-pill indigo"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"/><path d="M9 22v-4h6v4"/><line x1="8" y1="6" x2="8.01" y2="6"/><line x1="16" y1="6" x2="16.01" y2="6"/><line x1="12" y1="6" x2="12.01" y2="6"/><line x1="8" y1="10" x2="8.01" y2="10"/><line x1="12" y1="10" x2="12.01" y2="10"/><line x1="16" y1="10" x2="16.01" y2="10"/><line x1="8" y1="14" x2="8.01" y2="14"/><line x1="12" y1="14" x2="12.01" y2="14"/><line x1="16" y1="14" x2="16.01" y2="14"/></svg></div>
               </div>
               <div class="kpi-value-row">
                 <span class="kpi-value kpi-value-mono">14</span>
@@ -284,7 +316,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
             <div class="crm-card kpi-card">
               <div class="kpi-header">
                 <span class="kpi-title">Total Portfolio ARR</span>
-                <div class="kpi-icon-pill amber">💼</div>
+                <div class="kpi-icon-pill amber"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></div>
               </div>
               <div class="kpi-value-row">
                 <span class="kpi-value kpi-value-mono">$48.2M</span>
@@ -299,7 +331,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
             <div class="crm-card kpi-card">
               <div class="kpi-header">
                 <span class="kpi-title">Contract Retention</span>
-                <div class="kpi-icon-pill success">🛡️</div>
+                <div class="kpi-icon-pill success"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
               </div>
               <div class="kpi-value-row">
                 <span class="kpi-value kpi-value-mono">99.4%</span>
@@ -314,7 +346,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
             <div class="crm-card kpi-card">
               <div class="kpi-header">
                 <span class="kpi-title">Open Expansion Opps</span>
-                <div class="kpi-icon-pill steel">📈</div>
+                <div class="kpi-icon-pill steel"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></div>
               </div>
               <div class="kpi-value-row">
                 <span class="kpi-value kpi-value-mono">42</span>
@@ -330,11 +362,10 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
           <!-- Customer Filter Toolbar -->
           <div class="page-filter-bar">
             <div class="filter-pills-group">
-              <button class="filter-pill-btn active">All Sectors (14)</button>
-              <button class="filter-pill-btn">Ferrous Metallurgy (6)</button>
-              <button class="filter-pill-btn">Non-Ferrous &amp; Mining (3)</button>
-              <button class="filter-pill-btn">Chemical &amp; Agro (3)</button>
-              <button class="filter-pill-btn">Oil &amp; Gas (2)</button>
+              <button class="filter-pill-btn active" data-sector="all">All Sectors (<?= $custCount ?>)</button>
+              <?php foreach ($sectors as $sec): ?>
+                <button class="filter-pill-btn" data-sector="<?= htmlspecialchars($sec['sector']) ?>"><?= htmlspecialchars($sec['sector']) ?> (<?= $sec['cnt'] ?>)</button>
+              <?php endforeach; ?>
             </div>
             <div class="crm-gap-sm" >
               <select class="filter-select">
@@ -360,129 +391,57 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
                 </tr>
               </thead>
               <tbody id="customers-tbody">
-                <!-- Customer 1 -->
-                <tr class="account-row account-row-tagged" onclick="window.location.href='CustomerDetail.php'">
-                  <td>
-                    <div class="account-name-cell">
-                      <span class="account-name-title crm-text-indigo" >Severstal Metallurgy PJSC</span>
-                      <span class="account-name-sub">Account ID: #VP-90214 · Cherepovets Metallurgical Plant</span>
-                    </div>
-                  </td>
-                  <td>
-                    <span class="tier-badge strategic">Ferrous Metallurgy</span>
-                  </td>
-                  <td>
-                    <strong>Dr. Elena Rostova</strong>
-                    <div class="crm-text-muted-sm" >Senior Sales Director</div>
-                  </td>
-                  <td>
-                    <strong class="crm-mono-navy-lg" >$6,850,000.00</strong>
-                    <div class="crm-text-success-11" >+18.5% YoY Expansion</div>
-                  </td>
-                  <td>
-                    <span class="crm-mono-semibold-11" >MSA-2024-SVST-088</span>
-                    <div class="crm-text-muted-10" >Valid thru Dec 2026</div>
-                  </td>
-                  <td>
-                    <span class="crm-mono-bold-success" >98% (Optimal)</span>
-                  </td>
-                  <td>
-                    <a href="CustomerDetail.php" class="btn btn-indigo btn-sm">Full Profile →</a>
-                  </td>
-                </tr>
-
-                <!-- Customer 2 -->
-                <tr class="account-row account-row-tagged" onclick="window.location.href='CustomerDetail.php'">
-                  <td>
-                    <div class="account-name-cell">
-                      <span class="account-name-title crm-text-indigo" >Norilsk Nickel Mining</span>
-                      <span class="account-name-sub">Account ID: #VP-66102 · Talnakh Concentrator Division</span>
-                    </div>
-                  </td>
-                  <td>
-                    <span class="tier-badge strategic">Non-Ferrous Mining</span>
-                  </td>
-                  <td>
-                    <strong>Mikhail Sorokin</strong>
-                    <div class="crm-text-muted-sm" >VP Enterprise Sales</div>
-                  </td>
-                  <td>
-                    <strong class="crm-mono-navy-lg" >$8,400,000.00</strong>
-                    <div class="crm-text-success-11" >+24.0% YoY Expansion</div>
-                  </td>
-                  <td>
-                    <span class="crm-mono-semibold-11" >MSA-2023-NN-014</span>
-                    <div class="crm-text-muted-10" >Valid thru Nov 2025</div>
-                  </td>
-                  <td>
-                    <span class="crm-mono-bold-success" >95% (Optimal)</span>
-                  </td>
-                  <td>
-                    <a href="CustomerDetail.php" class="btn btn-indigo btn-sm">Full Profile →</a>
-                  </td>
-                </tr>
-
-                <!-- Customer 3 -->
-                <tr class="account-row account-row-tagged" onclick="window.location.href='CustomerDetail.php'">
-                  <td>
-                    <div class="account-name-cell">
-                      <span class="account-name-title crm-text-indigo" >NLMK Group Lipetsk</span>
-                      <span class="account-name-sub">Account ID: #VP-88412 · Blast Furnace &amp; Strip Mill</span>
-                    </div>
-                  </td>
-                  <td>
-                    <span class="tier-badge tier-1">Ferrous Metallurgy</span>
-                  </td>
-                  <td>
-                    <strong>Viktor Morozov</strong>
-                    <div class="crm-text-muted-sm" >Key Account Lead</div>
-                  </td>
-                  <td>
-                    <strong class="crm-mono-navy-lg" >$4,200,000.00</strong>
-                    <div class="crm-text-muted-sm" >Stable Baseline</div>
-                  </td>
-                  <td>
-                    <span class="crm-mono-semibold-11" >MSA-2024-NLMK-90</span>
-                    <div class="crm-text-muted-10" >Valid thru Oct 2026</div>
-                  </td>
-                  <td>
-                    <span class="crm-mono-bold-success" >92% (Good)</span>
-                  </td>
-                  <td>
-                    <a href="CustomerDetail.php" class="btn btn-indigo btn-sm">Full Profile →</a>
-                  </td>
-                </tr>
-
-                <!-- Customer 4 -->
-                <tr class="account-row account-row-tagged" onclick="window.location.href='CustomerDetail.php'">
-                  <td>
-                    <div class="account-name-cell">
-                      <span class="account-name-title crm-text-indigo" >EVRAZ Consolidated</span>
-                      <span class="account-name-sub">Account ID: #VP-77190 · Nizhny Tagil Plant</span>
-                    </div>
-                  </td>
-                  <td>
-                    <span class="tier-badge tier-2">Heavy Metallurgy</span>
-                  </td>
-                  <td>
-                    <strong>Denis Sokolov</strong>
-                    <div class="crm-text-muted-sm" >Technical Sales Eng.</div>
-                  </td>
-                  <td>
-                    <strong class="crm-mono-navy-lg" >$2,100,000.00</strong>
-                    <div class="crm-text-success-11" >+8.0% YoY</div>
-                  </td>
-                  <td>
-                    <span class="crm-mono-semibold-11" >MSA-2022-EVR-05</span>
-                    <div class="crm-text-muted-10" >Valid thru Jan 2025</div>
-                  </td>
-                  <td>
-                    <span class="crm-mono-amber" >88% (Normal)</span>
-                  </td>
-                  <td>
-                    <a href="CustomerDetail.php" class="btn btn-indigo btn-sm">Full Profile →</a>
-                  </td>
-                </tr>
+                <?php if (empty($customers)): ?>
+                  <tr><td colspan="7" style="text-align:center;padding:32px;color:var(--crm-text-muted);">No accounts found in database.</td></tr>
+                <?php else: ?>
+                  <?php foreach ($customers as $c): ?>
+                    <?php
+                    $hs = (int)($c['health_score'] ?? 90);
+                    $hsClass = $hs >= 92 ? 'crm-mono-bold-success' : ($hs >= 80 ? 'crm-mono-bold-amber' : 'crm-mono-bold-danger');
+                    $tierClass = stripos((string)$c['account_tier'], 'strategic') !== false ? 'tier-badge strategic' : 'tier-badge tier-1';
+                    ?>
+                    <tr class="account-row account-row-tagged" data-cus-id="<?= htmlspecialchars($c['cus_id']) ?>" data-sector="<?= htmlspecialchars($c['sector']) ?>" onclick="window.location.href='CustomerDetail.php?id=<?= urlencode($c['cus_id']) ?>'">
+                      <td>
+                        <div class="account-name-cell">
+                          <span class="account-name-title crm-text-indigo"><?= htmlspecialchars($c['company_name']) ?></span>
+                          <span class="account-name-sub">Account ID: #<?= htmlspecialchars($c['cus_id']) ?> · <?= htmlspecialchars($c['headquarters'] ?: $c['sector']) ?></span>
+                        </div>
+                      </td>
+                      <td>
+                        <span class="<?= $tierClass ?>"><?= htmlspecialchars($c['sector'] ?: 'Enterprise') ?></span>
+                      </td>
+                      <td>
+                        <strong><?= htmlspecialchars($c['account_manager_name'] ?: 'Dr. Elena Rostova') ?></strong>
+                        <div class="crm-text-muted-sm">Key Account Lead</div>
+                      </td>
+                      <td>
+                        <?php if ((float)$c['total_contract_value'] > 0): ?>
+                          <strong class="crm-mono-navy-lg">$<?= number_format((float)$c['total_contract_value'], 2) ?></strong>
+                          <div class="crm-text-success-11">Active Master Agreement</div>
+                        <?php else: ?>
+                          <strong class="crm-mono-navy-lg" style="color:var(--crm-text-muted);">$0.00</strong>
+                          <div class="crm-text-muted-sm">Pending Procurement RFP</div>
+                        <?php endif; ?>
+                      </td>
+                      <td>
+                        <?php if (!empty($c['active_contract_ref'])): ?>
+                          <span class="crm-mono-semibold-11"><?= htmlspecialchars($c['active_contract_ref']) ?></span>
+                          <div class="crm-text-muted-10"><?= !empty($c['contract_end']) ? 'Valid thru ' . htmlspecialchars($c['contract_end']) : 'Active SLA Term' ?></div>
+                        <?php else: ?>
+                          <span class="crm-mono-semibold-11" style="color:var(--crm-text-muted);">MSA In Negotiation</span>
+                          <div class="crm-text-muted-10">Standard Enterprise Terms</div>
+                        <?php endif; ?>
+                      </td>
+                      <td>
+                        <span class="<?= $hsClass ?>"><?= $hs ?>% (<?= $hs >= 92 ? 'Optimal' : 'Good' ?>)</span>
+                      </td>
+                      <td style="white-space:nowrap;">
+                        <a href="CustomerDetail.php?id=<?= urlencode($c['cus_id']) ?>" class="btn btn-indigo btn-sm" onclick="event.stopPropagation()">Full Profile →</a>
+                        <button class="btn btn-outline btn-sm" style="color:#ef4444;border-color:rgba(239,68,68,0.3);margin-left:4px;padding:4px 8px;" title="Delete Account" onclick="event.stopPropagation(); window.crmApp.deleteCustomer('<?= htmlspecialchars(addslashes($c['cus_id'])) ?>')">✕</button>
+                      </td>
+                    </tr>
+                  <?php endforeach; ?>
+                <?php endif; ?>
               </tbody>
             </table>
           </div>
@@ -497,6 +456,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
   <script src="../assets/js/api-core.js"></script>
   <script src="../assets/js/api-crm.js"></script>
   <script src="js/crm-data.js"></script>
+  <script src="../assets/js/notifications-hub.js" defer></script>
 </body>
 
 </html>

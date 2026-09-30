@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 /**
  * Class 4: Employee Intranet - Leave Requests API

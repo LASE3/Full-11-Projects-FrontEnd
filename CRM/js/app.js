@@ -176,13 +176,13 @@
       let icon = "ℹ️";
       if (type === "amber" || type === "warning") {
         typeClass = "toast-amber";
-        icon = "⚡";
+        icon = "<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>";
       } else if (type === "success") {
         typeClass = "toast-success";
         icon = "✓";
       } else if (type === "danger" || type === "confidential") {
         typeClass = "toast-danger";
-        icon = "🔒";
+        icon = "<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>";
       }
 
       toast.className = `crm-toast ${typeClass}`;
@@ -308,7 +308,7 @@
           });
 
           const confidentialBadge = opp.confidential
-            ? `<span class="confidential-pill" style="font-size: 9px; padding: 1px 5px;">🔒 Confid.</span>`
+            ? `<span class="confidential-pill" style="font-size: 9px; padding: 1px 5px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Confid.</span>`
             : "";
 
           card.innerHTML = `
@@ -323,7 +323,7 @@
             </div>
             <div class="card-footer-row">
               <span class="card-close-date">
-                <span>📅</span>
+                <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></span>
                 <span>${opp.closeDate}</span>
               </span>
               <img src="${opp.rep.avatar}" alt="${opp.rep.name}" class="card-rep-avatar" title="Rep: ${opp.rep.name}" />
@@ -411,21 +411,81 @@
         }
       });
 
-      // Global Omni Search Listener
+      // Global Omni Search Listener (Live API)
       const omniSearch = document.getElementById("global-omni-search");
       if (omniSearch) {
+        let searchTimeout = null;
+        const searchWrapper = omniSearch.closest(".top-search-bar") || omniSearch.parentElement;
+        let dropdown = document.querySelector(".omni-search-dropdown");
+        if (!dropdown && searchWrapper) {
+          dropdown = document.createElement("div");
+          dropdown.className = "omni-search-dropdown";
+          dropdown.style.display = "none";
+          searchWrapper.appendChild(dropdown);
+        }
+
+        const closeDropdown = () => {
+          if (dropdown) dropdown.style.display = "none";
+        };
+
+        const renderResults = (items, q) => {
+          if (!dropdown) return;
+          if (!items || items.length === 0) {
+            dropdown.innerHTML = `<div style="padding:14px;text-align:center;color:#94a3b8;font-size:12px;">No matching records found for "${q}"</div>`;
+            dropdown.style.display = "flex";
+            return;
+          }
+
+          dropdown.innerHTML = items.map((item, idx) => `
+            <a href="${item.url || '#'}" class="omni-search-item ${idx === 0 ? 'active' : ''}">
+              <span class="omni-search-badge ${item.type}">${item.type}</span>
+              <div class="omni-search-details">
+                <span class="omni-search-title">${item.title}</span>
+                <span class="omni-search-subtitle">${item.subtitle || ''}</span>
+              </div>
+            </a>
+          `).join('');
+          dropdown.style.display = "flex";
+        };
+
+        const performSearch = async () => {
+          const q = omniSearch.value.trim();
+          if (q.length < 2) {
+            closeDropdown();
+            return;
+          }
+          try {
+            const res = await fetch(`api/search.php?q=${encodeURIComponent(q)}`);
+            const json = await res.json();
+            if (json.success && Array.isArray(json.data)) {
+              renderResults(json.data, q);
+            }
+          } catch (e) {
+            console.error("Omni-search error:", e);
+          }
+        };
+
+        omniSearch.addEventListener("input", () => {
+          clearTimeout(searchTimeout);
+          searchTimeout = setTimeout(performSearch, 220);
+        });
+
         omniSearch.addEventListener("keydown", (e) => {
           if (e.key === "Enter") {
-            const query = omniSearch.value.trim();
-            if (query) {
-              crmApp.showToast(
-                "Omni-Search Query",
-                `Found 6 matched records for "${query}". Redirecting to Customer Ledger...`,
-              );
-              setTimeout(() => {
-                window.location.href = "CustomerDetail.php";
-              }, 600);
+            const firstLink = dropdown ? dropdown.querySelector(".omni-search-item") : null;
+            if (firstLink && firstLink.getAttribute("href")) {
+              window.location.href = firstLink.getAttribute("href");
+            } else {
+              performSearch();
             }
+          } else if (e.key === "Escape") {
+            closeDropdown();
+          }
+        });
+
+        document.addEventListener("click", (e) => {
+          if (!searchWrapper || !searchWrapper.contains(e.target)) {
+            closeDropdown();
           }
         });
       }

@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 /**
  * VOSTOKPRIBOR Standardized API Response Helper

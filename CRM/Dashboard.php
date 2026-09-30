@@ -34,6 +34,7 @@ $custCount = (int)($pdo->query("SELECT COUNT(*) FROM customers")->fetchColumn() 
       <div class="top-nav__content">
         <!-- Brand & System Identifier -->
         <div class="brand-section">
+          <button class="mobile-nav-toggle" id="crm-sidebar-toggle" onclick="document.body.classList.toggle('sidebar-open')" title="Toggle Menu"><span class="material-symbols-outlined">menu</span></button>
           <a href="Dashboard.php" class="brand-logo-container">
             <img alt="VOSTOKPRIBOR Official Mark" class="brand-logo-img" src="assets/logo.svg" />
             <div class="brand-divider"></div>
@@ -55,7 +56,7 @@ $custCount = (int)($pdo->query("SELECT COUNT(*) FROM customers")->fetchColumn() 
         <!-- Global Omni Search -->
         <div class="top-search-bar">
           <div class="search-input-wrapper">
-            <span class="search-icon">🔍</span>
+            <span class="search-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span>
             <input type="text" class="search-input" id="global-omni-search" placeholder="Search accounts, opportunities, quotes, contracts (e.g. Severstal, HPF-900X)..." />
             <span class="search-kbd">Ctrl+K</span>
           </div>
@@ -72,12 +73,11 @@ $custCount = (int)($pdo->query("SELECT COUNT(*) FROM customers")->fetchColumn() 
             <span>+ New Opportunity</span>
           </button>
 
-          <button class="icon-button" title="Sales Telemetry Notifications" onclick="window.crmApp.showToast('Operational Telemetry Alert', 'Severstal PJSC accessed Proposal Spec #PRJ-VP-7721.')">
+          <button class="icon-button notifications-btn" id="notifications-toggle-btn" title="Live Sales Telemetry & Notifications">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
               <path d="M13.73 21a2 2 0 0 1-3.46 0" />
             </svg>
-            <span class="badge-dot"></span>
           </button>
 
           <div class="top-user-profile" onclick="window.crmApp.showToast('Active User Session', '<?= htmlspecialchars($currUser['full_name'] ?? 'Mikhail Sorokin') ?> · <?= htmlspecialchars($currUser['role_name'] ?? 'VP Enterprise Sales') ?> · <?= htmlspecialchars($currUser['clearance_level'] ?? 'L4') ?> Clearance')">
@@ -298,10 +298,10 @@ $custCount = (int)($pdo->query("SELECT COUNT(*) FROM customers")->fetchColumn() 
             </div>
             <div class="page-header-actions">
               <div class="filter-select crm-inline-flex-sm" >
-                <span>📅 FY2024 - Q4 (Oct - Dec)</span>
+                <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> FY2024 - Q4 (Oct - Dec)</span>
               </div>
               <button class="btn btn-outline" onclick="window.crmApp.showToast('Export Manifest', 'Pipeline report exported as CSV ledger.')">
-                <span>📥 Export (.CSV)</span>
+                <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Export (.CSV)</span>
               </button>
               <button class="btn btn-primary-amber" onclick="window.crmApp.openModal('modal-new-opportunity')">
                 <span>+ New Opportunity</span>
@@ -315,7 +315,7 @@ $custCount = (int)($pdo->query("SELECT COUNT(*) FROM customers")->fetchColumn() 
             <div class="crm-card kpi-card">
               <div class="kpi-header">
                 <span class="kpi-title">New Leads</span>
-                <div class="kpi-icon-pill indigo">👥</div>
+                <div class="kpi-icon-pill indigo"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
               </div>
               <div class="kpi-value-row">
                 <span class="kpi-value kpi-value-mono" id="dash-kpi-leads">—</span>
@@ -331,7 +331,7 @@ $custCount = (int)($pdo->query("SELECT COUNT(*) FROM customers")->fetchColumn() 
             <div class="crm-card kpi-card">
               <div class="kpi-header">
                 <span class="kpi-title">Open Opportunities</span>
-                <div class="kpi-icon-pill amber">⚡</div>
+                <div class="kpi-icon-pill amber"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
               </div>
               <div class="kpi-value-row">
                 <span class="kpi-value kpi-value-mono" id="dash-kpi-opps">—</span>
@@ -347,7 +347,7 @@ $custCount = (int)($pdo->query("SELECT COUNT(*) FROM customers")->fetchColumn() 
             <div class="crm-card kpi-card">
               <div class="kpi-header">
                 <span class="kpi-title">Gross Pipeline Value</span>
-                <div class="kpi-icon-pill steel">💼</div>
+                <div class="kpi-icon-pill steel"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></div>
               </div>
               <div class="kpi-value-row">
                 <span class="kpi-value kpi-value-mono" id="dash-kpi-pipeline">—</span>
@@ -560,6 +560,7 @@ $custCount = (int)($pdo->query("SELECT COUNT(*) FROM customers")->fetchColumn() 
   <script src="../assets/js/api-core.js"></script>
   <script src="../assets/js/api-crm.js"></script>
   <script src="js/crm-data.js"></script>
+  <script src="../assets/js/notifications-hub.js" defer></script>
 </body>
 
 </html>

@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/../includes/auth_guard.php';
 requireAuth('CRM');
@@ -22,6 +22,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
       <div class="top-nav__accent-stripe"></div>
       <div class="top-nav__content">
         <div class="brand-section">
+          <button class="mobile-nav-toggle" id="crm-sidebar-toggle" onclick="document.body.classList.toggle('sidebar-open')" title="Toggle Menu"><span class="material-symbols-outlined">menu</span></button>
           <a href="Dashboard.php" class="brand-logo-container">
             <img alt="VOSTOKPRIBOR Official Mark" class="brand-logo-img" src="assets/logo.svg" />
             <div class="brand-divider"></div>
@@ -42,7 +43,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
 
         <div class="top-search-bar">
           <div class="search-input-wrapper">
-            <span class="search-icon">🔍</span>
+            <span class="search-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span>
             <input type="text" class="search-input" id="global-omni-search" placeholder="Search accounts, contracts, projects..." />
             <span class="search-kbd">Ctrl+K</span>
           </div>
@@ -56,12 +57,11 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
           <button class="btn btn-primary-amber btn-sm" onclick="window.crmApp.openModal('modal-new-opportunity')">
             <span>+ New Opportunity</span>
           </button>
-          <button class="icon-button" title="Telemetry" onclick="window.crmApp.showToast('Telemetry Alert', 'Severstal SCADA node #4 verified encryption handshake.')">
+          <button class="icon-button notifications-btn" id="notifications-toggle-btn" title="Live Sales Telemetry & Notifications">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
               <path d="M13.73 21a2 2 0 0 1-3.46 0" />
             </svg>
-            <span class="badge-dot"></span>
           </button>
           <div class="top-user-profile" onclick="window.crmApp.showToast('Active User Session', '<?= htmlspecialchars($currUser['full_name'] ?? 'Mikhail Sorokin') ?> · <?= htmlspecialchars($currUser['role_name'] ?? 'VP Enterprise Sales') ?> · <?= htmlspecialchars($currUser['clearance_level'] ?? 'L4') ?> Clearance')">
             <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDoVYMImYMOrFG-GImEjxCUij3YIwCjbxiUVg9-84NgNQUnx44rwhCbh4EVKLngwn6R5_hzNhRQkfTglEUz1jtP83GRGR8WbDdiIQblwg1fLV0mqc04y19GGKO27NGBpanqADz4vwO3ANY9KcZiOXBusZHAE_PU_FuuwKqChSLXXJsGo289bHOL3MFrKWoXXMoxnqoUIglg-NYsM99jg8cA3e1CeWhqlY0x7isLHdQfGbcFE_XiNNJg" alt="<?= htmlspecialchars($currUser['full_name'] ?? 'User') ?>" class="user-avatar-top" />
@@ -438,7 +438,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
                 <div class="confidential-contract-card">
                   <div class="confidential-badge-banner">
                     <span class="confidential-pill">
-                      <span>🔒</span>
+                      <span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>
                       <span>HIGHLY CONFIDENTIAL</span>
                     </span>
                     <span class="crm-mono-confidential-10" >
@@ -550,7 +550,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
           <div id="tab-panel-contracts" class="tab-content-panel">
             <div class="confidential-contract-card">
               <div class="confidential-badge-banner">
-                <span class="confidential-pill">🔒 Highly Confidential Legal Registry</span>
+                <span class="confidential-pill"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Highly Confidential Legal Registry</span>
                 <span class="crm-mono-bold-confidential" >4 ACTIVE CONTRACT DOCUMENTS</span>
               </div>
               <table class="accounts-table crm-bg-transparent" >
@@ -681,6 +681,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
   <script src="../assets/js/api-core.js"></script>
   <script src="../assets/js/api-crm.js"></script>
   <script src="js/crm-data.js"></script>
+  <script src="../assets/js/notifications-hub.js" defer></script>
 </body>
 
 </html>

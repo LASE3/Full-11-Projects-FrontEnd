@@ -27,6 +27,7 @@ $endpoints = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <!-- TOP NAVIGATION BAR (Deep Navy + 4px Cyan Identity Stripe) -->
     <header class="vk-top-navbar">
         <div class="dev-flex-center-gap-24" >
+            <button class="mobile-nav-toggle" id="dev-sidebar-toggle" onclick="document.body.classList.toggle('sidebar-open')" title="Toggle Menu"><span class="material-symbols-outlined">menu</span></button>
             <a class="vk-brand-section" href="Dashboard.php">
                 <img alt="VOSTOKPRIBOR Official Mark" class="brand-logo-img dev-logo-img"
                     src="assets/logo.svg" />
@@ -49,6 +50,9 @@ $endpoints = $stmt->fetchAll(PDO::FETCH_ASSOC);
         </div>
 
         <div class="dev-flex-center-gap-16" >
+<button class="icon-button notifications-btn" id="notifications-toggle-btn" title="Live Enterprise Notifications" style="background:transparent;border:none;color:#bdc6cf;cursor:pointer;padding:6px;display:flex;align-items:center;justify-content:center;position:relative;">
+                <span class="material-symbols-outlined text-[20px]">notifications</span>
+            </button>
             <!-- Search Bar Trigger (Ctrl + K) -->
             <div class="dev-search-box-wrap" >
                 <span class="material-symbols-outlined text-[16px] dev-position-absolute-left-10px-d4a8">search</span>
@@ -223,6 +227,7 @@ $endpoints = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <div class="vk-card tag-internal dev-margin-bottom-28px-background-8be5">
             <div class="vk-card-body dev-display-flex-align-items-8ee2">
                 <div class="dev-flex-center-gap-16" >
+
                     <div class="dev-width-42px-height-42px-234f"
                         >
                         <span class="material-symbols-outlined text-[24px]">terminal</span>
@@ -490,6 +495,7 @@ $endpoints = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <!-- SHARED JS SCRIPTS -->
     <script src="js/dev-common.js"></script>
     <script src="js/dev-portal.js"></script>
+  <script src="../assets/js/notifications-hub.js" defer></script>
 </body>
 
 </html>

@@ -4,6 +4,8 @@
    Common Components, Navigation & Authenticated Layout
    ========================================================================== */
 
+@import url("https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200");
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -678,10 +680,156 @@ body.sidebar-open .sidebar-backdrop {
   width: 100%;
 }
 
-/* Tablet & Smaller Screens (<= 1024px) */
-@media (max-width: 1024px) {
-  .mobile-nav-toggle {
+.mobile-nav-toggle {
+  display: none;
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  padding: 6px;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  margin-right: 8px;
+}
+
+.mobile-nav-toggle:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* ==========================================================================
+   Desktop Hover-to-Open Sidebar (Compact Rail -> Smooth Expand on Mouseover)
+   ========================================================================== */
+@media (min-width: 769px) {
+  .vk-sidebar {
+    width: 68px;
+    overflow-x: hidden;
+    transition: width 0.28s cubic-bezier(0.2, 0, 0, 1), box-shadow 0.28s ease;
+    z-index: 950;
+  }
+
+  .vk-sidebar:hover {
+    width: 250px;
+    box-shadow: 14px 0 36px rgba(0, 0, 0, 0.45);
+  }
+
+  .vk-main-layout {
+    margin-left: 68px;
+    transition: margin-left 0.28s cubic-bezier(0.2, 0, 0, 1);
+  }
+
+  .vk-sidebar .vk-sidebar-nav {
+    padding: 16px 8px;
+  }
+
+  .vk-sidebar .vk-nav-item {
+    padding: 9px 8px;
+    justify-content: flex-start;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+
+  .vk-sidebar .vk-nav-item [class*="flex-center-gap"] {
+    gap: 0;
+    width: 100%;
+  }
+
+  .vk-sidebar .vk-nav-item span.material-symbols-outlined {
+    min-width: 28px;
+    width: 28px;
+    text-align: center;
+    margin: 0;
+    font-size: 20px;
+  }
+
+  .vk-sidebar .vk-nav-item [class*="flex-center-gap"] > span:not(.material-symbols-outlined),
+  .vk-sidebar .vk-nav-label {
+    opacity: 0;
+    max-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    pointer-events: none;
+    margin-left: 0;
+    transition: opacity 0.2s ease, max-width 0.28s cubic-bezier(0.2, 0, 0, 1), margin-left 0.2s ease;
+  }
+
+  .vk-sidebar .nav-badge,
+  .vk-sidebar .vk-tag {
+    display: none;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+
+  .vk-sidebar .vk-sidebar-header {
+    opacity: 0;
+    height: 0;
+    padding: 0;
+    overflow: hidden;
+    transition: opacity 0.2s ease, height 0.28s ease, padding 0.28s ease;
+  }
+
+  .vk-sidebar .sidebar-nav-item {
+    padding: 9px 8px;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+
+  .vk-sidebar .sidebar-item-left > span:not(.sidebar-icon) {
+    opacity: 0;
+    max-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    pointer-events: none;
+    transition: opacity 0.2s ease, max-width 0.28s cubic-bezier(0.2, 0, 0, 1);
+  }
+
+  .vk-sidebar .sidebar-badge {
+    display: none;
+    opacity: 0;
+  }
+
+  /* When mouse moves on sidebar -> it opens smoothly */
+  .vk-sidebar:hover .vk-nav-item [class*="flex-center-gap"] {
+    gap: 10px;
+  }
+
+  .vk-sidebar:hover .vk-nav-item [class*="flex-center-gap"] > span:not(.material-symbols-outlined),
+  .vk-sidebar:hover .vk-nav-label {
+    opacity: 1;
+    max-width: 175px;
+    margin-left: 10px;
+    pointer-events: auto;
+  }
+
+  .vk-sidebar:hover .nav-badge,
+  .vk-sidebar:hover .vk-tag {
     display: inline-flex;
+    opacity: 1;
+  }
+
+  .vk-sidebar:hover .vk-sidebar-header {
+    opacity: 1;
+    height: auto;
+    padding: 8px 12px 4px 12px;
+  }
+
+  .vk-sidebar:hover .sidebar-item-left > span:not(.sidebar-icon) {
+    opacity: 1;
+    max-width: 175px;
+    margin-left: 8px;
+    pointer-events: auto;
+  }
+
+  .vk-sidebar:hover .sidebar-badge {
+    display: inline-flex;
+    opacity: 1;
+  }
+}
+
+/* Mobile & Small Screens (<= 768px) */
+@media (max-width: 768px) {
+  .mobile-nav-toggle {
+    display: inline-flex !important;
   }
 
   .vk-sidebar {

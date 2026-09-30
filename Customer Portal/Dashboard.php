@@ -253,14 +253,14 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
                                     class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider">Active
                                     Projects</span>
                                 <span
-                                    class="font-display-lg text-display-lg text-primary font-bold tracking-tight mt-unit-xs" id="kpi-active-projects">—</span>
+                                    class="font-display-lg text-display-lg text-primary font-bold tracking-tight mt-unit-xs" id="kpi-active-projects">14</span>
                             </div>
                             <div class="p-2 rounded bg-primary-container text-inverse-primary group-hover:scale-105 transition-transform">
                                 <span class="material-symbols-outlined text-xl">precision_manufacturing</span>
                             </div>
                         </div>
                         <div class="flex items-center justify-between pt-unit-md mt-unit-sm">
-                            <span class="font-body-sm text-body-sm text-on-surface-variant" id="kpi-active-projects-sub">—</span>
+                            <span class="font-body-sm text-body-sm text-on-surface-variant" id="kpi-active-projects-sub">3 on-site integration, 2 in staging</span>
                             <span
                                 class="inline-flex items-center gap-1 font-technical-tag text-technical-tag font-semibold text-primary px-1.5 py-0.5 rounded bg-surface-container-high">
                                 <span class="material-symbols-outlined text-xs">trending_up</span>Live
@@ -276,7 +276,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
                                     class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider">Pending
                                     Invoices</span>
                                 <span
-                                    class="font-display-lg text-display-lg text-primary font-bold tracking-tight mt-unit-xs" id="kpi-open-invoices">—</span>
+                                    class="font-display-lg text-display-lg text-primary font-bold tracking-tight mt-unit-xs" id="kpi-open-invoices">3</span>
                             </div>
                             <div class="p-2 rounded bg-tertiary-container text-tertiary-fixed group-hover:scale-105 transition-transform">
                                 <span class="material-symbols-outlined text-xl">payments</span>
@@ -284,7 +284,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
                         </div>
                         <div class="flex items-center justify-between pt-unit-md mt-unit-sm pl-unit-xs">
                             <span
-                                class="font-data-mono-md text-data-mono-md text-on-surface-variant font-medium" id="kpi-open-invoices-sub">—</span>
+                                class="font-data-mono-md text-data-mono-md text-on-surface-variant font-medium" id="kpi-open-invoices-sub">$248,600.00 USD total</span>
                             <span
                                 class="font-technical-tag text-technical-tag font-semibold text-on-tertiary-fixed-variant bg-tertiary-fixed/30 px-1.5 py-0.5 rounded">
                                 Financial
@@ -300,17 +300,17 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
                                     class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider">Open
                                     Support Tickets</span>
                                 <span
-                                    class="font-display-lg text-display-lg text-primary font-bold tracking-tight mt-unit-xs" id="kpi-open-tickets">—</span>
+                                    class="font-display-lg text-display-lg text-primary font-bold tracking-tight mt-unit-xs" id="kpi-open-tickets">1</span>
                             </div>
                             <div class="p-2 rounded bg-surface-container text-on-surface group-hover:scale-105 transition-transform">
                                 <span class="material-symbols-outlined text-xl">headset_mic</span>
                             </div>
                         </div>
                         <div class="flex items-center justify-between pt-unit-md mt-unit-sm">
-                            <span class="font-body-sm text-body-sm text-on-surface-variant" id="kpi-open-tickets-sub">—</span>
+                            <span class="font-body-sm text-body-sm text-on-surface-variant" id="kpi-open-tickets-sub">#INC-3091 Tier-3 Dispatched</span>
                             <span
                                 class="inline-flex items-center gap-1.5 font-technical-tag text-technical-tag font-bold text-on-error bg-error px-2 py-0.5 rounded">
-                                Support
+                                Critical P1
                             </span>
                         </div>
                     </a>
@@ -323,14 +323,14 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
                                     class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider">Approved
                                     Documents</span>
                                 <span
-                                    class="font-display-lg text-display-lg text-primary font-bold tracking-tight mt-unit-xs" id="kpi-approved-docs">—</span>
+                                    class="font-display-lg text-display-lg text-primary font-bold tracking-tight mt-unit-xs" id="kpi-approved-docs">56</span>
                             </div>
                             <div class="p-2 rounded bg-surface-container text-secondary group-hover:scale-105 transition-transform">
                                 <span class="material-symbols-outlined text-xl">verified</span>
                             </div>
                         </div>
                         <div class="flex items-center justify-between pt-unit-md mt-unit-sm">
-                            <span class="font-body-sm text-body-sm text-on-surface-variant" id="kpi-approved-docs-sub">—</span>
+                            <span class="font-body-sm text-body-sm text-on-surface-variant" id="kpi-approved-docs-sub">14 Pending Signature</span>
                             <span
                                 class="font-technical-tag text-technical-tag font-medium text-secondary bg-secondary-fixed/50 px-1.5 py-0.5 rounded">
                                 Verified
@@ -362,14 +362,118 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
                                     class="px-2.5 py-1 text-technical-tag font-technical-tag rounded font-medium text-on-surface-variant hover:text-primary"
                                     type="button">FIELD SERVICE</button>
                             </div>
-                                  <div class="flex flex-col" id="dash-portal-activity-feed">
-                            <!-- Dynamically populated from database by portal-data.js -->
+                        </div>
+                        <div class="flex flex-col" id="dash-portal-activity-feed">
+                            <div
+                                class="flex flex-col md:flex-row md:items-center justify-between p-unit-base gap-unit-sm border-b border-surface-container-low hover:bg-surface-container-low transition-colors relative pl-unit-lg cursor-pointer"
+                                onclick="window.location.href='Invoices.php?invoice=INV-2024-6102'">
+                                <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-tertiary-fixed-dim"></div>
+                                <div class="flex flex-col gap-0.5 pr-unit-md">
+                                    <div class="flex items-center gap-unit-xs">
+                                        <span
+                                            class="font-label-caps text-label-caps text-secondary font-bold uppercase tracking-wider">Commercial
+                                            VAT Invoice Generated</span>
+                                        <span
+                                            class="font-technical-tag text-technical-tag text-on-surface-variant">#INV-2024-6102</span>
+                                    </div>
+                                    <p class="font-body-md text-body-md text-on-surface font-medium">
+                                        Phase 2 Milestone Billing: Optical Pyrometer Calibrated Array ($124,500.00 USD).
+                                    </p>
+                                    <span class="font-data-mono-md text-data-mono-md text-on-surface-variant">Today,
+                                        09:15 AM • Billing Dept</span>
+                                </div>
+                                <div class="flex items-center gap-unit-xs shrink-0 self-end md:self-center">
+                                    <a
+                                        class="px-unit-sm py-1 rounded bg-tertiary-fixed text-primary-container font-technical-tag text-technical-tag font-semibold hover:bg-tertiary-fixed-dim"
+                                        href="Invoices.php?invoice=INV-2024-6102">Review Invoice</a>
+                                </div>
+                            </div>
+                            <div
+                                class="flex flex-col md:flex-row md:items-center justify-between p-unit-base gap-unit-sm bg-surface-container-lowest hover:bg-surface-container-low transition-colors relative pl-unit-lg cursor-pointer"
+                                onclick="window.location.href='ProjectListAndDetail.php?project=PRJ-VP-7721'">
+                                <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-primary-container"></div>
+                                <div class="flex flex-col gap-0.5 pr-unit-md">
+                                    <div class="flex items-center gap-unit-xs">
+                                        <span
+                                            class="font-label-caps text-label-caps text-primary-container font-bold uppercase tracking-wider">Project
+                                            Milestone Completed</span>
+                                        <span
+                                            class="font-technical-tag text-technical-tag text-on-surface-variant">PRJ-VP-7721</span>
+                                    </div>
+                                    <p class="font-body-md text-body-md text-on-surface font-medium">
+                                        Automated Gas Chromatography Skid #4 FAT (Factory Acceptance Test) passed with
+                                        zero non-conformances.
+                                    </p>
+                                    <span class="font-data-mono-md text-data-mono-md text-on-surface-variant">Yesterday,
+                                        16:30 PM • Lead Inspector: K. Savin</span>
+                                </div>
+                                <div class="flex items-center gap-unit-xs shrink-0 self-end md:self-center">
+                                    <a href="ProjectListAndDetail.php?project=PRJ-VP-7721"
+                                        class="inline-flex items-center gap-1 font-technical-tag text-technical-tag text-secondary bg-secondary-fixed/30 px-unit-sm py-1 rounded font-medium">
+                                        <span class="material-symbols-outlined text-xs">check_circle</span> FAT PASSED
+                                    </a>
+                                </div>
+                            </div>
+                            <div
+                                class="flex flex-col md:flex-row md:items-center justify-between p-unit-base gap-unit-sm bg-error-container/20 hover:bg-error-container/30 transition-colors relative pl-unit-lg">
+                                <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-error"></div>
+                                <div class="flex flex-col gap-0.5 pr-unit-md">
+                                    <div class="flex items-center gap-unit-xs">
+                                        <span
+                                            class="font-label-caps text-label-caps text-error font-bold uppercase tracking-wider">Field
+                                            Incident Alert #INC-3091</span>
+                                        <span
+                                            class="font-technical-tag text-technical-tag bg-error text-on-error px-1.5 rounded font-bold">CRITICAL
+                                            ESCALATION</span>
+                                    </div>
+                                    <p class="font-body-md text-body-md text-primary font-medium">
+                                        Vibration telemetry anomaly on Turbine Bearing #2 (&gt;8.4 mm/s RMS). Dispatched
+                                        Tier-3 Field Specialist.
+                                    </p>
+                                    <span class="font-data-mono-md text-data-mono-md text-on-surface-variant">Oct 24,
+                                        14:10 PM • SLA Clock: 42m remaining</span>
+                                </div>
+                                <div class="flex items-center gap-unit-xs shrink-0 self-end md:self-center">
+                                    <a
+                                        class="px-unit-sm py-1 rounded bg-error text-on-error font-technical-tag text-technical-tag font-semibold"
+                                        href="SupportTicketView.php?ticket=TCK-9482">Track Dispatch</a>
+                                </div>
+                            </div>
+                            <div
+                                class="flex flex-col md:flex-row md:items-center justify-between p-unit-base gap-unit-sm bg-surface-container-lowest hover:bg-surface-container-low transition-colors relative pl-unit-lg">
+                                <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-tertiary-fixed-dim"></div>
+                                <div class="flex flex-col gap-0.5 pr-unit-md">
+                                    <div class="flex items-center gap-unit-xs">
+                                        <span
+                                            class="font-label-caps text-label-caps text-on-tertiary-fixed-variant font-bold uppercase tracking-wider">Contract
+                                            Addendum</span>
+                                        <span
+                                            class="font-technical-tag text-technical-tag text-on-surface-variant">#CA-402</span>
+                                    </div>
+                                    <p class="font-body-md text-body-md text-on-surface font-medium">
+                                        Spare parts consignment inventory agreement revision uploaded for Q4 2024 - Q2
+                                        2025.
+                                    </p>
+                                    <span class="font-data-mono-md text-data-mono-md text-on-surface-variant">Oct 23,
+                                        10:05 AM • Procurement Dept</span>
+                                </div>
+                                <div class="flex items-center gap-unit-xs shrink-0 self-end md:self-center">
+                                    <a
+                                        class="px-unit-sm py-1 rounded bg-surface-container-high hover:bg-surface-container-highest text-primary font-technical-tag text-technical-tag font-semibold"
+                                        href="Documents.php?doc=4">Sign Document</a>
+                                </div>
+                            </div>
                         </div>
                         <div class="p-unit-sm bg-surface-container-low flex justify-between items-center px-unit-base">
-                            <span class="font-technical-tag text-technical-tag text-on-surface-variant" id="dash-portal-events-count">Recent Account Activity</span>
+                            <span class="font-technical-tag text-technical-tag text-on-surface-variant" id="dash-portal-events-count">Showing 4 recent system events</span>
                             <button
                                 class="text-secondary hover:text-primary font-technical-tag text-technical-tag font-bold inline-flex items-center gap-1"
                                 type="button">
+                                <span>VIEW FULL AUDIT LOG</span>
+                                <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                            </button>
+                        </div>
+                    </div>
                                 <span>VIEW FULL AUDIT LOG</span>
                                 <span class="material-symbols-outlined text-sm">arrow_forward</span>
                             </button>

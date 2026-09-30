@@ -295,8 +295,122 @@ div:has(> table) {
   overflow-x: auto;
 }
 
-/* Tablet & Smaller Screens (<= 1024px) */
-@media (max-width: 1024px) {
+.mobile-nav-toggle {
+  display: none;
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  padding: 6px;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  margin-right: 8px;
+}
+
+.mobile-nav-toggle:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* ==========================================================================
+   Desktop Hover-to-Open Sidebar (Compact Rail -> Smooth Expand on Mouseover)
+   ========================================================================== */
+@media (min-width: 769px) {
+  aside,
+  #gov-sidebar,
+  aside.fixed.left-0 {
+    width: 68px !important;
+    overflow-x: hidden;
+    transition: width 0.28s cubic-bezier(0.2, 0, 0, 1), box-shadow 0.28s ease !important;
+    z-index: 950 !important;
+  }
+
+  aside:hover,
+  #gov-sidebar:hover,
+  aside.fixed.left-0:hover {
+    width: 260px !important;
+    box-shadow: 14px 0 36px rgba(0, 0, 0, 0.5) !important;
+  }
+
+  div[class*="pl-[260px]"],
+  .pl-\[260px\] {
+    padding-left: 68px !important;
+    transition: padding-left 0.28s cubic-bezier(0.2, 0, 0, 1) !important;
+  }
+
+  aside a {
+    justify-content: flex-start;
+    padding: 10px 14px;
+    gap: 0;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+
+  aside a span.material-symbols-outlined {
+    min-width: 24px;
+    width: 24px;
+    text-align: center;
+    margin: 0;
+  }
+
+  aside a span:not(.material-symbols-outlined) {
+    opacity: 0;
+    max-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    pointer-events: none;
+    margin-left: 0;
+    transition: opacity 0.2s ease, max-width 0.28s cubic-bezier(0.2, 0, 0, 1), margin-left 0.2s ease;
+  }
+
+  aside div:first-child > div:first-child {
+    opacity: 0;
+    height: 0;
+    overflow: hidden;
+    padding: 0;
+    margin: 0;
+    transition: opacity 0.2s ease, height 0.28s ease;
+  }
+
+  aside div[class*="border-t"]:last-child {
+    opacity: 0;
+    max-height: 0;
+    overflow: hidden;
+    padding: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease, max-height 0.28s ease;
+  }
+
+  /* When mouse moves on sidebar -> it opens smoothly */
+  aside:hover a {
+    gap: 0.75rem;
+    padding: 0.625rem 1rem;
+  }
+
+  aside:hover a span:not(.material-symbols-outlined) {
+    opacity: 1;
+    max-width: 190px;
+    margin-left: 0.75rem;
+    pointer-events: auto;
+  }
+
+  aside:hover div:first-child > div:first-child {
+    opacity: 1;
+    height: auto;
+    padding: 0 1rem;
+    margin-bottom: 0.5rem;
+  }
+
+  aside:hover div[class*="border-t"]:last-child {
+    opacity: 1;
+    max-height: 250px;
+    padding: 1rem;
+    pointer-events: auto;
+  }
+}
+
+/* Mobile & Small Screens (<= 768px) */
+@media (max-width: 768px) {
   .mobile-nav-toggle {
     display: inline-flex !important;
   }

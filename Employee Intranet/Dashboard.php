@@ -312,26 +312,15 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
                 <button class="intra-btn-icon-ghost" type="button"  title="Lock Session" onclick="window.showIntranetToast('Security Notice', 'Session verified under ISO-27001 Zero-Trust policy.', 'info')">
                     <span class="material-symbols-outlined intra-text-11">lock</span>
                 </button>
-            </div>
         </div>
-                <button class="intra-btn-icon-ghost" type="button"
-                    
-                    title="Lock Session"
-                    onclick="window.showIntranetToast('Security Notice', 'Session verified under ISO-27001 Zero-Trust policy.', 'info')">
-                    <span class="material-symbols-outlined intra-text-11">lock</span>
-                </button>
-            </div>
-        </div>
-
-
-        <!-- Log Out -->
-
     </aside>
 
     <!-- Left-edge hover detection strip for collapsed rail state -->
     <div id="sidebar-hover-trigger" title="Hover to expand menu"></div>
-    MAIN CONTENT WRAPPER
-    ====================================================================== -->
+
+    <!-- ======================================================================
+         MAIN CONTENT WRAPPER
+         ====================================================================== -->
     <main class="intranet-content-wrapper" id="intranet-content-wrapper">
         <div class="intra-padding-1-5rem-max-53c0" >
 
@@ -581,7 +570,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
 
                         <div class="intra-display-grid-grid-template-38cf" >
 
-                            <div class="quick-link-btn" onclick="window.downloadDocSimulation('DOC-2026-005')">
+                            <div class="quick-link-btn" onclick="window.openQuickRequestModal('expense')">
                                 <span class="material-symbols-outlined intra-color-2e6e4e-font-size-b435">receipt_long</span>
                                 <span class="intra-text-center-bold-xs" >Submit
                                     Expense</span>
@@ -600,7 +589,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
                             </div>
 
                             <div class="quick-link-btn"
-                                onclick="window.showIntranetToast('Conference Room Booking', 'Calendar integration active. Select room slot.', 'info')">
+                                onclick="window.openQuickRequestModal('room')">
                                 <span class="material-symbols-outlined intra-color-0e7c86-font-size-0fa5">domain</span>
                                 <span class="intra-text-center-bold-xs" >Room
                                     Booking</span>
@@ -612,7 +601,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
                                     Chart</span>
                             </a>
 
-                            <div class="quick-link-btn" onclick="window.downloadDocSimulation('DOC-2026-008')">
+                            <div class="quick-link-btn" onclick="window.openQuickRequestModal('safety')">
                                 <span class="material-symbols-outlined intra-color-b23a32-font-size-2115">warning</span>
                                 <span class="intra-text-center-bold-xs" >Safety
                                     Report</span>

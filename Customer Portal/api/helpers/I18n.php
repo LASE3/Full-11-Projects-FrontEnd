@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 /**
  * VOSTOKPRIBOR Bilingual Translation Engine (English & Arabic)
