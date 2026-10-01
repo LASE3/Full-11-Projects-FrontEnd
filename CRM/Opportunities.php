@@ -3,6 +3,102 @@ require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/../includes/auth_guard.php';
 requireAuth('CRM');
 $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role_name' => 'VP Enterprise Sales', 'clearance_level' => 'L4'];
+
+$pdo = getDbConnection();
+$dbOpps = [];
+try {
+    $stmt = $pdo->query("
+        SELECT 
+            o.opp_id,
+            o.stage,
+            o.estimated_value,
+            o.expected_close_date,
+            o.opp_title,
+            o.probability_percent,
+            o.is_confidential,
+            c.cus_id,
+            c.company_name,
+            c.sector,
+            e.emp_id AS sales_emp_id,
+            e.full_name AS sales_representative
+        FROM opportunities o
+        LEFT JOIN customers c ON o.cus_id = c.cus_id
+        LEFT JOIN employees e ON o.sales_emp_id = e.emp_id
+        ORDER BY o.estimated_value DESC
+    ");
+    $dbOpps = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} catch (Exception $e) {
+    $dbOpps = [];
+}
+
+$oppsByStage = [
+    'qualification' => [],
+    'proposal' => [],
+    'negotiation' => [],
+    'contract' => [],
+    'won' => []
+];
+$stageTotals = [
+    'qualification' => 0.0,
+    'proposal' => 0.0,
+    'negotiation' => 0.0,
+    'contract' => 0.0,
+    'won' => 0.0
+];
+
+foreach ($dbOpps as $o) {
+    $rawStage = strtolower(trim((string)($o['stage'] ?? '')));
+    $matched = 'qualification';
+    foreach (array_keys($oppsByStage) as $s) {
+        if (str_contains($rawStage, $s)) {
+            $matched = $s;
+            break;
+        }
+    }
+    $oppsByStage[$matched][] = $o;
+    $stageTotals[$matched] += (float)($o['estimated_value'] ?? 0);
+}
+
+function formatCrmValue($val) {
+    if ($val >= 1000000) {
+        return '$' . number_format($val / 1000000, 2) . 'M';
+    } elseif ($val >= 1000) {
+        return '$' . number_format($val / 1000, 0) . 'K';
+    }
+    return '$' . number_format($val, 2);
+}
+
+function renderKanbanCardPhp($opp) {
+    $id = 'OPP-2026-' . str_pad((string)$opp['opp_id'], 4, '0', STR_PAD_LEFT);
+    $client = htmlspecialchars((string)($opp['company_name'] ?: ('Enterprise Account ' . ($opp['cus_id'] ?? ''))));
+    $title = htmlspecialchars((string)($opp['opp_title'] ?: ($opp['sector'] ? $opp['sector'] . ' Instrumentation' : 'Industrial Automation System')));
+    $val = '$' . number_format((float)($opp['estimated_value'] ?? 0), 2);
+    $prob = (int)($opp['probability_percent'] ?? 50);
+    $close = htmlspecialchars((string)($opp['expected_close_date'] ?? 'Q4 2026'));
+    $rep = htmlspecialchars((string)($opp['sales_representative'] ?? 'Pavel Orlov'));
+    $isConf = !empty($opp['is_confidential']);
+    $confBadge = $isConf ? '<span class="confidential-pill" style="font-size: 9px; padding: 1px 5px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Confid.</span>' : '';
+
+    return '
+    <div class="kanban-deal-card" draggable="true" data-id="' . $id . '" onclick="window.crmApp && window.crmApp.inspectOpportunity && window.crmApp.inspectOpportunity(\'' . $id . '\')">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+        <span class="card-company-name">' . $client . '</span>
+        ' . $confBadge . '
+      </div>
+      <div class="card-deal-title">' . $title . '</div>
+      <div style="display: flex; align-items: baseline; justify-content: space-between;">
+        <span class="card-value-badge">' . $val . '</span>
+        <span style="font-size: 10px; font-family: var(--crm-font-mono); color: var(--crm-indigo); font-weight: 700;">' . $prob . '% Prob.</span>
+      </div>
+      <div class="card-footer-row">
+        <span class="card-close-date">
+          <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></span>
+          <span>' . $close . '</span>
+        </span>
+        <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=60&auto=format&fit=crop&q=80" alt="' . $rep . '" class="card-rep-avatar" title="Rep: ' . $rep . '" />
+      </div>
+    </div>';
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -11,7 +107,10 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>VOSTOKPRIBOR CRM · Opportunities Kanban Board</title>
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/style.css?v=<?= time() ?>">
+  <script>
+    window.INITIAL_DB_OPPORTUNITIES = <?= json_encode($dbOpps, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) ?>;
+  </script>
 </head>
 
 <body>
@@ -185,6 +284,20 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
               </div>
               <span class="sidebar-badge badge-green">+14%</span>
             </a>
+          
+            <!-- Inter-System Integrations (SYS02) -->
+            <a href="Integrations.php" class="sidebar-nav-item">
+              <div class="sidebar-item-left">
+                <span class="sidebar-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00E5FF" stroke-width="2">
+                    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+                    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+                  </svg>
+                </span>
+                <span class="crm-nav-integrations" style="color: #00E5FF; font-weight: 600;">System Integrations</span>
+              </div>
+              <span class="sidebar-badge crm-badge-integrations" style="background: rgba(0, 229, 255, 0.15); color: #00E5FF; border: 1px solid rgba(0, 229, 255, 0.3);">SYS02</span>
+            </a>
           </nav>
         </div>
 
@@ -204,7 +317,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
             </div>
             <span class="sidebar-badge crm-text-xs" >SYS 01</span>
           </a>
-          <a href="../Employee Intranet/index.php" class="sidebar-nav-item">
+          <a href="../Employee Intranet/login.php" class="sidebar-nav-item">
             <div class="sidebar-item-left">
               <span class="sidebar-icon">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -274,11 +387,17 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
               <div class="kanban-col-header col-header-1">
                 <span class="kanban-col-title">1. Qualification</span>
                 <div class="kanban-col-metrics">
-                  <span class="kanban-col-count" id="col-count-qualification">2</span>
-                  <span class="crm-font-bold" id="col-val-qualification" >$4.75M</span>
+                  <span class="kanban-col-count" id="col-count-qualification"><?= count($oppsByStage['qualification']) ?></span>
+                  <span class="crm-font-bold" id="col-val-qualification"><?= formatCrmValue($stageTotals['qualification']) ?></span>
                 </div>
               </div>
-              <div class="kanban-cards-wrapper" id="kanban-cards-qualification"></div>
+              <div class="kanban-cards-wrapper" id="kanban-cards-qualification">
+                <?php if (empty($oppsByStage['qualification'])): ?>
+                  <div class="kanban-empty-part" style="padding: 24px 10px; text-align: center; color: #8892b0; font-size: 12px; font-weight: 500; font-style: italic; border: 1px dashed rgba(255,255,255,0.15); border-radius: 6px; margin: 8px 4px;">( There's no Opportunities in the moment )</div>
+                <?php else: ?>
+                  <?php foreach ($oppsByStage['qualification'] as $o) echo renderKanbanCardPhp($o); ?>
+                <?php endif; ?>
+              </div>
             </div>
 
             <!-- Column 2: Proposal -->
@@ -286,11 +405,17 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
               <div class="kanban-col-header col-header-2">
                 <span class="kanban-col-title">2. Proposal / Spec</span>
                 <div class="kanban-col-metrics">
-                  <span class="kanban-col-count" id="col-count-proposal">2</span>
-                  <span class="crm-font-bold" id="col-val-proposal" >$1.33M</span>
+                  <span class="kanban-col-count" id="col-count-proposal"><?= count($oppsByStage['proposal']) ?></span>
+                  <span class="crm-font-bold" id="col-val-proposal"><?= formatCrmValue($stageTotals['proposal']) ?></span>
                 </div>
               </div>
-              <div class="kanban-cards-wrapper" id="kanban-cards-proposal"></div>
+              <div class="kanban-cards-wrapper" id="kanban-cards-proposal">
+                <?php if (empty($oppsByStage['proposal'])): ?>
+                  <div class="kanban-empty-part" style="padding: 24px 10px; text-align: center; color: #8892b0; font-size: 12px; font-weight: 500; font-style: italic; border: 1px dashed rgba(255,255,255,0.15); border-radius: 6px; margin: 8px 4px;">( There's no Opportunities in the moment )</div>
+                <?php else: ?>
+                  <?php foreach ($oppsByStage['proposal'] as $o) echo renderKanbanCardPhp($o); ?>
+                <?php endif; ?>
+              </div>
             </div>
 
             <!-- Column 3: Negotiation -->
@@ -298,11 +423,17 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
               <div class="kanban-col-header col-header-3">
                 <span class="kanban-col-title">3. Negotiation</span>
                 <div class="kanban-col-metrics">
-                  <span class="kanban-col-count" id="col-count-negotiation">2</span>
-                  <span class="crm-font-bold" id="col-val-negotiation" >$4.25M</span>
+                  <span class="kanban-col-count" id="col-count-negotiation"><?= count($oppsByStage['negotiation']) ?></span>
+                  <span class="crm-font-bold" id="col-val-negotiation"><?= formatCrmValue($stageTotals['negotiation']) ?></span>
                 </div>
               </div>
-              <div class="kanban-cards-wrapper" id="kanban-cards-negotiation"></div>
+              <div class="kanban-cards-wrapper" id="kanban-cards-negotiation">
+                <?php if (empty($oppsByStage['negotiation'])): ?>
+                  <div class="kanban-empty-part" style="padding: 24px 10px; text-align: center; color: #8892b0; font-size: 12px; font-weight: 500; font-style: italic; border: 1px dashed rgba(255,255,255,0.15); border-radius: 6px; margin: 8px 4px;">( There's no Opportunities in the moment )</div>
+                <?php else: ?>
+                  <?php foreach ($oppsByStage['negotiation'] as $o) echo renderKanbanCardPhp($o); ?>
+                <?php endif; ?>
+              </div>
             </div>
 
             <!-- Column 4: Contract -->
@@ -310,11 +441,17 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
               <div class="kanban-col-header col-header-4">
                 <span class="kanban-col-title">4. Contract Review</span>
                 <div class="kanban-col-metrics">
-                  <span class="kanban-col-count" id="col-count-contract">1</span>
-                  <span class="crm-font-bold" id="col-val-contract" >$640K</span>
+                  <span class="kanban-col-count" id="col-count-contract"><?= count($oppsByStage['contract']) ?></span>
+                  <span class="crm-font-bold" id="col-val-contract"><?= formatCrmValue($stageTotals['contract']) ?></span>
                 </div>
               </div>
-              <div class="kanban-cards-wrapper" id="kanban-cards-contract"></div>
+              <div class="kanban-cards-wrapper" id="kanban-cards-contract">
+                <?php if (empty($oppsByStage['contract'])): ?>
+                  <div class="kanban-empty-part" style="padding: 24px 10px; text-align: center; color: #8892b0; font-size: 12px; font-weight: 500; font-style: italic; border: 1px dashed rgba(255,255,255,0.15); border-radius: 6px; margin: 8px 4px;">( There's no Opportunities in the moment )</div>
+                <?php else: ?>
+                  <?php foreach ($oppsByStage['contract'] as $o) echo renderKanbanCardPhp($o); ?>
+                <?php endif; ?>
+              </div>
             </div>
 
             <!-- Column 5: Won/Lost -->
@@ -322,11 +459,17 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
               <div class="kanban-col-header col-header-5">
                 <span class="kanban-col-title">5. Won / Finalized</span>
                 <div class="kanban-col-metrics">
-                  <span class="kanban-col-count" id="col-count-won">2</span>
-                  <span class="crm-font-bold" id="col-val-won" >$814K</span>
+                  <span class="kanban-col-count" id="col-count-won"><?= count($oppsByStage['won']) ?></span>
+                  <span class="crm-font-bold" id="col-val-won"><?= formatCrmValue($stageTotals['won']) ?></span>
                 </div>
               </div>
-              <div class="kanban-cards-wrapper" id="kanban-cards-won"></div>
+              <div class="kanban-cards-wrapper" id="kanban-cards-won">
+                <?php if (empty($oppsByStage['won'])): ?>
+                  <div class="kanban-empty-part" style="padding: 24px 10px; text-align: center; color: #8892b0; font-size: 12px; font-weight: 500; font-style: italic; border: 1px dashed rgba(255,255,255,0.15); border-radius: 6px; margin: 8px 4px;">( There's no Opportunities in the moment )</div>
+                <?php else: ?>
+                  <?php foreach ($oppsByStage['won'] as $o) echo renderKanbanCardPhp($o); ?>
+                <?php endif; ?>
+              </div>
             </div>
           </div>
         </div>
@@ -451,11 +594,11 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
   </div>
 
   <div id="toast-container"></div>
-  <script src="js/app.js"></script>
+  <script src="js/app.js?v=<?= time() ?>"></script>
   <link rel="stylesheet" href="../assets/css/api-ui.css">
   <script src="../assets/js/api-core.js"></script>
   <script src="../assets/js/api-crm.js"></script>
-  <script src="js/crm-data.js"></script>
+  <script src="js/crm-data.js?v=<?= time() ?>"></script>
   <script src="../assets/js/notifications-hub.js" defer></script>
 </body>
 

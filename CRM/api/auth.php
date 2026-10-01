@@ -92,7 +92,12 @@ $userSessionData = [
     'login_time'        => date('Y-m-d H:i:s'),
 ];
 
-$_SESSION['vostok_authenticated']         = true;
+foreach (array_keys($_SESSION) as $sessKey) {
+    if (str_starts_with($sessKey, 'vostok_system_')) {
+        unset($_SESSION[$sessKey]);
+    }
+}
+$_SESSION['vostok_authenticated'] = true;
 $_SESSION['vostok_system_' . SYSTEM_ID]   = true;
 $_SESSION['vostok_current_system']        = SYSTEM_ID;
 $_SESSION['vostok_user']                  = $userSessionData;

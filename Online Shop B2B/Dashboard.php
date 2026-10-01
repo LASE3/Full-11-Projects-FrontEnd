@@ -43,7 +43,7 @@ if ($cusId) {
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 
   <!-- Consolidated Stylesheet (Strict System Tokens & UI Components) -->
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/style.css?v=<?= time() ?>">
 </head>
 
 <body>
@@ -133,14 +133,14 @@ if ($cusId) {
       </div>
 
       <!-- Top Bar Sign Out -->
-      <a href="./api/logout.php?redirect=../Online%20Shop%20B2B/login.php" class="top-signout-btn" title="Sign Out of Online Shop B2B" onclick="(function(){sessionStorage.clear();localStorage.clear();})()"><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
+      <a href="./api/logout.php?redirect=../login.php" class="top-signout-btn" title="Sign Out of Online Shop B2B" onclick="(function(){sessionStorage.clear();localStorage.clear();})()"><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
     </div>
   </header>
 
   <!-- ========================================================================
        LEFT SIDEBAR NAVIGATION (Hover-to-Open & Hover-to-Close)
        ======================================================================== -->
-  <aside class="sidebar b2b-sidebar" id="b2b-sidebar">
+  <aside class="sidebar b2b-sidebar" id="b2b-sidebar" style="background-color: #0f2438 !important; border-right: 1px solid rgba(255, 255, 255, 0.1) !important;">
     <div class="sidebar-section-title">E-Commerce Navigation</div>
     <nav class="sidebar-nav">
       <a class="sidebar-nav-item active" data-screen="catalog" onclick="window.shopApp.navigateTo('catalog')">
@@ -184,7 +184,7 @@ if ($cusId) {
     <div class="sidebar-footer">
       <div class="b2b-account-badge" style="background:rgba(255,255,255,0.05); padding:10px; border-radius:8px; border:1px solid rgba(255,255,255,0.1);">
         <div style="font-size:10px; font-family:'JetBrains Mono',monospace; color:#94a3b8; text-transform:uppercase;">Account Mode</div>
-        <div style="font-size:12px; font-weight:600; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" id="sidebar-customer-name"><?= htmlspecialchars($customer['company_name'] ?? 'Enterprise Account') ?></div>
+        <div style="font-size:12px; font-weight:600; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" id="sidebar-customer-name"><?= htmlspecialchars($customer['company_name'] ?? ($_SESSION['vostok_user']['full_name'] ?? 'Enterprise Account')) ?></div>
       </div>
     </div>
   </aside>
@@ -689,13 +689,13 @@ if ($cusId) {
     <div class="drawer-footer">
       <div class="shop-summary-row">
         <span class="shop-summary-label">Net Subtotal (excl. VAT):</span>
-        <span class="price-value shop-price-cart-subtotal" id="cart-subtotal">€19,300</span>
+        <span class="price-value shop-price-cart-subtotal" id="cart-subtotal">€0.00</span>
       </div>
 
       <div
         class="shop-summary-row-total">
         <span class="shop-summary-label-total">Total Purchase Commitment:</span>
-        <span class="price-unit-large shop-price-cart-total" id="cart-total">€19,300</span>
+        <span class="price-unit-large shop-price-cart-total" id="cart-total">€0.00</span>
       </div>
 
       <button class="btn-primary-amber shop-btn-modal-action" onclick="window.shopApp.submitDirectPO()">
@@ -728,14 +728,14 @@ if ($cusId) {
         <a href="javascript:void(0)" onclick="window.shopApp.navigateTo('tracking')">Order Tracking</a>
         <a href="../VOSTOKPRIBOR Corporate Web Platform/index.php">Corporate (Sys 01)</a>
         <a href="../Customer Portal/Dashboard.php">Customer Portal (Sys 03)</a>
-        <a href="../Employee Intranet/index.php">Intranet (Sys 04)</a>
+        <a href="../Employee Intranet/login.php">Intranet (Sys 04)</a>
         <a href="../CRM/index.php">CRM (Sys 05)</a>
-        <a href="../HR System/index.php">HR (Sys 06)</a>
-        <a href="../Finance & Billing/index.php">Finance (Sys 07)</a>
-        <a href="../IT Helpdesk/index.php">Helpdesk (Sys 08)</a>
-        <a href="../File Center/index.php">File Center (Sys 09)</a>
-        <a href="../Developer/index.php">Developer (Sys 10)</a>
-        <a href="../Admin & Governance Portal/index.php">Admin (Sys 11)</a>
+        <a href="../HR System/login.php">HR (Sys 06)</a>
+        <a href="../Finance & Billing/login.php">Finance (Sys 07)</a>
+        <a href="../IT Helpdesk/login.php">Helpdesk (Sys 08)</a>
+        <a href="../File Center/login.php">File Center (Sys 09)</a>
+        <a href="../Developer/login.php">Developer (Sys 10)</a>
+        <a href="../Admin & Governance Portal/login.php">Admin (Sys 11)</a>
         <a href="javascript:void(0)"
           onclick="window.shopApp.downloadDoc('DOC-2026-009', 'Full Catalog PDF')">DOC-2026-009</a>
       </div>
@@ -743,12 +743,23 @@ if ($cusId) {
   </footer>
 
   <!-- Consolidated JavaScript Application -->
-  <script src="js/app.js"></script>
+  <script src="js/app.js?v=<?= time() ?>"></script>
   <link rel="stylesheet" href="../assets/css/api-ui.css">
   <script src="../assets/js/api-core.js"></script>
   <script src="../assets/js/api-shop.js"></script>
-  <script src="js/shop-data.js"></script>
+  <script src="js/shop-data.js?v=<?= time() ?>"></script>
   <script src="../assets/js/notifications-hub.js" defer></script>
+  <script>
+    // Ensure cart starts strictly empty on login
+    document.addEventListener("DOMContentLoaded", function () {
+      const hcb = document.getElementById("header-cart-badge");
+      if (hcb) hcb.textContent = "0";
+      const csub = document.getElementById("cart-subtotal");
+      if (csub) csub.textContent = "€0.00";
+      const ctot = document.getElementById("cart-total");
+      if (ctot) ctot.textContent = "€0.00";
+    });
+  </script>
 </body>
 
 </html>

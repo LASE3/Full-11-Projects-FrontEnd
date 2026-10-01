@@ -1,4 +1,5 @@
 <?php
+$currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Super Administrator', 'clearance_level' => 'L4', 'role_name' => 'System Architect'];
 require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/../includes/auth_guard.php';
 requireAuth('DEV');
@@ -31,7 +32,7 @@ $keyQuotas = $pdo->query("SELECT * FROM `developer_api_keys` ORDER BY `id` ASC L
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>Telemetry &amp; Usage Metrics - VOSTOKPRIBOR Developer Portal</title>
     <link rel="stylesheet" href="css/dev-tokens.css" />
-    <link rel="stylesheet" href="css/dev-common.css" />
+    <link rel="stylesheet" href="css/dev-common.css?v=<?= time() ?>" />
     <link rel="stylesheet" href="css/dev-metrics.css" />
 </head>
 
@@ -85,7 +86,7 @@ $keyQuotas = $pdo->query("SELECT * FROM `developer_api_keys` ORDER BY `id` ASC L
     </header>
 
     <!-- LEFT SIDEBAR -->
-    <aside class="vk-sidebar">
+    <aside class="vk-sidebar" style="background-color: #0f2438 !important; border-right: 1px solid rgba(255, 255, 255, 0.1) !important; scrollbar-width: none !important; -ms-overflow-style: none !important;">
         <div class="vk-sidebar-nav">
             <div class="vk-sidebar-header">Core Documentation</div>
             <a class="vk-nav-item" href="Dashboard.php">
@@ -129,6 +130,12 @@ $keyQuotas = $pdo->query("SELECT * FROM `developer_api_keys` ORDER BY `id` ASC L
                 </div>
             </a>
 
+                        <a href="Integrations.php" class="sidebar-nav-item">
+                <div class="sidebar-item-left"><span class="sidebar-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00E5FF" stroke-width="2">
+                            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+                            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+                        </svg></span><span class="dev-color-00e5ff-font-weight-fe7a" style="color:#00E5FF; font-weight:600;">System Integrations</span></div><span class="sidebar-badge" style="background:rgba(0, 229, 255, 0.15); color:#00E5FF; border:1px solid rgba(0, 229, 255, 0.3); font-size:9px; padding:2px 6px; border-radius:4px;">SYS04</span>
+            </a>
             <div class="vk-sidebar-header dev-mt-16">Unified Ecosystem</div>
             <a class="vk-nav-item" href="../VOSTOKPRIBOR Corporate Web Platform/index.php">
                 <div class="dev-flex-center-gap-10" >
@@ -137,21 +144,21 @@ $keyQuotas = $pdo->query("SELECT * FROM `developer_api_keys` ORDER BY `id` ASC L
                 </div>
                 <span class="vk-tag dev-font-size-9px-background-21b8">SYS-01</span>
             </a>
-            <a class="vk-nav-item" href="../Employee Intranet/index.php">
+            <a class="vk-nav-item" href="../Employee Intranet/login.php">
                 <div class="dev-flex-center-gap-10" >
                     <span class="material-symbols-outlined text-[18px] dev-color-5c7290-b50c">badge</span>
                     <span>Employee Intranet</span>
                 </div>
                 <span class="vk-tag dev-font-size-9px-background-cfa1">SYS-04</span>
             </a>
-            <a class="vk-nav-item" href="../File Center/index.php">
+            <a class="vk-nav-item" href="../File Center/login.php">
                 <div class="dev-flex-center-gap-10" >
                     <span class="material-symbols-outlined text-[18px] dev-color-5a6470-9f56">folder_zip</span>
                     <span>File Center</span>
                 </div>
                 <span class="vk-tag dev-font-size-9px-background-7efe">SYS-09</span>
             </a>
-            <a class="vk-nav-item" href="../Admin & Governance Portal/index.php">
+            <a class="vk-nav-item" href="../Admin & Governance Portal/login.php">
                 <div class="dev-flex-center-gap-10" >
                     <span class="material-symbols-outlined text-[18px] dev-color-alert">shield</span>
                     <span>Admin &amp; Governance</span>
@@ -477,7 +484,7 @@ $keyQuotas = $pdo->query("SELECT * FROM `developer_api_keys` ORDER BY `id` ASC L
                     <span class="dev-text-slate-400" >IEC 62443-4-2 Industrial Security</span>
                     <span class="dev-text-slate-400" >ISO 27001 Certified Gateway</span>
                     <span class="dev-text-slate-400" >mTLS Ed25519 Partner Clearance</span>
-                    <a class="dev-color-var-vk-alert-7bac" href="../Admin & Governance Portal/index.php" >Admin Governance Enclave</a>
+                    <a class="dev-color-var-vk-alert-7bac" href="../Admin & Governance Portal/login.php" >Admin Governance Enclave</a>
                 </div>
             </div>
 

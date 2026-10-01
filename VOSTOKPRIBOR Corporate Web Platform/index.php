@@ -99,7 +99,7 @@
                                 <span
                                     class="ecosystem-badge bg-blue-900/60 text-blue-300 border border-blue-500/30">Public</span>
                             </a>
-                            <a href="../Online Shop B2B/index.php" class="ecosystem-item border-l-[#0E7C86]">
+                            <a href="../Online Shop B2B/login.php" class="ecosystem-item border-l-[#0E7C86]">
                                 <span class="material-symbols-outlined text-sm text-teal-400">shopping_cart</span>
                                 <div class="flex-1">
                                     <div class="text-xs font-semibold text-slate-200">02. B2B Online Shop</div>
@@ -108,7 +108,7 @@
                                 <span
                                     class="ecosystem-badge bg-teal-900/60 text-teal-300 border border-teal-500/30">Public</span>
                             </a>
-                            <a href="../Customer Portal/Dashboard.php" class="ecosystem-item border-l-[#E8A33D]">
+                            <a href="../Customer Portal/login.php" class="ecosystem-item border-l-[#E8A33D]">
                                 <span class="material-symbols-outlined text-sm text-amber-400">space_dashboard</span>
                                 <div class="flex-1">
                                     <div class="text-xs font-semibold text-slate-200">03. Customer Portal</div>
@@ -117,7 +117,7 @@
                                 <span
                                     class="ecosystem-badge bg-amber-900/60 text-amber-300 border border-amber-500/30">Auth</span>
                             </a>
-                            <a href="../Employee Intranet/index.php" class="ecosystem-item border-l-[#5C7290]">
+                            <a href="../Employee Intranet/login.php" class="ecosystem-item border-l-[#5C7290]">
                                 <span class="material-symbols-outlined text-sm text-slate-400">badge</span>
                                 <div class="flex-1">
                                     <div class="text-xs font-semibold text-slate-200">04. Employee Intranet</div>
@@ -126,7 +126,7 @@
                                 <span
                                     class="ecosystem-badge bg-slate-800 text-slate-300 border border-slate-600">Internal</span>
                             </a>
-                            <a href="../CRM/index.php" class="ecosystem-item border-l-[#3B4C8C]">
+                            <a href="../CRM/login.php" class="ecosystem-item border-l-[#3B4C8C]">
                                 <span class="material-symbols-outlined text-sm text-indigo-400">groups</span>
                                 <div class="flex-1">
                                     <div class="text-xs font-semibold text-slate-200">05. CRM Platform</div>
@@ -135,7 +135,7 @@
                                 <span
                                     class="ecosystem-badge bg-indigo-900/60 text-indigo-300 border border-indigo-500/30">Sales</span>
                             </a>
-                            <a href="../HR System/index.php" class="ecosystem-item border-l-[#6E4C7C]">
+                            <a href="../HR System/login.php" class="ecosystem-item border-l-[#6E4C7C]">
                                 <span class="material-symbols-outlined text-sm text-purple-400">person_search</span>
                                 <div class="flex-1">
                                     <div class="text-xs font-semibold text-slate-200">06. Human Resources (HR)</div>
@@ -144,7 +144,7 @@
                                 <span
                                     class="ecosystem-badge bg-purple-900/60 text-purple-300 border border-purple-500/30">HRA</span>
                             </a>
-                            <a href="../Finance & Billing/index.php" class="ecosystem-item border-l-[#2E6E4E]">
+                            <a href="../Finance & Billing/login.php" class="ecosystem-item border-l-[#2E6E4E]">
                                 <span class="material-symbols-outlined text-sm text-emerald-400">receipt_long</span>
                                 <div class="flex-1">
                                     <div class="text-xs font-semibold text-slate-200">07. Finance & Billing</div>
@@ -153,7 +153,7 @@
                                 <span
                                     class="ecosystem-badge bg-emerald-900/60 text-emerald-300 border border-emerald-500/30">Fin</span>
                             </a>
-                            <a href="../IT Helpdesk/index.php" class="ecosystem-item border-l-[#C97A3D]">
+                            <a href="../IT Helpdesk/login.php" class="ecosystem-item border-l-[#C97A3D]">
                                 <span class="material-symbols-outlined text-sm text-orange-400">support_agent</span>
                                 <div class="flex-1">
                                     <div class="text-xs font-semibold text-slate-200">08. IT Helpdesk & Service</div>
@@ -162,7 +162,7 @@
                                 <span
                                     class="ecosystem-badge bg-orange-900/60 text-orange-300 border border-orange-500/30">ITD</span>
                             </a>
-                            <a href="../File Center/index.php" class="ecosystem-item border-l-[#5A6470]">
+                            <a href="../File Center/login.php" class="ecosystem-item border-l-[#5A6470]">
                                 <span class="material-symbols-outlined text-sm text-zinc-400">folder_zip</span>
                                 <div class="flex-1">
                                     <div class="text-xs font-semibold text-slate-200">09. File Center Hub</div>
@@ -171,7 +171,7 @@
                                 <span
                                     class="ecosystem-badge bg-zinc-800 text-zinc-300 border border-zinc-600">Dossier</span>
                             </a>
-                            <a href="../Developer/index.php" class="ecosystem-item border-l-[#1E8FA6]">
+                            <a href="../Developer/login.php" class="ecosystem-item border-l-[#1E8FA6]">
                                 <span class="material-symbols-outlined text-sm text-cyan-400">terminal</span>
                                 <div class="flex-1">
                                     <div class="text-xs font-semibold text-slate-200">10. Developer / API Portal</div>
@@ -180,7 +180,7 @@
                                 <span
                                     class="ecosystem-badge bg-cyan-900/60 text-cyan-300 border border-cyan-500/30">API</span>
                             </a>
-                            <a href="../Admin & Governance Portal/index.php" class="ecosystem-item border-l-[#B23A32]">
+                            <a href="../Admin & Governance Portal/login.php" class="ecosystem-item border-l-[#B23A32]">
                                 <span class="material-symbols-outlined text-sm text-red-400">security</span>
                                 <div class="flex-1">
                                     <div class="text-xs font-semibold text-slate-200">11. Admin & Governance</div>
@@ -220,7 +220,7 @@
                 <a href="#leadership" class="nav-link py-2">Leadership</a>
                 <a href="#network" class="nav-link py-2">Global Hubs</a>
                 <a href="#contact-rfq" class="nav-link py-2">Contact & RFQ</a>
-                <a href="../Customer Portal/Dashboard.php"
+                <a href="../Customer Portal/login.php"
                     class="mt-2 text-center py-2 rounded bg-brand-primary text-white text-xs font-semibold">Access
                     Customer Portal</a>
 
@@ -1192,22 +1192,22 @@
                     <div class="text-xs font-mono font-bold text-teal-400 uppercase tracking-wider mb-4">Ecosystem
                         Portals</div>
                     <ul class="space-y-2.5 text-xs font-mono">
-                        <li><a href="../Customer Portal/Dashboard.php"
+                        <li><a href="../Customer Portal/login.php"
                                 class="hover:text-teal-300 transition-colors flex items-center gap-1.5"><span
                                     class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>Customer Portal</a></li>
-                        <li><a href="../Online Shop B2B/index.php"
+                        <li><a href="../Online Shop B2B/login.php"
                                 class="hover:text-teal-300 transition-colors flex items-center gap-1.5"><span
                                     class="w-1.5 h-1.5 rounded-full bg-teal-400"></span>B2B Online Shop</a></li>
-                        <li><a href="../Developer/index.php"
+                        <li><a href="../Developer/login.php"
                                 class="hover:text-teal-300 transition-colors flex items-center gap-1.5"><span
                                     class="w-1.5 h-1.5 rounded-full bg-cyan-400"></span>Developer / API Hub</a></li>
-                        <li><a href="../Employee Intranet/index.php"
+                        <li><a href="../Employee Intranet/login.php"
                                 class="hover:text-teal-300 transition-colors flex items-center gap-1.5"><span
                                     class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>Employee Intranet</a></li>
-                        <li><a href="../CRM/index.php"
+                        <li><a href="../CRM/login.php"
                                 class="hover:text-teal-300 transition-colors flex items-center gap-1.5"><span
                                     class="w-1.5 h-1.5 rounded-full bg-indigo-400"></span>CRM Platform</a></li>
-                        <li><a href="../Admin & Governance Portal/index.php"
+                        <li><a href="../Admin & Governance Portal/login.php"
                                 class="hover:text-teal-300 transition-colors flex items-center gap-1.5"><span
                                     class="w-1.5 h-1.5 rounded-full bg-red-400"></span>Governance Console</a></li>
                     </ul>

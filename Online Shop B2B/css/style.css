@@ -2614,14 +2614,14 @@ input[type="checkbox"]:checked + .custom-checkbox::after {
    B2B Navigation Sidebar (Hover-to-Open & Hover-to-Close)
    ========================================================================== */
 .b2b-sidebar {
-  background-color: var(--primary-navy);
-  border-right: 1px solid var(--border-dark);
+  background-color: var(--nav-bg, #0f2438) !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: 1.25rem 0;
+  padding: 1rem 0;
   position: fixed;
-  top: 60px;
+  top: 68px;
   bottom: 0;
   left: 0;
   z-index: 900;
@@ -2649,7 +2649,7 @@ input[type="checkbox"]:checked + .custom-checkbox::after {
 .b2b-sidebar .sidebar-nav {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
   padding: 0 0.75rem;
 }
 
@@ -2734,7 +2734,7 @@ input[type="checkbox"]:checked + .custom-checkbox::after {
   .b2b-sidebar .sidebar-item-left {
     display: flex;
     align-items: center;
-    gap: 0;
+    gap: 12px;
     width: 100%;
   }
 
@@ -2757,8 +2757,7 @@ input[type="checkbox"]:checked + .custom-checkbox::after {
     overflow: hidden;
     white-space: nowrap;
     pointer-events: none;
-    margin-left: 0;
-    transition: opacity 0.2s ease, max-width 0.28s cubic-bezier(0.2, 0, 0, 1), margin-left 0.2s ease;
+    transition: opacity 0.2s ease, max-width 0.28s cubic-bezier(0.2, 0, 0, 1);
   }
 
   .b2b-sidebar .sidebar-badge {
@@ -2785,14 +2784,13 @@ input[type="checkbox"]:checked + .custom-checkbox::after {
 
   /* Hover Open */
   .b2b-sidebar:hover .sidebar-item-left {
-    gap: 0.75rem;
+    gap: 12px;
   }
 
   .b2b-sidebar:hover .sidebar-item-left > span:not(.sidebar-icon),
   .b2b-sidebar:hover .sidebar-label {
     opacity: 1;
     max-width: 175px;
-    margin-left: 0.75rem;
     pointer-events: auto;
   }
 

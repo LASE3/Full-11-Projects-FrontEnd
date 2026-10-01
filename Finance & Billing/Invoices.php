@@ -15,27 +15,56 @@ $userTitle = htmlspecialchars($currUser['job_title'] ?? $currUser['role_name'] ?
 $userClearance = htmlspecialchars($currUser['clearance_level'] ?? 'L4');
 
 // Fetch all invoices joined with customer and project records from Database
-$stmt = $pdo->query("
-    SELECT 
-        i.inv_id,
-        i.cus_id,
-        c.company_name,
-        c.primary_contact_name,
-        c.sector,
-        i.prj_id,
-        COALESCE(p.project_name, CONCAT('Project ', i.prj_id)) as project_name,
-        i.total_value,
-        i.currency,
-        i.payment_status,
-        i.issued_at,
-        i.due_date,
-        i.paid_at,
-        i.payment_terms
-    FROM invoices i
-    JOIN customers c ON i.cus_id = c.cus_id
-    LEFT JOIN projects p ON i.prj_id = p.prj_id
-    ORDER BY i.issued_at DESC, i.inv_id DESC
-");
+$userCusId = $currUser['cus_id'] ?? null;
+$isSuperAdmin = in_array($currUser['role_name'] ?? '', ['Super Administrator', 'Chief Financial Controller', 'VP Finance', 'Financial Controller']) || ($currUser['clearance_level'] ?? '') === 'L5' || ($currUser['username'] ?? '') === 'admin';
+
+if ($userCusId && !$isSuperAdmin) {
+    $stmt = $pdo->prepare("
+        SELECT 
+            i.inv_id,
+            i.cus_id,
+            c.company_name,
+            c.primary_contact_name,
+            c.sector,
+            i.prj_id,
+            COALESCE(p.project_name, CONCAT('Project ', i.prj_id)) as project_name,
+            i.total_value,
+            i.currency,
+            i.payment_status,
+            i.issued_at,
+            i.due_date,
+            i.paid_at,
+            i.payment_terms
+        FROM invoices i
+        JOIN customers c ON i.cus_id = c.cus_id
+        LEFT JOIN projects p ON i.prj_id = p.prj_id
+        WHERE i.cus_id = ?
+        ORDER BY i.issued_at DESC, i.inv_id DESC
+    ");
+    $stmt->execute([$userCusId]);
+} else {
+    $stmt = $pdo->query("
+        SELECT 
+            i.inv_id,
+            i.cus_id,
+            c.company_name,
+            c.primary_contact_name,
+            c.sector,
+            i.prj_id,
+            COALESCE(p.project_name, CONCAT('Project ', i.prj_id)) as project_name,
+            i.total_value,
+            i.currency,
+            i.payment_status,
+            i.issued_at,
+            i.due_date,
+            i.paid_at,
+            i.payment_terms
+        FROM invoices i
+        JOIN customers c ON i.cus_id = c.cus_id
+        LEFT JOIN projects p ON i.prj_id = p.prj_id
+        ORDER BY i.issued_at DESC, i.inv_id DESC
+    ");
+}
 $invoices = $stmt->fetchAll();
 
 $totalCount = count($invoices);
@@ -227,7 +256,7 @@ $avgBudgetBurn = (float)$pdo->query("SELECT AVG((spent_amount / NULLIF(allocated
             </div>
             <span class="sidebar-badge fin-text-xs" >SYS 01</span>
           </a>
-          <a href="../Employee Intranet/index.php" class="sidebar-nav-item">
+          <a href="../Employee Intranet/login.php" class="sidebar-nav-item">
             <div class="sidebar-item-left">
               <span class="sidebar-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <rect x="3" y="3" width="7" height="7" />

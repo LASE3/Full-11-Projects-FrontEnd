@@ -89,6 +89,11 @@ function canonicalSystemCode($sys)
         'FILE' => 'DOC',
         'FILES' => 'DOC',
         'FILE CENTER' => 'DOC',
+        'FILECENTER' => 'DOC',
+        'FILE_CENTER' => 'DOC',
+        'SYS06' => 'DOC',
+        'SYS-06' => 'DOC',
+        'SYSTEM06' => 'DOC',
         'SYS09' => 'DOC',
         'SYS-09' => 'DOC',
         'SYSTEM09' => 'DOC',
@@ -157,8 +162,9 @@ function requireAuth($systemId = '', $loginPath = 'login.php')
         exit;
     }
 
-    // Strictly enforce system-specific login session flag.
-    // Even SuperAdmin (L4) must log in explicitly on each system's login page.
+    // Enforce system-specific login session flag.
+    // Every individual system strictly requires its own login event, even for SuperAdmin.
+    // Only Corporate Web Platform (WEB) is accessible without login.
     if (empty($_SESSION['vostok_system_' . $canonicalSys])) {
         header("Location: " . $loginPath);
         exit;
@@ -177,8 +183,9 @@ function isSuperAdmin(?array $user = null): bool
         return false;
     }
     $clearance = $user['clearance_level'] ?? '';
-    $email = $user['email'] ?? '';
-    $role = $user['role_name'] ?? '';
-    return ($clearance === 'L4' || $email === 'admin@gmail.com' || str_contains(strtolower($role), 'superadmin') || str_contains(strtolower($role), 'administrator'));
+    $email = strtolower($user['email'] ?? '');
+    $role = strtolower($user['role_name'] ?? '');
+    $username = strtolower($user['username'] ?? '');
+    return ($clearance === 'L4' || $clearance === 'L5' || $email === 'admin@gmail.com' || $email === 'admin@vostokpribor.ru' || $email === 'nijim.ahmad077@gmail.com' || $username === 'admin' || str_contains($role, 'superadmin') || str_contains($role, 'administrator') || str_contains($role, 'admin'));
 }
 

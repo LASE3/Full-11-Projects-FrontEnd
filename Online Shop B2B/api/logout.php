@@ -41,6 +41,9 @@ if ($isJson) {
     exit;
 }
 
-$redirect = $_GET['redirect'] ?? '../Online Shop B2B/login.php';
+$redirect = $_GET['redirect'] ?? '../login.php';
+if (str_contains($redirect, 'Online Shop B2B') || str_contains($redirect, 'Online%20Shop%20B2B')) {
+    $redirect = '../login.php';
+}
 header('Location: ' . $redirect);
 exit;

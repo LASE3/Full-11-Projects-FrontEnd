@@ -1,9 +1,25 @@
 <?php
-require_once __DIR__ . '/../config/db.php';
-require_once __DIR__ . '/../includes/auth_guard.php';
-requireAuth('Customer');
-$pdo = getDbConnection();
-$currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clearance_level' => 'L2'];
+require_once __DIR__ . '/customer_context.php';
+
+// Financial events from MariaDB
+$finStmt = $pdo->prepare("SELECT i.inv_id, i.total_value, i.currency, i.payment_status, i.issued_at, p.project_name FROM invoices i LEFT JOIN projects p ON i.prj_id = p.prj_id WHERE " . ($isSuperAdmin ? "1=1" : "i.cus_id = :cid") . " ORDER BY i.issued_at DESC, i.inv_id DESC LIMIT 4");
+if (!$isSuperAdmin) { $finStmt->bindValue(':cid', $cusId); }
+$finStmt->execute();
+$finEvents = $finStmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Project events from MariaDB
+$prjFeedStmt = $pdo->prepare("SELECT p.prj_id, p.project_name, p.status, p.budget, p.currency, p.start_date FROM projects p WHERE " . ($isSuperAdmin ? "1=1" : "p.cus_id = :cid") . " ORDER BY p.prj_id DESC LIMIT 4");
+if (!$isSuperAdmin) { $prjFeedStmt->bindValue(':cid', $cusId); }
+$prjFeedStmt->execute();
+$prjEvents = $prjFeedStmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Field service events from MariaDB
+$tktFeedStmt = $pdo->prepare("SELECT t.tkt_id, t.title, t.priority, t.status, t.created_at, e.full_name AS tech_name FROM tickets t LEFT JOIN employees e ON t.assigned_emp_id = e.emp_id WHERE " . ($isSuperAdmin ? "1=1" : "t.requester_cus_id = :cid") . " ORDER BY t.created_at DESC LIMIT 4");
+if (!$isSuperAdmin) { $tktFeedStmt->bindValue(':cid', $cusId); }
+$tktFeedStmt->execute();
+$tktEvents = $tktFeedStmt->fetchAll(PDO::FETCH_ASSOC);
+
+$totalFeedEvents = count($finEvents) + count($prjEvents) + count($tktEvents);
 ?>
 <!DOCTYPE html>
 
@@ -51,8 +67,8 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
                 </div>
                 <div
                     class="flex items-center gap-unit-xs text-on-primary-container font-technical-tag text-technical-tag">
-                    <span>Severstal Metallurgy Plant #4</span><span class="text-outline">|</span><span
-                        class="text-primary-fixed-dim">VP-88204-EU</span>
+                    <span class="truncate max-w-[200px]"><?= htmlspecialchars($customer['company_name'] ?? 'Authorized Client') ?></span><span class="text-outline">|</span><span
+                        class="text-primary-fixed-dim font-mono"><?= htmlspecialchars($customer['tax_id'] ?? 'VP-88204-EU') ?></span>
                 </div>
             </div>
         </div>
@@ -78,14 +94,13 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
             </div><a class="flex items-center text-on-primary-container hover:text-on-primary" href="Documents.php"
                 title="Technical Documentation"><span class="material-symbols-outlined">menu_book</span></a>
             <div class="h-6 w-px bg-outline/30"></div>
-            <div class="flex items-center gap-unit-sm cursor-pointer" id="header-profile-btn">
+            <div class="flex items-center gap-unit-sm cursor-pointer" id="header-profile-btn" onclick="location.href='AccountSettings.php'">
                 <div class="flex flex-col text-right"><span
-                        class="font-headline-sm text-headline-sm text-on-primary font-medium leading-none">Alexey R.
-                        Danilov</span><span
-                        class="font-technical-tag text-technical-tag text-on-primary-container mt-0.5">Chief
-                        Instrumentation Eng.</span></div><img alt="Profile"
-                    class="w-8 h-8 rounded-full object-cover ring-1 ring-tertiary-fixed/50"
-                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuBxrM-O7aJYHYCDtkoA3WwbiOe6BxJ0vK7AcnogxwZN9MACsknTlpyGKyy-lWl2Hwn9IEZLPDCvVGrmxN2kvPEfzbJ5E4u5x6-38EP2exwXW8Dmm-7oMTzMG07_rmRLbT0xvZwQMFEwa4qJO5LcWbn58eWx3fSkVjAmSI3UWO8dCTgRg6GBgrY_MTUl-JF-JUf4K5CGPp0o4tvKoxbSqSysGT8r3j8de3w_sfk4F8p9ysiXXfbUkWPV" />
+                        class="font-headline-sm text-headline-sm text-on-primary font-medium leading-none"><?= htmlspecialchars($currUser['full_name'] ?? 'Authorized User') ?></span><span
+                        class="font-technical-tag text-technical-tag text-on-primary-container mt-0.5"><?= htmlspecialchars($currUser['role_name'] ?? ($currUser['clearance_level'] ?? 'L2')) ?></span></div>
+                <div class="w-8 h-8 rounded-full bg-tertiary-fixed/20 text-tertiary-fixed border border-tertiary-fixed/50 flex items-center justify-center font-bold text-xs">
+                    <?= htmlspecialchars(mb_substr($currUser['full_name'] ?? 'VP', 0, 2)) ?>
+                </div>
             </div>
 
             <!-- Top Bar Sign Out -->
@@ -211,31 +226,29 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
                         </nav>
                         <div class="flex flex-wrap items-baseline gap-x-unit-md gap-y-unit-xs">
                             <h1 class="font-headline-lg text-headline-lg text-primary tracking-tight font-bold">Welcome
-                                back, Severstal Engineering Division</h1>
+                                back, <?= htmlspecialchars($currUser['full_name'] ?? 'Client Representative') ?></h1>
                             <span
                                 class="font-technical-tag text-technical-tag bg-surface-container-high text-primary px-unit-xs py-0.5 rounded">SYS-AUTH
-                                // PROD-STATION 04</span>
+                                // <?= htmlspecialchars($currUser['clearance_level'] ?? 'L2') ?></span>
                         </div>
                         <p class="font-body-sm text-body-sm text-on-surface-variant max-w-4xl">
                             Client Account <span
-                                class="font-data-mono-md text-data-mono-md text-on-surface font-medium">#VP-90214</span>
-                            • Primary Facility: <span class="font-medium text-on-surface">Cherepovets Hot Rolling Mill
-                                #2</span> • Assigned Lead: <span class="font-medium text-on-surface">Viktor
-                                Morozov</span> (Senior Lead Systems Engineer, ext. 4410 • <a
+                                class="font-data-mono-md text-data-mono-md text-on-surface font-medium">#<?= htmlspecialchars($cusId) ?></span>
+                            • Facility: <span class="font-medium text-on-surface"><?= htmlspecialchars($customer['company_name'] ?? 'Industrial Operations') ?></span> • Primary Contact: <span class="font-medium text-on-surface"><?= htmlspecialchars($customer['primary_contact_name'] ?? 'Engineering Team') ?></span> (<a
                                 class="text-secondary hover:underline"
-                                href="mailto:direct.contact@vostokpribor.com">direct.contact@vostokpribor.com</a>)
+                                href="mailto:<?= htmlspecialchars($customer['primary_contact_email'] ?? 'direct.contact@vostokpribor.com') ?>"><?= htmlspecialchars($customer['primary_contact_email'] ?? 'direct.contact@vostokpribor.com') ?></a>)
                         </p>
                     </div>
                     <div class="flex items-center gap-unit-sm shrink-0">
                         <button
-                            class="inline-flex items-center gap-unit-xs px-unit-md py-2 bg-surface-container-lowest text-primary text-body-sm font-body-sm font-medium rounded shadow-sm hover:bg-surface-container transition-colors"
-                            onclick="window.showToast('Telemetry PDF Compiled', 'Plant #4 operational dossier exported successfully.', 'success')"
+                            class="inline-flex items-center gap-unit-xs px-unit-md py-2 bg-surface-container-lowest text-primary text-body-sm font-body-sm font-medium rounded shadow-sm hover:bg-surface-container transition-colors cursor-pointer"
+                            onclick="window.showToast('Telemetry PDF Compiled', 'Facility operational dossier exported successfully.', 'success')"
                             type="button">
                             <span class="material-symbols-outlined text-lg text-secondary">file_download</span>
                             <span>Export Telemetry PDF</span>
                         </button>
                         <button
-                            class="inline-flex items-center gap-unit-xs px-unit-md py-2 bg-tertiary-fixed text-primary-container text-body-sm font-body-sm font-semibold rounded shadow-sm hover:bg-tertiary-fixed-dim transition-colors"
+                            class="inline-flex items-center gap-unit-xs px-unit-md py-2 bg-tertiary-fixed text-primary-container text-body-sm font-body-sm font-semibold rounded shadow-sm hover:bg-tertiary-fixed-dim transition-colors cursor-pointer"
                             onclick="window.showDispatchModal()"
                             type="button">
                             <span class="material-symbols-outlined text-lg text-primary-container">local_shipping</span>
@@ -253,14 +266,14 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
                                     class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider">Active
                                     Projects</span>
                                 <span
-                                    class="font-display-lg text-display-lg text-primary font-bold tracking-tight mt-unit-xs" id="kpi-active-projects">14</span>
+                                    class="font-display-lg text-display-lg text-primary font-bold tracking-tight mt-unit-xs" id="kpi-active-projects"><?= $badgeProjects ?></span>
                             </div>
                             <div class="p-2 rounded bg-primary-container text-inverse-primary group-hover:scale-105 transition-transform">
                                 <span class="material-symbols-outlined text-xl">precision_manufacturing</span>
                             </div>
                         </div>
                         <div class="flex items-center justify-between pt-unit-md mt-unit-sm">
-                            <span class="font-body-sm text-body-sm text-on-surface-variant" id="kpi-active-projects-sub">3 on-site integration, 2 in staging</span>
+                            <span class="font-body-sm text-body-sm text-on-surface-variant" id="kpi-active-projects-sub"><?= $badgeProjects ?> engineering scopes active</span>
                             <span
                                 class="inline-flex items-center gap-1 font-technical-tag text-technical-tag font-semibold text-primary px-1.5 py-0.5 rounded bg-surface-container-high">
                                 <span class="material-symbols-outlined text-xs">trending_up</span>Live
@@ -273,10 +286,10 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
                         <div class="flex items-start justify-between pl-unit-xs">
                             <div class="flex flex-col">
                                 <span
-                                    class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider">Pending
+                                    class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider">Total
                                     Invoices</span>
                                 <span
-                                    class="font-display-lg text-display-lg text-primary font-bold tracking-tight mt-unit-xs" id="kpi-open-invoices">3</span>
+                                    class="font-display-lg text-display-lg text-primary font-bold tracking-tight mt-unit-xs" id="kpi-open-invoices"><?= $badgeInvoices ?></span>
                             </div>
                             <div class="p-2 rounded bg-tertiary-container text-tertiary-fixed group-hover:scale-105 transition-transform">
                                 <span class="material-symbols-outlined text-xl">payments</span>
@@ -284,33 +297,33 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
                         </div>
                         <div class="flex items-center justify-between pt-unit-md mt-unit-sm pl-unit-xs">
                             <span
-                                class="font-data-mono-md text-data-mono-md text-on-surface-variant font-medium" id="kpi-open-invoices-sub">$248,600.00 USD total</span>
+                                class="font-data-mono-md text-data-mono-md text-on-surface-variant font-medium" id="kpi-open-invoices-sub"><?= $badgeInvoices ?> commercial invoices</span>
                             <span
                                 class="font-technical-tag text-technical-tag font-semibold text-on-tertiary-fixed-variant bg-tertiary-fixed/30 px-1.5 py-0.5 rounded">
                                 Financial
                             </span>
                         </div>
                     </a>
-                    <a href="SupportTicketView.php?ticket=TCK-9482"
+                    <a href="SupportTicketView.php"
                         class="flex flex-col justify-between p-unit-base bg-surface-container-lowest rounded-xl shadow-sm relative overflow-hidden group hover:-translate-y-0.5 hover:shadow-md transition-all">
                         <div class="absolute top-0 left-0 right-0 h-1 bg-error group-hover:h-1.5 transition-all"></div>
                         <div class="flex items-start justify-between">
                             <div class="flex flex-col">
                                 <span
-                                    class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider">Open
-                                    Support Tickets</span>
+                                    class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider">Support
+                                    Tickets</span>
                                 <span
-                                    class="font-display-lg text-display-lg text-primary font-bold tracking-tight mt-unit-xs" id="kpi-open-tickets">1</span>
+                                    class="font-display-lg text-display-lg text-primary font-bold tracking-tight mt-unit-xs" id="kpi-open-tickets"><?= $badgeTickets ?></span>
                             </div>
                             <div class="p-2 rounded bg-surface-container text-on-surface group-hover:scale-105 transition-transform">
                                 <span class="material-symbols-outlined text-xl">headset_mic</span>
                             </div>
                         </div>
                         <div class="flex items-center justify-between pt-unit-md mt-unit-sm">
-                            <span class="font-body-sm text-body-sm text-on-surface-variant" id="kpi-open-tickets-sub">#INC-3091 Tier-3 Dispatched</span>
+                            <span class="font-body-sm text-body-sm text-on-surface-variant" id="kpi-open-tickets-sub"><?= $badgeTickets ?> logged in registry</span>
                             <span
                                 class="inline-flex items-center gap-1.5 font-technical-tag text-technical-tag font-bold text-on-error bg-error px-2 py-0.5 rounded">
-                                Critical P1
+                                Active SLA
                             </span>
                         </div>
                     </a>
@@ -320,17 +333,17 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
                         <div class="flex items-start justify-between">
                             <div class="flex flex-col">
                                 <span
-                                    class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider">Approved
+                                    class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider">Technical
                                     Documents</span>
                                 <span
-                                    class="font-display-lg text-display-lg text-primary font-bold tracking-tight mt-unit-xs" id="kpi-approved-docs">56</span>
+                                    class="font-display-lg text-display-lg text-primary font-bold tracking-tight mt-unit-xs" id="kpi-approved-docs"><?= $badgeDocs ?></span>
                             </div>
                             <div class="p-2 rounded bg-surface-container text-secondary group-hover:scale-105 transition-transform">
                                 <span class="material-symbols-outlined text-xl">verified</span>
                             </div>
                         </div>
                         <div class="flex items-center justify-between pt-unit-md mt-unit-sm">
-                            <span class="font-body-sm text-body-sm text-on-surface-variant" id="kpi-approved-docs-sub">14 Pending Signature</span>
+                            <span class="font-body-sm text-body-sm text-on-surface-variant" id="kpi-approved-docs-sub"><?= $badgeDocs ?> repository specs</span>
                             <span
                                 class="font-technical-tag text-technical-tag font-medium text-secondary bg-secondary-fixed/50 px-1.5 py-0.5 rounded">
                                 Verified
@@ -348,132 +361,105 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
                                 <h2 class="font-headline-sm text-headline-sm text-primary font-semibold">Recent Portal
                                     &amp; Facility Activity</h2>
                             </div>
-                            <div class="flex items-center gap-1 bg-surface-container-highest p-1 rounded">
+                            <div class="flex items-center gap-1 bg-surface-container-highest p-1 rounded" id="dash-activity-filters">
                                 <button
-                                    class="px-2.5 py-1 text-technical-tag font-technical-tag rounded font-semibold bg-surface-container-lowest text-primary shadow-xs"
-                                    type="button">ALL EVENTS</button>
+                                    class="dash-filter-btn px-2.5 py-1 text-technical-tag font-technical-tag rounded font-semibold bg-surface-container-lowest text-primary shadow-xs transition-colors cursor-pointer"
+                                    data-filter="all" type="button">ALL EVENTS</button>
                                 <button
-                                    class="px-2.5 py-1 text-technical-tag font-technical-tag rounded font-medium text-on-surface-variant hover:text-primary"
-                                    type="button">FINANCIAL</button>
+                                    class="dash-filter-btn px-2.5 py-1 text-technical-tag font-technical-tag rounded font-medium text-on-surface-variant hover:text-primary transition-colors cursor-pointer"
+                                    data-filter="finance" type="button">FINANCIAL</button>
                                 <button
-                                    class="px-2.5 py-1 text-technical-tag font-technical-tag rounded font-medium text-on-surface-variant hover:text-primary"
-                                    type="button">PROJECTS</button>
+                                    class="dash-filter-btn px-2.5 py-1 text-technical-tag font-technical-tag rounded font-medium text-on-surface-variant hover:text-primary transition-colors cursor-pointer"
+                                    data-filter="project" type="button">PROJECTS</button>
                                 <button
-                                    class="px-2.5 py-1 text-technical-tag font-technical-tag rounded font-medium text-on-surface-variant hover:text-primary"
-                                    type="button">FIELD SERVICE</button>
+                                    class="dash-filter-btn px-2.5 py-1 text-technical-tag font-technical-tag rounded font-medium text-on-surface-variant hover:text-primary transition-colors cursor-pointer"
+                                    data-filter="field" type="button">FIELD SERVICE</button>
                             </div>
                         </div>
                         <div class="flex flex-col" id="dash-portal-activity-feed">
-                            <div
-                                class="flex flex-col md:flex-row md:items-center justify-between p-unit-base gap-unit-sm border-b border-surface-container-low hover:bg-surface-container-low transition-colors relative pl-unit-lg cursor-pointer"
-                                onclick="window.location.href='Invoices.php?invoice=INV-2024-6102'">
-                                <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-tertiary-fixed-dim"></div>
-                                <div class="flex flex-col gap-0.5 pr-unit-md">
-                                    <div class="flex items-center gap-unit-xs">
-                                        <span
-                                            class="font-label-caps text-label-caps text-secondary font-bold uppercase tracking-wider">Commercial
-                                            VAT Invoice Generated</span>
-                                        <span
-                                            class="font-technical-tag text-technical-tag text-on-surface-variant">#INV-2024-6102</span>
+                            <?php if (empty($finEvents) && empty($prjEvents) && empty($tktEvents)): ?>
+                                <div id="dash-portal-empty-feed" class="p-8 text-center text-on-surface-variant font-mono text-sm">
+                                    No activity events recorded at the moment.
+                                </div>
+                            <?php else: ?>
+                                <?php foreach ($finEvents as $fe): ?>
+                                    <div class="feed-item flex flex-col md:flex-row md:items-center justify-between p-unit-base gap-unit-sm border-b border-surface-container-low hover:bg-surface-container-low transition-colors relative pl-unit-lg cursor-pointer"
+                                         data-category="finance"
+                                         onclick="window.location.href='Invoices.php?invoice=<?= urlencode($fe['inv_id']) ?>'">
+                                        <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-tertiary-fixed-dim"></div>
+                                        <div class="flex flex-col gap-0.5 pr-unit-md">
+                                            <div class="flex items-center gap-unit-xs">
+                                                <span class="font-label-caps text-label-caps text-secondary font-bold uppercase tracking-wider">Commercial Invoice</span>
+                                                <span class="font-technical-tag text-technical-tag text-on-surface-variant">#<?= htmlspecialchars($fe['inv_id']) ?></span>
+                                            </div>
+                                            <p class="font-body-md text-body-md text-on-surface font-medium">
+                                                <?= htmlspecialchars($fe['project_name'] ?? 'Equipment Procurement') ?>: <?= htmlspecialchars($fe['payment_status']) ?> ($<?= number_format((float)$fe['total_value'], 2) ?> <?= htmlspecialchars($fe['currency'] ?? 'USD') ?>).
+                                            </p>
+                                            <span class="font-data-mono-md text-data-mono-md text-on-surface-variant"><?= htmlspecialchars($fe['issued_at']) ?> • Financial Dept</span>
+                                        </div>
+                                        <div class="flex items-center gap-unit-xs shrink-0 self-end md:self-center">
+                                            <a class="px-unit-sm py-1 rounded bg-tertiary-fixed text-primary-container font-technical-tag text-technical-tag font-semibold hover:bg-tertiary-fixed-dim"
+                                               href="Invoices.php?invoice=<?= urlencode($fe['inv_id']) ?>">Review Invoice</a>
+                                        </div>
                                     </div>
-                                    <p class="font-body-md text-body-md text-on-surface font-medium">
-                                        Phase 2 Milestone Billing: Optical Pyrometer Calibrated Array ($124,500.00 USD).
-                                    </p>
-                                    <span class="font-data-mono-md text-data-mono-md text-on-surface-variant">Today,
-                                        09:15 AM • Billing Dept</span>
-                                </div>
-                                <div class="flex items-center gap-unit-xs shrink-0 self-end md:self-center">
-                                    <a
-                                        class="px-unit-sm py-1 rounded bg-tertiary-fixed text-primary-container font-technical-tag text-technical-tag font-semibold hover:bg-tertiary-fixed-dim"
-                                        href="Invoices.php?invoice=INV-2024-6102">Review Invoice</a>
-                                </div>
-                            </div>
-                            <div
-                                class="flex flex-col md:flex-row md:items-center justify-between p-unit-base gap-unit-sm bg-surface-container-lowest hover:bg-surface-container-low transition-colors relative pl-unit-lg cursor-pointer"
-                                onclick="window.location.href='ProjectListAndDetail.php?project=PRJ-VP-7721'">
-                                <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-primary-container"></div>
-                                <div class="flex flex-col gap-0.5 pr-unit-md">
-                                    <div class="flex items-center gap-unit-xs">
-                                        <span
-                                            class="font-label-caps text-label-caps text-primary-container font-bold uppercase tracking-wider">Project
-                                            Milestone Completed</span>
-                                        <span
-                                            class="font-technical-tag text-technical-tag text-on-surface-variant">PRJ-VP-7721</span>
+                                <?php endforeach; ?>
+
+                                <?php foreach ($prjEvents as $pe): ?>
+                                    <div class="feed-item flex flex-col md:flex-row md:items-center justify-between p-unit-base gap-unit-sm bg-surface-container-lowest hover:bg-surface-container-low transition-colors relative pl-unit-lg cursor-pointer border-b border-surface-container-low"
+                                         data-category="project"
+                                         onclick="window.location.href='ProjectListAndDetail.php?project=<?= urlencode($pe['prj_id']) ?>'">
+                                        <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-primary-container"></div>
+                                        <div class="flex flex-col gap-0.5 pr-unit-md">
+                                            <div class="flex items-center gap-unit-xs">
+                                                <span class="font-label-caps text-label-caps text-primary-container font-bold uppercase tracking-wider">Project Milestone</span>
+                                                <span class="font-technical-tag text-technical-tag text-on-surface-variant"><?= htmlspecialchars($pe['prj_id']) ?></span>
+                                            </div>
+                                            <p class="font-body-md text-body-md text-on-surface font-medium">
+                                                <?= htmlspecialchars($pe['project_name']) ?> (Status: <?= htmlspecialchars($pe['status']) ?>, Budget: $<?= number_format((float)$pe['budget'], 2) ?>).
+                                            </p>
+                                            <span class="font-data-mono-md text-data-mono-md text-on-surface-variant">Started <?= htmlspecialchars($pe['start_date']) ?> • Engineering Bureau</span>
+                                        </div>
+                                        <div class="flex items-center gap-unit-xs shrink-0 self-end md:self-center">
+                                            <a href="ProjectListAndDetail.php?project=<?= urlencode($pe['prj_id']) ?>"
+                                               class="inline-flex items-center gap-1 font-technical-tag text-technical-tag text-secondary bg-secondary-fixed/30 px-unit-sm py-1 rounded font-medium">
+                                                <span class="material-symbols-outlined text-xs">check_circle</span> <?= htmlspecialchars($pe['status']) ?>
+                                            </a>
+                                        </div>
                                     </div>
-                                    <p class="font-body-md text-body-md text-on-surface font-medium">
-                                        Automated Gas Chromatography Skid #4 FAT (Factory Acceptance Test) passed with
-                                        zero non-conformances.
-                                    </p>
-                                    <span class="font-data-mono-md text-data-mono-md text-on-surface-variant">Yesterday,
-                                        16:30 PM • Lead Inspector: K. Savin</span>
-                                </div>
-                                <div class="flex items-center gap-unit-xs shrink-0 self-end md:self-center">
-                                    <a href="ProjectListAndDetail.php?project=PRJ-VP-7721"
-                                        class="inline-flex items-center gap-1 font-technical-tag text-technical-tag text-secondary bg-secondary-fixed/30 px-unit-sm py-1 rounded font-medium">
-                                        <span class="material-symbols-outlined text-xs">check_circle</span> FAT PASSED
-                                    </a>
-                                </div>
-                            </div>
-                            <div
-                                class="flex flex-col md:flex-row md:items-center justify-between p-unit-base gap-unit-sm bg-error-container/20 hover:bg-error-container/30 transition-colors relative pl-unit-lg">
-                                <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-error"></div>
-                                <div class="flex flex-col gap-0.5 pr-unit-md">
-                                    <div class="flex items-center gap-unit-xs">
-                                        <span
-                                            class="font-label-caps text-label-caps text-error font-bold uppercase tracking-wider">Field
-                                            Incident Alert #INC-3091</span>
-                                        <span
-                                            class="font-technical-tag text-technical-tag bg-error text-on-error px-1.5 rounded font-bold">CRITICAL
-                                            ESCALATION</span>
+                                <?php endforeach; ?>
+
+                                <?php foreach ($tktEvents as $te): ?>
+                                    <div class="feed-item flex flex-col md:flex-row md:items-center justify-between p-unit-base gap-unit-sm bg-error-container/20 hover:bg-error-container/30 transition-colors relative pl-unit-lg cursor-pointer border-b border-surface-container-low"
+                                         data-category="field"
+                                         onclick="window.location.href='SupportTicketView.php?ticket=<?= urlencode($te['tkt_id']) ?>'">
+                                        <div class="absolute left-0 top-0 bottom-0 w-1.5 <?= $te['priority'] === 'Critical' ? 'bg-error' : 'bg-secondary' ?>"></div>
+                                        <div class="flex flex-col gap-0.5 pr-unit-md">
+                                            <div class="flex items-center gap-unit-xs">
+                                                <span class="font-label-caps text-label-caps text-error font-bold uppercase tracking-wider">Field Incident #<?= htmlspecialchars($te['tkt_id']) ?></span>
+                                                <span class="font-technical-tag text-technical-tag bg-error text-on-error px-1.5 rounded font-bold"><?= htmlspecialchars(strtoupper($te['priority'])) ?></span>
+                                            </div>
+                                            <p class="font-body-md text-body-md text-primary font-medium">
+                                                <?= htmlspecialchars($te['title']) ?> (Status: <?= htmlspecialchars($te['status']) ?>)
+                                            </p>
+                                            <span class="font-data-mono-md text-data-mono-md text-on-surface-variant">Created <?= htmlspecialchars($te['created_at']) ?> • Assigned: <?= htmlspecialchars($te['tech_name'] ?? 'Field Pool') ?></span>
+                                        </div>
+                                        <div class="flex items-center gap-unit-xs shrink-0 self-end md:self-center">
+                                            <a class="px-unit-sm py-1 rounded bg-error text-on-error font-technical-tag text-technical-tag font-semibold"
+                                               href="SupportTicketView.php?ticket=<?= urlencode($te['tkt_id']) ?>">Track Dispatch</a>
+                                        </div>
                                     </div>
-                                    <p class="font-body-md text-body-md text-primary font-medium">
-                                        Vibration telemetry anomaly on Turbine Bearing #2 (&gt;8.4 mm/s RMS). Dispatched
-                                        Tier-3 Field Specialist.
-                                    </p>
-                                    <span class="font-data-mono-md text-data-mono-md text-on-surface-variant">Oct 24,
-                                        14:10 PM • SLA Clock: 42m remaining</span>
+                                <?php endforeach; ?>
+                                <div id="dash-portal-empty-filter" style="display: none;" class="p-8 text-center text-on-surface-variant font-mono text-sm">
+                                    No records found in this category.
                                 </div>
-                                <div class="flex items-center gap-unit-xs shrink-0 self-end md:self-center">
-                                    <a
-                                        class="px-unit-sm py-1 rounded bg-error text-on-error font-technical-tag text-technical-tag font-semibold"
-                                        href="SupportTicketView.php?ticket=TCK-9482">Track Dispatch</a>
-                                </div>
-                            </div>
-                            <div
-                                class="flex flex-col md:flex-row md:items-center justify-between p-unit-base gap-unit-sm bg-surface-container-lowest hover:bg-surface-container-low transition-colors relative pl-unit-lg">
-                                <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-tertiary-fixed-dim"></div>
-                                <div class="flex flex-col gap-0.5 pr-unit-md">
-                                    <div class="flex items-center gap-unit-xs">
-                                        <span
-                                            class="font-label-caps text-label-caps text-on-tertiary-fixed-variant font-bold uppercase tracking-wider">Contract
-                                            Addendum</span>
-                                        <span
-                                            class="font-technical-tag text-technical-tag text-on-surface-variant">#CA-402</span>
-                                    </div>
-                                    <p class="font-body-md text-body-md text-on-surface font-medium">
-                                        Spare parts consignment inventory agreement revision uploaded for Q4 2024 - Q2
-                                        2025.
-                                    </p>
-                                    <span class="font-data-mono-md text-data-mono-md text-on-surface-variant">Oct 23,
-                                        10:05 AM • Procurement Dept</span>
-                                </div>
-                                <div class="flex items-center gap-unit-xs shrink-0 self-end md:self-center">
-                                    <a
-                                        class="px-unit-sm py-1 rounded bg-surface-container-high hover:bg-surface-container-highest text-primary font-technical-tag text-technical-tag font-semibold"
-                                        href="Documents.php?doc=4">Sign Document</a>
-                                </div>
-                            </div>
+                            <?php endif; ?>
                         </div>
                         <div class="p-unit-sm bg-surface-container-low flex justify-between items-center px-unit-base">
-                            <span class="font-technical-tag text-technical-tag text-on-surface-variant" id="dash-portal-events-count">Showing 4 recent system events</span>
+                            <span class="font-technical-tag text-technical-tag text-on-surface-variant" id="dash-portal-events-count">Showing <?= $totalFeedEvents ?> recent system events</span>
                             <button
-                                class="text-secondary hover:text-primary font-technical-tag text-technical-tag font-bold inline-flex items-center gap-1"
+                                class="text-secondary hover:text-primary font-technical-tag text-technical-tag font-bold inline-flex items-center gap-1 cursor-pointer"
+                                onclick="window.location.href='Documents.php'"
                                 type="button">
-                                <span>VIEW FULL AUDIT LOG</span>
-                                <span class="material-symbols-outlined text-sm">arrow_forward</span>
-                            </button>
-                        </div>
-                    </div>
                                 <span>VIEW FULL AUDIT LOG</span>
                                 <span class="material-symbols-outlined text-sm">arrow_forward</span>
                             </button>
@@ -538,12 +524,14 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
                             </div>
                             <div class="flex items-center gap-unit-xs pt-unit-sm">
                                 <button
-                                    class="flex-1 py-1.5 text-center bg-surface-container hover:bg-surface-container-high rounded text-primary font-technical-tag text-technical-tag font-semibold transition-colors"
+                                    class="flex-1 py-1.5 text-center bg-surface-container hover:bg-surface-container-high rounded text-primary font-technical-tag text-technical-tag font-semibold transition-colors cursor-pointer"
+                                    onclick="window.showToast('Ledger Exported', 'Facility CSV ledger downloaded.', 'success')"
                                     type="button">
                                     DOWNLOAD LEDGER (.CSV)
                                 </button>
                                 <button
-                                    class="flex-1 py-1.5 text-center bg-surface-container hover:bg-surface-container-high rounded text-primary font-technical-tag text-technical-tag font-semibold transition-colors"
+                                    class="flex-1 py-1.5 text-center bg-surface-container hover:bg-surface-container-high rounded text-primary font-technical-tag text-technical-tag font-semibold transition-colors cursor-pointer"
+                                    onclick="window.exportTelemetryPDF ? window.exportTelemetryPDF() : window.showToast('PDF Exported', 'Facility report compiled.', 'success')"
                                     type="button">
                                     PDF REPORT
                                 </button>
@@ -560,7 +548,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
                             </div>
                             <div class="flex items-center gap-unit-md py-unit-xs">
                                 <img class="w-14 h-14 rounded-full object-cover shadow-sm ring-2 ring-tertiary-fixed/50"
-                                    data-alt="Professional portrait of Senior Lead Systems Engineer Viktor Morozov wearing high-tech corporate industrial uniform with precision instruments in blurred background, clean corporate lighting, dark navy and cool slate tones."
+                                    data-alt="Professional portrait of Senior Lead Systems Engineer Viktor Morozov"
                                     src="https://lh3.googleusercontent.com/aida-public/AB6AXuDoVYMImYMOrFG-GImEjxCUij3YIwCjbxiUVg9-84NgNQUnx44rwhCbh4EVKLngwn6R5_hzNhRQkfTglEUz1jtP83GRGR8WbDdiIQblwg1fLV0mqc04y19GGKO27NGBpanqADz4vwO3ANY9KcZiOXBusZHAE_PU_FuuwKqChSLXXJsGo289bHOL3MFrKWoXXMoxnqoUIglg-NYsM99jg8cA3e1CeWhqlY0x7isLHdQfGbcFE_XiNNJg" />
                                 <div class="flex flex-col">
                                     <span
@@ -589,8 +577,8 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
                             </div>
                             <div class="flex items-center gap-unit-xs pt-unit-xs">
                                 <button
-                                    class="flex-1 py-2 bg-primary-container hover:bg-primary text-on-primary font-technical-tag text-technical-tag font-bold rounded inline-flex items-center justify-center gap-1.5 transition-colors"
-                                    onclick="window.location.href='SupportTicketView.php?ticket=TCK-9482'"
+                                    class="flex-1 py-2 bg-primary-container hover:bg-primary text-on-primary font-technical-tag text-technical-tag font-bold rounded inline-flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                                    onclick="window.location.href='SupportTicketView.php'"
                                     type="button">
                                     <span class="material-symbols-outlined text-base">chat</span>
                                     <span>SECURE DISPATCH CHAT</span>
@@ -602,6 +590,41 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
             </div>
         </main>
     </div>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const filterBtns = document.querySelectorAll('#dash-activity-filters .dash-filter-btn');
+        const items = document.querySelectorAll('#dash-portal-activity-feed .feed-item');
+        const emptyNotice = document.getElementById('dash-portal-empty-filter');
+        const countEl = document.getElementById('dash-portal-events-count');
+
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const filter = this.getAttribute('data-filter');
+                filterBtns.forEach(b => {
+                    b.className = 'dash-filter-btn px-2.5 py-1 text-technical-tag font-technical-tag rounded font-medium text-on-surface-variant hover:text-primary transition-colors cursor-pointer';
+                });
+                this.className = 'dash-filter-btn px-2.5 py-1 text-technical-tag font-technical-tag rounded font-semibold bg-surface-container-lowest text-primary shadow-xs transition-colors cursor-pointer';
+
+                let visible = 0;
+                items.forEach(item => {
+                    if (filter === 'all' || item.getAttribute('data-category') === filter) {
+                        item.style.display = 'flex';
+                        visible++;
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+
+                if (emptyNotice) {
+                    emptyNotice.style.display = (visible === 0 && items.length > 0) ? 'block' : 'none';
+                }
+                if (countEl) {
+                    countEl.textContent = `Showing ${visible} recent system event${visible === 1 ? '' : 's'}`;
+                }
+            });
+        });
+    });
+    </script>
 </body>
 
 </html>

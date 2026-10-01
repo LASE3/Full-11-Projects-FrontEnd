@@ -44,13 +44,25 @@ $accStmt->execute([$cusId]);
 $customerAccount = $accStmt->fetch(PDO::FETCH_ASSOC) ?: [];
 
 $currUser = $_SESSION['vostok_user'] ?? [];
-if (empty($currUser['full_name']) || $currUser['full_name'] === 'Authorized User' || $currUser['full_name'] === 'Alexey R. Danilov') {
-    $currUser['full_name'] = $customer['primary_contact_name'] ?? 'Client Representative';
+$isSuperAdmin = isSuperAdmin($currUser);
+
+if ($isSuperAdmin) {
+    $currUser['full_name'] = (!empty($currUser['full_name']) && $currUser['full_name'] !== 'Alexey R. Danilov' && $currUser['full_name'] !== 'Authorized User')
+        ? $currUser['full_name']
+        : 'System Administrator';
+    $currUser['role_name'] = 'Executive SuperAdmin';
+    $currUser['clearance_level'] = 'L4';
+    $currUser['email'] = !empty($currUser['email']) ? $currUser['email'] : 'admin@gmail.com';
+    $currUser['company_name'] = $customer['company_name'] ?? 'VOSTOKPRIBOR Master Admin';
+} else {
+    if (empty($currUser['full_name']) || $currUser['full_name'] === 'Authorized User') {
+        $currUser['full_name'] = $customer['primary_contact_name'] ?? 'Client Representative';
+    }
+    $currUser['company_name'] = $customer['company_name'] ?? 'Authorized Client';
+    $currUser['clearance_level'] = $currUser['clearance_level'] ?? 'L1';
+    $currUser['role_name'] = $currUser['role_name'] ?? ($customer['account_tier'] ?? 'Strategic Client');
+    $currUser['email'] = !empty($currUser['email']) ? $currUser['email'] : ($customerAccount['email'] ?? ($customer['primary_contact_email'] ?? ''));
 }
-$currUser['company_name'] = $customer['company_name'] ?? 'Authorized Client';
-$currUser['clearance_level'] = $currUser['clearance_level'] ?? 'L1';
-$currUser['role_name'] = $currUser['role_name'] ?? ($customer['account_tier'] ?? 'Strategic Client');
-$currUser['email'] = $customerAccount['email'] ?? ($customer['primary_contact_email'] ?? '');
 
 // Live badge counters directly from MariaDB
 $badgeOrders = (int)$pdo->query("SELECT COUNT(*) FROM orders WHERE cus_id = '{$cusId}'")->fetchColumn();

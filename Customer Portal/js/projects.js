@@ -222,4 +222,26 @@
       }, 350);
     }
   });
+
+  window.exportProjectsCSV = function () {
+    const rows = document.querySelectorAll("#projects-tbody tr:not([class*='bg-surface-container-low/60'])");
+    let csv = "Project ID,Description,Stage,Budget,Progress,Project Manager\n";
+    rows.forEach((row) => {
+      const cols = Array.from(row.querySelectorAll("td")).map((td) => {
+        return '"' + td.innerText.replace(/"/g, '""').replace(/\n+/g, " ").trim() + '"';
+      });
+      if (cols.length >= 6) {
+        csv += cols.slice(0, 6).join(",") + "\n";
+      }
+    });
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "vostokpribor_projects_" + new Date().toISOString().slice(0, 10) + ".csv";
+    link.click();
+    if (window.showToast) {
+      window.showToast("Ledger Exported", "Project capital allocations exported (.CSV).", "success");
+    }
+  };
 })();
+

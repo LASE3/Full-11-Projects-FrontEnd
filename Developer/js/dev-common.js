@@ -169,47 +169,47 @@
     {
       name: "B2B Online Shop (SYS-02)",
       cat: "Ecosystem",
-      href: "../Online Shop B2B/index.php",
+      href: "../Online Shop B2B/login.php",
     },
     {
       name: "Customer Portal (SYS-03)",
       cat: "Ecosystem",
-      href: "../Customer Portal/Dashboard.php",
+      href: "../Customer Portal/login.php",
     },
     {
       name: "Employee Intranet (SYS-04)",
       cat: "Ecosystem",
-      href: "../Employee Intranet/index.php",
+      href: "../Employee Intranet/login.php",
     },
     {
       name: "CRM Platform (SYS-05)",
       cat: "Ecosystem",
-      href: "../CRM/index.php",
+      href: "../CRM/login.php",
     },
     {
       name: "HR System (SYS-06)",
       cat: "Ecosystem",
-      href: "../HR System/index.php",
+      href: "../HR System/login.php",
     },
     {
       name: "Finance & Billing (SYS-07)",
       cat: "Ecosystem",
-      href: "../Finance & Billing/index.php",
+      href: "../Finance & Billing/login.php",
     },
     {
       name: "IT Helpdesk & Service (SYS-08)",
       cat: "Ecosystem",
-      href: "../IT Helpdesk/index.php",
+      href: "../IT Helpdesk/login.php",
     },
     {
       name: "File Center / Document Hub (SYS-09)",
       cat: "Ecosystem",
-      href: "../File Center/index.php",
+      href: "../File Center/login.php",
     },
     {
       name: "Admin & Governance Portal (SYS-11)",
       cat: "Ecosystem",
-      href: "../Admin & Governance Portal/index.php",
+      href: "../Admin & Governance Portal/login.php",
     },
   ];
 

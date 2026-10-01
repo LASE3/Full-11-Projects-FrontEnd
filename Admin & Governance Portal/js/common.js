@@ -344,7 +344,7 @@
     },
     {
       name: "Farida Iskakova (EMP-1019) - Project Manager & Lead Custodian [L3]",
-      path: "../File Center/index.php",
+      path: "../File Center/login.php",
       type: "EMP-ID",
       cat: "Engineering",
     },
@@ -374,7 +374,7 @@
     },
     {
       name: "Employee Intranet (System 04 // Staff)",
-      path: "../Employee Intranet/index.php",
+      path: "../Employee Intranet/login.php",
       type: "External",
       cat: "Ecosystem",
     },
@@ -404,7 +404,7 @@
     },
     {
       name: "File Center / Document Hub (System 09 // Graphite)",
-      path: "../File Center/index.php",
+      path: "../File Center/login.php",
       type: "External",
       cat: "File Center",
     },

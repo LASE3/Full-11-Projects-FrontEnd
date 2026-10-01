@@ -523,6 +523,15 @@ function gov_renderSidebar($currentPage = '')
                 'badge_class' => 'font-telemetry-micro text-[10px] text-on-primary-container'
             ],
             [
+                'file' => 'integrations.php',
+                'href' => 'Integrations.php',
+                'path' => 'system-integrations',
+                'icon' => 'hub',
+                'title' => 'System Integrations',
+                'badge' => 'SYS01',
+                'badge_class' => 'font-telemetry-micro text-[10px] px-space-2xs bg-secondary-fixed/20 text-secondary-fixed font-bold rounded'
+            ],
+            [
                 'file' => 'break-glassaccess.php',
                 'href' => 'Break-GlassAccess.php',
                 'path' => 'emergency-break-glass',

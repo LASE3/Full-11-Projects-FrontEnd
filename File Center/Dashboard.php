@@ -54,20 +54,28 @@ foreach ($folders as $f) {
     $folderCounts[$f] = (int)$stmt->fetchColumn();
 }
 
-// Fetch all documents from database
-$docsStmt = $pdo->query("
-    SELECT 
-        d.*,
-        e.full_name AS custodian_name,
-        e.job_title AS custodian_job,
-        c.company_name AS customer_name,
-        p.project_name AS project_name
-    FROM documents d
-    LEFT JOIN employees e ON d.owner_emp_id = e.emp_id
-    LEFT JOIN customers c ON d.related_cus_id = c.cus_id
-    LEFT JOIN projects p ON d.related_prj_id = p.prj_id
-    ORDER BY CAST(SUBSTRING(d.doc_id, 10) AS UNSIGNED) ASC, d.doc_id ASC
-");
+$userClearance = $currUser['clearance_level'] ?? 'L2';
+$userCusId = $currUser['cus_id'] ?? null;
+$isSuperAdmin = ($userClearance === 'L4' || $userClearance === 'L5' || ($currUser['role_name'] ?? '') === 'Super Administrator' || ($currUser['username'] ?? '') === 'admin');
+
+$allowedClassifications = ['Public'];
+if ($userClearance === 'L2') {
+    $allowedClassifications = ['Public', 'Internal'];
+} elseif ($userClearance === 'L3') {
+    $allowedClassifications = ['Public', 'Internal', 'Confidential'];
+} elseif ($isSuperAdmin || in_array($userClearance, ['L4', 'L5'])) {
+    $allowedClassifications = ['Public', 'Internal', 'Confidential', 'TopSecret', 'Restricted'];
+}
+$inClause = "'" . implode("','", $allowedClassifications) . "'";
+
+if ($userCusId && !$isSuperAdmin) {
+    $sqlDocs = "SELECT d.*, e.full_name AS custodian_name, e.job_title AS custodian_job, c.company_name AS customer_name, p.project_name AS project_name FROM documents d LEFT JOIN employees e ON d.owner_emp_id = e.emp_id LEFT JOIN customers c ON d.related_cus_id = c.cus_id LEFT JOIN projects p ON d.related_prj_id = p.prj_id WHERE (d.related_cus_id = " . $pdo->quote($userCusId) . " OR d.classification = 'Public') ORDER BY CAST(SUBSTRING(d.doc_id, 10) AS UNSIGNED) ASC, d.doc_id ASC";
+} elseif (!$isSuperAdmin) {
+    $sqlDocs = "SELECT d.*, e.full_name AS custodian_name, e.job_title AS custodian_job, c.company_name AS customer_name, p.project_name AS project_name FROM documents d LEFT JOIN employees e ON d.owner_emp_id = e.emp_id LEFT JOIN customers c ON d.related_cus_id = c.cus_id LEFT JOIN projects p ON d.related_prj_id = p.prj_id WHERE d.classification IN ($inClause) ORDER BY CAST(SUBSTRING(d.doc_id, 10) AS UNSIGNED) ASC, d.doc_id ASC";
+} else {
+    $sqlDocs = "SELECT d.*, e.full_name AS custodian_name, e.job_title AS custodian_job, c.company_name AS customer_name, p.project_name AS project_name FROM documents d LEFT JOIN employees e ON d.owner_emp_id = e.emp_id LEFT JOIN customers c ON d.related_cus_id = c.cus_id LEFT JOIN projects p ON d.related_prj_id = p.prj_id ORDER BY CAST(SUBSTRING(d.doc_id, 10) AS UNSIGNED) ASC, d.doc_id ASC";
+}
+$docsStmt = $pdo->query($sqlDocs);
 $documents = $docsStmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 <!DOCTYPE html>
@@ -78,7 +86,7 @@ $documents = $docsStmt->fetchAll(PDO::FETCH_ASSOC);
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>Enterprise Document Repository - VOSTOKPRIBOR File Center</title>
     <link rel="stylesheet" href="css/fc-tokens.css" />
-    <link rel="stylesheet" href="css/fc-common.css" />
+    <link rel="stylesheet" href="css/fc-common.css?v=<?= time() ?>" />
     <link rel="stylesheet" href="css/fc-repo.css" />
 </head>
 
@@ -132,7 +140,7 @@ $documents = $docsStmt->fetchAll(PDO::FETCH_ASSOC);
     </header>
 
     <!-- LEFT SIDEBAR -->
-    <aside class="vk-sidebar">
+    <aside class="vk-sidebar" style="background-color: #0f2438 !important; border-right: 1px solid rgba(255, 255, 255, 0.1) !important;">
         <div class="vk-sidebar-nav">
             <div class="vk-sidebar-header">Document Vault</div>
             <a class="vk-nav-item active" href="Dashboard.php">
@@ -184,21 +192,21 @@ $documents = $docsStmt->fetchAll(PDO::FETCH_ASSOC);
                 </div>
                 <span class="vk-tag fc-font-size-9px-background-21b8">SYS-01</span>
             </a>
-            <a class="vk-nav-item" href="../Employee Intranet/index.php">
+            <a class="vk-nav-item" href="../Employee Intranet/login.php">
                 <div class="fc-flex-center-gap-10">
                     <span class="material-symbols-outlined text-[18px] fc-color-5c7290-b50c">badge</span>
                     <span>Employee Intranet</span>
                 </div>
                 <span class="vk-tag fc-font-size-9px-background-cfa1">SYS-04</span>
             </a>
-            <a class="vk-nav-item" href="../Developer/index.php">
+            <a class="vk-nav-item" href="../Developer/login.php">
                 <div class="fc-flex-center-gap-10">
                     <span class="material-symbols-outlined text-[18px] fc-color-1e8fa6-f90d">terminal</span>
                     <span>Developer / API Portal</span>
                 </div>
                 <span class="vk-tag fc-font-size-9px-background-5382">SYS-10</span>
             </a>
-            <a class="vk-nav-item" href="../Admin & Governance Portal/index.php">
+            <a class="vk-nav-item" href="../Admin & Governance Portal/login.php">
                 <div class="fc-flex-center-gap-10">
                     <span class="material-symbols-outlined text-[18px] fc-color-var-vk-alert-6578">shield</span>
                     <span>Admin &amp; Governance</span>

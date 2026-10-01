@@ -15,19 +15,36 @@ $userFullName = htmlspecialchars($currUser['full_name'] ?? 'Mikhail Sorokin');
 $userTitle = htmlspecialchars($currUser['job_title'] ?? $currUser['role_name'] ?? 'Chief Financial Controller');
 $userClearance = htmlspecialchars($currUser['clearance_level'] ?? 'L4');
 
+$userCusId = $currUser['cus_id'] ?? null;
+$isSuperAdmin = in_array($currUser['role_name'] ?? '', ['Super Administrator', 'Chief Financial Controller', 'VP Finance', 'Financial Controller']) || ($currUser['clearance_level'] ?? '') === 'L5' || ($currUser['username'] ?? '') === 'admin';
+
 // 1. KPI Queries directly from Database
-// KPI 1: Outstanding Invoices
-$stmtOut = $pdo->query("SELECT COALESCE(SUM(total_value),0) as total_out, COUNT(*) as count_active FROM invoices WHERE payment_status != 'Paid'");
-$kpiOut = $stmtOut->fetch();
-$totalOutstanding = (float)($kpiOut['total_out'] ?? 0);
-$activeInvoicesCount = (int)($kpiOut['count_active'] ?? 0);
+if ($userCusId && !$isSuperAdmin) {
+    $stmtOut = $pdo->prepare("SELECT COALESCE(SUM(total_value),0) as total_out, COUNT(*) as count_active FROM invoices WHERE payment_status != 'Paid' AND cus_id = ?");
+    $stmtOut->execute([$userCusId]);
+    $kpiOut = $stmtOut->fetch();
+    $totalOutstanding = (float)($kpiOut['total_out'] ?? 0);
+    $activeInvoicesCount = (int)($kpiOut['count_active'] ?? 0);
 
-$stmtDueSoon = $pdo->query("SELECT COUNT(*) FROM invoices WHERE payment_status != 'Paid' AND due_date BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 7 DAY)");
-$dueSoonCount = (int)$stmtDueSoon->fetchColumn();
+    $stmtDueSoon = $pdo->prepare("SELECT COUNT(*) FROM invoices WHERE payment_status != 'Paid' AND cus_id = ? AND due_date BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 7 DAY)");
+    $stmtDueSoon->execute([$userCusId]);
+    $dueSoonCount = (int)$stmtDueSoon->fetchColumn();
 
-// KPI 2: Revenue Collected
-$stmtRev = $pdo->query("SELECT COALESCE(SUM(total_value),0) FROM invoices WHERE payment_status = 'Paid'");
-$revenueCollected = (float)$stmtRev->fetchColumn();
+    $stmtRev = $pdo->prepare("SELECT COALESCE(SUM(total_value),0) FROM invoices WHERE payment_status = 'Paid' AND cus_id = ?");
+    $stmtRev->execute([$userCusId]);
+    $revenueCollected = (float)$stmtRev->fetchColumn();
+} else {
+    $stmtOut = $pdo->query("SELECT COALESCE(SUM(total_value),0) as total_out, COUNT(*) as count_active FROM invoices WHERE payment_status != 'Paid'");
+    $kpiOut = $stmtOut->fetch();
+    $totalOutstanding = (float)($kpiOut['total_out'] ?? 0);
+    $activeInvoicesCount = (int)($kpiOut['count_active'] ?? 0);
+
+    $stmtDueSoon = $pdo->query("SELECT COUNT(*) FROM invoices WHERE payment_status != 'Paid' AND due_date BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 7 DAY)");
+    $dueSoonCount = (int)$stmtDueSoon->fetchColumn();
+
+    $stmtRev = $pdo->query("SELECT COALESCE(SUM(total_value),0) FROM invoices WHERE payment_status = 'Paid'");
+    $revenueCollected = (float)$stmtRev->fetchColumn();
+}
 
 $stmtTarget = $pdo->query("SELECT COALESCE(SUM(budget),0) FROM projects");
 $targetRevenue = (float)$stmtTarget->fetchColumn();
@@ -279,7 +296,7 @@ $monthlyData = [
             </div>
             <span class="sidebar-badge fin-text-xs" >SYS 01</span>
           </a>
-          <a href="../Employee Intranet/index.php" class="sidebar-nav-item">
+          <a href="../Employee Intranet/login.php" class="sidebar-nav-item">
             <div class="sidebar-item-left">
               <span class="sidebar-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <rect x="3" y="3" width="7" height="7" />

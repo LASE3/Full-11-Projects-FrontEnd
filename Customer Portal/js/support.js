@@ -393,11 +393,13 @@
       now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) +
       " MSK";
 
+    const userName = (window.CURRENT_USER && window.CURRENT_USER.full_name) || "Authorized User";
+    const userRole = (window.CURRENT_USER && window.CURRENT_USER.role_name) || "Client Representative";
+
     currentTicket.messages.push({
-      sender: "Alexey R. Danilov",
-      role: "Client - Chief Instrumentation Eng.",
-      avatar:
-        "https://lh3.googleusercontent.com/aida-public/AB6AXuBxrM-O7aJYHYCDtkoA3WwbiOe6BxJ0vK7AcnogxwZN9MACsknTlpyGKyy-lWl2Hwn9IEZLPDCvVGrmxN2kvPEfzbJ5E4u5x6-38EP2exwXW8Dmm-7oMTzMG07_rmRLbT0xvZwQMFEwa4qJO5LcWbn58eWx3fSkVjAmSI3UWO8dCTgRg6GBgrY_MTUl-JF-JUf4K5CGPp0o4tvKoxbSqSysGT8r3j8de3w_sfk4F8p9ysiXXfbUkWPV",
+      sender: userName,
+      role: "Client - " + userRole,
+      avatar: "https://ui-avatars.com/api/?name=" + encodeURIComponent(userName) + "&background=0f2438&color=ffddb5",
       time: timeStr,
       text: text,
     });
@@ -552,16 +554,10 @@
    * Export incident tickets audit log as CSV
    */
   window.exportTicketAudit = function () {
-    let csv =
-      "Ticket ID,System,Equipment,Subject,Priority,Status,Specialist,Updated\n";
-    csv +=
-      "TCK-9482,SCADA Telemetry,Blast Furnace #5,Telemetry dropout on Gas Chromatography Skid #4,Critical,Escalated,Denis Sokolov,12 mins ago\n";
-    csv +=
-      "TCK-9460,Optical Sensors,CCU #3,Scheduled zero-drift recalibration assistance,Medium,In Progress,Anna Timofeeva,2 hours ago\n";
-    csv +=
-      "TCK-9399,Laser Profiler,Raw Material Yard,Replacement lens assembly shipping tracking,Low,Resolved,Logistics Support,Yesterday\n";
-    csv +=
-      "TCK-9351,Hydraulic Pressure,Hot Strip Mill,Firmware patch v3.8.1 validation,High,Resolved,Denis Sokolov,Oct 21\n";
+    let csv = "Ticket ID,System,Equipment,Subject,Priority,Status,Specialist,Updated\n";
+    Object.values(TICKET_DATABASE).forEach(t => {
+      csv += `"${t.id}","${t.projectName || 'SCADA Telemetry'}","${t.assetName || 'Plant Asset'}","${(t.title || '').replace(/"/g, '""')}","${t.isCritical ? 'Critical' : 'Normal'}","Active","${t.specialist || 'Denis Sokolov'}","${t.logged || 'Recent'}"\n`;
+    });
 
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
@@ -605,6 +601,7 @@
   window.joinSecureBridge = function () {
     const ticket =
       TICKET_DATABASE[currentActiveTicket] || TICKET_DATABASE["TCK-9482"];
+    const participantMe = ((window.CURRENT_USER && window.CURRENT_USER.full_name) || "Authorized User") + " (You)";
     const modalHtml = `
             <div class="space-y-4 text-left">
                 <div class="p-3 rounded bg-primary-container text-on-primary flex items-center justify-between">
@@ -636,7 +633,7 @@
                     </div>
                 </div>
                 <div class="p-2.5 rounded bg-surface-container-low border border-outline-variant/40 font-technical-tag text-xs space-y-1">
-                    <div class="flex justify-between"><span>Bridge Participants:</span><span class="font-semibold text-primary">Alexey Danilov (You), Denis Sokolov, Boris K.</span></div>
+                    <div class="flex justify-between"><span>Bridge Participants:</span><span class="font-semibold text-primary">${participantMe}, Denis Sokolov, Boris K.</span></div>
                     <div class="flex justify-between"><span>Audio Latency:</span><span class="font-mono text-tertiary-container font-semibold">18 ms (Low jitter)</span></div>
                     <div class="flex justify-between"><span>Shared Diagnostic Screen:</span><span class="text-primary font-medium">Gateway VP-GW-09 Modbus Register Stream</span></div>
                 </div>
@@ -732,12 +729,19 @@
    * Parse URL query parameters on load
    */
   document.addEventListener("DOMContentLoaded", function () {
+    if (window.SERVER_TICKETS && Object.keys(window.SERVER_TICKETS).length > 0) {
+      Object.assign(TICKET_DATABASE, window.SERVER_TICKETS);
+      currentActiveTicket = Object.keys(window.SERVER_TICKETS)[0];
+    }
+
     const params = new URLSearchParams(window.location.search);
-    const ticketParam = params.get("ticket");
+    const ticketParam = params.get("ticket") || params.get("project");
     const newParam = params.get("new");
 
     if (ticketParam && TICKET_DATABASE[ticketParam]) {
       window.selectTicket(ticketParam);
+    } else if (currentActiveTicket) {
+      window.selectTicket(currentActiveTicket);
     }
     if (newParam === "true") {
       setTimeout(window.showNewTicketModal, 400);

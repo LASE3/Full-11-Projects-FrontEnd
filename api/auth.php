@@ -121,6 +121,11 @@ $userSessionData = [
 ];
 
 // Set PHP session strictly for the authenticated system
+foreach (array_keys($_SESSION) as $sessKey) {
+    if (str_starts_with($sessKey, 'vostok_system_')) {
+        unset($_SESSION[$sessKey]);
+    }
+}
 $_SESSION['vostok_authenticated'] = true;
 $_SESSION['vostok_system_' . $systemId] = true;
 $_SESSION['vostok_current_system'] = $systemId;

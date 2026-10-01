@@ -95,13 +95,55 @@ body {
   left: 0;
   bottom: 0;
   width: 260px;
-  background-color: #ffffff;
-  border-right: 1px solid var(--vk-neutral-200);
+  background-color: #0f2438 !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.1) !important;
   z-index: 40;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   overflow-y: auto;
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
+.vk-sidebar::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+.vk-sidebar .vk-sidebar-header {
+  color: #94a3b8 !important;
+}
+
+.vk-sidebar .vk-nav-item {
+  color: #cbd5e1 !important;
+}
+
+.vk-sidebar .vk-nav-item:hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: #ffffff !important;
+  border-left: 3px solid #00E5FF;
+}
+
+.vk-sidebar .vk-nav-item.active {
+  background: rgba(255, 255, 255, 0.12) !important;
+  color: #ffffff !important;
+  border-left: 3px solid #00E5FF;
+}
+
+.vk-sidebar .sidebar-nav-item {
+  color: #cbd5e1 !important;
+}
+
+.vk-sidebar .sidebar-nav-item:hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: #ffffff !important;
+}
+
+.vk-sidebar .vk-sidebar-footer {
+  background-color: #0c1c2c !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
 }
 
 .vk-sidebar-nav {

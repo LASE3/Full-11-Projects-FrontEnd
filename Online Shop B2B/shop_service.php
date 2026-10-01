@@ -30,20 +30,30 @@ function shop_getCurrentCustomerId(): string
     if (!empty($_SESSION['cus_id'])) {
         return (string)$_SESSION['cus_id'];
     }
-    if (!empty($_SESSION['vostok_user']['user_id'])) {
-        return (string)$_SESSION['vostok_user']['user_id'];
-    }
     if (!empty($_SESSION['vostok_user']['cus_id'])) {
         return (string)$_SESSION['vostok_user']['cus_id'];
     }
-    if (!empty($_SESSION['vostok_user']['emp_id']) && str_starts_with((string)$_SESSION['vostok_user']['emp_id'], 'CUS-')) {
-        return (string)$_SESSION['vostok_user']['emp_id'];
+    $uid = (string)($_SESSION['vostok_user']['user_id'] ?? '');
+    if (str_starts_with($uid, 'CUS-')) {
+        $_SESSION['cus_id'] = $uid;
+        return $uid;
     }
-    try {
-        $pdo = getDbConnection();
-        $cid = $pdo->query("SELECT cus_id FROM customers ORDER BY cus_id ASC LIMIT 1")->fetchColumn();
-        if ($cid) return (string)$cid;
-    } catch (Throwable $e) {}
+    $accId = $_SESSION['vostok_user']['account_id'] ?? null;
+    if ($accId) {
+        try {
+            $pdo = getDbConnection();
+            $stmt = $pdo->prepare("SELECT cus_id FROM customer_accounts WHERE account_id = ?");
+            $stmt->execute([$accId]);
+            $cid = $stmt->fetchColumn();
+            if ($cid) {
+                $_SESSION['cus_id'] = (string)$cid;
+                return (string)$cid;
+            }
+        } catch (Throwable $e) {}
+    }
+    if (!empty($_GET['cus_id'])) {
+        return (string)$_GET['cus_id'];
+    }
     return '';
 }
 

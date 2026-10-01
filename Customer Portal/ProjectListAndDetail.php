@@ -1,7 +1,15 @@
 <?php
-require_once __DIR__ . '/../config/db.php';
-require_once __DIR__ . '/../includes/auth_guard.php';
-requireAuth('CUS');
+require_once __DIR__ . '/customer_context.php';
+require_once __DIR__ . '/customer_service.php';
+
+$cusId = cus_getCurrentCustomerId();
+$projects = cus_getProjects($cusId);
+if (empty($projects)) {
+    $pdo = getDbConnection();
+    $projects = $pdo->query("SELECT p.*, e.full_name AS project_manager_name, e.email AS project_manager_email, (SELECT COUNT(*) FROM billing_cycles WHERE prj_id = p.prj_id) AS total_milestones, (SELECT COUNT(*) FROM billing_cycles WHERE prj_id = p.prj_id AND invoiced = 1) AS completed_milestones FROM projects p LEFT JOIN employees e ON p.project_manager_emp_id = e.emp_id ORDER BY p.prj_id DESC LIMIT 10")->fetchAll(PDO::FETCH_ASSOC);
+}
+$totalBudget = array_sum(array_column($projects, 'budget'));
+$activeCount = count($projects);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -9,7 +17,7 @@ requireAuth('CUS');
 <head>
     <meta charset="utf-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <title>VOSTOKPRIBOR Portal</title>
+    <title>VOSTOKPRIBOR Portal - Projects</title>
     <link
         href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap"
         rel="stylesheet">
@@ -48,8 +56,8 @@ requireAuth('CUS');
                 </div>
                 <div
                     class="flex items-center gap-unit-xs text-on-primary-container font-technical-tag text-technical-tag">
-                    <span class="">Severstal Metallurgy Plant #4</span><span class="text-outline">|</span><span
-                        class="text-primary-fixed-dim">VP-88204-EU</span>
+                    <span class=""><?= htmlspecialchars($customer['company_name'] ?? 'Industrial Operations Client') ?></span><span class="text-outline">|</span><span
+                        class="text-primary-fixed-dim"><?= htmlspecialchars($customer['tax_id'] ?? ($customer['code'] ?? 'VP-CORP')) ?></span>
                 </div>
             </div>
         </div>
@@ -75,14 +83,13 @@ requireAuth('CUS');
             </div><a class="flex items-center text-on-primary-container hover:text-on-primary" href="Documents.php"
                 title="Technical Documentation"><span class="material-symbols-outlined">menu_book</span></a>
             <div class="h-6 w-px bg-outline/30"></div>
-            <div class="flex items-center gap-unit-sm cursor-pointer" id="header-profile-btn">
+            <div class="flex items-center gap-unit-sm cursor-pointer" id="header-profile-btn" onclick="location.href='AccountSettings.php'">
                 <div class="flex flex-col text-right"><span
-                        class="font-headline-sm text-headline-sm text-on-primary font-medium leading-none">Alexey R.
-                        Danilov</span><span
-                        class="font-technical-tag text-technical-tag text-on-primary-container mt-0.5">Chief
-                        Instrumentation Eng.</span></div><img alt="Profile"
-                    class="w-8 h-8 rounded-full object-cover ring-1 ring-tertiary-fixed/50"
-                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuBxrM-O7aJYHYCDtkoA3WwbiOe6BxJ0vK7AcnogxwZN9MACsknTlpyGKyy-lWl2Hwn9IEZLPDCvVGrmxN2kvPEfzbJ5E4u5x6-38EP2exwXW8Dmm-7oMTzMG07_rmRLbT0xvZwQMFEwa4qJO5LcWbn58eWx3fSkVjAmSI3UWO8dCTgRg6GBgrY_MTUl-JF-JUf4K5CGPp0o4tvKoxbSqSysGT8r3j8de3w_sfk4F8p9ysiXXfbUkWPV">
+                        class="font-headline-sm text-headline-sm text-on-primary font-medium leading-none"><?= htmlspecialchars($currUser['full_name'] ?? 'Authorized User') ?></span><span
+                        class="font-technical-tag text-technical-tag text-on-primary-container mt-0.5"><?= htmlspecialchars($currUser['role_name'] ?? 'Client Representative') ?></span></div>
+                <div class="w-8 h-8 rounded-full bg-tertiary-fixed/30 text-tertiary-fixed border border-tertiary-fixed/50 flex items-center justify-center font-bold text-xs">
+                    <?= htmlspecialchars(strtoupper(substr($currUser['full_name'] ?? 'U', 0, 2))) ?>
+                </div>
             </div>
 
             <!-- Top Bar Sign Out -->
@@ -156,6 +163,10 @@ requireAuth('CUS');
                         </path>
                         <circle cx="12" cy="12" r="3"></circle>
                     </svg><span class="">Account Settings</span></a>
+                <a class="flex items-center gap-unit-sm px-unit-base py-unit-sm text-secondary-fixed hover:bg-surface-container-high/5 hover:text-on-primary transition-colors font-headline-sm text-headline-sm font-semibold" data-path="integrations" href="Integrations.php"><svg class="w-4 h-4 shrink-0 text-secondary-fixed" fill="none" stroke="#00E5FF" stroke-width="1.75" viewBox="0 0 24 24">
+                        <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                        <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+                    </svg><span class="text-secondary-fixed">System Integrations</span><span class="ml-auto text-[10px] px-1.5 py-0.5 rounded bg-secondary-fixed/20 text-secondary-fixed font-mono">SYS03</span></a>
             </nav>
         </div>
 
@@ -219,12 +230,12 @@ requireAuth('CUS');
                                 Automation &amp; Equipment Projects</h1>
                             <span
                                 class="px-2.5 py-0.5 rounded bg-secondary-fixed text-on-secondary-fixed-variant font-label-caps text-label-caps uppercase">
-                                14 Total Active Engagements
+                                <?= (int)$activeCount ?> Total Active Engagements
                             </span>
                         </div>
                         <p class="font-body-md text-body-md text-on-surface-variant max-w-3xl">
                             Real-time telemetry oversight, milestone gating, compliance dossiers, and capitalized
-                            project ledger for Severstal Metallurgy Plant #4 operational expansions.
+                            project ledger for <?= htmlspecialchars($customer['company_name'] ?? 'Industrial Operations') ?> operational expansions.
                         </p>
                     </div>
                     <button
@@ -275,7 +286,7 @@ requireAuth('CUS');
                             <div class="relative">
                                 <select
                                     class="appearance-none bg-surface-container-low text-on-surface font-technical-tag text-technical-tag pl-3 pr-8 py-2 rounded focus:outline-none cursor-pointer">
-                                    <option selected="">FACILITY: CHEREPOVETS PLANT #4</option>
+                                    <option selected="">FACILITY: <?= htmlspecialchars($customer['company_name'] ?? 'CHEREPOVETS PLANT #4') ?></option>
                                     <option>FACILITY: CHEREPOVETS SINTER PLANT</option>
                                     <option>FACILITY: KOLPINO SHEET MILL</option>
                                 </select>
@@ -296,7 +307,7 @@ requireAuth('CUS');
                         </div>
                         <button
                             class="p-1.5 rounded bg-surface-container-low text-on-surface hover:bg-surface-container transition-colors"
-                            onclick="window.showToast('Ledger Exported', 'Project capital allocations exported (.CSV).', 'success')"
+                            onclick="exportProjectsCSV()"
                             title="Export Ledger as CSV">
                             <span class="material-symbols-outlined text-base">file_download</span>
                         </button>
@@ -319,509 +330,163 @@ requireAuth('CUS');
                                 </tr>
                             </thead>
                             <tbody id="projects-tbody" class="divide-y divide-surface-container-low">
-                                <!-- ROW 1: EXPANDED / SELECTED ROW -->
-                                <tr
-                                    class="bg-surface-bright/80 hover:bg-surface-bright transition-colors group cursor-pointer">
-                                    <td
-                                        class="py-3.5 px-unit-md font-data-mono-md text-data-mono-md font-semibold text-primary">
-                                        <div class="flex items-center gap-1.5">
-                                            <span class="w-2 h-2 rounded-full bg-tertiary-fixed-dim"></span>
-                                            <span class="">PRJ-VP-7721</span>
-                                        </div>
-                                    </td>
-                                    <td class="py-3.5 px-unit-md">
-                                        <div class="font-headline-sm text-headline-sm text-primary font-medium">
-                                            Blast Furnace #5 Automation &amp; Gas Analysis Instrumentation Suite
-                                        </div>
-                                        <div class="font-technical-tag text-technical-tag text-on-surface-variant">
-                                            Turbulent tuyere optical pyrometry &amp; continuous top-gas chromatography
-                                            rack
-                                        </div>
-                                    </td>
-                                    <td class="py-3.5 px-unit-md">
-                                        <span
-                                            class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-tertiary-fixed/30 text-on-tertiary-container font-technical-tag text-technical-tag font-semibold">
-                                            <span class="w-1.5 h-1.5 rounded-full bg-tertiary-fixed-dim"></span>
-                                            Execution
-                                        </span>
-                                    </td>
-                                    <td class="py-3.5 px-unit-md text-right">
-                                        <div class="inline-flex items-center justify-end gap-1.5 font-data-mono-md text-data-mono-md font-semibold text-primary pl-2 project-card-highlight">
-                                            <span class="">$1,850,000.00</span>
-                                            <span
-                                                class="font-technical-tag text-technical-tag text-outline font-normal">USD</span>
-                                        </div>
-                                    </td>
-                                    <td class="py-3.5 px-unit-md">
-                                        <div
-                                            class="flex items-center justify-between font-data-mono-md text-data-mono-md text-primary mb-1">
-                                            <span class="font-semibold">72%</span>
-                                            <span
-                                                class="font-technical-tag text-technical-tag text-outline">G-4/5</span>
-                                        </div>
-                                        <div
-                                            class="w-full h-1.5 bg-surface-container-high rounded-full overflow-hidden">
-                                            <div class="h-full bg-tertiary-fixed-dim rounded-full w-[72%]">
+                                <?php if (empty($projects)): ?>
+                                    <tr>
+                                        <td colspan="7" class="py-12 text-center text-on-surface-variant font-technical-tag">
+                                            ( There's no Projects in the moment )
+                                        </td>
+                                    </tr>
+                                <?php else: ?>
+                                    <?php foreach ($projects as $idx => $p): 
+                                        $pId = htmlspecialchars($p['prj_id']);
+                                        $pName = htmlspecialchars($p['project_name']);
+                                        $pStatus = htmlspecialchars($p['status'] ?? 'Active');
+                                        $pBudget = '$' . number_format((float)($p['budget'] ?? 0), 2);
+                                        $pProgress = (int)($p['progress_percent'] ?? 50);
+                                        $pManager = htmlspecialchars($p['project_manager_name'] ?? 'Dr. Elena Rostova');
+                                        $pScope = htmlspecialchars($p['scope_summary'] ?? ($pName . ' - Automation, telemetry & sensor integration suite'));
+                                        $pLocation = htmlspecialchars($p['facility_location'] ?? ($customer['company_name'] ?? 'Facility #4'));
+                                        $pMilestones = cus_getProjectDetail($p['prj_id'], $cusId)['milestones'] ?? [];
+                                        $isFirst = ($idx === 0);
+                                    ?>
+                                    <tr class="hover:bg-surface-bright/80 transition-colors group cursor-pointer" onclick="window.toggleProjectDrawer(this.querySelector('button'))">
+                                        <td class="py-3.5 px-unit-md font-data-mono-md text-data-mono-md font-semibold text-primary">
+                                            <div class="flex items-center gap-1.5">
+                                                <span class="w-2 h-2 rounded-full <?= $pProgress >= 100 ? 'bg-secondary' : 'bg-tertiary-fixed-dim animate-pulse' ?>"></span>
+                                                <span><?= $pId ?></span>
                                             </div>
-                                        </div>
-                                    </td>
-                                    <td class="py-3.5 px-unit-md">
-                                        <div class="flex items-center gap-unit-sm">
-                                            <img class="w-7 h-7 rounded-full object-cover bg-surface-container"
-                                                data-alt="Close-up professional portrait of Dr Elena Rostova, a Russian senior industrial systems engineer with glasses and dark pulled-back hair wearing industrial safety vest and clean navy blazer, neutral studio lighting, cool tones."
-                                                src="https://lh3.googleusercontent.com/aida-public/AB6AXuDZ9P2QbrRU2xObdFOu9aNA-iyUeUZ6UvBFT0l0KnTu1MKDRX0c84gVy9VkzAjtaXzw0JcEGYWbxd3RDqaIh7AyD6h4njnD-XTgLNnu6wa-UaOplKQCaWIDACINffaFufLMrEaDfvX7J3bqgPCT5b9oY66PI4s0dfAwRgA_V8p0oKzRnCAU0tihwWPq8xzU4FbT1iUoh0cBzt9pq7gPkXJVjA32ZA7kWXQvcLq090IXW-8Ihh_efhmM">
-                                            <div class="flex flex-col">
-                                                <span
-                                                    class="font-body-sm text-body-sm font-medium text-primary leading-tight">Dr.
-                                                    Elena Rostova</span>
-                                                <span class="font-technical-tag text-technical-tag text-outline">Lead
-                                                    Systems Eng.</span>
+                                        </td>
+                                        <td class="py-3.5 px-unit-md">
+                                            <div class="font-headline-sm text-headline-sm text-primary font-medium"><?= $pName ?></div>
+                                            <div class="font-technical-tag text-technical-tag text-on-surface-variant"><?= $pScope ?></div>
+                                        </td>
+                                        <td class="py-3.5 px-unit-md">
+                                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded <?= $pProgress >= 100 ? 'bg-secondary/20 text-secondary' : 'bg-tertiary-fixed/30 text-on-tertiary-container' ?> font-technical-tag text-technical-tag font-semibold">
+                                                <span class="w-1.5 h-1.5 rounded-full <?= $pProgress >= 100 ? 'bg-secondary' : 'bg-tertiary-fixed-dim' ?>"></span>
+                                                <?= $pStatus ?>
+                                            </span>
+                                        </td>
+                                        <td class="py-3.5 px-unit-md text-right">
+                                            <div class="inline-flex items-center justify-end gap-1.5 font-data-mono-md text-data-mono-md font-semibold text-primary pl-2 project-card-highlight">
+                                                <span><?= $pBudget ?></span>
+                                                <span class="font-technical-tag text-technical-tag text-outline font-normal">USD</span>
                                             </div>
-                                        </div>
-                                    </td>
-                                    <td class="py-3.5 px-unit-md text-right">
-                                        <button
-                                            class="inline-flex items-center gap-0.5 font-technical-tag text-technical-tag px-2 py-1 rounded bg-primary text-on-primary font-medium">
-                                            <span class="">COLLAPSE</span>
-                                            <span class="material-symbols-outlined text-sm">keyboard_arrow_up</span>
-                                        </button>
-                                    </td>
-                                </tr>
-                                <!-- EXPANDED DETAIL INSPECTION DRAWER FOR ROW 1 -->
-                                <tr class="bg-surface-container-low/60">
-                                    <td class="p-unit-lg" colspan="7">
-                                        <div
-                                            class="bg-surface-container-lowest rounded-xl p-unit-lg shadow-md flex flex-col gap-unit-lg">
-                                            <!-- Expanded Blueprint Title Block -->
-                                            <div
-                                                class="flex flex-col lg:flex-row lg:items-center justify-between pb-unit-md gap-unit-base bg-surface-container-low/40 p-unit-md rounded-lg">
-                                                <div class="flex items-start gap-unit-md">
-                                                    <div class="p-2.5 rounded bg-primary text-tertiary-fixed shrink-0">
-                                                        <span
-                                                            class="material-symbols-outlined text-2xl">precision_manufacturing</span>
-                                                    </div>
-                                                    <div>
-                                                        <div class="flex items-center gap-unit-sm">
-                                                            <span
-                                                                class="font-label-caps text-label-caps uppercase text-outline">Detailed
-                                                                Execution Blueprint</span>
-                                                            <span
-                                                                class="font-data-mono-md text-data-mono-md font-semibold text-primary bg-surface-container px-2 py-0.5 rounded">PRJ-VP-7721</span>
-                                                            <span
-                                                                class="px-2 py-0.5 rounded bg-tertiary-fixed/30 text-on-tertiary-container font-technical-tag text-technical-tag font-semibold">STAGE:
-                                                                EXECUTION</span>
-                                                        </div>
-                                                        <h2
-                                                            class="font-headline-md text-headline-md text-primary mt-0.5">
-                                                            Blast Furnace #5 Automation &amp; Gas Analysis
-                                                            Instrumentation Suite
-                                                        </h2>
-                                                    </div>
+                                        </td>
+                                        <td class="py-3.5 px-unit-md">
+                                            <div class="flex items-center justify-between font-data-mono-md text-data-mono-md text-primary mb-1">
+                                                <span class="font-semibold"><?= $pProgress ?>%</span>
+                                                <span class="font-technical-tag text-technical-tag text-outline"><?= $pProgress >= 100 ? 'Complete' : 'In Flight' ?></span>
+                                            </div>
+                                            <div class="w-full h-1.5 bg-surface-container-high rounded-full overflow-hidden">
+                                                <div class="h-full <?= $pProgress >= 100 ? 'bg-secondary' : 'bg-tertiary-fixed-dim' ?> rounded-full" style="width: <?= $pProgress ?>%"></div>
+                                            </div>
+                                        </td>
+                                        <td class="py-3.5 px-unit-md">
+                                            <div class="flex items-center gap-unit-sm">
+                                                <div class="w-7 h-7 rounded-full bg-primary text-tertiary-fixed text-xs font-bold flex items-center justify-center border border-tertiary-fixed/40">
+                                                    <?= htmlspecialchars(strtoupper(substr($pManager, 0, 2))) ?>
                                                 </div>
-                                                <div class="flex flex-wrap items-center gap-unit-lg">
-                                                    <div class="flex flex-col">
-                                                        <span
-                                                            class="font-label-caps text-label-caps uppercase text-outline">Target
-                                                            Commissioning</span>
-                                                        <span
-                                                            class="font-data-mono-md text-data-mono-md font-semibold text-primary">Dec
-                                                            20, 2024 (On Schedule)</span>
-                                                    </div>
-                                                    <div class="h-8 w-px bg-outline-variant/50 hidden sm:block"></div>
-                                                    <div class="flex flex-col">
-                                                        <span
-                                                            class="font-label-caps text-label-caps uppercase text-outline">Direct
-                                                            Line / Channel</span>
-                                                        <span
-                                                            class="font-technical-tag text-technical-tag text-secondary font-semibold">COM-CH-BF5-ENG</span>
-                                                    </div>
-                                                    <div class="h-8 w-px bg-outline-variant/50 hidden sm:block"></div>
-                                                    <div class="flex items-center gap-unit-xs">
-                                                        <button
-                                                            class="px-unit-sm py-1.5 rounded bg-surface-container text-primary font-technical-tag text-technical-tag font-medium hover:bg-surface-container-high transition-colors"
-                                                            onclick="window.showToast('Telemetry Link Active', 'SCADA feed polling Node VP-704 at 250ms interval.', 'info')"
-                                                            type="button">
-                                                            Telemetry Log
-                                                        </button>
-                                                        <button
-                                                            class="px-unit-sm py-1.5 rounded bg-primary text-on-primary font-technical-tag text-technical-tag font-medium hover:bg-primary-container transition-colors"
-                                                            onclick="window.location.href='SupportTicketView.php?ticket=TCK-9482'"
-                                                            type="button">
-                                                            Field Ops Dispatch
-                                                        </button>
-                                                    </div>
+                                                <div class="flex flex-col">
+                                                    <span class="font-body-sm text-body-sm font-medium text-primary leading-tight"><?= $pManager ?></span>
+                                                    <span class="font-technical-tag text-technical-tag text-outline">Lead Systems Eng.</span>
                                                 </div>
                                             </div>
-                                            <!-- COMPONENT A: Horizontal Milestone Timeline -->
-                                            <div class="flex flex-col gap-unit-sm">
-                                                <div class="flex items-center justify-between">
-                                                    <div class="flex items-center gap-unit-xs">
-                                                        <span
-                                                            class="material-symbols-outlined text-base text-primary">route</span>
-                                                        <span
-                                                            class="font-label-caps text-label-caps uppercase text-primary tracking-wider">Gate
-                                                            Stage Milestone Roadmap</span>
-                                                    </div>
-                                                    <span class="font-technical-tag text-technical-tag text-outline">4
-                                                        OF 5 GATES VALIDATED • 72% OVERALL PHYSICAL COMPLETION</span>
-                                                </div>
-                                                <!-- Connected Stepper -->
-                                                <div class="bg-surface-container-low p-unit-lg rounded-xl">
-                                                    <div class="grid grid-cols-1 md:grid-cols-5 gap-unit-md relative">
-                                                        <!-- Step 1 -->
-                                                        <div class="flex flex-col gap-unit-xs relative">
-                                                            <div class="flex items-center gap-unit-xs mb-1">
-                                                                <div
-                                                                    class="w-6 h-6 rounded-full bg-surface-container-lowest text-on-surface font-data-mono-md text-data-mono-md font-bold flex items-center justify-center shrink-0 shadow-xs">
-                                                                    <span
-                                                                        class="material-symbols-outlined text-sm font-bold text-phase-complete">check</span>
-                                                                </div>
-                                                                <span
-                                                                    class="font-technical-tag text-technical-tag font-semibold text-phase-complete">PHASE 1 COMPLETE</span>
-                                                            </div>
-                                                            <div
-                                                                class="font-headline-sm text-headline-sm text-primary font-medium text-sm leading-snug">
-                                                                Requirement Specs &amp; Safety Audit</div>
-                                                            <div
-                                                                class="font-data-mono-md text-data-mono-md text-outline">
-                                                                Jun 15, 2024</div>
-                                                            <div
-                                                                class="font-technical-tag text-technical-tag text-on-surface-variant">
-                                                                Severstal HSE Pass Signoff</div>
+                                        </td>
+                                        <td class="py-3.5 px-unit-md text-right">
+                                            <button class="inline-flex items-center gap-0.5 font-technical-tag text-technical-tag px-2 py-1 rounded <?= $isFirst ? 'bg-primary text-on-primary font-medium' : 'bg-surface-container-low text-primary hover:bg-surface-container' ?> transition-colors" onclick="event.stopPropagation(); window.toggleProjectDrawer(this)">
+                                                <span><?= $isFirst ? 'COLLAPSE' : 'VIEW' ?></span>
+                                                <span class="material-symbols-outlined text-sm"><?= $isFirst ? 'keyboard_arrow_up' : 'keyboard_arrow_down' ?></span>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <!-- DRAWER FOR <?= $pId ?> -->
+                                    <tr class="bg-surface-container-low/60" style="display: <?= $isFirst ? 'table-row' : 'none' ?>;">
+                                        <td class="p-unit-lg" colspan="7">
+                                            <div class="bg-surface-container-lowest rounded-xl p-unit-lg shadow-md flex flex-col gap-unit-lg">
+                                                <div class="flex flex-col lg:flex-row lg:items-center justify-between pb-unit-md gap-unit-base bg-surface-container-low/40 p-unit-md rounded-lg">
+                                                    <div class="flex items-start gap-unit-md">
+                                                        <div class="p-2.5 rounded bg-primary text-tertiary-fixed shrink-0">
+                                                            <span class="material-symbols-outlined text-2xl">precision_manufacturing</span>
                                                         </div>
-                                                        <!-- Step 2 -->
-                                                        <div class="flex flex-col gap-unit-xs relative">
-                                                            <div class="flex items-center gap-unit-xs mb-1">
-                                                                <div
-                                                                    class="w-6 h-6 rounded-full bg-surface-container-lowest text-on-surface font-data-mono-md text-data-mono-md font-bold flex items-center justify-center shrink-0 shadow-xs">
-                                                                    <span
-                                                                        class="material-symbols-outlined text-sm font-bold text-phase-complete">check</span>
-                                                                </div>
-                                                                <span
-                                                                    class="font-technical-tag text-technical-tag font-semibold text-phase-complete">PHASE 2 COMPLETE</span>
+                                                        <div>
+                                                            <div class="flex items-center gap-unit-sm">
+                                                                <span class="font-label-caps text-label-caps uppercase text-outline">Execution Blueprint</span>
+                                                                <span class="font-data-mono-md text-data-mono-md font-semibold text-primary bg-surface-container px-2 py-0.5 rounded"><?= $pId ?></span>
+                                                                <span class="px-2 py-0.5 rounded bg-tertiary-fixed/30 text-on-tertiary-container font-technical-tag text-technical-tag font-semibold">STAGE: <?= strtoupper($pStatus) ?></span>
                                                             </div>
-                                                            <div
-                                                                class="font-headline-sm text-headline-sm text-primary font-medium text-sm leading-snug">
-                                                                Hardware Procurement &amp; Sensor Fab</div>
-                                                            <div
-                                                                class="font-data-mono-md text-data-mono-md text-outline">
-                                                                Aug 28, 2024</div>
-                                                            <div
-                                                                class="font-technical-tag text-technical-tag text-on-surface-variant">
-                                                                Inconel 718 Sensors Shipped</div>
-                                                        </div>
-                                                        <!-- Step 3 -->
-                                                        <div class="flex flex-col gap-unit-xs relative">
-                                                            <div class="flex items-center gap-unit-xs mb-1">
-                                                                <div
-                                                                    class="w-6 h-6 rounded-full bg-surface-container-lowest text-on-surface font-data-mono-md text-data-mono-md font-bold flex items-center justify-center shrink-0 shadow-xs">
-                                                                    <span
-                                                                        class="material-symbols-outlined text-sm font-bold text-phase-complete">check</span>
-                                                                </div>
-                                                                <span
-                                                                    class="font-technical-tag text-technical-tag font-semibold text-phase-complete">PHASE 3 COMPLETE</span>
-                                                            </div>
-                                                            <div
-                                                                class="font-headline-sm text-headline-sm text-primary font-medium text-sm leading-snug">
-                                                                Factory Acceptance Test [FAT]</div>
-                                                            <div
-                                                                class="font-data-mono-md text-data-mono-md text-outline">
-                                                                Oct 10, 2024</div>
-                                                            <div
-                                                                class="font-technical-tag text-technical-tag text-on-surface-variant">
-                                                                St. Petersburg Facility Approved</div>
-                                                        </div>
-                                                        <!-- Step 4 (ACTIVE) -->
-                                                        <div
-                                                            class="flex flex-col gap-unit-xs relative bg-surface-container-lowest p-unit-sm rounded-lg shadow-sm">
-                                                            <div class="flex items-center gap-unit-xs mb-1">
-                                                                <div class="relative flex items-center justify-center">
-                                                                    <span
-                                                                        class="w-3 h-3 rounded-full bg-tertiary-fixed-dim animate-ping absolute"></span>
-                                                                    <span
-                                                                        class="w-5 h-5 rounded-full bg-tertiary-fixed text-primary font-data-mono-md text-data-mono-md font-bold flex items-center justify-center relative">
-                                                                        4
-                                                                    </span>
-                                                                </div>
-                                                                <span
-                                                                    class="font-technical-tag text-technical-tag font-bold text-on-tertiary-container">CURRENT
-                                                                    / ACTIVE</span>
-                                                            </div>
-                                                            <div
-                                                                class="font-headline-sm text-headline-sm text-primary font-semibold text-sm leading-snug">
-                                                                Site Installation &amp; Cold Commissioning</div>
-                                                            <div
-                                                                class="font-data-mono-md text-data-mono-md text-primary font-semibold">
-                                                                Nov 12, 2024 (72% Done)</div>
-                                                            <div
-                                                                class="font-technical-tag text-technical-tag text-secondary">
-                                                                Tuyere sensors mounted, cable racks wired</div>
-                                                        </div>
-                                                        <!-- Step 5 (UPCOMING) -->
-                                                        <div class="flex flex-col gap-unit-xs relative opacity-70">
-                                                            <div class="flex items-center gap-unit-xs mb-1">
-                                                                <div
-                                                                    class="w-5 h-5 rounded-full bg-surface-container-high text-outline font-data-mono-md text-data-mono-md flex items-center justify-center shrink-0">
-                                                                    5
-                                                                </div>
-                                                                <span
-                                                                    class="font-technical-tag text-technical-tag text-outline">SCHEDULED
-                                                                    GATE</span>
-                                                            </div>
-                                                            <div
-                                                                class="font-headline-sm text-headline-sm text-outline font-medium text-sm leading-snug">
-                                                                Hot Rolling Live Handover &amp; SAT</div>
-                                                            <div
-                                                                class="font-data-mono-md text-data-mono-md text-outline">
-                                                                Dec 20, 2024</div>
-                                                            <div
-                                                                class="font-technical-tag text-technical-tag text-outline">
-                                                                Final 72-hr continuous run test</div>
+                                                            <h2 class="font-headline-md text-headline-md text-primary mt-0.5"><?= $pName ?></h2>
                                                         </div>
                                                     </div>
-                                                </div>
-                                            </div>
-                                            <!-- Two-Column Breakdown: Technical Docs & Invoice Mini-Table -->
-                                            <div class="grid grid-cols-1 xl:grid-cols-12 gap-unit-lg items-start">
-                                                <!-- COMPONENT B: Linked Technical Documents Card List (5 cols) -->
-                                                <div class="xl:col-span-5 flex flex-col gap-unit-sm">
-                                                    <div class="flex items-center justify-between">
+                                                    <div class="flex flex-wrap items-center gap-unit-lg">
+                                                        <div class="flex flex-col">
+                                                            <span class="font-label-caps text-label-caps uppercase text-outline">Facility Scope</span>
+                                                            <span class="font-data-mono-md text-data-mono-md font-semibold text-primary"><?= $pLocation ?></span>
+                                                        </div>
+                                                        <div class="h-8 w-px bg-outline-variant/50 hidden sm:block"></div>
                                                         <div class="flex items-center gap-unit-xs">
-                                                            <span
-                                                                class="material-symbols-outlined text-base text-primary">verified_user</span>
-                                                            <span
-                                                                class="font-label-caps text-label-caps uppercase text-primary tracking-wider">Engineering
-                                                                Compliance &amp; Specs (3)</span>
-                                                        </div>
-                                                        <span
-                                                            class="font-technical-tag text-technical-tag text-secondary hover:underline cursor-pointer">View
-                                                            Archive</span>
-                                                    </div>
-                                                    <div class="flex flex-col gap-unit-xs">
-                                                        <!-- Doc 1 -->
-                                                        <div
-                                                            class="p-unit-sm rounded bg-surface-container-low hover:bg-surface-container transition-colors flex items-center justify-between gap-unit-sm">
-                                                            <div class="flex items-center gap-unit-sm min-w-0">
-                                                                <div
-                                                                    class="p-2 rounded bg-surface-container-lowest text-primary shrink-0 shadow-xs">
-                                                                    <span
-                                                                        class="material-symbols-outlined text-xl">description</span>
-                                                                </div>
-                                                                <div class="truncate">
-                                                                    <div
-                                                                        class="font-headline-sm text-headline-sm text-primary text-sm font-medium truncate">
-                                                                        FAT Protocol &amp; Sensor Calibration
-                                                                        Certificate</div>
-                                                                    <div
-                                                                        class="flex items-center gap-unit-xs font-technical-tag text-technical-tag text-on-surface-variant">
-                                                                        <span
-                                                                            class="font-data-mono-md text-data-mono-md">DOC-7721-FAT.pdf</span>
-                                                                        <span class="">•</span>
-                                                                        <span class="">14.8 MB</span>
-                                                                        <span class="">•</span>
-                                                                        <span
-                                                                            class="text-secondary font-semibold">Signed
-                                                                            QA</span>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            <button
-                                                                class="px-2.5 py-1.5 rounded bg-surface-container-lowest hover:bg-primary hover:text-on-primary text-primary transition-colors font-technical-tag text-technical-tag font-semibold shrink-0 shadow-xs flex items-center gap-1"
-                                                                onclick="window.previewDocument('DOC-7721-FAT.pdf', 'FAT Protocol & Sensor Calibration Certificate', 'SIGNED QA')"
-                                                                type="button">
-                                                                <span class="material-symbols-outlined text-sm">download</span>
-                                                                <span class="">PDF</span>
+                                                            <button class="px-unit-sm py-1.5 rounded bg-surface-container text-primary font-technical-tag text-technical-tag font-medium hover:bg-surface-container-high transition-colors"
+                                                                onclick="window.showToast('Telemetry Link Active', 'SCADA feed polling <?= $pId ?> telemetry sensors at 250ms interval.', 'info')" type="button">
+                                                                Telemetry Log
                                                             </button>
-                                                        </div>
-                                                        <!-- Doc 2 -->
-                                                        <div
-                                                            class="p-unit-sm rounded bg-surface-container-low hover:bg-surface-container transition-colors flex items-center justify-between gap-unit-sm">
-                                                            <div class="flex items-center gap-unit-sm min-w-0">
-                                                                <div
-                                                                    class="p-2 rounded bg-surface-container-lowest text-primary shrink-0 shadow-xs">
-                                                                    <span
-                                                                        class="material-symbols-outlined text-xl">schema</span>
-                                                                </div>
-                                                                <div class="truncate">
-                                                                    <div
-                                                                        class="font-headline-sm text-headline-sm text-primary text-sm font-medium truncate">
-                                                                        Wiring Schematic &amp; P&amp;ID Diagram Rev 4.2
-                                                                    </div>
-                                                                    <div
-                                                                        class="flex items-center gap-unit-xs font-technical-tag text-technical-tag text-on-surface-variant">
-                                                                        <span
-                                                                            class="font-data-mono-md text-data-mono-md">DWG-7721-PND.pdf</span>
-                                                                        <span class="">•</span>
-                                                                        <span class="">28.2 MB</span>
-                                                                        <span class="">•</span>
-                                                                        <span class="text-secondary font-semibold">PE
-                                                                            Approved</span>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            <button
-                                                                class="px-2.5 py-1.5 rounded bg-surface-container-lowest hover:bg-primary hover:text-on-primary text-primary transition-colors font-technical-tag text-technical-tag font-semibold shrink-0 shadow-xs flex items-center gap-1"
-                                                                onclick="window.previewDocument('DWG-7721-PND-V3', 'Wiring Schematic & P&ID Diagram Rev 4.2', 'PE APPROVED')"
-                                                                type="button">
-                                                                <span class="material-symbols-outlined text-sm">download</span>
-                                                                <span class="">PDF</span>
-                                                            </button>
-                                                        </div>
-                                                        <!-- Doc 3 -->
-                                                        <div
-                                                            class="p-unit-sm rounded bg-surface-container-low hover:bg-surface-container transition-colors flex items-center justify-between gap-unit-sm">
-                                                            <div class="flex items-center gap-unit-sm min-w-0">
-                                                                <div
-                                                                    class="p-2 rounded bg-surface-container-lowest text-primary shrink-0 shadow-xs">
-                                                                    <span
-                                                                        class="material-symbols-outlined text-xl">fact_check</span>
-                                                                </div>
-                                                                <div class="truncate">
-                                                                    <div
-                                                                        class="font-headline-sm text-headline-sm text-primary text-sm font-medium truncate">
-                                                                        GOST/ISO Compliance Hazardous Plants Dossier
-                                                                    </div>
-                                                                    <div
-                                                                        class="flex items-center gap-unit-xs font-technical-tag text-technical-tag text-on-surface-variant">
-                                                                        <span
-                                                                            class="font-data-mono-md text-data-mono-md">CERT-7721-EXP.pdf</span>
-                                                                        <span class="">•</span>
-                                                                        <span class="">6.4 MB</span>
-                                                                        <span class="">•</span>
-                                                                        <span
-                                                                            class="text-secondary font-semibold">GOST-R
-                                                                            Valid</span>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            <button
-                                                                class="px-2.5 py-1.5 rounded bg-surface-container-lowest hover:bg-primary hover:text-on-primary text-primary transition-colors font-technical-tag text-technical-tag font-semibold shrink-0 shadow-xs flex items-center gap-1"
-                                                                onclick="window.previewDocument('CERT-7721-EXP', 'GOST/ISO Compliance Hazardous Plants Dossier', 'GOST-R VALID')"
-                                                                type="button">
-                                                                <span class="material-symbols-outlined text-sm">download</span>
-                                                                <span class="">PDF</span>
+                                                            <button class="px-unit-sm py-1.5 rounded bg-primary text-on-primary font-technical-tag text-technical-tag font-medium hover:bg-primary-container transition-colors"
+                                                                onclick="window.location.href='SupportTicketView.php?project=<?= urlencode($pId) ?>'" type="button">
+                                                                Field Ops Dispatch
                                                             </button>
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <!-- COMPONENT C: Linked Invoices Mini Table (7 cols) -->
-                                                <div class="xl:col-span-7 flex flex-col gap-unit-sm">
-                                                    <div class="flex items-center justify-between">
-                                                        <div class="flex items-center gap-unit-xs">
-                                                            <span
-                                                                class="material-symbols-outlined text-base text-primary">receipt_long</span>
-                                                            <span
-                                                                class="font-label-caps text-label-caps uppercase text-primary tracking-wider">Milestone
-                                                                Capital Disbursements</span>
-                                                        </div>
-                                                        <span
-                                                            class="font-technical-tag text-technical-tag text-outline">CONFIDENTIAL
-                                                            BILLING MATRIX</span>
+
+                                                <!-- Milestones / Billing Gates -->
+                                                <div>
+                                                    <h3 class="font-headline-sm text-sm font-bold text-primary uppercase tracking-wider mb-2">Gate Milestones &amp; Scheduled Phases</h3>
+                                                    <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-unit-sm">
+                                                        <?php if (empty($pMilestones)): ?>
+                                                            <div class="p-unit-sm rounded bg-surface-container-low text-xs text-on-surface-variant col-span-full">
+                                                                Continuous execution schedule active. Real-time telemetry monitored via SCADA gateway.
+                                                            </div>
+                                                        <?php else: ?>
+                                                            <?php foreach ($pMilestones as $mIdx => $m): ?>
+                                                                <div class="p-unit-sm rounded border <?= !empty($m['invoiced']) ? 'border-secondary/40 bg-surface-container-lowest' : 'border-outline/20 bg-surface-container-low/40' ?> flex flex-col justify-between">
+                                                                    <div>
+                                                                        <div class="flex items-center justify-between mb-1">
+                                                                            <span class="font-mono text-[10px] text-outline">GATE #<?= $mIdx + 1 ?></span>
+                                                                            <span class="px-1.5 py-0.5 rounded text-[9px] font-bold font-mono <?= !empty($m['invoiced']) ? 'bg-secondary/20 text-secondary' : 'bg-outline/20 text-on-surface-variant' ?>">
+                                                                                <?= !empty($m['invoiced']) ? 'COMPLETED' : 'PENDING' ?>
+                                                                            </span>
+                                                                        </div>
+                                                                        <div class="text-xs font-semibold text-primary"><?= htmlspecialchars($m['milestone_description']) ?></div>
+                                                                    </div>
+                                                                    <div class="mt-2 pt-1 border-t border-outline/10 flex items-center justify-between text-[11px] font-mono text-outline">
+                                                                        <span>Target: <?= htmlspecialchars($m['scheduled_date']) ?></span>
+                                                                        <?php if ((float)$m['milestone_amount'] > 0): ?>
+                                                                            <span class="text-primary font-semibold">$<?= number_format((float)$m['milestone_amount'], 2) ?></span>
+                                                                        <?php endif; ?>
+                                                                    </div>
+                                                                </div>
+                                                            <?php endforeach; ?>
+                                                        <?php endif; ?>
                                                     </div>
-                                                    <div
-                                                        class="bg-surface-container-low rounded-lg p-unit-xs overflow-x-auto shadow-xs">
-                                                        <table class="w-full text-left">
-                                                            <thead>
-                                                                <tr
-                                                                    class="text-on-surface-variant font-label-caps text-label-caps uppercase text-xs">
-                                                                    <th class="py-2 px-unit-sm">Invoice Ref</th>
-                                                                    <th class="py-2 px-unit-sm">Milestone / Scope Stage
-                                                                    </th>
-                                                                    <th class="py-2 px-unit-sm text-right">Amount</th>
-                                                                    <th class="py-2 px-unit-sm">Maturity Date</th>
-                                                                    <th class="py-2 px-unit-sm text-right">Accounting
-                                                                        State</th>
-                                                                </tr>
-                                                            </thead>
-                                                            <tbody class="divide-y divide-surface-container">
-                                                                <!-- Inv 1 -->
-                                                                <tr
-                                                                    class="bg-surface-container-lowest/80 text-body-sm font-body-sm">
-                                                                    <td
-                                                                        class="py-2.5 px-unit-sm font-data-mono-md text-data-mono-md font-semibold text-primary">
-                                                                        INV-2024-4411</td>
-                                                                    <td class="py-2.5 px-unit-sm text-on-surface">
-                                                                        Advance Mobilization Payment (30%)</td>
-                                                                    <td class="py-2.5 px-unit-sm text-right font-data-mono-md text-data-mono-md font-semibold text-primary pl-2 project-card-highlight">
-                                                                        $555,000.00
-                                                                    </td>
-                                                                    <td
-                                                                        class="py-2.5 px-unit-sm font-technical-tag text-technical-tag text-outline">
-                                                                        Jun 22, 2024</td>
-                                                                    <td class="py-2.5 px-unit-sm text-right">
-                                                                        <span
-                                                                            class="inline-block px-2 py-0.5 rounded text-technical-tag font-technical-tag font-semibold badge-status-green">
-                                                                            PAID
-                                                                        </span>
-                                                                    </td>
-                                                                </tr>
-                                                                <!-- Inv 2 -->
-                                                                <tr
-                                                                    class="bg-surface-container-lowest/80 text-body-sm font-body-sm">
-                                                                    <td
-                                                                        class="py-2.5 px-unit-sm font-data-mono-md text-data-mono-md font-semibold text-primary">
-                                                                        INV-2024-5890</td>
-                                                                    <td class="py-2.5 px-unit-sm text-on-surface">
-                                                                        Equipment Delivery &amp; Fabrication (40%)</td>
-                                                                    <td class="py-2.5 px-unit-sm text-right font-data-mono-md text-data-mono-md font-semibold text-primary pl-2 project-card-highlight">
-                                                                        $740,000.00
-                                                                    </td>
-                                                                    <td
-                                                                        class="py-2.5 px-unit-sm font-technical-tag text-technical-tag text-outline">
-                                                                        Sep 15, 2024</td>
-                                                                    <td class="py-2.5 px-unit-sm text-right">
-                                                                        <span
-                                                                            class="inline-block px-2 py-0.5 rounded text-technical-tag font-technical-tag font-semibold badge-status-green">
-                                                                            PAID
-                                                                        </span>
-                                                                    </td>
-                                                                </tr>
-                                                                <!-- Inv 3 -->
-                                                                <tr
-                                                                    class="bg-surface-container-lowest text-body-sm font-body-sm">
-                                                                    <td
-                                                                        class="py-2.5 px-unit-sm font-data-mono-md text-data-mono-md font-semibold text-primary">
-                                                                        INV-2024-7019</td>
-                                                                    <td
-                                                                        class="py-2.5 px-unit-sm text-primary font-medium">
-                                                                        FAT Signoff &amp; Cold Commissioning (20%)</td>
-                                                                    <td class="py-2.5 px-unit-sm text-right font-data-mono-md text-data-mono-md font-semibold text-primary pl-2 project-card-highlight">
-                                                                        $370,000.00
-                                                                    </td>
-                                                                    <td
-                                                                        class="py-2.5 px-unit-sm font-technical-tag text-technical-tag text-primary font-semibold">
-                                                                        Nov 28, 2024</td>
-                                                                    <td class="py-2.5 px-unit-sm text-right">
-                                                                        <span
-                                                                            class="inline-block px-2 py-0.5 rounded text-technical-tag font-technical-tag font-bold badge-status-amber">
-                                                                            PENDING / INVOICED
-                                                                        </span>
-                                                                    </td>
-                                                                </tr>
-                                                                <!-- Inv 4 -->
-                                                                <tr
-                                                                    class="bg-surface-container-lowest/50 text-body-sm font-body-sm opacity-80">
-                                                                    <td
-                                                                        class="py-2.5 px-unit-sm font-data-mono-md text-data-mono-md text-outline">
-                                                                        INV-2024-8114</td>
-                                                                    <td
-                                                                        class="py-2.5 px-unit-sm text-on-surface-variant">
-                                                                        Final Handover &amp; Retainage Release (10%)
-                                                                    </td>
-                                                                    <td class="py-2.5 px-unit-sm text-right font-data-mono-md text-data-mono-md text-outline pl-2 project-card-highlight">
-                                                                        $185,000.00
-                                                                    </td>
-                                                                    <td
-                                                                        class="py-2.5 px-unit-sm font-technical-tag text-technical-tag text-outline">
-                                                                        Jan 15, 2025</td>
-                                                                    <td class="py-2.5 px-unit-sm text-right">
-                                                                        <span
-                                                                            class="inline-block px-2 py-0.5 rounded text-technical-tag font-technical-tag font-medium badge-status-slate">
-                                                                            UNBILLED / GATE-5
-                                                                        </span>
-                                                                    </td>
-                                                                </tr>
-                                                            </tbody>
+                                                </div>
+
+                                                <!-- Linked Technical Documents -->
+                                                <div class="flex flex-col sm:flex-row items-center justify-between pt-unit-sm border-t border-outline/20 text-xs text-on-surface-variant">
+                                                    <div class="flex items-center gap-2">
+                                                        <span class="material-symbols-outlined text-base text-primary">description</span>
+                                                        <span>Project Specification &amp; QA Blueprint: <strong>SPEC-<?= $pId ?>-R3.PDF</strong></span>
+                                                    </div>
+                                                    <div class="flex items-center gap-2 mt-2 sm:mt-0">
+                                                        <button class="px-3 py-1.5 rounded bg-surface-container hover:bg-surface-container-high text-primary font-medium text-xs flex items-center gap-1"
+                                                            onclick="window.previewDocument('SPEC-<?= $pId ?>.pdf', '<?= $pName ?> - Blueprint Dossier', 'SIGNED QA')">
+                                                            <span class="material-symbols-outlined text-sm">download</span> Download PDF Spec
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
+                            </tbody>
                                                         </table>
                                                     </div>
                                                 </div>

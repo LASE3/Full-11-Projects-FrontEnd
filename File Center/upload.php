@@ -32,7 +32,7 @@ $pendingApprovals = (int)$pdo->query("SELECT COUNT(*) FROM documents WHERE statu
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>Secure Document Ingestion - VOSTOKPRIBOR File Center</title>
     <link rel="stylesheet" href="css/fc-tokens.css" />
-    <link rel="stylesheet" href="css/fc-common.css" />
+    <link rel="stylesheet" href="css/fc-common.css?v=<?= time() ?>" />
     <link rel="stylesheet" href="css/fc-upload.css" />
 </head>
 
@@ -86,7 +86,7 @@ $pendingApprovals = (int)$pdo->query("SELECT COUNT(*) FROM documents WHERE statu
     </header>
 
     <!-- LEFT SIDEBAR -->
-    <aside class="vk-sidebar">
+    <aside class="vk-sidebar" style="background-color: #0f2438 !important; border-right: 1px solid rgba(255, 255, 255, 0.1) !important;">
         <div class="vk-sidebar-nav">
             <div class="vk-sidebar-header">Document Vault</div>
             <a class="vk-nav-item" href="Dashboard.php">
@@ -117,6 +117,13 @@ $pendingApprovals = (int)$pdo->query("SELECT COUNT(*) FROM documents WHERE statu
                     <span>Retention &amp; Holds</span>
                 </div>
             </a>
+                        <a href="Integrations.php" class="vk-nav-item">
+                <div class="fc-flex-center-gap-10">
+                    <span class="material-symbols-outlined text-[18px]" style="color: #00E5FF;">hub</span>
+                    <span style="color: #00E5FF; font-weight: 600;">System Integrations</span>
+                </div>
+                <span class="sidebar-badge" style="background: rgba(0, 229, 255, 0.15); color: #00E5FF; border: 1px solid rgba(0, 229, 255, 0.3); font-size: 9px; padding: 2px 6px; border-radius: 4px;">SYS06</span>
+            </a>
             <a class="vk-nav-item" href="audit.php">
                 <div class="fc-flex-center-gap-10" >
                     <span class="material-symbols-outlined text-[18px]">fingerprint</span>
@@ -132,21 +139,21 @@ $pendingApprovals = (int)$pdo->query("SELECT COUNT(*) FROM documents WHERE statu
                 </div>
                 <span class="vk-tag fc-font-size-9px-background-21b8">SYS-01</span>
             </a>
-            <a class="vk-nav-item" href="../Employee Intranet/index.php">
+            <a class="vk-nav-item" href="../Employee Intranet/login.php">
                 <div class="fc-flex-center-gap-10" >
                     <span class="material-symbols-outlined text-[18px] fc-color-5c7290-b50c">badge</span>
                     <span>Employee Intranet</span>
                 </div>
                 <span class="vk-tag fc-font-size-9px-background-cfa1">SYS-04</span>
             </a>
-            <a class="vk-nav-item" href="../Developer/index.php">
+            <a class="vk-nav-item" href="../Developer/login.php">
                 <div class="fc-flex-center-gap-10" >
                     <span class="material-symbols-outlined text-[18px] fc-color-1e8fa6-f90d">terminal</span>
                     <span>Developer / API Portal</span>
                 </div>
                 <span class="vk-tag fc-font-size-9px-background-5382">SYS-10</span>
             </a>
-            <a class="vk-nav-item" href="../Admin & Governance Portal/index.php">
+            <a class="vk-nav-item" href="../Admin & Governance Portal/login.php">
                 <div class="fc-flex-center-gap-10" >
                     <span class="material-symbols-outlined text-[18px] fc-color-var-vk-alert-6578">shield</span>
                     <span>Admin &amp; Governance</span>

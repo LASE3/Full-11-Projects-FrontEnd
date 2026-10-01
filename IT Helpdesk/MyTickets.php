@@ -6,22 +6,45 @@ require_once __DIR__ . '/api/db_helper.php';
 $pdo = getItDb();
 $currUser = getItCurrentUser();
 
-$techFilter = $_GET['tech'] ?? 'Alexey Ivanov';
+$userEmpId = $currUser['emp_id'] ?? null;
+$userFullName = $currUser['full_name'] ?? 'Alexey Ivanov';
+$isSuperAdmin = isSuperAdmin($currUser)
+    || in_array($currUser['role_name'] ?? '', ['Super Administrator', 'Executive SuperAdmin', 'System Administrator', 'Admin', 'IT Director'])
+    || in_array($currUser['clearance_level'] ?? '', ['L4', 'L5'])
+    || ($currUser['username'] ?? '') === 'admin'
+    || ($currUser['email'] ?? '') === 'admin@gmail.com';
 
-// Query tickets for this tech or all assigned
-if ($techFilter === 'all') {
-  $stmt = $pdo->prepare("SELECT * FROM tickets WHERE assigned_emp_id IS NOT NULL ORDER BY FIELD(priority, 'Critical', 'High', 'Medium', 'Low'), created_at DESC");
-  $stmt->execute();
+if ($isSuperAdmin) {
+    // Super admin can see everything
+    $techFilter = $_GET['tech'] ?? 'all';
+    if ($techFilter === 'all') {
+        $stmt = $pdo->query("SELECT * FROM tickets ORDER BY FIELD(priority, 'Critical', 'High', 'Medium', 'Low'), created_at DESC");
+        $myTickets = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } else {
+        $stmt = $pdo->prepare("
+            SELECT t.* FROM tickets t
+            LEFT JOIN employees e ON t.assigned_emp_id = e.emp_id
+            WHERE t.assigned_emp_id = :empid OR e.full_name = :techname OR t.requester_name = :reqname
+            ORDER BY FIELD(t.priority, 'Critical', 'High', 'Medium', 'Low'), t.created_at DESC
+        ");
+        $stmt->execute([':empid' => $techFilter, ':techname' => $techFilter, ':reqname' => $techFilter]);
+        $myTickets = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 } else {
-  $stmt = $pdo->prepare("SELECT * FROM tickets WHERE assigned_emp_id IS NOT NULL ORDER BY FIELD(priority, 'Critical', 'High', 'Medium', 'Low'), created_at DESC");
-  $stmt->execute();
-}
-$myTickets = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-// If no tickets assigned to current filter, fallback to showing all open tickets
-if (empty($myTickets)) {
-  $stmt = $pdo->query("SELECT * FROM tickets ORDER BY FIELD(priority, 'Critical', 'High', 'Medium', 'Low'), created_at DESC LIMIT 10");
-  $myTickets = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    // Regular user / technician: query only their tickets
+    $techFilter = $userFullName;
+    $stmt = $pdo->prepare("
+        SELECT t.* FROM tickets t
+        LEFT JOIN employees e ON t.assigned_emp_id = e.emp_id
+        WHERE t.assigned_emp_id = :empid OR e.full_name = :fullname OR t.requester_name = :reqname
+        ORDER BY FIELD(t.priority, 'Critical', 'High', 'Medium', 'Low'), t.created_at DESC
+    ");
+    $stmt->execute([
+        ':empid'    => $userEmpId,
+        ':fullname' => $userFullName,
+        ':reqname'  => $userFullName
+    ]);
+    $myTickets = $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
 // Counts
@@ -212,7 +235,7 @@ $slaPct = $sbStats['sla_pct'];
             </div>
             <span class="sidebar-badge hd-text-xs">SYS 01</span>
           </a>
-          <a href="../Employee Intranet/index.php" class="sidebar-nav-item">
+          <a href="../Employee Intranet/login.php" class="sidebar-nav-item">
             <div class="sidebar-item-left">
               <span class="sidebar-icon">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -302,7 +325,7 @@ $slaPct = $sbStats['sla_pct'];
                 <?php if (empty($myTickets)): ?>
                   <tr>
                     <td colspan="7" style="text-align: center; padding: 24px; color: var(--hd-text-muted);">
-                      No tickets currently assigned to this engineer.
+                      No tickets for you
                     </td>
                   </tr>
                 <?php else: ?>

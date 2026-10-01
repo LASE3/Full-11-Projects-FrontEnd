@@ -516,36 +516,66 @@
         return;
       }
 
-      // Generate Lead Reference ID conforming to Baseline SOP-01
-      const randomSuffix = Math.floor(1000 + Math.random() * 9000);
-      const leadId = `LEAD-2026-${randomSuffix}`;
-      const timestamp = new Date().toLocaleTimeString("en-US", {
-        hour12: false,
-      });
-
-      // Render Confirmation Overlay Modal
-      const confirmationBackdrop = document.getElementById(
-        "rfqConfirmationBackdrop",
-      );
-      const leadIdDisplay = document.getElementById("confirmedLeadId");
-      const leadRoutingDisplay = document.getElementById("confirmedRouting");
-
-      if (confirmationBackdrop && leadIdDisplay) {
-        leadIdDisplay.textContent = leadId;
-        if (leadRoutingDisplay) {
-          leadRoutingDisplay.textContent = `Routed via SOP-01 to CRM (crm.vostokpribor.local). Assigned Account Lead: Pavel Orlov (EMP-1006) / Sara Lindholm (EMP-1007).`;
-        }
-        confirmationBackdrop.classList.add("show");
+      const budgetSelect = document.getElementById("rfqBudget");
+      const submitBtn = form.querySelector('button[type="submit"]');
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span>Saving & Dispatching to CRM...</span>';
       }
 
-      showCorporateToast(
-        `Commercial Lead Generated [${leadId}]`,
-        `Inquiry from ${companyInput.value} dispatched to CRM queue at ${timestamp}.`,
-        "success",
-      );
+      fetch('api/contact.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          company: companyInput.value.trim(),
+          contact: contactInput.value.trim(),
+          email: emailInput.value.trim(),
+          sector: sectorSelect ? sectorSelect.value : '',
+          interest: interestSelect ? interestSelect.value : '',
+          budget: budgetSelect ? budgetSelect.value : '',
+          notes: notesInput ? notesInput.value.trim() : ''
+        })
+      })
+      .then(res => res.json())
+      .then(result => {
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = '<span>Submit RFP / Inquiry</span>';
+        }
+        const leadId = result.lead_id || `LEAD-2026-${Math.floor(1000 + Math.random() * 9000)}`;
+        const timestamp = new Date().toLocaleTimeString("en-US", { hour12: false });
 
-      // Reset form fields
-      form.reset();
+        const confirmationBackdrop = document.getElementById("rfqConfirmationBackdrop");
+        const leadIdDisplay = document.getElementById("confirmedLeadId");
+        const leadRoutingDisplay = document.getElementById("confirmedRouting");
+
+        if (confirmationBackdrop && leadIdDisplay) {
+          leadIdDisplay.textContent = leadId;
+          if (leadRoutingDisplay) {
+            leadRoutingDisplay.textContent = `Saved to database and routed to CRM (crm.vostokpribor.local). Assigned Account Lead: Pavel Orlov (EMP-1006) / Sara Lindholm (EMP-1007).`;
+          }
+          confirmationBackdrop.classList.add("show");
+        }
+
+        showCorporateToast(
+          `Commercial Lead Saved [${leadId}]`,
+          `Inquiry from ${companyInput.value} saved & dispatched to CRM queue at ${timestamp}.`,
+          "success"
+        );
+        form.reset();
+      })
+      .catch(err => {
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = '<span>Submit RFP / Inquiry</span>';
+        }
+        console.error(err);
+        showCorporateToast(
+          "Transmission Issue",
+          "Could not save inquiry to server: " + (err.message || "Network error"),
+          "error"
+        );
+      });
     });
 
     // Confirmation modal close button

@@ -122,8 +122,8 @@ body {
 
 .vk-sidebar {
   width: var(--sidebar-width);
-  background-color: #ffffff;
-  border-right: 1px solid var(--vk-neutral-200);
+  background-color: #0f2438 !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.1) !important;
   position: fixed;
   top: var(--topbar-height);
   bottom: var(--status-bar-height);
@@ -133,6 +133,40 @@ body {
   justify-content: space-between;
   z-index: 900;
   overflow-y: auto;
+}
+
+.vk-sidebar .vk-sidebar-header {
+  color: #94a3b8 !important;
+}
+
+.vk-sidebar .vk-nav-item {
+  color: #cbd5e1 !important;
+}
+
+.vk-sidebar .vk-nav-item:hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: #ffffff !important;
+  border-left: 3.5px solid var(--vk-sys-accent, #c97a3d);
+}
+
+.vk-sidebar .vk-nav-item.active {
+  background-color: rgba(255, 255, 255, 0.12) !important;
+  color: #ffffff !important;
+  border-left: 3px solid var(--vk-sys-accent, #c97a3d);
+}
+
+.vk-sidebar .sidebar-nav-item {
+  color: #cbd5e1 !important;
+}
+
+.vk-sidebar .sidebar-nav-item:hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: #ffffff !important;
+}
+
+.vk-sidebar .vk-sidebar-footer {
+  background-color: #0c1c2c !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
 }
 
 .vk-sidebar-nav {

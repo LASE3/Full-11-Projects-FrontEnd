@@ -286,6 +286,11 @@
         if (countEl) countEl.textContent = items.length;
         if (valEl) valEl.textContent = this.formatUSD(stageTotalVal);
 
+        if (items.length === 0) {
+          wrapper.innerHTML = '<div class="kanban-empty-part" style="padding: 24px 10px; text-align: center; color: #8892b0; font-size: 12px; font-weight: 500; font-style: italic; border: 1px dashed rgba(255,255,255,0.15); border-radius: 6px; margin: 8px 4px;">( There\'s no Opportunities in the moment )</div>';
+          return;
+        }
+
         items.forEach((opp) => {
           const card = document.createElement("div");
           card.className = "kanban-deal-card";
@@ -553,6 +558,32 @@
 
       // Initial Kanban Render if present
       if (document.getElementById("kanban-cards-qualification")) {
+        if (window.INITIAL_DB_OPPORTUNITIES !== undefined && Array.isArray(window.INITIAL_DB_OPPORTUNITIES)) {
+          if (window.INITIAL_DB_OPPORTUNITIES.length > 0) {
+            const stageMap = { "qualification": "qualification", "proposal": "proposal", "negotiation": "negotiation", "contract": "contract", "won": "won" };
+            this.opportunities = window.INITIAL_DB_OPPORTUNITIES.map((o) => {
+              let rawStage = (o.stage || "").toLowerCase().trim();
+              let matched = "qualification";
+              for (const s of Object.keys(stageMap)) {
+                if (rawStage.includes(s)) { matched = s; break; }
+              }
+              return {
+                id: "OPP-2026-" + String(o.opp_id).padStart(4, "0"),
+                client: o.company_name || ("Enterprise Account " + (o.cus_id || "")),
+                title: o.opp_title || (o.sector ? o.sector + " Instrumentation" : "Industrial Automation System"),
+                value: parseFloat(o.estimated_value || 0),
+                stage: matched,
+                probability: parseInt(o.probability_percent || (matched === "negotiation" ? 80 : matched === "proposal" ? 60 : 35)),
+                closeDate: o.expected_close_date || "Q4 2026",
+                rep: { name: o.sales_representative || "Pavel Orlov", avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=60&auto=format&fit=crop&q=80" },
+                confidential: !!parseInt(o.is_confidential || 0),
+                priority: o.priority || "high"
+              };
+            });
+          } else {
+            this.opportunities = [];
+          }
+        }
         this.renderKanban();
       }
 

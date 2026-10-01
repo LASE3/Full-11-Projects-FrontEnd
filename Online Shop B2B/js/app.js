@@ -1065,42 +1065,8 @@
     sortBy: "default",
     galleryActiveIndex: 0,
     selectedTrackingOrderId: "ORD-2026-005",
-    cartItems: [
-      {
-        id: "PROD-1001",
-        sku: "VP-OPT-9020",
-        name: "Industrial Optical Sensor Package",
-        qty: 2,
-        price: 5200,
-        model: "Per Unit",
-      },
-      {
-        id: "PROD-1005",
-        sku: "VP-GTW-320",
-        name: "Remote Monitoring Gateway",
-        qty: 4,
-        price: 2600,
-        model: "Per Unit",
-      },
-    ],
-    quoteItems: [
-      {
-        id: "PROD-1004",
-        sku: "VP-PLC-X400",
-        name: "Industrial PLC Integration Unit",
-        qty: 1,
-        price: 18500,
-        model: "Per Project",
-      },
-      {
-        id: "PROD-1008",
-        sku: "VP-SRV-AUT",
-        name: "Automation Software Integration",
-        qty: 1,
-        price: 19200,
-        model: "Per Project",
-      },
-    ],
+    cartItems: [],
+    quoteItems: [],
   };
 
   // ==========================================================================

@@ -216,8 +216,10 @@
         sessionStorage.getItem("vp_cus_id") ||
         localStorage.getItem("vp_cus_id") ||
         "";
-      const params = cusId ? `?cus_id=${encodeURIComponent(cusId)}` : "";
-      const ordRes  = await fetch(`../api/v1/orders.php${params}&limit=200`);
+      const ordUrl = cusId
+        ? `../api/v1/orders.php?limit=200&cus_id=${encodeURIComponent(cusId)}`
+        : `../api/v1/orders.php?limit=200`;
+      const ordRes  = await fetch(ordUrl);
       const ordJson = await ordRes.json();
       const orders  = ordJson.data || [];
 

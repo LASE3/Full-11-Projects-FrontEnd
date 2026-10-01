@@ -18,9 +18,7 @@ require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/../includes/auth_guard.php';
 require_once __DIR__ . '/../includes/integration_panel.php';
 
-// Enforce authentication & clearance
-requireAuth('Web');
-$currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clearance_level' => 'L2'];
+$currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Corporate Visitor', 'clearance_level' => 'L1'];
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -50,10 +48,6 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
             <a href="index.php" class="vostok-btn-back">
                 <span class="material-symbols-outlined vostok-icon-sm">arrow_back</span>
                 <span>Back to Dashboard</span>
-            </a>
-            <a href="../api/logout.php?redirect=../VOSTOKPRIBOR Corporate Web Platform/index.php" class="vostok-btn-back vostok-btn-signout">
-                <span class="material-symbols-outlined vostok-icon-sm">logout</span>
-                <span>Sign Out</span>
             </a>
         </div>
     </header>

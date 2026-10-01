@@ -75,7 +75,7 @@ $currUser = $_SESSION['vostok_user'] ?? [
                 <span class="material-symbols-outlined vostok-icon-sm">arrow_back</span>
                 <span>Back to Dashboard</span>
             </a>
-            <a href="./api/logout.php?redirect=../Online%20Shop%20B2B/login.php" class="vostok-btn-back vostok-btn-signout" title="Sign Out of Online Shop B2B">
+            <a href="./api/logout.php?redirect=../login.php" class="vostok-btn-back vostok-btn-signout" title="Sign Out of Online Shop B2B">
                 <span class="material-symbols-outlined vostok-icon-sm">logout</span>
                 <span>Sign Out</span>
             </a>

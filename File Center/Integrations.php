@@ -20,7 +20,8 @@ require_once __DIR__ . '/../includes/auth_guard.php';
 require_once __DIR__ . '/../includes/integration_panel.php';
 
 // Enforce authentication & clearance
-requireAuth('FileCenter');
+require_once __DIR__ . '/../includes/auth_guard.php';
+requireAuth('DOC');
 $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clearance_level' => 'L2'];
 ?>
 <!DOCTYPE html>

@@ -1,11 +1,14 @@
 <?php
+require_once __DIR__ . '/customer_context.php';
 require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/../includes/auth_guard.php';
 requireAuth('CUS');
 
 // Establish database connection and identify current logged-in customer
 $pdo = getDbConnection();
-$cusId = $_SESSION['cus_id'] ?? ($_SESSION['vostok_user']['user_id'] ?? null);
+$currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clearance_level' => 'L2'];
+$isSuperAdmin = isSuperAdmin($currUser);
+$cusId = $_SESSION['cus_id'] ?? ($currUser['user_id'] ?? null);
 
 $invoices = [];
 $kpis = [
@@ -17,8 +20,13 @@ $kpis = [
 ];
 $nextMilestone = null;
 
-if ($cusId) {
+if ($isSuperAdmin || $cusId) {
     try {
+        $whereKpi = $isSuperAdmin ? '1=1' : 'cus_id = :cid';
+        $whereInv = $isSuperAdmin ? '1=1' : 'i.cus_id = :cid';
+        $whereNext = $isSuperAdmin ? "payment_status IN ('Pending', 'Unpaid', 'Overdue')" : "cus_id = :cid AND payment_status IN ('Pending', 'Unpaid', 'Overdue')";
+        $params   = $isSuperAdmin ? [] : [':cid' => $cusId];
+
         // Fetch financial KPI metrics
         $kpiStmt = $pdo->prepare("
             SELECT 
@@ -28,9 +36,9 @@ if ($cusId) {
                 COUNT(CASE WHEN payment_status IN ('Pending', 'Unpaid', 'Overdue') THEN 1 END) AS pending_count,
                 COUNT(CASE WHEN payment_status = 'Paid' THEN 1 END) AS paid_count
             FROM invoices 
-            WHERE cus_id = :cid
+            WHERE {$whereKpi}
         ");
-        $kpiStmt->execute([':cid' => $cusId]);
+        $kpiStmt->execute($params);
         $kpis = $kpiStmt->fetch(PDO::FETCH_ASSOC) ?: $kpis;
 
         // Fetch overall invoices ledger
@@ -46,21 +54,21 @@ if ($cusId) {
                 c.company_name AS facility_name
             FROM invoices i
             LEFT JOIN customers c ON i.cus_id = c.cus_id
-            WHERE i.cus_id = :cid
+            WHERE {$whereInv}
             ORDER BY i.issued_at DESC
         ");
-        $invStmt->execute([':cid' => $cusId]);
+        $invStmt->execute($params);
         $invoices = $invStmt->fetchAll(PDO::FETCH_ASSOC);
 
         // Fetch next upcoming maturity invoice milestone
         $nextStmt = $pdo->prepare("
             SELECT inv_id AS invoice_id, due_date, total_value AS total_amount 
             FROM invoices 
-            WHERE cus_id = :cid AND payment_status IN ('Pending', 'Unpaid', 'Overdue')
+            WHERE {$whereNext}
             ORDER BY due_date ASC 
             LIMIT 1
         ");
-        $nextStmt->execute([':cid' => $cusId]);
+        $nextStmt->execute($params);
         $nextMilestone = $nextStmt->fetch(PDO::FETCH_ASSOC);
 
     } catch (PDOException $e) {
@@ -113,9 +121,7 @@ if ($cusId) {
                 </div>
                 <div
                     class="flex items-center gap-unit-xs text-on-primary-container font-technical-tag text-technical-tag">
-                    <span class="">Severstal Metallurgy Plant #4</span><span
-                        class="text-on-primary-container/50">|</span><span
-                        class="text-primary-fixed-dim">VP-88204-EU</span>
+                    <span class=""><?= htmlspecialchars($customer['company_name'] ?? 'Industrial Operations Client') ?></span><span class="text-on-primary-container/50">|</span><span class="text-primary-fixed-dim"><?= htmlspecialchars($customer['tax_id'] ?? ($customer['code'] ?? 'VP-CORP')) ?></span>
                 </div>
             </div>
         </div>
@@ -141,21 +147,20 @@ if ($cusId) {
             </div><a class="flex items-center text-on-primary-container hover:text-on-primary" href="Documents.php"
                 title="Technical Documentation"><span class="material-symbols-outlined">menu_book</span></a>
             <div class="h-6 w-px bg-on-primary-container/30"></div>
-            <div class="flex items-center gap-unit-sm cursor-pointer" id="header-profile-btn">
+                        <div class="flex items-center gap-unit-sm cursor-pointer" id="header-profile-btn" onclick="location.href='AccountSettings.php'">
                 <div class="flex flex-col text-right"><span
-                        class="font-headline-sm text-headline-sm text-on-primary font-medium leading-none">Alexey R.
-                        Danilov</span><span
-                        class="font-technical-tag text-technical-tag text-on-primary-container mt-0.5">Chief
-                        Instrumentation Eng.</span></div><img alt="Alexey R. Danilov Profile"
-                    class="w-8 h-8 rounded-full object-cover ring-1 ring-tertiary-fixed/50"
-                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuBxrM-O7aJYHYCDtkoA3WwbiOe6BxJ0vK7AcnogxwZN9MACsknTlpyGKyy-lWl2Hwn9IEZLPDCvVGrmxN2kvPEfzbJ5E4u5x6-38EP2exwXW8Dmm-7oMTzMG07_rmRLbT0xvZwQMFEwa4qJO5LcWbn58eWx3fSkVjAmSI3UWO8dCTgRg6GBgrY_MTUl-JF-JUf4K5CGPp0o4tvKoxbSqSysGT8r3j8de3w_sfk4F8p9ysiXXfbUkWPV">
+                        class="font-headline-sm text-headline-sm text-on-primary font-medium leading-none"><?= htmlspecialchars($currUser['full_name'] ?? 'Authorized User') ?></span><span
+                        class="font-technical-tag text-technical-tag text-on-primary-container mt-0.5"><?= htmlspecialchars($currUser['role_name'] ?? 'Client Representative') ?></span></div>
+                <div class="w-8 h-8 rounded-full bg-tertiary-fixed/30 text-tertiary-fixed border border-tertiary-fixed/50 flex items-center justify-center font-bold text-xs">
+                    <?= htmlspecialchars(strtoupper(substr($currUser['full_name'] ?? 'U', 0, 2))) ?>
+                </div>
             </div>
-
             <!-- Top Bar Sign Out -->
-            <a href="./api/logout.php?redirect=../Customer%20Portal/login.php" class="top-signout-btn" title="Sign Out of Customer Portal" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" ><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
+            <a href="./api/logout.php?redirect=../Customer%20Portal/login.php" class="top-signout-btn" title="Sign Out of Customer Portal" onclick="(function(){sessionStorage.clear();localStorage.clear();})()"><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
         </div>
     </header>
-    <aside id="portal-sidebar" class="fixed left-0 top-16 bottom-0 w-64 bg-primary-container z-40 flex flex-col justify-between shadow-sm">
+    <aside id="portal-sidebar"
+        class="fixed left-0 top-16 bottom-0 w-64 bg-primary-container z-40 flex flex-col justify-between border-r border-outline/20">
         <div class="py-unit-md">
             <div
                 class="px-unit-base mb-unit-sm font-label-caps text-label-caps text-on-primary-container uppercase tracking-wider flex items-center justify-between">
@@ -168,59 +173,30 @@ if ($cusId) {
                 data-active-classes="bg-surface-container-high/10 text-on-primary font-semibold border-l-4 border-on-tertiary-container">
                 <a class="flex items-center gap-unit-sm px-unit-base py-unit-sm text-on-primary-container hover:bg-surface-container-high/5 hover:text-on-primary transition-colors font-headline-sm text-headline-sm font-normal"
                     data-path="dashboard" href="Dashboard.php"><svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor"
-                        stroke-width="1.75" viewBox="0 0 24 24">
-                        <rect height="7" rx="1" width="7" x="3" y="3"></rect>
-                        <rect height="7" rx="1" width="7" x="14" y="3"></rect>
-                        <rect height="7" rx="1" width="7" x="14" y="14"></rect>
-                        <rect height="7" rx="1" width="7" x="3" y="14"></rect>
-                    </svg><span class="">Dashboard</span></a><a
-                    class="flex items-center gap-unit-sm px-unit-base py-unit-sm text-on-primary-container hover:bg-surface-container-high/5 hover:text-on-primary transition-colors font-headline-sm text-headline-sm font-normal"
+                        stroke-width="1.75" viewBox="0 0 24 24"><rect height="7" rx="1" width="7" x="3" y="3"></rect><rect height="7" rx="1" width="7" x="14" y="3"></rect><rect height="7" rx="1" width="7" x="14" y="14"></rect><rect height="7" rx="1" width="7" x="3" y="14"></rect></svg><span class="">Dashboard</span></a>
+                <a class="flex items-center gap-unit-sm px-unit-base py-unit-sm text-on-primary-container hover:bg-surface-container-high/5 hover:text-on-primary transition-colors font-headline-sm text-headline-sm font-normal"
                     data-path="orders" href="Orders.php"><svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor"
-                        stroke-width="1.75" viewBox="0 0 24 24">
-                        <path
-                            d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z">
-                        </path>
-                        <path d="m3.3 7 8.7 5 8.7-5"></path>
-                        <path d="M12 22V12"></path>
-                    </svg><span class="">Orders</span></a><a
-                    class="flex items-center gap-unit-sm px-unit-base py-unit-sm text-on-primary-container hover:bg-surface-container-high/5 hover:text-on-primary transition-colors font-headline-sm text-headline-sm font-normal"
+                        stroke-width="1.75" viewBox="0 0 24 24"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"></path><path d="m3.3 7 8.7 5 8.7-5"></path><path d="M12 22V12"></path></svg><span class="">Orders</span></a>
+                <a class="flex items-center gap-unit-sm px-unit-base py-unit-sm text-on-primary-container hover:bg-surface-container-high/5 hover:text-on-primary transition-colors font-headline-sm text-headline-sm font-normal"
                     data-path="projects" href="ProjectListAndDetail.php"><svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor"
-                        stroke-width="1.75" viewBox="0 0 24 24">
-                        <rect height="18" rx="2" width="18" x="3" y="3"></rect>
-                        <path d="M3 9h18"></path>
-                        <path d="M9 21V9"></path>
-                    </svg><span class="">Projects</span></a><a aria-current="page"
+                        stroke-width="1.75" viewBox="0 0 24 24"><rect height="18" rx="2" width="18" x="3" y="3"></rect><path d="M3 9h18"></path><path d="M9 21V9"></path></svg><span class="">Projects</span></a>
+                <a aria-current="page"
                     class="flex items-center gap-unit-sm px-unit-base py-unit-sm transition-colors bg-surface-container-high/10 text-on-primary font-semibold border-l-4 border-on-tertiary-container font-headline-sm text-headline-sm"
-                    data-path="invoices" href="Invoices.php"><svg class="w-4 h-4 shrink-0 text-tertiary-fixed" fill="none"
-                        stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
-                        <path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"></path>
-                        <path d="M8 7h8"></path>
-                        <path d="M8 11h8"></path>
-                        <path d="M8 15h5"></path>
-                    </svg><span class="">Invoices</span></a><a
-                    class="flex items-center gap-unit-sm px-unit-base py-unit-sm text-on-primary-container hover:bg-surface-container-high/5 hover:text-on-primary transition-colors font-headline-sm text-headline-sm font-normal"
+                    data-path="invoices" href="Invoices.php"><svg class="w-4 h-4 shrink-0 text-tertiary-fixed" fill="none" stroke="currentColor"
+                        stroke-width="1.75" viewBox="0 0 24 24"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"></path><path d="M8 7h8"></path><path d="M8 11h8"></path><path d="M8 15h5"></path></svg><span class="">Invoices</span></a>
+                <a class="flex items-center gap-unit-sm px-unit-base py-unit-sm text-on-primary-container hover:bg-surface-container-high/5 hover:text-on-primary transition-colors font-headline-sm text-headline-sm font-normal"
                     data-path="documents" href="Documents.php"><svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor"
-                        stroke-width="1.75" viewBox="0 0 24 24">
-                        <path
-                            d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z">
-                        </path>
-                    </svg><span class="">Documents</span></a><a
-                    class="flex items-center gap-unit-sm px-unit-base py-unit-sm text-on-primary-container hover:bg-surface-container-high/5 hover:text-on-primary transition-colors font-headline-sm text-headline-sm font-normal"
+                        stroke-width="1.75" viewBox="0 0 24 24"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"></path></svg><span class="">Documents</span></a>
+                <a class="flex items-center gap-unit-sm px-unit-base py-unit-sm text-on-primary-container hover:bg-surface-container-high/5 hover:text-on-primary transition-colors font-headline-sm text-headline-sm font-normal"
                     data-path="support" href="SupportTicketView.php"><svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor"
-                        stroke-width="1.75" viewBox="0 0 24 24">
-                        <path d="M3 18v-6a9 9 0 0 1 18 0v6"></path>
-                        <path
-                            d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z">
-                        </path>
-                    </svg><span class="">Support</span></a><a
-                    class="flex items-center gap-unit-sm px-unit-base py-unit-sm text-on-primary-container hover:bg-surface-container-high/5 hover:text-on-primary transition-colors font-headline-sm text-headline-sm font-normal"
-                    data-path="account-settings" href="AccountSettings.php"><svg class="w-4 h-4 shrink-0" fill="none"
-                        stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
-                        <path
-                            d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z">
-                        </path>
-                        <circle cx="12" cy="12" r="3"></circle>
-                    </svg><span class="">Account Settings</span></a>
+                        stroke-width="1.75" viewBox="0 0 24 24"><path d="M3 18v-6a9 9 0 0 1 18 0v6"></path><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"></path></svg><span class="">Support</span></a>
+                <a class="flex items-center gap-unit-sm px-unit-base py-unit-sm text-on-primary-container hover:bg-surface-container-high/5 hover:text-on-primary transition-colors font-headline-sm text-headline-sm font-normal"
+                    data-path="account-settings" href="AccountSettings.php"><svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor"
+                        stroke-width="1.75" viewBox="0 0 24 24"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3"></circle></svg><span class="">Account Settings</span></a>
+                <a class="flex items-center gap-unit-sm px-unit-base py-unit-sm text-secondary-fixed hover:bg-surface-container-high/5 hover:text-on-primary transition-colors font-headline-sm text-headline-sm font-semibold" data-path="integrations" href="Integrations.php"><svg class="w-4 h-4 shrink-0 text-secondary-fixed" fill="none" stroke="#00E5FF" stroke-width="1.75" viewBox="0 0 24 24">
+                        <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                        <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+                    </svg><span class="text-secondary-fixed">System Integrations</span><span class="ml-auto text-[10px] px-1.5 py-0.5 rounded bg-secondary-fixed/20 text-secondary-fixed font-mono">SYS03</span></a>
             </nav>
         </div>
 
@@ -265,7 +241,11 @@ if ($cusId) {
                         <span class="hover:text-on-surface cursor-pointer">Commercial &amp; Billing</span>
                         <span class="">/</span>
                         <span class="text-on-surface font-semibold">Invoices</span>
-                    </nav>
+                                    <a class="flex items-center gap-unit-sm px-unit-base py-unit-sm text-secondary-fixed hover:bg-surface-container-high/5 hover:text-on-primary transition-colors font-headline-sm text-headline-sm font-semibold" data-path="integrations" href="Integrations.php"><svg class="w-4 h-4 shrink-0 text-secondary-fixed" fill="none" stroke="#00E5FF" stroke-width="1.75" viewBox="0 0 24 24">
+                        <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                        <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+                    </svg><span class="text-secondary-fixed">System Integrations</span><span class="ml-auto text-[10px] px-1.5 py-0.5 rounded bg-secondary-fixed/20 text-secondary-fixed font-mono">SYS03</span></a>
+            </nav>
                     <div
                         class="flex items-center gap-unit-xs px-unit-sm py-1 rounded bg-surface-container-high text-on-surface-variant font-technical-tag text-technical-tag">
                         <span class="w-1.5 h-1.5 rounded-full bg-on-tertiary-container animate-pulse"></span>

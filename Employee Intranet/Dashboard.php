@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/../includes/auth_guard.php';
-requireAuth('Employee');
+requireAuth('EMP');
 $pdo = getDbConnection();
 $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clearance_level' => 'L2'];
 ?>
@@ -140,7 +140,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
                                     <div class="intra-mono-muted-xs" >vostokpribor.local • System 01</div>
                                 </div>
                             </a>
-                            <a href="../Online Shop B2B/index.php" class="ecosystem-item">
+                            <a href="../Online Shop B2B/login.php" class="ecosystem-item">
                                 <span class="material-symbols-outlined intra-color-0e7c86-font-size-06b1">shopping_bag</span>
                                 <div>
                                     <div class="intra-text-white-bold-sm" >B2B Online Shop</div>
@@ -168,42 +168,42 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
                                     <div class="intra-mono-muted-xs" >crm.vostokpribor.local • System 05</div>
                                 </div>
                             </a>
-                            <a href="../HR System/index.php" class="ecosystem-item">
+                            <a href="../HR System/login.php" class="ecosystem-item">
                                 <span class="material-symbols-outlined intra-color-6e4c7c-font-size-e5aa">person_search</span>
                                 <div>
                                     <div class="intra-text-white-bold-sm" >Human Resources (HR)</div>
                                     <div class="intra-mono-muted-xs" >hr.vostokpribor.local • System 06</div>
                                 </div>
                             </a>
-                            <a href="../Finance & Billing/index.php" class="ecosystem-item">
+                            <a href="../Finance & Billing/login.php" class="ecosystem-item">
                                 <span class="material-symbols-outlined intra-color-2e6e4e-font-size-0395">receipt_long</span>
                                 <div>
                                     <div class="intra-text-white-bold-sm" >Finance & Billing</div>
                                     <div class="intra-mono-muted-xs" >finance.vostokpribor.local • System 07</div>
                                 </div>
                             </a>
-                            <a href="../IT Helpdesk/index.php" class="ecosystem-item">
+                            <a href="../IT Helpdesk/login.php" class="ecosystem-item">
                                 <span class="material-symbols-outlined intra-color-c97a3d-font-size-d3fb">support_agent</span>
                                 <div>
                                     <div class="intra-text-white-bold-sm" >IT Helpdesk & Service</div>
                                     <div class="intra-mono-muted-xs" >helpdesk.vostokpribor.local • System 08</div>
                                 </div>
                             </a>
-                            <a href="../File Center/index.php" class="ecosystem-item">
+                            <a href="../File Center/login.php" class="ecosystem-item">
                                 <span class="material-symbols-outlined intra-color-5a6470-font-size-48ce">folder_zip</span>
                                 <div>
                                     <div class="intra-text-white-bold-sm" >File Center Hub</div>
                                     <div class="intra-mono-muted-xs" >files.vostokpribor.local • System 09</div>
                                 </div>
                             </a>
-                            <a href="../Developer/index.php" class="ecosystem-item">
+                            <a href="../Developer/login.php" class="ecosystem-item">
                                 <span class="material-symbols-outlined intra-color-1e8fa6-font-size-e073">terminal</span>
                                 <div>
                                     <div class="intra-text-white-bold-sm" >Developer / API Portal</div>
                                     <div class="intra-mono-muted-xs" >developer.vostokpribor.local • System 10</div>
                                 </div>
                             </a>
-                            <a href="../Admin & Governance Portal/index.php" class="ecosystem-item">
+                            <a href="../Admin & Governance Portal/login.php" class="ecosystem-item">
                                 <span class="material-symbols-outlined intra-color-b23a32-font-size-0dac">security</span>
                                 <div>
                                     <div class="intra-text-white-bold-sm" >Admin & Governance</div>

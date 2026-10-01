@@ -121,6 +121,13 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
             <a href="Training.php" class="sidebar-nav-item">
               <div class="sidebar-item-left"><span class="sidebar-icon">🎓</span><span>Training &amp; Certs</span></div>
             </a>
+          
+            <a href="Integrations.php" class="sidebar-nav-item">
+              <div class="sidebar-item-left"><span class="sidebar-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00E5FF" stroke-width="2">
+                    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+                    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+                  </svg></span><span class="hr-nav-integrations" style="color: #00E5FF; font-weight: 600;">System Integrations</span></div><span class="sidebar-badge hr-badge-integrations" style="background: rgba(0, 229, 255, 0.15); color: #00E5FF; border: 1px solid rgba(0, 229, 255, 0.3);">SYS08</span>
+            </a>
           </nav>
         </div>
       </aside>

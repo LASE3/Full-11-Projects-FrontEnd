@@ -1,7 +1,5 @@
 <?php
-require_once __DIR__ . '/../config/db.php';
-require_once __DIR__ . '/../includes/auth_guard.php';
-requireAuth('CUS');
+require_once __DIR__ . '/customer_context.php';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -48,9 +46,9 @@ requireAuth('CUS');
                 </div>
                 <div
                     class="flex items-center gap-unit-xs text-on-primary-container font-technical-tag text-technical-tag">
-                    <span class="">Severstal Metallurgy Plant #4</span><span
+                    <span class=""><?= htmlspecialchars($customer['company_name'] ?? 'Industrial Operations Client') ?></span><span
                         class="text-on-primary-container/50">|</span><span
-                        class="text-primary-fixed-dim">VP-88204-EU</span>
+                        class="text-primary-fixed-dim"><?= htmlspecialchars($customer['tax_id'] ?? ($customer['code'] ?? 'VP-CORP')) ?></span>
                 </div>
             </div>
         </div>
@@ -76,14 +74,13 @@ requireAuth('CUS');
             </div><a class="flex items-center text-on-primary-container hover:text-on-primary" href="Documents.php"
                 title="Technical Documentation"><span class="material-symbols-outlined">menu_book</span></a>
             <div class="h-6 w-px bg-on-primary-container/30"></div>
-            <div class="flex items-center gap-unit-sm cursor-pointer" id="header-profile-btn">
+            <div class="flex items-center gap-unit-sm cursor-pointer" id="header-profile-btn" onclick="location.href='AccountSettings.php'">
                 <div class="flex flex-col text-right"><span
-                        class="font-headline-sm text-headline-sm text-on-primary font-medium leading-none">Alexey R.
-                        Danilov</span><span
-                        class="font-technical-tag text-technical-tag text-on-primary-container mt-0.5">Chief
-                        Instrumentation Eng.</span></div><img alt="Alexey R. Danilov Profile"
-                    class="w-8 h-8 rounded-full object-cover ring-1 ring-tertiary-fixed/50"
-                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuBxrM-O7aJYHYCDtkoA3WwbiOe6BxJ0vK7AcnogxwZN9MACsknTlpyGKyy-lWl2Hwn9IEZLPDCvVGrmxN2kvPEfzbJ5E4u5x6-38EP2exwXW8Dmm-7oMTzMG07_rmRLbT0xvZwQMFEwa4qJO5LcWbn58eWx3fSkVjAmSI3UWO8dCTgRg6GBgrY_MTUl-JF-JUf4K5CGPp0o4tvKoxbSqSysGT8r3j8de3w_sfk4F8p9ysiXXfbUkWPV">
+                        class="font-headline-sm text-headline-sm text-on-primary font-medium leading-none"><?= htmlspecialchars($currUser['full_name'] ?? 'Authorized User') ?></span><span
+                        class="font-technical-tag text-technical-tag text-on-primary-container mt-0.5"><?= htmlspecialchars($currUser['role_name'] ?? 'Client Representative') ?></span></div>
+                <div class="w-8 h-8 rounded-full bg-tertiary-fixed/30 text-tertiary-fixed border border-tertiary-fixed/50 flex items-center justify-center font-bold text-xs">
+                    <?= htmlspecialchars(strtoupper(substr($currUser['full_name'] ?? 'U', 0, 2))) ?>
+                </div>
             </div>
 
             <!-- Top Bar Sign Out -->
@@ -156,6 +153,10 @@ requireAuth('CUS');
                         </path>
                         <circle cx="12" cy="12" r="3"></circle>
                     </svg><span class="">Account Settings</span></a>
+                <a class="flex items-center gap-unit-sm px-unit-base py-unit-sm text-secondary-fixed hover:bg-surface-container-high/5 hover:text-on-primary transition-colors font-headline-sm text-headline-sm font-semibold" data-path="integrations" href="Integrations.php"><svg class="w-4 h-4 shrink-0 text-secondary-fixed" fill="none" stroke="#00E5FF" stroke-width="1.75" viewBox="0 0 24 24">
+                        <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                        <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+                    </svg><span class="text-secondary-fixed">System Integrations</span><span class="ml-auto text-[10px] px-1.5 py-0.5 rounded bg-secondary-fixed/20 text-secondary-fixed font-mono">SYS03</span></a>
             </nav>
         </div>
 
@@ -711,22 +712,21 @@ requireAuth('CUS');
                             <!-- Avatar & Core Identity -->
                             <div class="flex items-center gap-unit-base">
                                 <div class="relative shrink-0">
-                                    <img alt="Alexey R. Danilov" class="w-20 h-20 rounded-lg object-cover shadow-sm"
-                                        src="https://lh3.googleusercontent.com/aida/AEtjO1V61u7Ly_CzjzrkQt7vVPbpwZk-8rQRkwZx3MZiNbmrQ7tgWERNDD8ZWgSmT3WMLVyA-ZwCmnUZQ-TXg_Gn3cKdTiIqzXSw4TlgpI6scZYM1XxVGq461YEi1SDi8w3P9czownSHZ2lfdTEw9o8lw7pUNU6MTSe8MDxMnyMbweBSYLFdWxhi2lebsF_0xDOdl0ZDE4BqGo8CCs471bPGP2Pxvrp7OPKyz6zIYLqvlYP2h1F8y2PJOb50RZg">
+                                    <div class="w-20 h-20 rounded-lg bg-primary-container text-tertiary-fixed font-bold text-2xl flex items-center justify-center border-2 border-tertiary-fixed/40 shadow-sm">
+                                        <?= htmlspecialchars(strtoupper(substr($currUser['full_name'] ?? 'U', 0, 2))) ?>
+                                    </div>
                                     <span
                                         class="absolute -bottom-1 -right-1 px-1.5 py-0.5 rounded bg-primary text-tertiary-fixed font-technical-tag text-technical-tag font-bold">
-                                        ENG-1
+                                        <?= htmlspecialchars($currUser['clearance_level'] ?? 'L1') ?>
                                     </span>
                                 </div>
                                 <div class="flex flex-col min-w-0">
                                     <span
-                                        class="font-label-caps text-label-caps text-on-tertiary-container font-semibold uppercase">Chief
-                                        Instrumentation Engineer</span>
-                                    <h3 class="font-headline-md text-headline-sm text-primary font-bold truncate">Alexey
-                                        R. Danilov</h3>
+                                        class="font-label-caps text-label-caps text-on-tertiary-container font-semibold uppercase"><?= htmlspecialchars($currUser['role_name'] ?? 'Client Representative') ?></span>
+                                    <h3 class="font-headline-md text-headline-sm text-primary font-bold truncate"><?= htmlspecialchars($currUser['full_name'] ?? 'Authorized User') ?></h3>
                                     <span
                                         class="font-data-mono-md text-technical-tag text-on-surface-variant truncate">ID:
-                                        VSTK-EMP-4019</span>
+                                        <?= htmlspecialchars($currUser['id'] ?? 'VSTK-USR-1001') ?></span>
                                 </div>
                             </div>
                             <!-- Clearance Badges -->
@@ -736,11 +736,9 @@ requireAuth('CUS');
                                         Clearance</span>
                                     <span class="material-symbols-outlined text-base text-primary">verified_user</span>
                                 </div>
-                                <span class="font-headline-sm text-body-sm text-primary font-semibold">Tier-1 SCADA
-                                    Supervisory &amp; Engineering Signoff</span>
+                                <span class="font-headline-sm text-body-sm text-primary font-semibold"><?= htmlspecialchars($currUser['clearance_level'] ?? 'Tier-1') ?> Industrial Supervisory Signoff</span>
                                 <p class="font-body-sm text-technical-tag text-on-surface-variant mt-0.5">
-                                    Full parameter modification rights for pyrometric loops, automated shutoff valves,
-                                    and telemetry polling frequencies.
+                                    Operational parameter modification rights, procurement authorization, and telemetry access.
                                 </p>
                             </div>
                             <!-- User Specific Attributes List -->
@@ -750,7 +748,7 @@ requireAuth('CUS');
                                         class="font-label-caps text-technical-tag text-on-surface-variant uppercase">Work
                                         Email</span>
                                     <span
-                                        class="font-data-mono-md text-body-sm text-primary truncate font-medium">a.danilov@severstal-met.vostokpribor.local</span>
+                                        class="font-data-mono-md text-body-sm text-primary truncate font-medium"><?= htmlspecialchars($currUser['email'] ?? 'user@vostokpribor.local') ?></span>
                                 </div>
                                 <div class="flex flex-col gap-0.5">
                                     <span

@@ -1,7 +1,67 @@
 <?php
-require_once __DIR__ . '/../config/db.php';
-require_once __DIR__ . '/../includes/auth_guard.php';
-requireAuth('CUS');
+require_once __DIR__ . '/customer_context.php';
+require_once __DIR__ . '/customer_service.php';
+
+$cusId = cus_getCurrentCustomerId();
+$tickets = cus_getTickets($cusId);
+if (empty($tickets)) {
+    $pdo = getDbConnection();
+    $tickets = $pdo->query("SELECT t.*, e.full_name AS assigned_engineer_name, e.email AS assigned_engineer_email, (SELECT COUNT(*) FROM ticket_comments WHERE tkt_id = t.tkt_id) AS comment_count FROM tickets t LEFT JOIN employees e ON t.assigned_emp_id = e.emp_id ORDER BY t.created_at DESC LIMIT 10")->fetchAll(PDO::FETCH_ASSOC);
+}
+
+// Build map for dynamic JS cockpit
+$ticketsMap = [];
+foreach ($tickets as $t) {
+    $tId = $t['tkt_id'];
+    $details = cus_getTicketDetail($tId, $cusId);
+    $msgs = [];
+    if (!empty($details['comments'])) {
+        foreach ($details['comments'] as $c) {
+            $isEmp = !empty($c['author_emp_id']);
+            $msgs[] = [
+                'sender' => $c['display_author'] ?? ($isEmp ? 'Denis Sokolov' : ($currUser['full_name'] ?? 'Client Representative')),
+                'role' => $isEmp ? 'VOSTOKPRIBOR - Support Engineer' : 'Client Representative',
+                'initials' => strtoupper(substr($c['display_author'] ?? 'SP', 0, 2)),
+                'time' => date('h:i A MSK', strtotime($c['created_at'])),
+                'text' => htmlspecialchars($c['comment_text'] ?? ''),
+                'attachments' => []
+            ];
+        }
+    }
+    if (empty($msgs)) {
+        $msgs[] = [
+            'sender' => $customer['primary_contact_name'] ?? $currUser['full_name'] ?? 'Authorized User',
+            'role' => 'Client - ' . ($currUser['role_name'] ?? 'Lead Engineer'),
+            'initials' => strtoupper(substr($currUser['full_name'] ?? 'CU', 0, 2)),
+            'time' => date('h:i A MSK', strtotime($t['created_at'])),
+            'text' => htmlspecialchars($t['title'] . (empty($t['description']) ? '' : ' - ' . $t['description'])),
+            'attachments' => []
+        ];
+    }
+    $ticketsMap[$tId] = [
+        'id' => $tId,
+        'title' => $tId . ': ' . $t['title'] . ' • Priority: ' . $t['priority'],
+        'escalation' => 'INCIDENT ESCALATION ' . strtoupper($t['priority']),
+        'sla' => 'SLA ACTIVE • 24/7 DEDICATED RESPONSE',
+        'isCritical' => (strtolower($t['priority']) === 'critical'),
+        'logged' => date('h:i:s A MSK', strtotime($t['created_at'])),
+        'dispatch' => date('h:i:s A MSK', strtotime($t['created_at'] . ' +10 minutes')),
+        'remaining' => '02h 45m REMAINING',
+        'specialist' => $t['assigned_engineer_name'] ?? 'Denis Sokolov (Diagnostics Lead)',
+        'assetName' => $t['facility_location'] ?? ($customer['company_name'] ?? 'Industrial Operations Suite'),
+        'assetModel' => 'VP-704 SCADA Automation Telemetry',
+        'serial' => 'VP-SN-' . substr(md5($tId), 0, 8),
+        'firmware' => 'v4.12.0 (Patch Applied)',
+        'placement' => htmlspecialchars($customer['company_name'] ?? 'Main Facility'),
+        'projectName' => $t['related_prj_id'] ?? 'PRJ-VP-7721',
+        'projectId' => $t['related_prj_id'] ?? 'PRJ-VP-7721',
+        'interface' => 'Modbus TCP / PROFINET RT',
+        'diagramDoc' => 'DOC-WD-7721-04',
+        'messages' => $msgs
+    ];
+}
+$firstTicket = reset($ticketsMap) ?: null;
+$firstTicketId = $firstTicket ? $firstTicket['id'] : 'TCK-9482';
 ?>
 <!DOCTYPE html>
 
@@ -30,6 +90,10 @@ requireAuth('CUS');
     <script src="../assets/js/api-customer.js"></script>
     <script src="js/portal-data.js"></script>
     <script src="js/support.js"></script>
+<script>
+window.SERVER_TICKETS = <?= json_encode($ticketsMap, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) ?>;
+window.CURRENT_USER = <?= json_encode($currUser, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) ?>;
+</script>
 </head>
 
 <body class="bg-background font-body-md text-body-md text-on-background">
@@ -49,8 +113,7 @@ requireAuth('CUS');
                 </div>
                 <div
                     class="flex items-center gap-unit-xs text-on-primary-container font-technical-tag text-technical-tag">
-                    <span>Severstal Metallurgy Plant #4</span><span class="text-outline">|</span><span
-                        class="text-primary-fixed-dim">VP-88204-EU</span>
+                    <span><?= htmlspecialchars($customer['company_name'] ?? 'Industrial Operations Client') ?></span><span class="text-outline">|</span><span class="text-primary-fixed-dim"><?= htmlspecialchars($customer['tax_id'] ?? ($customer['code'] ?? 'VP-CORP')) ?></span>
                 </div>
             </div>
         </div>
@@ -411,253 +474,76 @@ requireAuth('CUS');
                                 </tr>
                             </thead>
                             <tbody id="tickets-list" class="divide-y divide-outline-variant/20 font-body-sm text-body-sm">
-                                <!-- ROW 1 (SELECTED / EXPANDED: TCK-9482) -->
-                                <tr id="ticket-row-TCK-9482" data-ticket="TCK-9482" data-system="scada" data-priority="critical" data-status="active" onclick="selectTicket('TCK-9482')"
-                                    class="ticket-table-row bg-surface-container-low/50 hover:bg-surface-container-low transition-colors relative cursor-pointer">
-                                    <td
-                                        class="py-unit-sm px-unit-base font-data-mono-lg text-data-mono-lg font-bold text-primary relative">
-                                        <div class="row-indicator absolute left-0 top-0 bottom-0 w-1 bg-tertiary-fixed-dim"></div>
-                                        <div class="flex items-center gap-1">
-                                            <span
-                                                class="material-symbols-outlined text-xs text-on-tertiary-container row-radio">radio_button_checked</span>
-                                            <span>TCK-9482</span>
-                                        </div>
-                                    </td>
-                                    <td class="py-unit-sm px-unit-base">
-                                        <div class="font-headline-sm text-headline-sm text-primary font-semibold">Blast
-                                            Furnace #5</div>
-                                        <div
-                                            class="font-technical-tag text-technical-tag text-secondary flex items-center gap-1">
-                                            <span class="w-1.5 h-1.5 rounded-full bg-error"></span>
-                                            <span>SCADA Telemetry Gateway VP-GW-09</span>
-                                        </div>
-                                    </td>
-                                    <td class="py-unit-sm px-unit-base">
-                                        <div
-                                            class="font-body-sm text-body-sm text-on-surface font-medium truncate max-w-md">
-                                            Telemetry dropout on Gas Chromatography Sensor Bank #2 during high-temp
-                                            cycle
-                                        </div>
-                                        <div
-                                            class="font-technical-tag text-technical-tag text-error flex items-center gap-1 mt-0.5">
-                                            <span class="material-symbols-outlined text-xs">error</span>
-                                            <span>Diagnostic code: 0x7E (Analog Loop Open) • P1 Escalated</span>
-                                        </div>
-                                    </td>
-                                    <td class="py-unit-sm px-unit-base text-center">
-                                        <span
-                                            class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-error text-on-error font-label-caps text-label-caps uppercase">
-                                            <span class="material-symbols-outlined text-xs">warning</span> Critical
-                                        </span>
-                                    </td>
-                                    <td class="py-unit-sm px-unit-base">
-                                        <span
-                                            class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded border border-tertiary-fixed-dim bg-tertiary-fixed/30 text-on-tertiary-container font-technical-tag text-technical-tag font-semibold">
-                                            <span class="w-2 h-2 rounded-full bg-error animate-ping"></span>
-                                            <span>Escalated / In Progress</span>
-                                        </span>
-                                    </td>
-                                    <td class="py-unit-sm px-unit-base">
-                                        <div class="flex items-center gap-2">
-                                            <div
-                                                class="w-6 h-6 rounded-full bg-primary-container text-tertiary-fixed flex items-center justify-center font-technical-tag text-technical-tag font-bold">
-                                                DS</div>
-                                            <div class="flex flex-col">
-                                                <span
-                                                    class="font-body-sm text-body-sm text-primary font-medium leading-none">Denis
-                                                    Sokolov</span>
-                                                <span
-                                                    class="font-technical-tag text-technical-tag text-secondary leading-none mt-1">Tier-3
-                                                    Field Eng.</span>
+                                <?php if (empty($tickets)): ?>
+                                    <tr>
+                                        <td colspan="7" class="py-12 text-center text-secondary font-technical-tag">
+                                            ( There's no Support Tickets in the moment )
+                                        </td>
+                                    </tr>
+                                <?php else: ?>
+                                    <?php foreach ($tickets as $idx => $t): 
+                                        $tId = htmlspecialchars($t['tkt_id']);
+                                        $tPriority = strtolower($t['priority'] ?? 'medium');
+                                        $tStatus = strtolower($t['status'] ?? 'open');
+                                        $isSel = ($idx === 0);
+                                        $engineer = htmlspecialchars($t['assigned_engineer_name'] ?? 'Denis Sokolov');
+                                        $title = htmlspecialchars($t['title']);
+                                        $systemName = htmlspecialchars($t['facility_location'] ?? ($customer['company_name'] ?? 'SCADA Automation'));
+                                        $updatedTime = date('M d, H:i', strtotime($t['created_at']));
+                                    ?>
+                                    <tr id="ticket-row-<?= $tId ?>" data-ticket="<?= $tId ?>" data-system="scada" data-priority="<?= $tPriority ?>" data-status="<?= $tStatus ?>" onclick="selectTicket('<?= $tId ?>')"
+                                        class="ticket-table-row <?= $isSel ? 'bg-surface-container-low/50' : 'hover:bg-surface-container-low/40' ?> transition-colors relative cursor-pointer">
+                                        <td class="py-unit-sm px-unit-base font-data-mono-lg text-data-mono-lg font-bold text-primary relative">
+                                            <div class="row-indicator absolute left-0 top-0 bottom-0 w-1 <?= $isSel ? 'bg-tertiary-fixed-dim' : 'bg-transparent' ?>"></div>
+                                            <div class="flex items-center gap-1">
+                                                <span class="material-symbols-outlined text-xs <?= $isSel ? 'text-on-tertiary-container' : 'text-secondary' ?> row-radio"><?= $isSel ? 'radio_button_checked' : 'radio_button_unchecked' ?></span>
+                                                <span><?= $tId ?></span>
                                             </div>
-                                        </div>
-                                    </td>
-                                    <td
-                                        class="py-unit-sm px-unit-base text-right font-data-mono-md text-data-mono-md font-semibold text-error">
-                                        12 mins ago
-                                    </td>
-                                </tr>
-                                <!-- ROW 2: TCK-9460 -->
-                                <tr id="ticket-row-TCK-9460" data-ticket="TCK-9460" data-system="optical" data-priority="medium" data-status="active" onclick="selectTicket('TCK-9460')"
-                                    class="ticket-table-row hover:bg-surface-container-low/40 transition-colors cursor-pointer">
-                                    <td
-                                        class="py-unit-sm px-unit-base font-data-mono-lg text-data-mono-lg font-bold text-secondary relative">
-                                        <div class="row-indicator absolute left-0 top-0 bottom-0 w-1 bg-transparent"></div>
-                                        <div class="flex items-center gap-1">
-                                            <span
-                                                class="material-symbols-outlined text-xs text-secondary row-radio">radio_button_unchecked</span>
-                                            <span>TCK-9460</span>
-                                        </div>
-                                    </td>
-                                    <td class="py-unit-sm px-unit-base">
-                                        <div class="font-headline-sm text-headline-sm text-primary font-medium">
-                                            Continuous Casting Unit #3</div>
-                                        <div class="font-technical-tag text-technical-tag text-secondary">Optical
-                                            Pyrometers (VP-OP-402)</div>
-                                    </td>
-                                    <td class="py-unit-sm px-unit-base">
-                                        <div class="font-body-sm text-body-sm text-on-surface truncate max-w-md">
-                                            Scheduled zero-drift recalibration assistance request ahead of heat cycle
-                                            inspection
-                                        </div>
-                                        <div class="font-technical-tag text-technical-tag text-secondary mt-0.5">SLA
-                                            window: 4h • Normal workflow</div>
-                                    </td>
-                                    <td class="py-unit-sm px-unit-base text-center">
-                                        <span
-                                            class="inline-flex items-center px-2 py-0.5 rounded bg-tertiary-fixed text-on-tertiary-fixed font-label-caps text-label-caps uppercase font-bold">
-                                            Medium
-                                        </span>
-                                    </td>
-                                    <td class="py-unit-sm px-unit-base">
-                                        <span
-                                            class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded border border-outline-variant bg-surface-container text-secondary font-technical-tag text-technical-tag">
-                                            <span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
-                                            <span>In Progress</span>
-                                        </span>
-                                    </td>
-                                    <td class="py-unit-sm px-unit-base">
-                                        <div class="flex items-center gap-2">
-                                            <div
-                                                class="w-6 h-6 rounded-full bg-surface-container-high text-secondary flex items-center justify-center font-technical-tag text-technical-tag font-bold">
-                                                AT</div>
-                                            <div class="flex flex-col">
-                                                <span
-                                                    class="font-body-sm text-body-sm text-primary font-medium leading-none">Anna
-                                                    Timofeeva</span>
-                                                <span
-                                                    class="font-technical-tag text-technical-tag text-secondary leading-none mt-1">Calibration
-                                                    Lead</span>
+                                        </td>
+                                        <td class="py-unit-sm px-unit-base">
+                                            <div class="font-headline-sm text-headline-sm text-primary font-semibold"><?= $systemName ?></div>
+                                            <div class="font-technical-tag text-technical-tag text-secondary flex items-center gap-1">
+                                                <span class="w-1.5 h-1.5 rounded-full <?= $tPriority === 'critical' ? 'bg-error' : 'bg-secondary' ?>"></span>
+                                                <span>VP-GW-09 Telemetry Bus</span>
                                             </div>
-                                        </div>
-                                    </td>
-                                    <td
-                                        class="py-unit-sm px-unit-base text-right font-data-mono-md text-data-mono-md text-on-surface-variant">
-                                        2 hours ago
-                                    </td>
-                                </tr>
-                                <!-- ROW 3: TCK-9399 -->
-                                <tr id="ticket-row-TCK-9399" data-ticket="TCK-9399" data-system="optical" data-priority="low" data-status="resolved" onclick="selectTicket('TCK-9399')"
-                                    class="ticket-table-row hover:bg-surface-container-low/40 transition-colors cursor-pointer">
-                                    <td
-                                        class="py-unit-sm px-unit-base font-data-mono-lg text-data-mono-lg font-bold text-secondary relative">
-                                        <div class="row-indicator absolute left-0 top-0 bottom-0 w-1 bg-transparent"></div>
-                                        <div class="flex items-center gap-1">
-                                            <span
-                                                class="material-symbols-outlined text-xs text-secondary row-radio">radio_button_unchecked</span>
-                                            <span>TCK-9399</span>
-                                        </div>
-                                    </td>
-                                    <td class="py-unit-sm px-unit-base">
-                                        <div class="font-headline-sm text-headline-sm text-primary font-medium">Raw
-                                            Material Yard</div>
-                                        <div class="font-technical-tag text-technical-tag text-secondary">Laser Profiler
-                                            LP-400</div>
-                                    </td>
-                                    <td class="py-unit-sm px-unit-base">
-                                        <div class="font-body-sm text-body-sm text-on-surface truncate max-w-md">
-                                            Replacement lens assembly shipping tracking and customs declaration
-                                            documents
-                                        </div>
-                                        <div
-                                            class="font-technical-tag text-technical-tag text-on-surface-variant mt-0.5">
-                                            AWB: 88204-RU-SPB</div>
-                                    </td>
-                                    <td class="py-unit-sm px-unit-base text-center">
-                                        <span
-                                            class="inline-flex items-center px-2 py-0.5 rounded bg-surface-container-high text-on-surface-variant font-label-caps text-label-caps uppercase">
-                                            Low
-                                        </span>
-                                    </td>
-                                    <td class="py-unit-sm px-unit-base">
-                                        <span
-                                            class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-surface-container-high text-on-surface font-technical-tag text-technical-tag font-semibold">
-                                            <span
-                                                class="material-symbols-outlined text-xs text-on-surface">check_circle</span>
-                                            <span>Resolved</span>
-                                        </span>
-                                    </td>
-                                    <td class="py-unit-sm px-unit-base">
-                                        <div class="flex items-center gap-2">
-                                            <div
-                                                class="w-6 h-6 rounded-full bg-surface-container-high text-secondary flex items-center justify-center font-technical-tag text-technical-tag font-bold">
-                                                LS</div>
-                                            <div class="flex flex-col">
-                                                <span
-                                                    class="font-body-sm text-body-sm text-primary font-medium leading-none">Logistics
-                                                    Support</span>
-                                                <span
-                                                    class="font-technical-tag text-technical-tag text-secondary leading-none mt-1">Spares
-                                                    Dept</span>
+                                        </td>
+                                        <td class="py-unit-sm px-unit-base">
+                                            <div class="font-body-sm text-body-sm text-on-surface font-medium truncate max-w-md">
+                                                <?= $title ?>
                                             </div>
-                                        </div>
-                                    </td>
-                                    <td
-                                        class="py-unit-sm px-unit-base text-right font-data-mono-md text-data-mono-md text-on-surface-variant">
-                                        Yesterday
-                                    </td>
-                                </tr>
-                                <!-- ROW 4: TCK-9351 -->
-                                <tr id="ticket-row-TCK-9351" data-ticket="TCK-9351" data-system="hydraulic" data-priority="critical" data-status="resolved" onclick="selectTicket('TCK-9351')"
-                                    class="ticket-table-row hover:bg-surface-container-low/40 transition-colors cursor-pointer">
-                                    <td
-                                        class="py-unit-sm px-unit-base font-data-mono-lg text-data-mono-lg font-bold text-secondary relative">
-                                        <div class="row-indicator absolute left-0 top-0 bottom-0 w-1 bg-transparent"></div>
-                                        <div class="flex items-center gap-1">
-                                            <span
-                                                class="material-symbols-outlined text-xs text-secondary row-radio">radio_button_unchecked</span>
-                                            <span>TCK-9351</span>
-                                        </div>
-                                    </td>
-                                    <td class="py-unit-sm px-unit-base">
-                                        <div class="font-headline-sm text-headline-sm text-primary font-medium">Hot
-                                            Strip Mill</div>
-                                        <div class="font-technical-tag text-technical-tag text-secondary">Hydraulic
-                                            Pressure Sensor Array</div>
-                                    </td>
-                                    <td class="py-unit-sm px-unit-base">
-                                        <div class="font-body-sm text-body-sm text-on-surface truncate max-w-md">
-                                            Firmware patch v3.8.1 compatibility validation with legacy Siemens S7-400
-                                            PLC
-                                        </div>
-                                        <div
-                                            class="font-technical-tag text-technical-tag text-on-surface-variant mt-0.5">
-                                            Signed patch checksum verified</div>
-                                    </td>
-                                    <td class="py-unit-sm px-unit-base text-center">
-                                        <span
-                                            class="inline-flex items-center px-2 py-0.5 rounded bg-tertiary text-on-tertiary font-label-caps text-label-caps uppercase font-bold">
-                                            High
-                                        </span>
-                                    </td>
-                                    <td class="py-unit-sm px-unit-base">
-                                        <span
-                                            class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-surface-container-high text-on-surface font-technical-tag text-technical-tag font-semibold">
-                                            <span
-                                                class="material-symbols-outlined text-xs text-on-surface">check_circle</span>
-                                            <span>Resolved</span>
-                                        </span>
-                                    </td>
-                                    <td class="py-unit-sm px-unit-base">
-                                        <div class="flex items-center gap-2">
-                                            <div
-                                                class="w-6 h-6 rounded-full bg-primary-container text-tertiary-fixed flex items-center justify-center font-technical-tag text-technical-tag font-bold">
-                                                DS</div>
-                                            <div class="flex flex-col">
-                                                <span
-                                                    class="font-body-sm text-body-sm text-primary font-medium leading-none">Denis
-                                                    Sokolov</span>
-                                                <span
-                                                    class="font-technical-tag text-technical-tag text-secondary leading-none mt-1">Tier-3
-                                                    Field Eng.</span>
+                                            <div class="font-technical-tag text-technical-tag text-secondary flex items-center gap-1 mt-0.5">
+                                                <span class="material-symbols-outlined text-xs">verified</span>
+                                                <span>SLA Enforced • <?= htmlspecialchars(ucfirst($t['status'] ?? 'Open')) ?></span>
                                             </div>
-                                        </div>
-                                    </td>
-                                    <td
-                                        class="py-unit-sm px-unit-base text-right font-data-mono-md text-data-mono-md text-on-surface-variant">
-                                        Oct 21
-                                    </td>
-                                </tr>
+                                        </td>
+                                        <td class="py-unit-sm px-unit-base text-center">
+                                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded <?= $tPriority === 'critical' ? 'bg-error text-on-error font-bold' : ($tPriority === 'high' ? 'bg-tertiary-fixed-dim text-primary font-semibold' : 'bg-surface-container text-on-surface-variant') ?> font-label-caps text-label-caps uppercase">
+                                                <?= htmlspecialchars(ucfirst($t['priority'])) ?>
+                                            </span>
+                                        </td>
+                                        <td class="py-unit-sm px-unit-base">
+                                            <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded border border-outline-variant bg-surface-container text-secondary font-technical-tag text-technical-tag font-semibold">
+                                                <span class="w-1.5 h-1.5 rounded-full <?= $tStatus === 'resolved' ? 'bg-green-500' : 'bg-tertiary-fixed-dim' ?>"></span>
+                                                <span><?= htmlspecialchars(ucfirst($t['status'])) ?></span>
+                                            </span>
+                                        </td>
+                                        <td class="py-unit-sm px-unit-base">
+                                            <div class="flex items-center gap-2">
+                                                <div class="w-6 h-6 rounded-full bg-primary-container text-tertiary-fixed flex items-center justify-center font-technical-tag text-technical-tag font-bold">
+                                                    <?= htmlspecialchars(strtoupper(substr($engineer, 0, 2))) ?>
+                                                </div>
+                                                <div class="flex flex-col">
+                                                    <span class="font-body-sm text-body-sm text-primary font-medium leading-none"><?= $engineer ?></span>
+                                                    <span class="font-technical-tag text-technical-tag text-secondary leading-none mt-1">Field Diagnostics</span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="py-unit-sm px-unit-base text-right font-data-mono-md text-data-mono-md text-secondary">
+                                            <?= $updatedTime ?>
+                                        </td>
+                                    </tr>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
                             </tbody>
                         </table>
                     </div>

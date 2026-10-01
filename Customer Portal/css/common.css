@@ -181,7 +181,18 @@ aside,
 
 .portal-content-wrapper,
 .pl-64 {
+  padding-left: 16rem;
   transition: padding-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+@media (max-width: 1023px) {
+  .portal-content-wrapper,
+  .pl-64 {
+    padding-left: 0 !important;
+  }
 }
 
 /* Collapsed Desktop State */
