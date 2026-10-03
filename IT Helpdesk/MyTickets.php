@@ -9,10 +9,8 @@ $currUser = getItCurrentUser();
 $userEmpId = $currUser['emp_id'] ?? null;
 $userFullName = $currUser['full_name'] ?? 'Alexey Ivanov';
 $isSuperAdmin = isSuperAdmin($currUser)
-    || in_array($currUser['role_name'] ?? '', ['Super Administrator', 'Executive SuperAdmin', 'System Administrator', 'Admin', 'IT Director'])
-    || in_array($currUser['clearance_level'] ?? '', ['L4', 'L5'])
-    || ($currUser['username'] ?? '') === 'admin'
-    || ($currUser['email'] ?? '') === 'admin@gmail.com';
+    || in_array($currUser['role_name'] ?? '', ['SuperAdmin', 'Super Administrator', 'Executive SuperAdmin', 'System Administrator', 'Admin', 'IT Director'])
+    || in_array($currUser['clearance_level'] ?? '', ['L4', 'L5']);
 
 if ($isSuperAdmin) {
     // Super admin can see everything

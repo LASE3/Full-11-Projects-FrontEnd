@@ -14,6 +14,9 @@ if (session_status() === PHP_SESSION_NONE) {
 
 require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/../includes/auth_guard.php';
+require_once __DIR__ . '/../includes/AuditLogger.php';
+require_once __DIR__ . '/../includes/integration_bus.php';
+require_once __DIR__ . '/../includes/enterprise_flows.php';
 
 function cus_jsonReply(array $data, int $statusCode = 200): void
 {
@@ -317,61 +320,16 @@ function cus_recordPayment(string $invId, string $cusId, float $amount, ?string 
         throw new InvalidArgumentException("Payment amount must be greater than zero.");
     }
 
-    $pdo->beginTransaction();
-    try {
-        // Lock invoice row
-        $invStmt = $pdo->prepare("SELECT * FROM invoices WHERE inv_id = :iid AND cus_id = :cid FOR UPDATE");
-        $invStmt->execute([':iid' => $invId, ':cid' => $cusId]);
-        $inv = $invStmt->fetch(PDO::FETCH_ASSOC);
+    // Verify invoice ownership
+    $invStmt = $pdo->prepare("SELECT * FROM invoices WHERE inv_id = :iid AND cus_id = :cid");
+    $invStmt->execute([':iid' => $invId, ':cid' => $cusId]);
+    $inv = $invStmt->fetch(PDO::FETCH_ASSOC);
 
-        if (!$inv) {
-            throw new Exception("Invoice [{$invId}] not found or unauthorized.");
-        }
-
-        $txReference = $txRef ?: 'TX-SPFS-' . strtoupper(substr(md5((string)microtime(true)), 0, 10));
-
-        // Insert payment record
-        $payInsert = $pdo->prepare("
-            INSERT INTO payments 
-            (tx_reference, sender_name, inv_id, amount, payment_date, method, remittance_memo, bank_gateway, reconciled)
-            VALUES 
-            (:tx, :sender, :iid, :amt, CURDATE(), :method, 'Customer Portal Online Remittance', 'SPFS / Central Clearing', 1)
-        ");
-        $payInsert->execute([
-            ':tx'     => $txReference,
-            ':sender' => $cusId,
-            ':iid'    => $invId,
-            ':amt'    => $amount,
-            ':method' => $method
-        ]);
-        $paymentId = (int)$pdo->lastInsertId();
-
-        // Calculate sum of payments
-        $sumStmt = $pdo->prepare("SELECT COALESCE(SUM(amount), 0) FROM payments WHERE inv_id = ?");
-        $sumStmt->execute([$invId]);
-        $totalPaid = (float)$sumStmt->fetchColumn();
-
-        $newStatus = ($totalPaid >= (float)$inv['total_value']) ? 'Paid' : 'Pending';
-        $paidAt = ($newStatus === 'Paid') ? date('Y-m-d') : null;
-
-        $updInv = $pdo->prepare("UPDATE invoices SET payment_status = :st, paid_at = :pa WHERE inv_id = :iid");
-        $updInv->execute([':st' => $newStatus, ':pa' => $paidAt, ':iid' => $invId]);
-
-        $pdo->commit();
-
-        logIntegrationEvent('CUS-PAYMENT', 'SYS-03', 'SYS-06', '/invoices/pay', "Recorded payment of \${$amount} for {$invId} (Status: {$newStatus})", 'REMITTANCE', 200, $cusId);
-
-        return [
-            'success'        => true,
-            'payment_id'     => $paymentId,
-            'tx_reference'   => $txReference,
-            'payment_status' => $newStatus,
-            'total_paid'     => $totalPaid
-        ];
-    } catch (Exception $e) {
-        $pdo->rollBack();
-        throw $e;
+    if (!$inv) {
+        throw new Exception("Invoice [{$invId}] not found or unauthorized.");
     }
+
+    return vp_reconcile_payment($pdo, $invId, $amount, $method, $cusId);
 }
 
 // ============================================================================
@@ -450,62 +408,11 @@ function cus_getTicketDetail(string $tktId, ?string $cusId = null): ?array
 function cus_createTicket(string $cusId, array $data): string
 {
     $pdo = getDbConnection();
-    $title = trim($data['title'] ?? '');
-    $desc = trim($data['description'] ?? '');
-    $prio = trim($data['priority'] ?? 'Medium');
-    $system = trim($data['source_system'] ?? 'Customer Portal Hardware / SCADA');
-
-    if (empty($title)) {
-        throw new InvalidArgumentException("Ticket title is required.");
-    }
-
-    $allowedPrio = ['Low', 'Medium', 'High', 'Critical'];
-    if (!in_array($prio, $allowedPrio, true)) {
-        $prio = 'Medium';
-    }
-
-    $randNum = rand(1000, 9999);
-    $tktId = "TICK-CUS-{$randNum}";
-
-    $slaHours = match ($prio) {
-        'Critical' => 2,
-        'High'     => 4,
-        'Medium'   => 8,
-        'Low'      => 24,
-        default    => 8,
-    };
-    $slaDeadline = date('Y-m-d H:i:s', strtotime("+{$slaHours} hours"));
-
-    $stmt = $pdo->prepare("
-        INSERT INTO tickets 
-        (tkt_id, requester_type, requester_cus_id, source_system, title, description, priority, status, sla_deadline, created_at)
-        VALUES 
-        (:tid, 'Customer', :cid, :sys, :title, :desc, :prio, 'Open', :sla, NOW())
-    ");
-    $stmt->execute([
-        ':tid'   => $tktId,
-        ':cid'   => $cusId,
-        ':sys'   => $system,
-        ':title' => $title,
-        ':desc'  => $desc,
-        ':prio'  => $prio,
-        ':sla'   => $slaDeadline
-    ]);
-
-    if (!empty($desc)) {
-        $cStmt = $pdo->prepare("
-            INSERT INTO ticket_comments (tkt_id, author_name, author_type, comment_text, created_at)
-            VALUES (:tid, :author, 'requester', :txt, NOW())
-        ");
-        $cStmt->execute([
-            ':tid'    => $tktId,
-            ':author' => 'Enterprise Customer Representative',
-            ':txt'    => $desc
-        ]);
-    }
-
-    logIntegrationEvent('CUS-TICKET-NEW', 'SYS-03', 'SYS-08', '/tickets/create', "Created ticket {$tktId} ({$prio})", 'ESCALATION', 201, $cusId);
-    return $tktId;
+    require_once __DIR__ . '/../includes/enterprise_flows.php';
+    $data['cus_id'] = $cusId;
+    $data['requester_cus_id'] = $cusId;
+    $data['source_system'] = 'CUS';
+    return vp_create_ticket($pdo, $data, $cusId);
 }
 
 function cus_addTicketComment(string $tktId, string $cusId, string $commentText, string $authorName = 'Customer Rep'): bool

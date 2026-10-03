@@ -13,6 +13,9 @@ if (session_status() === PHP_SESSION_NONE) {
 
 require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/../includes/auth_guard.php';
+require_once __DIR__ . '/../includes/AuditLogger.php';
+require_once __DIR__ . '/../includes/integration_bus.php';
+require_once __DIR__ . '/../includes/enterprise_flows.php';
 
 function shop_jsonReply(array $data, int $statusCode = 200): void
 {
@@ -300,11 +303,23 @@ function shop_createOrder(string $cusId, array $items): array
                 throw new Exception("Insufficient stock for [{$prodId}]. Available in warehouse: " . ($stock !== false ? $stock : 0));
             }
 
-            // Fetch pricing (custom or default 2500)
+            // Fetch pricing (custom or product catalog; NO 2500.00 fallback allowed!)
             $pStmt = $pdo->prepare("SELECT special_price FROM customer_pricing WHERE cus_id = :cid AND prod_id = :pid");
             $pStmt->execute([':cid' => $cusId, ':pid' => $prodId]);
             $special = $pStmt->fetchColumn();
-            $unitPrice = ($special !== false) ? (float)$special : 2500.00;
+
+            if ($special !== false && (float)$special > 0.0) {
+                $unitPrice = (float)$special;
+            } else {
+                $baseStmt = $pdo->prepare("SELECT price FROM products WHERE prod_id = ?");
+                $baseStmt->execute([$prodId]);
+                $basePrice = $baseStmt->fetchColumn();
+                if ($basePrice !== false && $basePrice !== null && (float)$basePrice > 0.0) {
+                    $unitPrice = (float)$basePrice;
+                } else {
+                    throw new Exception("Product {$prodId} has no established price in products or customer_pricing. Order rejected.");
+                }
+            }
 
             $totalAmount += ($unitPrice * $qty);
 
@@ -346,14 +361,9 @@ function shop_createOrder(string $cusId, array $items): array
 
         $pdo->commit();
 
-        logIntegrationEvent('SHOP-ORDER', 'SYS-02', 'SYS-06', '/orders/create', "Placed B2B order #{$orderId} for {$cusId} (\${$totalAmount})", 'DISPATCH', 201, $cusId);
-
-        return [
-            'success'      => true,
-            'order_id'     => $orderId,
-            'total_amount' => $totalAmount,
-            'status'       => 'Processing'
-        ];
+        // Centralized Flow D processing across systems:
+        // Creates invoice, File Center doc, CRM activity, OPS task, customer notification, and emits all events
+        return vp_process_order($pdo, $orderId);
     } catch (Exception $e) {
         $pdo->rollBack();
         throw $e;
@@ -395,7 +405,16 @@ function shop_updateOrderStatus(int $orderId, string $newStatus): bool
 
         $pdo->commit();
 
-        logIntegrationEvent('SHOP-STATUS', 'SYS-02', 'SYS-02', '/orders/status', "Order #{$orderId} changed to {$newStatus}", 'STATE_CHANGE', 200);
+        try {
+            vp_emit($pdo, 'SHP_TO_CUS', 'SHP', 'CUS', 'ORDER_STATUS_CHANGED', [
+                'order_id'   => $orderId,
+                'new_status' => $newStatus,
+                'summary'    => "Order #{$orderId} changed to {$newStatus}",
+                'endpoint'   => '/orders/status'
+            ], 'SYSTEM', 200);
+        } catch (Throwable $e) {
+            error_log("Failed to emit SHP_TO_CUS: " . $e->getMessage());
+        }
         return $res;
     } catch (Exception $e) {
         $pdo->rollBack();

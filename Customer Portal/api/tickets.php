@@ -125,53 +125,23 @@ if ($method === 'POST') {
             Response::error("Ticket description cannot be empty.", 422);
         }
 
-        // Generate ID
-        $count = $pdo->query("SELECT COUNT(*) FROM tickets")->fetchColumn() + 1;
-        $tktId = sprintf("TKT-2026-%03d", $count);
-
-        // Dynamically assign to the support engineer with the fewest open tickets
-        $assignStmt = $pdo->query("
-            SELECT e.emp_id
-            FROM employees e
-            LEFT JOIN tickets t ON e.emp_id = t.assigned_emp_id AND t.status NOT IN ('Resolved', 'Closed')
-            WHERE e.department_code IN ('ITD', 'OPS', 'ENG') AND e.employment_status = 'Active'
-            GROUP BY e.emp_id
-            ORDER BY COUNT(t.tkt_id) ASC
-            LIMIT 1
-        ");
-        $assignedEmpId = $assignStmt->fetchColumn() ?: null;
-
-        $stmt = $pdo->prepare("
-            INSERT INTO tickets (tkt_id, requester_type, requester_cus_id, source_system, priority, assigned_emp_id, status, created_at)
-            VALUES (:tid, 'Customer', :cid, :sys, :prio, :emp, 'Open', NOW())
-        ");
-        $stmt->execute([
-            ':tid'  => $tktId,
-            ':cid'  => $cusId,
-            ':sys'  => $system,
-            ':prio' => $priority,
-            ':emp'  => $assignedEmpId
-        ]);
+        require_once __DIR__ . '/../../includes/enterprise_flows.php';
+        $tktId = vp_create_ticket($pdo, [
+            'title'          => $data['title'] ?? 'Customer Support Ticket',
+            'description'    => $message,
+            'priority'       => $priority,
+            'source_system'  => 'CUS',
+            'cus_id'         => $cusId,
+            'requester_name' => $user['full_name'] ?? 'Customer Representative',
+        ], $cusId);
 
         // Insert first comment thread entry
         $cmtStmt = $pdo->prepare("INSERT INTO ticket_comments (tkt_id, author_emp_id, comment_text, created_at) VALUES (:tid, NULL, :txt, NOW())");
         $cmtStmt->execute([':tid' => $tktId, ':txt' => $message]);
 
-        AuditLogger::logAction(
-            null,
-            $cusId,
-            'Customer Portal',
-            'CUS',
-            'OPEN_CUSTOMER_SUPPORT_TICKET',
-            'tickets',
-            $tktId,
-            ['priority' => $priority, 'system' => $system],
-            'SUCCESS'
-        );
-
         Response::success([
             'tkt_id'   => $tktId,
-            'status'   => 'Open',
+            'status'   => ($priority === 'Critical') ? 'Escalated' : 'Open',
             'priority' => $priority
         ], "Support ticket successfully created", 201);
     }

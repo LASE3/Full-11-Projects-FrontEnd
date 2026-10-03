@@ -13,27 +13,33 @@ declare(strict_types=1);
  */
 
 require_once __DIR__ . '/../config/db.php';
+require_once __DIR__ . '/AuditLogger.php';
+require_once __DIR__ . '/integration_bus.php';
 
 /**
- * Generate official sequential Invoice ID (INV-2026-xxx)
+ * Generate official sequential Invoice ID (INV-2026-xxx) via locked counter
  */
 function vostok_getNextInvoiceId(PDO $pdo): string
 {
-    $stmt = $pdo->query("SELECT MAX(CAST(SUBSTRING(inv_id, 10) AS UNSIGNED)) as max_num FROM invoices WHERE inv_id LIKE 'INV-2026-%'");
-    $maxNum = $stmt->fetchColumn();
-    $nextNum = ($maxNum ? (int)$maxNum : 10) + 1;
-    return sprintf('INV-2026-%03d', $nextNum);
+    $stmt = $pdo->prepare("SELECT next_val FROM id_counters WHERE name = 'invoices' FOR UPDATE");
+    $stmt->execute();
+    $nextVal = (int)$stmt->fetchColumn();
+    if ($nextVal < 1) $nextVal = 11;
+    $pdo->prepare("UPDATE id_counters SET next_val = ? WHERE name = 'invoices'")->execute([$nextVal + 1]);
+    return sprintf('INV-2026-%03d', $nextVal);
 }
 
 /**
- * Generate official sequential Document ID (DOC-2026-xxx)
+ * Generate official sequential Document ID (DOC-2026-xxx) via locked counter
  */
 function vostok_getNextDocumentId(PDO $pdo): string
 {
-    $stmt = $pdo->query("SELECT MAX(CAST(SUBSTRING(doc_id, 10) AS UNSIGNED)) as max_num FROM documents WHERE doc_id LIKE 'DOC-2026-%'");
-    $maxNum = $stmt->fetchColumn();
-    $nextNum = ($maxNum ? (int)$maxNum : 20) + 1;
-    return sprintf('DOC-2026-%03d', $nextNum);
+    $stmt = $pdo->prepare("SELECT next_val FROM id_counters WHERE name = 'documents' FOR UPDATE");
+    $stmt->execute();
+    $nextVal = (int)$stmt->fetchColumn();
+    if ($nextVal < 1) $nextVal = 16;
+    $pdo->prepare("UPDATE id_counters SET next_val = ? WHERE name = 'documents'")->execute([$nextVal + 1]);
+    return sprintf('DOC-2026-%03d', $nextVal);
 }
 
 /**
@@ -313,28 +319,45 @@ HTML;
             $cusId
         ]);
 
-        // 9. Record cross-system integration logs
-        logIntegrationEvent(
-            'INT-SHP-FIN-01',
-            'SHP',
-            'FIN',
-            '/api/invoices/create',
-            "Store System automatically generated invoice {$invId} for Order #{$orderId} value \${$totalAmount}",
-            'OUTBOUND',
-            201,
-            $cusId
-        );
+        // 9. Record cross-system integration logs via vp_emit
+        try {
+            vp_emit(
+                $pdo,
+                'SHP_TO_FIN',
+                'SHP',
+                'FIN',
+                'INVOICE_GENERATED',
+                [
+                    'inv_id'       => $invId,
+                    'order_id'     => $orderId,
+                    'cus_id'       => $cusId,
+                    'total_amount' => $totalAmount,
+                    'summary'      => "Store System automatically generated invoice {$invId} for Order #{$orderId} value \${$totalAmount}",
+                    'endpoint'     => '/api/invoices/create'
+                ],
+                $cusId,
+                201
+            );
 
-        logIntegrationEvent(
-            'INT-FIN-DOC-01',
-            'FIN',
-            'DOC',
-            '/api/documents/ingest',
-            "Invoice file {$fileName} ingested into File Center vault as {$docId} (SHA256: " . substr($fileHash, 0, 12) . "…)",
-            'INBOUND',
-            201,
-            'FIN-SYSTEM'
-        );
+            vp_emit(
+                $pdo,
+                'FIN_TO_DOC',
+                'FIN',
+                'DOC',
+                'DOCUMENT_INGESTED',
+                [
+                    'doc_id'    => $docId,
+                    'inv_id'    => $invId,
+                    'file_name' => $fileName,
+                    'summary'   => "Invoice file {$fileName} ingested into File Center vault as {$docId}",
+                    'endpoint'  => '/api/documents/ingest'
+                ],
+                'SYSTEM',
+                201
+            );
+        } catch (Throwable $e) {
+            error_log("Failed in order integration logging: " . $e->getMessage());
+        }
 
         return [
             'success'   => true,
@@ -387,16 +410,26 @@ function vostok_createCustomerServiceRequest(PDO $pdo, array $data): array
         ");
         $stmt->execute([$reqId, $cusId, $serviceType, $title, $description, $location, $priority, $reqDate]);
 
-        logIntegrationEvent(
-            'INT-CUS-HR-01',
-            'CUS',
-            'HR',
-            '/api/service-requests/submit',
-            "Customer {$cusId} submitted service request {$reqId} ({$serviceType})",
-            'DISPATCH',
-            201,
-            $cusId
-        );
+        try {
+            vp_emit(
+                $pdo,
+                'CUS_TO_IT',
+                'CUS',
+                'IT',
+                'SERVICE_REQUEST_SUBMITTED',
+                [
+                    'request_id'   => $reqId,
+                    'cus_id'       => $cusId,
+                    'service_type' => $serviceType,
+                    'summary'      => "Customer {$cusId} submitted service request {$reqId} ({$serviceType})",
+                    'endpoint'     => '/api/service-requests/submit'
+                ],
+                $cusId,
+                201
+            );
+        } catch (Throwable $e) {
+            error_log("Failed to emit CUS_TO_IT: " . $e->getMessage());
+        }
 
         return [
             'success'    => true,
@@ -434,16 +467,25 @@ function vostok_assignServiceRequestPersonnel(PDO $pdo, string $requestId, strin
         ");
         $stmt->execute([$empId, $notes, $requestId]);
 
-        logIntegrationEvent(
-            'INT-HR-CUS-01',
-            'HR',
-            'CUS',
-            '/api/service-requests/assign',
-            "Assigned {$emp['full_name']} ({$empId}) to customer service request {$requestId}",
-            'DISPATCH',
-            200,
-            'HR-DISPATCH'
-        );
+        try {
+            vp_emit(
+                $pdo,
+                'HR_TO_EMP',
+                'HR',
+                'EMP',
+                'PERSONNEL_ASSIGNED',
+                [
+                    'request_id' => $requestId,
+                    'emp_id'     => $empId,
+                    'summary'    => "Assigned {$emp['full_name']} ({$empId}) to customer service request {$requestId}",
+                    'endpoint'   => '/api/service-requests/assign'
+                ],
+                'SYSTEM',
+                200
+            );
+        } catch (Throwable $e) {
+            error_log("Failed to emit HR_TO_EMP: " . $e->getMessage());
+        }
 
         return [
             'success' => true,
@@ -477,27 +519,24 @@ function vostok_getPublishedJobPostings(PDO $pdo): array
 
 /**
  * Super-Administrator Privilege: Appoint another manager with equal privileges via HR System
- * Strictly checked: ONLY SuperAdmin (admin@gmail.com / clearance L4) is authorized to invoke!
+ * Strictly checked: ONLY SuperAdmin (SuperAdmin role in employee_roles) is authorized to invoke!
  */
 function vostok_appointEqualManager(PDO $pdo, string $actingUserId, string $targetEmpId, string $newRoleTitle, ?string $deptCode = null): array
 {
     try {
         // Look up acting user
         $acting = queryUserByCredentials($actingUserId);
-        $actingEmail = $acting['email'] ?? '';
         $actingClearance = $acting['clearance_level'] ?? '';
         $actingEmpId = $acting['emp_id'] ?? '';
 
         // STRICT SECURITY ENFORCEMENT:
-        // Only the Super-Administrator (admin@gmail.com / EMP-0001 / L4) can appoint another manager with equal privileges!
-        $isSuperAdmin = ($actingEmail === 'admin@gmail.com') ||
-                        ($actingEmpId === 'EMP-0001') ||
-                        ($actingClearance === 'L4' && in_array($acting['department_code'] ?? '', ['EXE', 'ADM']));
+        // Only the SuperAdmin role has authority to appoint managers with equal privileges!
+        $isSuperAdmin = $acting && isSuperAdmin($acting);
 
         if (!$isSuperAdmin) {
             return [
                 'success' => false,
-                'error'   => 'Security Authorization Failure: Only the Super-Administrator (admin@gmail.com) has authority to appoint managers with equal privileges.'
+                'error'   => 'Security Authorization Failure: Only the SuperAdmin role has authority to appoint managers with equal privileges.'
             ];
         }
 
@@ -541,17 +580,29 @@ function vostok_appointEqualManager(PDO $pdo, string $actingUserId, string $targ
         ");
         $auditStmt->execute([$actingEmpId ?: 'EMP-0001', $targetEmpId, json_encode(['job_title' => $newRoleTitle, 'clearance_level' => 'L4', 'role_id' => 1])]);
 
-        // Record in system_integration_logs
-        logIntegrationEvent(
-            'INT-HR-ADM-01',
-            'HR',
-            'ADM',
-            '/api/managers/appoint',
-            $auditMsg,
-            'INTERNAL',
-            200,
-            $actingEmpId ?: 'EMP-0001'
-        );
+        // Record in system_integration_logs via vp_emit
+        try {
+            vp_emit(
+                $pdo,
+                'HR_TO_ADM',
+                'HR',
+                'ADM',
+                'EQUAL_MANAGER_APPOINTED',
+                [
+                    'target_emp_id' => $targetEmpId,
+                    'new_role'      => $newRoleTitle,
+                    'governance'    => true,
+                    'severity'      => 'High',
+                    'summary'       => $auditMsg,
+                    'description'   => $auditMsg,
+                    'endpoint'      => '/api/managers/appoint'
+                ],
+                $actingEmpId ?: 'EMP-1004',
+                200
+            );
+        } catch (Throwable $e) {
+            error_log("Failed to emit HR_TO_ADM: " . $e->getMessage());
+        }
 
         $pdo->commit();
 

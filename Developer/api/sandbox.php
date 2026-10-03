@@ -201,6 +201,49 @@ try {
                 error_log('Sandbox log insertion error: ' . $logErr->getMessage());
             }
 
+            // Flow J: Every API call writes to api_access_logs
+            try {
+                $apiLog = $pdo->prepare("
+                    INSERT INTO api_access_logs (system_id, endpoint, http_method, source_ip, status_code, response_time_ms, success)
+                    VALUES ('DEV', :ep, :method, :ip, :status, :resp_time, :success)
+                ");
+                $apiLog->execute([
+                    ':ep' => $url,
+                    ':method' => $reqMethod,
+                    ':ip' => $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1',
+                    ':status' => $statusCode,
+                    ':resp_time' => $elapsedMs,
+                    ':success' => $statusCode < 400 ? 1 : 0
+                ]);
+            } catch (Throwable $apiErr) {
+                error_log('API access log insertion error: ' . $apiErr->getMessage());
+            }
+
+            // Flow J: Sandbox / webhook errors create an IT ticket and emit DEV->IT
+            if ($statusCode >= 400 || !empty($payload['simulate_error']) || str_contains($url, 'error')) {
+                try {
+                    require_once __DIR__ . '/../../includes/enterprise_flows.php';
+                    $errTkt = vp_create_ticket($pdo, [
+                        'title' => "Gateway / Webhook Failure on endpoint {$url}",
+                        'source_system' => 'DEV',
+                        'priority' => 'High',
+                        'requester_name' => 'Developer Gateway Daemon',
+                        'requester_role' => 'API Gateway Subsystem',
+                        'category' => 'Infrastructure',
+                        'description' => "Webhook/Sandbox dispatch failure on endpoint {$url}. Status code {$statusCode}. Remediation required."
+                    ], 'EMP-1020');
+
+                    require_once __DIR__ . '/../../includes/integration_bus.php';
+                    vp_emit($pdo, 'DEV_TO_IT', 'DEV', 'IT', 'sandbox_error_dispatched', [
+                        'endpoint' => $url,
+                        'status_code' => $statusCode,
+                        'ticket_id' => $errTkt
+                    ], 'EMP-1020');
+                } catch (Throwable $tktErr) {
+                    error_log('Failed to create IT ticket for sandbox error: ' . $tktErr->getMessage());
+                }
+            }
+
             sendJsonSuccess([
                 'status' => $statusCode,
                 'statusText' => $statusText,

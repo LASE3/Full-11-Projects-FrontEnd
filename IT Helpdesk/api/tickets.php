@@ -8,6 +8,9 @@ declare(strict_types=1);
  */
 
 require_once __DIR__ . '/db_helper.php';
+require_once __DIR__ . '/../../includes/auth_guard.php';
+
+$user = requireApiAuth();
 
 $pdo = getItDb();
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
@@ -36,6 +39,13 @@ if ($method === 'GET') {
 
         if (!$ticket) {
             sendJsonError("Ticket [{$tktId}] not found in database.", 404);
+        }
+
+        if (($user['account_type'] ?? '') === 'Customer') {
+            $ownCusId = $user['cus_id'] ?? $user['user_id'];
+            if ($ticket['requester_cus_id'] !== $ownCusId) {
+                sendJsonError("Forbidden: Unauthorized ticket access.", 403);
+            }
         }
 
         // Fetch comments for this ticket
@@ -69,6 +79,11 @@ if ($method === 'GET') {
     // List tickets with filters
     $where = [];
     $params = [];
+
+    if (($user['account_type'] ?? '') === 'Customer') {
+        $where[] = "t.requester_cus_id = :own_cus_id";
+        $params[':own_cus_id'] = $user['cus_id'] ?? $user['user_id'];
+    }
 
     $status = trim((string)($payload['status'] ?? ''));
     if ($status !== '' && $status !== 'all') {
@@ -140,76 +155,36 @@ $action = trim((string)($_GET['action'] ?? ($payload['action'] ?? '')));
 // ACTION: CREATE TICKET
 if ($action === 'create') {
     $title = trim((string)($payload['title'] ?? ''));
-    $system = trim((string)($payload['source_system'] ?? ($payload['system'] ?? 'General IT Support')));
-    $priority = trim((string)($payload['priority'] ?? 'Medium'));
-    $description = trim((string)($payload['description'] ?? ''));
-    $requesterName = trim((string)($payload['requester_name'] ?? 'Authorized Personnel'));
-    $requesterRole = trim((string)($payload['requester_role'] ?? 'Operations Staff'));
-    $requesterDept = trim((string)($payload['requester_dept'] ?? 'ENG'));
-    $assignedEmpId = trim((string)($payload['assigned_emp_id'] ?? 'EMP-1018'));
-    $status = trim((string)($payload['status'] ?? 'Open'));
-
     if ($title === '') {
         sendJsonError("Ticket title is required.");
     }
 
-    // Auto-generate ticket ID (e.g. TICK-8824 or TKT-2026-XXX)
-    $customId = trim((string)($payload['tkt_id'] ?? ''));
-    if ($customId !== '') {
-        $tktId = $customId;
-    } else {
-        $randNum = rand(1000, 9999);
-        $tktId = "TICK-{$randNum}";
+    require_once __DIR__ . '/../../includes/enterprise_flows.php';
+    $actorId = $user['emp_id'] ?? ($user['cus_id'] ?? ($user['user_id'] ?? 'EMP-1004'));
+
+    try {
+        $tktId = vp_create_ticket($pdo, $payload, $actorId);
+
+        $description = trim((string)($payload['description'] ?? ''));
+        if ($description !== '') {
+            $cmtStmt = $pdo->prepare("
+                INSERT INTO ticket_comments 
+                (tkt_id, author_name, author_role, author_type, comment_text, created_at)
+                VALUES 
+                (:tid, :authName, :authRole, 'requester', :txt, NOW())
+            ");
+            $cmtStmt->execute([
+                ':tid'      => $tktId,
+                ':authName' => $payload['requester_name'] ?? 'Authorized Personnel',
+                ':authRole' => $payload['requester_role'] ?? 'Specialist',
+                ':txt'      => $description,
+            ]);
+        }
+
+        sendJsonSuccess(['tkt_id' => $tktId], "Ticket [{$tktId}] created successfully.");
+    } catch (Throwable $e) {
+        sendJsonError("Failed to create ticket: " . $e->getMessage(), 500);
     }
-
-    // Compute SLA deadline
-    $slaHours = match ($priority) {
-        'Critical' => 2,
-        'High'     => 4,
-        'Medium'   => 8,
-        'Low'      => 24,
-        default    => 8,
-    };
-    $slaDeadline = date('Y-m-d H:i:s', strtotime("+{$slaHours} hours"));
-
-    $stmt = $pdo->prepare("
-        INSERT INTO tickets 
-        (tkt_id, requester_type, source_system, title, description, requester_name, requester_role, requester_dept, priority, assigned_emp_id, status, sla_deadline, created_at)
-        VALUES 
-        (:tid, 'Employee', :sys, :title, :desc, :reqName, :reqRole, :reqDept, :prio, :assigned, :status, :sla, NOW())
-    ");
-
-    $stmt->execute([
-        ':tid'      => $tktId,
-        ':sys'      => $system,
-        ':title'    => $title,
-        ':desc'     => $description,
-        ':reqName'  => $requesterName,
-        ':reqRole'  => $requesterRole,
-        ':reqDept'  => $requesterDept,
-        ':prio'     => $priority,
-        ':assigned' => $assignedEmpId ?: null,
-        ':status'   => $status,
-        ':sla'      => $slaDeadline,
-    ]);
-
-    // Insert initial comment in thread if description provided
-    if ($description !== '') {
-        $cmtStmt = $pdo->prepare("
-            INSERT INTO ticket_comments 
-            (tkt_id, author_name, author_role, author_type, comment_text, created_at)
-            VALUES 
-            (:tid, :authName, :authRole, 'requester', :txt, NOW())
-        ");
-        $cmtStmt->execute([
-            ':tid'      => $tktId,
-            ':authName' => $requesterName,
-            ':authRole' => $requesterRole,
-            ':txt'      => $description,
-        ]);
-    }
-
-    sendJsonSuccess(['tkt_id' => $tktId], "Ticket [{$tktId}] created successfully.");
 }
 
 // ACTION: UPDATE TICKET
@@ -294,6 +269,17 @@ if ($action === 'resolve') {
         ':role' => $authRole,
         ':txt'  => "RESOLVED: " . $notes,
     ]);
+
+    // Check if this was a provisioning ticket and activate account
+    $tCheck = $pdo->prepare("SELECT title FROM tickets WHERE tkt_id = :id");
+    $tCheck->execute([':id' => $tktId]);
+    $tTitle = $tCheck->fetchColumn();
+    if ($tTitle && preg_match('/Provision access for (EMP-\d+)/i', (string)$tTitle, $m)) {
+        $targetEmp = $m[1];
+        $pdo->prepare("UPDATE employees SET employment_status = 'Active' WHERE emp_id = ? AND employment_status = 'Inactive'")->execute([$targetEmp]);
+        $pdo->prepare("UPDATE employee_accounts SET status = 'Active' WHERE emp_id = ? AND status = 'Inactive'")->execute([$targetEmp]);
+        $pdo->prepare("UPDATE employee_onboarding SET status = 'Completed', completed_at = NOW() WHERE emp_id = ? AND step = 'SystemAccessGranted'")->execute([$targetEmp]);
+    }
 
     sendJsonSuccess(['tkt_id' => $tktId], "Ticket [{$tktId}] marked as Resolved.");
 }

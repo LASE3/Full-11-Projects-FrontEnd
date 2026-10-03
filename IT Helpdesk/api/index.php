@@ -7,6 +7,9 @@ declare(strict_types=1);
  */
 
 require_once __DIR__ . '/db_helper.php';
+require_once __DIR__ . '/../../includes/auth_guard.php';
+
+requireApiAuth();
 
 $pdo = getItDb();
 
@@ -16,7 +19,7 @@ $assetsCount = (int)$pdo->query("SELECT COUNT(*) FROM it_assets")->fetchColumn()
 $kbCount = (int)$pdo->query("SELECT COUNT(*) FROM knowledge_base_articles")->fetchColumn();
 
 sendJsonSuccess([
-    'system'       => 'VOSTOKPRIBOR IT Helpdesk & Support Operations (SYS-08)',
+    'system'       => 'VOSTOKPRIBOR IT Helpdesk & Support Operations (08 IT)',
     'api_version'  => '2.4.0',
     'status'       => 'ONLINE',
     'stats'        => [

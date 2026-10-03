@@ -528,7 +528,7 @@ function gov_renderSidebar($currentPage = '')
                 'path' => 'system-integrations',
                 'icon' => 'hub',
                 'title' => 'System Integrations',
-                'badge' => 'SYS01',
+                'badge' => '11 ADM',
                 'badge_class' => 'font-telemetry-micro text-[10px] px-space-2xs bg-secondary-fixed/20 text-secondary-fixed font-bold rounded'
             ],
             [
@@ -634,6 +634,137 @@ function gov_renderSidebar($currentPage = '')
     $html .= '</aside>';
 
     return $html;
+}
+
+/**
+ * Flow K: Orphaned Access Check
+ * Identifies any separated or suspended employees who still retain active roles or active sessions.
+ */
+function gov_getOrphanedAccessFindings(PDO $pdo): array
+{
+    $stmt = $pdo->query("
+        SELECT 
+            e.emp_id,
+            e.full_name,
+            e.job_title,
+            e.department_code,
+            e.employment_status,
+            COUNT(DISTINCT er.role_id) AS active_role_count,
+            GROUP_CONCAT(DISTINCT r.role_name SEPARATOR ', ') AS active_roles,
+            COUNT(DISTINCT us.session_id) AS active_sessions_count
+        FROM employees e
+        LEFT JOIN employee_roles er ON e.emp_id = er.emp_id
+        LEFT JOIN roles r ON er.role_id = r.role_id
+        LEFT JOIN employee_accounts ea ON e.emp_id = ea.emp_id
+        LEFT JOIN user_sessions us ON ea.account_id = us.employee_account_id AND us.status = 'Active' AND us.ended_at IS NULL
+        WHERE e.employment_status IN ('Terminated', 'Suspended')
+          AND (er.role_id IS NOT NULL OR us.session_id IS NOT NULL)
+        GROUP BY e.emp_id, e.full_name, e.job_title, e.department_code, e.employment_status
+    ");
+    return $stmt ? $stmt->fetchAll(PDO::FETCH_ASSOC) : [];
+}
+
+/**
+ * Flow K: Link-Health View
+ * Compares expected matrix links vs links with traffic in the last 24 hours.
+ */
+function gov_getLinkHealth(PDO $pdo): array
+{
+    $stmt = $pdo->query("
+        SELECT 
+            si.link_code,
+            si.source_system_id,
+            si.target_system_id,
+            si.status AS configured_status,
+            COUNT(sil.log_id) AS traffic_24h,
+            MAX(sil.executed_at) AS last_traffic_at
+        FROM system_integrations si
+        LEFT JOIN system_integration_logs sil 
+            ON si.link_code = sil.link_code 
+           AND sil.executed_at >= DATE_SUB(NOW(), INTERVAL 24 HOUR)
+        GROUP BY si.link_code, si.source_system_id, si.target_system_id, si.status
+        ORDER BY traffic_24h DESC, si.link_code ASC
+    ");
+    return $stmt ? $stmt->fetchAll(PDO::FETCH_ASSOC) : [];
+}
+
+/**
+ * Flow K: Live Integration Traffic from system_integration_logs
+ */
+function gov_getLiveIntegrationTraffic(PDO $pdo, int $limit = 15): array
+{
+    $stmt = $pdo->prepare("
+        SELECT 
+            sil.*,
+            e.full_name AS actor_name
+        FROM system_integration_logs sil
+        LEFT JOIN employees e ON sil.actor_id = e.emp_id
+        ORDER BY sil.executed_at DESC, sil.log_id DESC
+        LIMIT :limit
+    ");
+    $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+/**
+ * Flow K: Critical Tickets
+ */
+function gov_getCriticalTickets(PDO $pdo, int $limit = 10): array
+{
+    $stmt = $pdo->prepare("
+        SELECT 
+            t.*,
+            e.full_name AS assigned_tech_name
+        FROM tickets t
+        LEFT JOIN employees e ON t.assigned_emp_id = e.emp_id
+        WHERE t.priority = 'Critical'
+        ORDER BY t.created_at DESC
+        LIMIT :limit
+    ");
+    $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+/**
+ * Flow K: Privileged Account Changes
+ */
+function gov_getPrivilegedAccountChanges(PDO $pdo, int $limit = 10): array
+{
+    $stmt = $pdo->prepare("
+        SELECT 
+            al.*,
+            e.full_name AS actor_name
+        FROM audit_logs al
+        LEFT JOIN employees e ON al.actor_emp_id = e.emp_id
+        WHERE al.target_entity_type IN ('roles', 'employee_roles', 'account', 'employee_accounts', 'privileged_access')
+           OR al.action LIKE '%role%' OR al.action LIKE '%privilege%' OR al.action LIKE '%auth%'
+        ORDER BY al.occurred_at DESC
+        LIMIT :limit
+    ");
+    $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+/**
+ * Flow K: Security Events per system
+ */
+function gov_getSecurityEventsPerSystem(PDO $pdo, int $limit = 15): array
+{
+    $stmt = $pdo->prepare("
+        SELECT 
+            se.*,
+            e.full_name AS actor_name
+        FROM security_events se
+        LEFT JOIN employees e ON se.actor_emp_id = e.emp_id
+        ORDER BY se.event_time DESC
+        LIMIT :limit
+    ");
+    $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
 

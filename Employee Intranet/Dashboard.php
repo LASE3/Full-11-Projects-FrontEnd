@@ -2,8 +2,23 @@
 require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/../includes/auth_guard.php';
 requireAuth('EMP');
+require_once __DIR__ . '/intranet_service.php';
+
 $pdo = getDbConnection();
 $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clearance_level' => 'L2'];
+
+// Handle direct read/write update for OPS Queue
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ops_action']) && $_POST['ops_action'] === 'update_task') {
+    $tId = trim($_POST['task_id'] ?? '');
+    $tStatus = trim($_POST['task_status'] ?? 'Pending');
+    $tEmp = trim($_POST['assigned_emp_id'] ?? '');
+    if ($tId !== '') {
+        intra_updateOpsTask($tId, $tStatus, $tEmp ?: null);
+        header("Location: Dashboard.php?ops_updated=1");
+        exit;
+    }
+}
+$opsTasks = intra_getOpsTasks();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -452,6 +467,56 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
                      RIGHT COLUMN: STACKED WIDGETS
                      ========================================================== -->
                 <div class="intra-display-flex-flex-direction-a81b" >
+
+                    <!-- WIDGET 0: OPS FULFILLMENT QUEUE (DEPARTMENT BOARD FOR EMP-1011..1015) -->
+                    <div class="intranet-card intra-p-125" id="ops-queue-panel">
+                        <div class="intra-display-flex-align-items-4177" style="margin-bottom: 0.75rem;">
+                            <div class="intra-flex-center-gap-sm">
+                                <span class="material-symbols-outlined intra-accent-xl" style="color:#00e5ff;">local_shipping</span>
+                                <h3 class="intra-margin-0-font-size-99fa">OPS Fulfillment Queue</h3>
+                            </div>
+                            <span class="dept-badge ops" style="font-size:0.6875rem;">03 OPS (EMP-1011..1015)</span>
+                        </div>
+                        <?php if (empty($opsTasks)): ?>
+                            <div style="font-size:0.8125rem; color: var(--neutral-500); padding: 0.5rem 0;">No active tasks in OPS queue.</div>
+                        <?php else: ?>
+                            <div style="display:flex; flex-direction:column; gap:0.5rem; max-height: 340px; overflow-y: auto;">
+                                <?php foreach ($opsTasks as $task): ?>
+                                    <div style="padding: 0.625rem; background: var(--neutral-50); border: 1px solid var(--neutral-200); border-radius: 4px; font-size: 0.8125rem;">
+                                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 4px;">
+                                            <span style="font-family: var(--font-mono); font-weight:600; color: var(--system-accent);"><?= htmlspecialchars((string)$task['task_id']) ?></span>
+                                            <span style="font-size: 0.6875rem; padding: 1px 6px; border-radius: 3px; font-weight:600; background: <?= $task['status'] === 'Completed' ? '#d4edda; color:#155724' : ($task['status'] === 'In Progress' ? '#cce5ff; color:#004085' : '#fff3cd; color:#856404') ?>;">
+                                                <?= htmlspecialchars((string)$task['status']) ?>
+                                            </span>
+                                        </div>
+                                        <div style="font-size: 0.75rem; color: var(--neutral-700); margin-bottom: 4px;">
+                                            <strong>Type:</strong> <?= htmlspecialchars((string)$task['task_type']) ?>
+                                            <?php if (!empty($task['order_id'])): ?> | <strong>Order:</strong> <?= htmlspecialchars((string)$task['order_id']) ?><?php endif; ?>
+                                            <?php if (!empty($task['prj_id'])): ?> | <strong>Project:</strong> <?= htmlspecialchars((string)$task['prj_id']) ?><?php endif; ?>
+                                        </div>
+                                        <form method="POST" action="Dashboard.php" style="display:flex; gap: 4px; align-items:center; margin-top: 4px;">
+                                            <input type="hidden" name="ops_action" value="update_task">
+                                            <input type="hidden" name="task_id" value="<?= htmlspecialchars((string)$task['task_id']) ?>">
+                                            <select name="assigned_emp_id" style="font-size:0.75rem; padding: 2px 4px; border: 1px solid var(--neutral-300); border-radius: 3px; flex:1;">
+                                                <option value="EMP-1011" <?= ($task['assigned_emp_id'] ?? '') === 'EMP-1011' ? 'selected' : '' ?>>Amina Karimova (EMP-1011)</option>
+                                                <option value="EMP-1012" <?= ($task['assigned_emp_id'] ?? '') === 'EMP-1012' ? 'selected' : '' ?>>Baurzhan Asanov (EMP-1012)</option>
+                                                <option value="EMP-1013" <?= ($task['assigned_emp_id'] ?? '') === 'EMP-1013' ? 'selected' : '' ?>>Galina Voronova (EMP-1013)</option>
+                                                <option value="EMP-1014" <?= ($task['assigned_emp_id'] ?? '') === 'EMP-1014' ? 'selected' : '' ?>>Dmitry Chen (EMP-1014)</option>
+                                                <option value="EMP-1015" <?= ($task['assigned_emp_id'] ?? '') === 'EMP-1015' ? 'selected' : '' ?>>Saule Kadyrova (EMP-1015)</option>
+                                            </select>
+                                            <select name="task_status" style="font-size:0.75rem; padding: 2px 4px; border: 1px solid var(--neutral-300); border-radius: 3px;">
+                                                <option value="Pending" <?= $task['status'] === 'Pending' ? 'selected' : '' ?>>Pending</option>
+                                                <option value="In Progress" <?= $task['status'] === 'In Progress' ? 'selected' : '' ?>>In Progress</option>
+                                                <option value="Completed" <?= $task['status'] === 'Completed' ? 'selected' : '' ?>>Completed</option>
+                                                <option value="Cancelled" <?= $task['status'] === 'Cancelled' ? 'selected' : '' ?>>Cancelled</option>
+                                            </select>
+                                            <button type="submit" class="btn btn-secondary" style="font-size:0.6875rem; padding: 2px 6px; height:auto;">Update</button>
+                                        </form>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
+                        <?php endif; ?>
+                    </div>
 
                     <!-- WIDGET 1: TODAY'S CALENDAR -->
                     <div class="intranet-card intra-p-125">

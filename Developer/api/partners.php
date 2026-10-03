@@ -76,6 +76,33 @@ try {
             ]);
 
             $newId = (int)$pdo->lastInsertId();
+
+            // Flow J: Create CRM lead tagged source_page='Developer Portal'
+            try {
+                $stmtLead = $pdo->prepare("
+                    INSERT INTO leads (full_name, email, company_name, source_page, status, assigned_sales_emp_id, message, created_at)
+                    VALUES (?, ?, ?, 'Developer Portal', 'New', 'EMP-1007', ?, NOW())
+                ");
+                $stmtLead->execute([$contactName, $contactEmail, $company, "Partner registration: {$ticketId} (Env: {$targetEnv})"]);
+                $leadId = (int)$pdo->lastInsertId();
+
+                $stmtAct = $pdo->prepare("
+                    INSERT INTO crm_activities (lead_id, activity_type, summary, created_by_emp_id, activity_date)
+                    VALUES (?, 'Partner Registration', ?, 'EMP-1020', NOW())
+                ");
+                $stmtAct->execute([$leadId, "Developer Portal partner clearance requested by {$company} ({$contactName})"]);
+
+                require_once __DIR__ . '/../../includes/integration_bus.php';
+                vp_emit($pdo, 'DEV_TO_CRM', 'DEV', 'CRM', 'partner_registered_lead', [
+                    'company' => $company,
+                    'email'   => $contactEmail,
+                    'ticket'  => $ticketId,
+                    'lead_id' => $leadId
+                ], 'DEV-SYSTEM');
+            } catch (Throwable $leadErr) {
+                error_log("Failed to create CRM lead from Developer Portal: " . $leadErr->getMessage());
+            }
+
             sendJsonSuccess([
                 'id' => $newId,
                 'ticket_id' => $ticketId,
@@ -99,6 +126,15 @@ try {
             $contact = trim($payload['contact_name'] ?? '');
             $email = trim($payload['contact_email'] ?? '');
 
+            // Fetch existing record if company is blank
+            if ($company === '') {
+                $currApp = $pdo->query("SELECT company_name, partner_id FROM developer_partner_applications WHERE id = {$id}")->fetch(PDO::FETCH_ASSOC);
+                if ($currApp) {
+                    $company = $currApp['company_name'] ?? 'Enterprise Partner';
+                    $partnerId = $currApp['partner_id'] ?? 'CUS-1002';
+                }
+            }
+
             $stmt = $pdo->prepare("
                 UPDATE `developer_partner_applications`
                 SET `status` = :status,
@@ -117,7 +153,62 @@ try {
                 ':email' => $email
             ]);
 
-            sendJsonSuccess(['id' => $id, 'status' => $status], 'Application status updated in database');
+            $credsData = null;
+            if ($status === 'Approved') {
+                $partnerCusId = $partnerId ?? 'CUS-1002';
+                $stmtP = $pdo->prepare("SELECT partner_id FROM api_partners WHERE partner_name = ? OR cus_id = ? LIMIT 1");
+                $stmtP->execute([$company, $partnerCusId]);
+                $existingPid = $stmtP->fetchColumn();
+                if (!$existingPid) {
+                    $insP = $pdo->prepare("INSERT INTO api_partners (cus_id, partner_name, registered_at, status) VALUES (?, ?, NOW(), 'Active')");
+                    $insP->execute([$partnerCusId, $company]);
+                    $partnerDbId = (int)$pdo->lastInsertId();
+                } else {
+                    $partnerDbId = (int)$existingPid;
+                }
+
+                $rawSecret = 'vp_live_' . bin2hex(random_bytes(20));
+                $hashedSecret = password_hash($rawSecret, PASSWORD_BCRYPT);
+                $expiresAt = date('Y-m-d H:i:s', strtotime('+1 year'));
+
+                $insCred = $pdo->prepare("
+                    INSERT INTO api_credentials (partner_id, api_key_hash, created_at, expires_at, revoked)
+                    VALUES (?, ?, NOW(), ?, 0)
+                ");
+                $insCred->execute([$partnerDbId, $hashedSecret, $expiresAt]);
+                $credId = (int)$pdo->lastInsertId();
+
+                $keyIdent = 'VP-KEY-' . rand(1000, 9999);
+                $insDevKey = $pdo->prepare("
+                    INSERT INTO developer_api_keys (key_identifier, label, partner_id, partner_name, token_prefix, token_full, environment, rate_limit, rate_limit_value, classification, scopes, status, created_at, expires_at)
+                    VALUES (?, ?, ?, ?, ?, ?, 'Production', '10,000 req/min', 10000, 'Confidential', 'telemetry:read,scada:ingest', 'Active', NOW(), ?)
+                ");
+                $insDevKey->execute([
+                    $keyIdent,
+                    "Production API Key - {$company}",
+                    $partnerCusId,
+                    $company,
+                    substr($rawSecret, 0, 10),
+                    $rawSecret,
+                    $expiresAt
+                ]);
+
+                require_once __DIR__ . '/../../includes/integration_bus.php';
+                vp_emit($pdo, 'DEV_TO_CRM', 'DEV', 'CRM', 'partner_approved_credentials', [
+                    'partner_id' => $partnerDbId,
+                    'company' => $company,
+                    'credential_id' => $credId
+                ], 'EMP-1020');
+
+                $credsData = [
+                    'partner_id' => $partnerDbId,
+                    'credential_id' => $credId,
+                    'api_key' => $rawSecret, // Shown once
+                    'expires_at' => $expiresAt
+                ];
+            }
+
+            sendJsonSuccess(['id' => $id, 'status' => $status, 'credentials' => $credsData], 'Application status updated in database');
             break;
 
         case 'delete':

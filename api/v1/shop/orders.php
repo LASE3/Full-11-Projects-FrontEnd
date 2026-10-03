@@ -6,36 +6,54 @@
  * Methods: GET, POST
  */
 require_once __DIR__ . '/../../../config/db.php';
+require_once __DIR__ . '/../../../includes/auth_guard.php';
 require_once __DIR__ . '/../../helpers/Response.php';
 require_once __DIR__ . '/../../helpers/I18n.php';
 require_once __DIR__ . '/../../helpers/AuditLogger.php';
+require_once __DIR__ . '/../../../includes/enterprise_flows.php';
 
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
+$user = requireApiAuth();
 
 $pdo = getDbConnection();
-$cusId = $_SESSION['cus_id'] ?? ($_SESSION['vostok_user']['user_id'] ?? ($_GET['cus_id'] ?? null));
-$lang  = $_GET['lang'] ?? 'en';
+// Ignore any cus_id from GET/body: derive strictly from authenticated customer session
+if (($user['account_type'] ?? '') === 'Customer') {
+    $cusId = $user['cus_id'] ?? $user['user_id'];
+} else {
+    $cusId = $_SESSION['cus_id'] ?? null;
+}
+
+if (!$cusId) {
+    Response::error("Customer account required to access orders.", 401);
+}
+
+$lang   = $_GET['lang'] ?? 'en';
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 
 // Handle GET: Retrieve orders
 if ($method === 'GET') {
-    if (!$cusId) {
-        $cusId = 'CUS-1001';
-    }
-
     try {
         $orderId = $_GET['order_id'] ?? null;
         if ($orderId) {
-            // Specific order with item lines
+            // Check ownership
+            $chkStmt = $pdo->prepare("SELECT cus_id FROM orders WHERE order_id = :oid");
+            $chkStmt->execute([':oid' => $orderId]);
+            $owner = $chkStmt->fetchColumn();
+
+            if ($owner === false) {
+                Response::error("Order not found.", 404);
+            }
+
+            if (($user['account_type'] ?? '') === 'Customer' && $owner !== $cusId) {
+                Response::error("Forbidden: You do not have permission to view this order.", 403);
+            }
+
             $stmt = $pdo->prepare("
                 SELECT o.*, c.company_name, c.primary_contact_name
                 FROM orders o
                 JOIN customers c ON o.cus_id = c.cus_id
                 WHERE o.order_id = :oid AND o.cus_id = :cid
             ");
-            $stmt->execute([':oid' => $orderId, ':cid' => $cusId]);
+            $stmt->execute([':oid' => $orderId, ':cid' => $owner]);
             $order = $stmt->fetch(PDO::FETCH_ASSOC);
 
             if (!$order) {
@@ -88,7 +106,8 @@ if ($method === 'POST') {
     $rawInput = file_get_contents('php://input');
     $input = json_decode($rawInput, true);
 
-    $targetCusId = $cusId ?: ($input['cus_id'] ?? ($_SESSION['vostok_user']['user_id'] ?? 'CUS-1001'));
+    // Ignore any cus_id from body: strictly derived from authenticated customer session
+    $targetCusId = $cusId;
 
     $items = $input['items'] ?? [];
     if (empty($items) || !is_array($items)) {
@@ -118,12 +137,23 @@ if ($method === 'POST') {
                 throw new Exception("Insufficient stock for product ID: {$prodId}. Available: " . ($stock !== false ? $stock : 0));
             }
 
-            // Check pricing (custom or default 2500.00)
+            // Check pricing in customer_pricing first, then products table
             $priceStmt = $pdo->prepare("SELECT special_price FROM customer_pricing WHERE cus_id = :cid AND prod_id = :pid");
             $priceStmt->execute([':cid' => $targetCusId, ':pid' => $prodId]);
             $customPrice = $priceStmt->fetchColumn();
 
-            $unitPrice = $customPrice !== false ? (float)$customPrice : 2500.00;
+            if ($customPrice !== false && $customPrice !== null) {
+                $unitPrice = (float)$customPrice;
+            } else {
+                $basePriceStmt = $pdo->prepare("SELECT unit_price FROM products WHERE prod_id = :pid");
+                $basePriceStmt->execute([':pid' => $prodId]);
+                $basePrice = $basePriceStmt->fetchColumn();
+                if ($basePrice === false || $basePrice === null) {
+                    throw new Exception("Product price not configured for item: " . htmlspecialchars($prodId));
+                }
+                $unitPrice = (float)$basePrice;
+            }
+
             $lineTotal = $unitPrice * $qty;
             $totalOrderAmount += $lineTotal;
 
@@ -166,6 +196,11 @@ if ($method === 'POST') {
             ['total_amount' => $totalOrderAmount, 'items_count' => count($processedLines)],
             'SUCCESS'
         );
+
+        // Call common order processing function if defined (Phase 3 Flow D)
+        if (function_exists('vp_process_order')) {
+            vp_process_order($pdo, $newOrderId);
+        }
 
         $pdo->commit();
 

@@ -71,8 +71,14 @@ loadEnvFile(__DIR__ . '/../.env');
 function requireEnv(string $key): string
 {
     $value = getenv($key);
-    if ($value === false || $value === '') {
+    if ($value === false) {
         error_log("Startup error: required environment variable '{$key}' is not set.");
+        throw new RuntimeException(
+            "Server misconfiguration: required environment variable '{$key}' is not set."
+        );
+    }
+    if ($key !== 'DB_PASS' && trim($value) === '') {
+        error_log("Startup error: required environment variable '{$key}' is empty.");
         throw new RuntimeException(
             "Server misconfiguration: required environment variable '{$key}' is not set."
         );
@@ -99,8 +105,8 @@ function optionalEnv(string $key, string $default): string
 define('VP_DB_HOST', optionalEnv('DB_HOST', '127.0.0.1'));
 define('VP_DB_PORT', optionalEnv('DB_PORT', '3306'));
 define('VP_DB_NAME', optionalEnv('DB_NAME', 'vostokpribor'));
-define('VP_DB_USER', optionalEnv('DB_USER', 'root'));
-define('VP_DB_PASS', optionalEnv('DB_PASS', ''));
+define('VP_DB_USER', requireEnv('DB_USER'));
+define('VP_DB_PASS', requireEnv('DB_PASS'));
 
 /**
  * Get or create the active PDO database connection.
@@ -127,34 +133,8 @@ function getDbConnection(): PDO
     try {
         $pdo = new PDO($dsn, VP_DB_USER, VP_DB_PASS, $options);
     } catch (PDOException $e) {
-        // Fallback: allow an explicit, opt-in auto-migration for local/dev setups only.
-        // This never runs unless DB_AUTO_MIGRATE=true is explicitly set — it will not
-        // silently re-seed a production database on a transient connection error.
-        if (optionalEnv('DB_AUTO_MIGRATE', 'false') === 'true') {
-            try {
-                $rootPdo = new PDO(
-                    'mysql:host=' . VP_DB_HOST . ';port=' . VP_DB_PORT . ';charset=utf8mb4',
-                    VP_DB_USER,
-                    VP_DB_PASS,
-                    $options
-                );
-                $rootPdo->exec(
-                    'CREATE DATABASE IF NOT EXISTS `' . VP_DB_NAME . '` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci'
-                );
-                $pdo = new PDO($dsn, VP_DB_USER, VP_DB_PASS, $options);
-
-                $masterSql = __DIR__ . '/../DataBase/vostokpribor.sql';
-                if (file_exists($masterSql)) {
-                    $pdo->exec((string)file_get_contents($masterSql));
-                }
-            } catch (Throwable $fallbackEx) {
-                error_log('Database connection failure: ' . $e->getMessage());
-                throw new RuntimeException('Unable to connect to VOSTOKPRIBOR core database.', 0, $e);
-            }
-        } else {
-            error_log('Database connection failure: ' . $e->getMessage());
-            throw new RuntimeException('Unable to connect to VOSTOKPRIBOR core database.', 0, $e);
-        }
+        error_log('Database connection failure: ' . $e->getMessage());
+        throw new RuntimeException('Unable to connect to VOSTOKPRIBOR core database.', 0, $e);
     }
 
     return $pdo;
@@ -221,11 +201,12 @@ function queryUserByCredentials(string $userId): ?array
                 ca.email,
                 'L1' AS clearance_level,
                 'CUS' AS department_code,
-                9 AS role_id,
-                'Customer Client' AS role_name,
+                r.role_id,
+                r.role_name,
                 'Customer' AS account_type
             FROM customer_accounts ca
             JOIN customers c ON ca.cus_id = c.cus_id
+            LEFT JOIN roles r ON r.role_name IN ('Customer Client Account', 'Customer Client', 'Customer')
             WHERE ca.username = :u1
                OR ca.cus_id = :u2
                OR ca.email = :u3
@@ -249,9 +230,8 @@ function queryUserByCredentials(string $userId): ?array
 /**
  * Verify a user's password against the stored bcrypt hash.
  *
- * SECURITY: This performs strict hash verification only. There are
- * no hardcoded fallback/demo passwords — every credential must match
- * the stored password_hash via password_verify().
+ * SECURITY: Strict hash verification ONLY. No fallbacks allowed.
+ * Only password_verify() may succeed.
  *
  * @param array<string, mixed> $user
  */
@@ -261,25 +241,12 @@ function verifyUserPassword(array $user, string $password): bool
         return false;
     }
 
-    if (password_verify($password, (string)$user['password_hash'])) {
-        return true;
-    }
-
-    $acceptableFallbacks = [
-        'AdminPass2026!',
-        'ClientPass2026!',
-        'Vostok2026!',
-        'EmpPass2026!',
-        'DevPass2026!',
-        'admin123',
-        'password123'
-    ];
-
-    return in_array($password, $acceptableFallbacks, true);
+    return password_verify($password, (string)$user['password_hash']);
 }
 
 /**
  * Check if the user is authorized to access the specified system.
+ * Uses role_system_access table rather than static departmental arrays.
  *
  * @param array<string, mixed> $user
  * @return array{authorized: bool, reason: string}
@@ -291,54 +258,100 @@ function checkSystemAuthorization(array $user, string $systemId): array
         return ['authorized' => true, 'reason' => 'Global access granted'];
     }
 
-    if (!empty($user['clearance_level']) && $user['clearance_level'] === 'L4') {
-        return ['authorized' => true, 'reason' => 'Executive L4 unrestricted clearance'];
+    // Corporate Web Platform (WEB) is public company presentation
+    if ($systemId === 'WEB') {
+        return ['authorized' => true, 'reason' => 'Public corporate portal'];
     }
 
-    if (($user['account_type'] ?? null) === 'Customer') {
-        if (in_array($systemId, ['CUS', 'SHP', 'WEB'], true)) {
-            return ['authorized' => true, 'reason' => 'Customer portal access granted'];
+    try {
+        $pdo = getDbConnection();
+
+        // 1. Check SuperAdmin role in employee_roles
+        $empId = $user['emp_id'] ?? ($user['account_type'] === 'Employee' ? ($user['user_id'] ?? null) : null);
+        if ($empId) {
+            $saStmt = $pdo->prepare("
+                SELECT 1 FROM employee_roles er
+                JOIN roles r ON er.role_id = r.role_id
+                WHERE er.emp_id = ? AND (r.role_name = 'SuperAdmin' OR r.role_name = 'Executive SuperAdmin')
+                LIMIT 1
+            ");
+            $saStmt->execute([$empId]);
+            if ($saStmt->fetchColumn()) {
+                return ['authorized' => true, 'reason' => 'SuperAdmin unrestricted governance clearance'];
+            }
         }
-        return ['authorized' => false, 'reason' => 'Customer accounts are restricted from internal enterprise portals'];
-    }
 
-    if (!empty($user['role_id'])) {
-        try {
-            $pdo = getDbConnection();
+        // 2. Customer accounts check
+        if (($user['account_type'] ?? null) === 'Customer') {
+            $roleId = $user['role_id'] ?? null;
+            if (!$roleId) {
+                $roleId = (int)$pdo->query("SELECT role_id FROM roles WHERE role_name IN ('Customer Client Account', 'Customer Client') LIMIT 1")->fetchColumn();
+                if (!$roleId) $roleId = 9;
+            }
+            $stmt = $pdo->prepare('SELECT access_level FROM role_system_access WHERE role_id = ? AND system_id = ?');
+            $stmt->execute([$roleId, $systemId]);
+            $access = $stmt->fetchColumn();
+            if ($access) {
+                return ['authorized' => true, 'reason' => "Customer authorized via role access ({$access})"];
+            }
+            return ['authorized' => false, 'reason' => 'Customer accounts are restricted from internal enterprise portals'];
+        }
+
+        // 3. Employee role_system_access check
+        if ($empId) {
+            $stmt = $pdo->prepare("
+                SELECT rsa.access_level, r.role_name
+                FROM employee_roles er
+                JOIN role_system_access rsa ON er.role_id = rsa.role_id
+                JOIN roles r ON er.role_id = r.role_id
+                WHERE er.emp_id = ? AND rsa.system_id = ?
+                LIMIT 1
+            ");
+            $stmt->execute([$empId, $systemId]);
+            $row = $stmt->fetch();
+            if ($row) {
+                return ['authorized' => true, 'reason' => "Authorized via role {$row['role_name']} ({$row['access_level']})"];
+            }
+        } elseif (!empty($user['role_id'])) {
             $stmt = $pdo->prepare('SELECT access_level FROM role_system_access WHERE role_id = ? AND system_id = ?');
             $stmt->execute([$user['role_id'], $systemId]);
             $access = $stmt->fetchColumn();
             if ($access) {
                 return ['authorized' => true, 'reason' => "Authorized via role access ({$access})"];
             }
-        } catch (Throwable $e) {
-            error_log('checkSystemAuthorization error: ' . $e->getMessage());
         }
-    }
-
-    $dept = (string)($user['department_code'] ?? '');
-    $allowedByDept = [
-        'EXE' => ['ADM', 'CRM', 'CUS', 'DEV', 'EMP', 'DOC', 'FIN', 'HR', 'IT', 'SHP', 'WEB'],
-        'SAL' => ['CRM', 'SHP', 'EMP', 'DOC', 'CUS'],
-        'ENG' => ['DEV', 'IT', 'EMP', 'DOC', 'WEB'],
-        'OPS' => ['SHP', 'EMP', 'DOC', 'FIN'],
-        'FIN' => ['FIN', 'ADM', 'EMP', 'DOC', 'CRM'],
-        'HR'  => ['HR', 'EMP', 'DOC', 'ADM'],
-        'IT'  => ['IT', 'DEV', 'DOC', 'EMP', 'ADM'],
-    ];
-
-    if (isset($allowedByDept[$dept]) && in_array($systemId, $allowedByDept[$dept], true)) {
-        return ['authorized' => true, 'reason' => "Departmental {$dept} authorization"];
-    }
-
-    if (in_array($systemId, ['EMP', 'DOC', 'WEB'], true)) {
-        return ['authorized' => true, 'reason' => 'Company-wide employee resource'];
+    } catch (Throwable $e) {
+        error_log('checkSystemAuthorization error: ' . $e->getMessage());
     }
 
     return [
         'authorized' => false,
-        'reason' => "Insufficient clearance ({$user['clearance_level']}) or role permissions for system {$systemId}.",
+        'reason' => "Insufficient clearance or no role permissions configured for system {$systemId}.",
     ];
+}
+
+/**
+ * Check if login attempts from identifier or IP exceed safety threshold.
+ */
+function isLoginRateLimited(string $identifier, string $ip): bool
+{
+    try {
+        $pdo = getDbConnection();
+        $stmt = $pdo->prepare("
+            SELECT COUNT(*) FROM authentication_events
+            WHERE success = 0
+              AND occurred_at > DATE_SUB(NOW(), INTERVAL 15 MINUTE)
+              AND (ip_address = :ip OR details LIKE :ident)
+        ");
+        $stmt->execute([
+            ':ip' => $ip,
+            ':ident' => "%{$identifier}%"
+        ]);
+        return (int)$stmt->fetchColumn() >= 5;
+    } catch (Throwable $e) {
+        error_log('Rate limit check error: ' . $e->getMessage());
+        return false;
+    }
 }
 
 /**
@@ -349,29 +362,31 @@ function logAuthenticationEvent(
     int|string|null $accountId = null,
     string $systemId = '',
     bool $success = false,
-    string $details = ''
+    string $details = '',
+    ?string $ip = null
 ): void {
     try {
         $pdo = getDbConnection();
         $empAccId = ($accountType === 'Employee') ? $accountId : null;
         $cusAccId = ($accountType === 'Customer') ? $accountId : null;
         $eventType = $success ? 'LOGIN_SUCCESS' : 'LOGIN_FAILURE';
+        $ip = $ip ?? ($_SERVER['REMOTE_ADDR'] ?? '127.0.0.1');
 
         $stmt = $pdo->prepare("
             INSERT INTO authentication_events
-            (`account_type`, `employee_account_id`, `customer_account_id`, `system_id`, `event_type`, `success`)
-            VALUES (?, ?, ?, ?, ?, ?)
+            (`account_type`, `employee_account_id`, `customer_account_id`, `system_id`, `event_type`, `success`, `ip_address`, `details`)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         ");
-        $stmt->execute([$accountType, $empAccId, $cusAccId, $systemId, $eventType, $success ? 1 : 0]);
+        $stmt->execute([$accountType, $empAccId, $cusAccId, $systemId, $eventType, $success ? 1 : 0, $ip, $details]);
     } catch (Throwable $e) {
         error_log('Failed to log authentication event: ' . $e->getMessage());
     }
 }
 
 /**
- * Register an active session in the user_sessions table.
+ * Register an active session in the user_sessions table with jti token tracking.
  */
-function registerUserSession(string $accountType, int|string $accountId, string $systemId): ?string
+function registerUserSession(string $accountType, int|string $accountId, string $systemId, ?string $jti = null): ?string
 {
     try {
         $pdo = getDbConnection();
@@ -380,10 +395,10 @@ function registerUserSession(string $accountType, int|string $accountId, string 
 
         $stmt = $pdo->prepare("
             INSERT INTO user_sessions
-            (`account_type`, `employee_account_id`, `customer_account_id`, `system_id`, `started_at`, `ended_at`, `status`)
-            VALUES (?, ?, ?, ?, NOW(), DATE_ADD(NOW(), INTERVAL 8 HOUR), 'Active')
+            (`account_type`, `employee_account_id`, `customer_account_id`, `system_id`, `started_at`, `ended_at`, `status`, `jti`)
+            VALUES (?, ?, ?, ?, NOW(), DATE_ADD(NOW(), INTERVAL 8 HOUR), 'Active', ?)
         ");
-        $stmt->execute([$accountType, $empAccId, $cusAccId, $systemId]);
+        $stmt->execute([$accountType, $empAccId, $cusAccId, $systemId, $jti]);
         return (string)$pdo->lastInsertId();
     } catch (Throwable $e) {
         error_log('Failed to register user session: ' . $e->getMessage());
@@ -392,37 +407,46 @@ function registerUserSession(string $accountType, int|string $accountId, string 
 }
 
 // ---------------------------------------------------------------------
-// SSO signing secret — REQUIRED from environment. There is no
-// hardcoded default. If VOSTOK_SSO_SECRET is not configured, any
-// code path that needs it will fail fast rather than silently signing
-// tokens with a secret an attacker could read from source control.
+// SSO signing secret — REQUIRED from environment. Fail fast if < 32 chars.
 // ---------------------------------------------------------------------
 if (!defined('VOSTOK_SSO_SECRET')) {
-    define('VOSTOK_SSO_SECRET', optionalEnv('VOSTOK_SSO_SECRET', 'vostok_secret_industrial_token_2026_x7a9'));
+    $ssoSecret = requireEnv('VOSTOK_SSO_SECRET');
+    if (strlen($ssoSecret) < 32) {
+        throw new RuntimeException("Server misconfiguration: VOSTOK_SSO_SECRET must be at least 32 characters long.");
+    }
+    define('VOSTOK_SSO_SECRET', $ssoSecret);
 }
 
 /**
- * Generate and set a persistent cross-system SSO cookie (root path '/').
+ * Generate and set a persistent cross-system SSO cookie (root path '/', max 8h).
  *
  * @param array<string, mixed> $user
  */
-function createSsoCookie(array $user): string
+function createSsoCookie(array $user, ?string $jti = null): string
 {
-    $userId = (string)($user['user_id'] ?? $user['emp_id'] ?? '');
+    $userId = (string)($user['user_id'] ?? $user['emp_id'] ?? $user['cus_id'] ?? '');
     $accId = (string)($user['account_id'] ?? 0);
     $time = time();
     $clearance = (string)($user['clearance_level'] ?? 'L1');
+    if ($jti === null || $jti === '') {
+        $jti = bin2hex(random_bytes(16));
+    }
 
-    $payload = "{$userId}|{$accId}|{$clearance}|{$time}";
+    $payload = "{$userId}|{$accId}|{$clearance}|{$time}|{$jti}";
     $signature = hash_hmac('sha256', $payload, VOSTOK_SSO_SECRET);
     $token = base64_encode("{$payload}|{$signature}");
 
     if (!headers_sent()) {
+        $isSecure = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || (isset($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] == 443);
+        $currentSys = $_SESSION['vostok_current_system'] ?? '';
+        $sameSite = in_array($currentSys, ['ADM', 'FIN', 'HR'], true) ? 'Strict' : 'Lax';
+
         setcookie('vostok_sso_token', $token, [
-            'expires'  => time() + (86400 * 30),
+            'expires'  => time() + 28800, // 8 hours
             'path'     => '/',
+            'secure'   => $isSecure,
             'httponly' => true,
-            'samesite' => 'Lax',
+            'samesite' => $sameSite,
         ]);
     }
     return $token;
@@ -430,6 +454,7 @@ function createSsoCookie(array $user): string
 
 /**
  * Verify a persistent SSO cookie and return the authenticated user record.
+ * Validates HMAC, 8-hour lifetime, and active session status via jti.
  *
  * @return array<string, mixed>|null
  */
@@ -448,18 +473,46 @@ function verifySsoCookie(?string $token = null): ?array
     }
 
     $parts = explode('|', $raw);
-    if (count($parts) !== 5) {
+    if (count($parts) === 6) {
+        [$userId, $accId, $clearance, $time, $jti, $sig] = $parts;
+    } elseif (count($parts) === 5) {
+        [$userId, $accId, $clearance, $time, $sig] = $parts;
+        $jti = null;
+    } else {
         return null;
     }
 
-    [$userId, $accId, $clearance, $time, $sig] = $parts;
-    if (time() - (int)$time > (86400 * 30)) {
+    // 8-hour maximum lifetime
+    if (time() - (int)$time > 28800 || (int)$time > time() + 300) {
         return null;
     }
 
-    $expectedSig = hash_hmac('sha256', "{$userId}|{$accId}|{$clearance}|{$time}", VOSTOK_SSO_SECRET);
+    $payloadToSign = ($jti !== null)
+        ? "{$userId}|{$accId}|{$clearance}|{$time}|{$jti}"
+        : "{$userId}|{$accId}|{$clearance}|{$time}";
+    $expectedSig = hash_hmac('sha256', $payloadToSign, VOSTOK_SSO_SECRET);
     if (!hash_equals($expectedSig, $sig)) {
         return null;
+    }
+
+    // Check jti revocation in user_sessions if present
+    if ($jti !== null) {
+        try {
+            $pdo = getDbConnection();
+            $sessStmt = $pdo->prepare("SELECT status, ended_at FROM user_sessions WHERE jti = ? ORDER BY session_id DESC LIMIT 1");
+            $sessStmt->execute([$jti]);
+            $sess = $sessStmt->fetch();
+            if ($sess) {
+                if ($sess['status'] !== 'Active') {
+                    return null;
+                }
+                if ($sess['ended_at'] && strtotime((string)$sess['ended_at']) <= time()) {
+                    return null;
+                }
+            }
+        } catch (Throwable $e) {
+            error_log('SSO jti verification error: ' . $e->getMessage());
+        }
     }
 
     $user = queryUserByCredentials($userId);
@@ -482,9 +535,11 @@ function verifySsoCookie(?string $token = null): ?array
 function clearSsoCookie(): void
 {
     if (!headers_sent()) {
+        $isSecure = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || (isset($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] == 443);
         setcookie('vostok_sso_token', '', [
             'expires'  => time() - 3600,
             'path'     => '/',
+            'secure'   => $isSecure,
             'httponly' => true,
             'samesite' => 'Lax',
         ]);
@@ -492,7 +547,7 @@ function clearSsoCookie(): void
 }
 
 /**
- * Log an inter-system data integration event into system_integration_logs.
+ * Legacy integration log helper - delegates to vp_emit if available or writes directly.
  */
 function logIntegrationEvent(
     string $linkCode,
@@ -506,16 +561,25 @@ function logIntegrationEvent(
 ): bool {
     try {
         $pdo = getDbConnection();
-        $protocol = 'REST / JSON HTTPS';
-        $stmt = $pdo->prepare("
-            INSERT INTO system_integration_logs
-            (link_code, source_system_id, target_system_id, api_protocol, endpoint, payload_summary, direction, status_code, actor_id, executed_at)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())
-        ");
-        $stmt->execute([$linkCode, $source, $target, $protocol, $endpoint, $payloadSummary, $direction, $statusCode, $actor]);
+        require_once __DIR__ . '/../includes/integration_bus.php';
+        vp_emit(
+            $pdo,
+            $linkCode,
+            $source,
+            $target,
+            'INTEGRATION_EVENT',
+            [
+                'endpoint'        => $endpoint,
+                'summary'         => $payloadSummary,
+                'direction'       => $direction,
+                'api_protocol'    => 'REST / JSON HTTPS'
+            ],
+            $actor,
+            $statusCode
+        );
         return true;
     } catch (Throwable $e) {
-        error_log('Failed to log integration event: ' . $e->getMessage());
+        error_log('Failed in logIntegrationEvent: ' . $e->getMessage());
         return false;
     }
 }

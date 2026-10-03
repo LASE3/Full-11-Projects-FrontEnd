@@ -6,16 +6,15 @@
  * Methods: GET, POST
  */
 require_once __DIR__ . '/../../../config/db.php';
+require_once __DIR__ . '/../../../includes/auth_guard.php';
 require_once __DIR__ . '/../../helpers/Response.php';
 require_once __DIR__ . '/../../helpers/I18n.php';
 require_once __DIR__ . '/../../helpers/AuditLogger.php';
 
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
+$user = requireApiAuth();
 
 $pdo = getDbConnection();
-$cusId = $_SESSION['cus_id'] ?? ($_GET['cus_id'] ?? 'CUS-1001');
+$cusId = enforceCustomerTenant($user, $_GET['cus_id'] ?? null);
 $lang  = $_GET['lang'] ?? 'en';
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 

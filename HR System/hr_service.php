@@ -12,6 +12,9 @@ if (session_status() === PHP_SESSION_NONE) {
 
 require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/../includes/auth_guard.php';
+require_once __DIR__ . '/../includes/AuditLogger.php';
+require_once __DIR__ . '/../includes/integration_bus.php';
+require_once __DIR__ . '/../includes/enterprise_flows.php';
 
 /**
  * Get active user from session or fallback
@@ -53,7 +56,7 @@ function hr_getDashboardMetrics()
     $pdo = getDbConnection();
 
     // 1. Total Active Headcount
-    $stmt = $pdo->query("SELECT COUNT(*) FROM employees WHERE employment_status = 'Active' AND emp_id != 'EMP-0001' AND email != 'admin@gmail.com'");
+    $stmt = $pdo->query("SELECT COUNT(*) FROM employees WHERE employment_status = 'Active' AND emp_id != 'EMP-0001'");
     $activeHeadcount = (int) $stmt->fetchColumn();
 
     // 2. Active Onboarding Pipelines
@@ -78,7 +81,7 @@ function hr_getDashboardMetrics()
 
     // 5. Clearance Tier Counts
     $clearanceCounts = ['L4' => 0, 'L3' => 0, 'L2' => 0, 'L1' => 0];
-    $stmt = $pdo->query("SELECT clearance_level, COUNT(*) AS cnt FROM employees WHERE employment_status = 'Active' AND emp_id != 'EMP-0001' AND email != 'admin@gmail.com' GROUP BY clearance_level");
+    $stmt = $pdo->query("SELECT clearance_level, COUNT(*) AS cnt FROM employees WHERE employment_status = 'Active' AND emp_id != 'EMP-0001' GROUP BY clearance_level");
     while ($row = $stmt->fetch()) {
         if (isset($clearanceCounts[$row['clearance_level']])) {
             $clearanceCounts[$row['clearance_level']] = (int) $row['cnt'];
@@ -90,7 +93,7 @@ function hr_getDashboardMetrics()
     $stmt = $pdo->query("
         SELECT d.dept_code, d.dept_name, d.employee_count_target, COUNT(e.emp_id) AS current_count
         FROM departments d
-        LEFT JOIN employees e ON d.dept_code = e.department_code AND e.employment_status = 'Active' AND e.emp_id != 'EMP-0001' AND e.email != 'admin@gmail.com'
+        LEFT JOIN employees e ON d.dept_code = e.department_code AND e.employment_status = 'Active' AND e.emp_id != 'EMP-0001'
         GROUP BY d.dept_code, d.dept_name, d.employee_count_target
         ORDER BY current_count DESC
     ");
@@ -106,7 +109,7 @@ function hr_getDashboardMetrics()
     // 7. Recent Activity Feed
     $recentActivity = [];
     // Recent employees
-    $stmt = $pdo->query("SELECT emp_id, full_name, job_title, hire_date, clearance_level FROM employees WHERE emp_id != 'EMP-0001' AND email != 'admin@gmail.com' ORDER BY emp_id DESC LIMIT 5");
+    $stmt = $pdo->query("SELECT emp_id, full_name, job_title, hire_date, clearance_level FROM employees WHERE emp_id != 'EMP-0001' ORDER BY emp_id DESC LIMIT 5");
     while ($row = $stmt->fetch()) {
         $recentActivity[] = [
             'type' => 'NEW_HIRE',
@@ -154,7 +157,7 @@ function hr_getEmployees($search = '', $dept = '', $clearance = '', $status = ''
         LEFT JOIN departments d ON e.department_code = d.dept_code
         LEFT JOIN employees m ON e.manager_emp_id = m.emp_id
         LEFT JOIN employee_accounts ea ON e.emp_id = ea.emp_id
-        WHERE 1=1 AND e.emp_id != 'EMP-0001' AND e.email != 'admin@gmail.com'
+        WHERE 1=1 AND e.emp_id != 'EMP-0001'
     ";
 
     $params = [];
@@ -236,21 +239,25 @@ function hr_createEmployee($data)
     $pdo->beginTransaction();
 
     try {
-        // 1. Determine next EMP ID if not provided
+        // 1. Determine next EMP ID if not provided using id_counters with FOR UPDATE
         $empId = trim($data['emp_id'] ?? '');
         if (empty($empId)) {
-            $stmtMax = $pdo->query("
-                SELECT emp_id FROM employees 
-                WHERE emp_id LIKE 'EMP-%' 
-                ORDER BY CAST(SUBSTRING(emp_id, 5) AS UNSIGNED) DESC 
-                LIMIT 1
-            ");
-            $lastId = $stmtMax->fetchColumn();
-            if ($lastId && preg_match('/EMP-(\d+)/', $lastId, $m)) {
-                $nextNum = (int)$m[1] + 1;
-                $empId = 'EMP-' . str_pad($nextNum, 4, '0', STR_PAD_LEFT);
+            $stmtC = $pdo->prepare("SELECT next_val FROM id_counters WHERE name = 'employees' FOR UPDATE");
+            $stmtC->execute();
+            $val = $stmtC->fetchColumn();
+            if ($val !== false) {
+                $empId = sprintf("EMP-%04d", (int)$val);
+                $pdo->prepare("UPDATE id_counters SET next_val = next_val + 1 WHERE name = 'employees'")->execute();
             } else {
-                $empId = 'EMP-1021';
+                $stmtMax = $pdo->query("
+                    SELECT emp_id FROM employees 
+                    WHERE emp_id LIKE 'EMP-%' 
+                    ORDER BY CAST(SUBSTRING(emp_id, 5) AS UNSIGNED) DESC 
+                    LIMIT 1
+                ");
+                $lastId = $stmtMax->fetchColumn();
+                $nextNum = ($lastId && preg_match('/EMP-(\d+)/', $lastId, $m)) ? (int)$m[1] + 1 : 1022;
+                $empId = sprintf("EMP-%04d", $nextNum);
             }
         }
 
@@ -265,17 +272,17 @@ function hr_createEmployee($data)
         $passHash    = password_hash($password, PASSWORD_BCRYPT);
         $username    = trim($data['username'] ?? '') ?: strtolower(str_replace(' ', '.', $fullName));
 
-        // Insert into employees
+        // Insert into employees - inactive until IT closes provisioning ticket
         $stmtEmp = $pdo->prepare("
             INSERT INTO employees (emp_id, full_name, job_title, department_code, clearance_level, email, manager_emp_id, employment_status, hire_date)
-            VALUES (?, ?, ?, ?, ?, ?, ?, 'Active', ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?, 'Inactive', ?)
         ");
         $stmtEmp->execute([$empId, $fullName, $jobTitle, $deptCode, $clearance, $email, $managerId, $hireDate]);
 
-        // Insert into employee_accounts
+        // Insert into employee_accounts - inactive
         $stmtAcc = $pdo->prepare("
             INSERT INTO employee_accounts (emp_id, username, password_hash, status, created_at)
-            VALUES (?, ?, ?, 'Active', NOW())
+            VALUES (?, ?, ?, 'Inactive', NOW())
         ");
         $stmtAcc->execute([$empId, $username, $passHash]);
 
@@ -313,12 +320,83 @@ function hr_createEmployee($data)
             $stmtOnboard->execute([$empId, $step[0], $step[1]]);
         }
 
+        // Create Helpdesk ticket: "Provision access for EMP-xxxx"
+        $actorEmpId = $_SESSION['vostok_user']['user_id'] ?? ($_SESSION['vostok_user']['emp_id'] ?? 'EMP-1004');
+        $tktData = [
+            'title' => "Provision access for {$empId}",
+            'source_system' => 'HR',
+            'priority' => 'Normal',
+            'requester_name' => 'HR Operations',
+            'requester_role' => 'HR Specialist',
+            'category' => 'Access',
+            'description' => "Initial IT workstation and system access provisioning for {$fullName} ({$empId}) in {$deptCode}."
+        ];
+        $tktId = vp_create_ticket($pdo, $tktData, $actorEmpId);
+
+        // Create it_assets request
+        $stmtAsset = $pdo->prepare("
+            INSERT INTO it_assets 
+            (asset_tag, emp_id, department_code, system_id, asset_type, device_model, hostname, status, assigned_date, notes)
+            VALUES 
+            (?, ?, ?, 'IT', 'Workstation', 'Standard Corporate Laptop', ?, 'Provisioning', CURDATE(), ?)
+        ");
+        $stmtAsset->execute([
+            'AST-' . $empId,
+            $empId,
+            $deptCode,
+            'ws-' . strtolower((string)preg_replace('/[^a-zA-Z0-9]/', '', $fullName)),
+            "Initial workstation provision request linked to ticket {$tktId}"
+        ]);
+
+        // Post Intranet welcome notification
+        $stmtAnnounce = $pdo->prepare("
+            INSERT INTO announcements (title, body, posted_by_emp_id, audience_dept, posted_at)
+            VALUES (?, ?, ?, NULL, NOW())
+        ");
+        $stmtAnnounce->execute([
+            "Welcome {$fullName} to VOSTOKPRIBOR",
+            "Please welcome {$fullName}, who joins VOSTOKPRIBOR as {$jobTitle} in the {$deptCode} department.",
+            $actorEmpId
+        ]);
+
+        // Store HR file as a documents row
+        $stmtDocC = $pdo->prepare("SELECT next_val FROM id_counters WHERE name = 'documents' FOR UPDATE");
+        $stmtDocC->execute();
+        $dNum = $stmtDocC->fetchColumn();
+        if ($dNum !== false) {
+            $docId = sprintf("DOC-2026-%03d", (int)$dNum);
+            $pdo->prepare("UPDATE id_counters SET next_val = next_val + 1 WHERE name = 'documents'")->execute();
+        } else {
+            $docId = "DOC-HR-" . $empId;
+        }
+
+        $stmtDoc = $pdo->prepare("
+            INSERT INTO documents 
+            (doc_id, file_name, description, classification, folder, department, file_size, status, retention_period, owning_system, owner_emp_id)
+            VALUES 
+            (?, ?, ?, 'Confidential', 'hr', 'HRA', '1.2 MB', 'Approved', '7y', 'HR', ?)
+        ");
+        $stmtDoc->execute([
+            $docId,
+            "HR_Dossier_{$empId}.pdf",
+            "Employee Personnel Dossier and Employment Agreement for {$fullName} ({$empId})",
+            $actorEmpId
+        ]);
+
+        // Emit HR integrations: HR->IT, HR->EMP, HR->DOC, HR->ADM
+        vp_emit($pdo, 'HR_TO_IT', 'HR', 'IT', 'employee_provision_requested', ['emp_id' => $empId, 'ticket_id' => $tktId], $actorEmpId);
+        vp_emit($pdo, 'HR_TO_EMP', 'HR', 'EMP', 'welcome_announcement_posted', ['emp_id' => $empId, 'name' => $fullName], $actorEmpId);
+        vp_emit($pdo, 'HR_TO_DOC', 'HR', 'DOC', 'hr_dossier_archived', ['emp_id' => $empId, 'doc_id' => $docId], $actorEmpId);
+        vp_emit($pdo, 'HR_TO_ADM', 'HR', 'ADM', 'employee_registered_governance', ['emp_id' => $empId, 'status' => 'Pending Provisioning', 'governance' => true], $actorEmpId);
+
         $pdo->commit();
         return [
             'success'  => true,
             'emp_id'   => $empId,
+            'ticket_id' => $tktId,
+            'doc_id'   => $docId,
             'username' => $username,
-            'message'  => "Employee {$fullName} ({$empId}) registered successfully."
+            'message'  => "Employee {$fullName} ({$empId}) registered successfully. Provisioning ticket {$tktId} dispatched to IT."
         ];
     } catch (Exception $e) {
         $pdo->rollBack();
@@ -482,6 +560,64 @@ function hr_getOffboardingCases()
 }
 
 /**
+ * Flow H: Revoke all employee access, credentials, sessions, and reassign tasks
+ */
+function hr_revokeAllEmployeeAccess(PDO $pdo, string $empId, string $status = 'Terminated', string $actorId = 'EMP-1004'): string
+{
+    // 1. Suspend/terminate the employee
+    $pdo->prepare("UPDATE employees SET employment_status = ? WHERE emp_id = ?")->execute([$status, $empId]);
+
+    // 2. Set account inactive / suspended
+    $pdo->prepare("UPDATE employee_accounts SET status = 'Suspended' WHERE emp_id = ?")->execute([$empId]);
+
+    // 3. Delete employee_roles
+    $pdo->prepare("DELETE FROM employee_roles WHERE emp_id = ?")->execute([$empId]);
+
+    // 4. Mark all user_sessions ended and revoke SSO jti
+    $pdo->prepare("
+        UPDATE user_sessions 
+        SET status = 'Revoked', ended_at = NOW(), jti = NULL 
+        WHERE employee_account_id IN (SELECT account_id FROM employee_accounts WHERE emp_id = ?)
+    ")->execute([$empId]);
+
+    // 5. Revoke developer_api_keys
+    $pdo->prepare("
+        UPDATE developer_api_keys 
+        SET status = 'Revoked' 
+        WHERE label LIKE ? OR key_identifier LIKE ? OR partner_id = ?
+    ")->execute(["%{$empId}%", "%{$empId}%", $empId]);
+
+    // 6. Reassign open tickets/opportunities/projects to manager
+    $stmtMgr = $pdo->prepare("SELECT manager_emp_id FROM employees WHERE emp_id = ?");
+    $stmtMgr->execute([$empId]);
+    $mgrId = $stmtMgr->fetchColumn();
+    if (!$mgrId || $mgrId === $empId) {
+        $mgrId = 'EMP-1004';
+    }
+    $pdo->prepare("UPDATE tickets SET assigned_emp_id = ? WHERE assigned_emp_id = ? AND status NOT IN ('Resolved', 'Closed')")->execute([$mgrId, $empId]);
+    $pdo->prepare("UPDATE opportunities SET sales_emp_id = ? WHERE sales_emp_id = ? AND stage NOT IN ('Won', 'Lost')")->execute([$mgrId, $empId]);
+    $pdo->prepare("UPDATE projects SET project_manager_emp_id = ? WHERE project_manager_emp_id = ? AND status != 'Closed'")->execute([$mgrId, $empId]);
+
+    // 7. Create IT revocation ticket
+    $revTktData = [
+        'title' => "Revoke access and decommission equipment for {$empId}",
+        'source_system' => 'HR',
+        'priority' => 'High',
+        'requester_name' => 'HR Operations',
+        'requester_role' => 'HR Governance',
+        'category' => 'Offboarding',
+        'description' => "Immediate offboarding revocation protocol executed for {$empId}. Hardware recovery and credential purge required."
+    ];
+    $revTktId = vp_create_ticket($pdo, $revTktData, $actorId);
+
+    // 8. Emit HR->IT and HR->ADM with severity High
+    vp_emit($pdo, 'HR_TO_IT', 'HR', 'IT', 'offboarding_revocation_requested', ['emp_id' => $empId, 'ticket_id' => $revTktId], $actorId);
+    vp_emit($pdo, 'HR_TO_ADM', 'HR', 'ADM', 'employee_offboarded_governance', ['emp_id' => $empId, 'action' => 'all_roles_and_sessions_revoked', 'severity' => 'High', 'governance' => true], $actorId);
+
+    return $revTktId;
+}
+
+/**
  * Initiate offboarding for an employee
  */
 function hr_initiateOffboarding($empId, $reason = 'Resignation')
@@ -490,27 +626,24 @@ function hr_initiateOffboarding($empId, $reason = 'Resignation')
     $pdo->beginTransaction();
 
     try {
-        // 1. Set employment status to Suspended
-        $pdo->prepare("UPDATE employees SET employment_status = 'Suspended' WHERE emp_id = ?")->execute([$empId]);
+        $actorId = $_SESSION['vostok_user']['user_id'] ?? ($_SESSION['vostok_user']['emp_id'] ?? 'EMP-1004');
+        hr_revokeAllEmployeeAccess($pdo, $empId, 'Suspended', $actorId);
 
-        // 2. Lock employee account
-        $pdo->prepare("UPDATE employee_accounts SET status = 'Suspended' WHERE emp_id = ?")->execute([$empId]);
-
-        // 3. Clear existing offboarding steps if any
+        // Clear existing offboarding steps if any
         $pdo->prepare("DELETE FROM employee_offboarding WHERE emp_id = ?")->execute([$empId]);
 
-        // 4. Populate standard 10-step offboarding checklist
+        // Populate standard 10-step offboarding checklist
         $steps = [
             'HRInitiated'        => 'Completed',
             'StatusChanged'      => 'Completed',
-            'ITNotified'         => 'In Progress',
-            'AccessRevoked'      => 'Pending',
-            'IntranetRevoked'    => 'Pending',
-            'FileCenterReviewed' => 'Pending',
-            'CRMRevoked'         => 'Pending',
-            'HelpdeskClosed'     => 'Pending',
-            'GovernanceVerified' => 'Pending',
-            'AuditLogged'        => 'Pending'
+            'ITNotified'         => 'Completed',
+            'AccessRevoked'      => 'Completed',
+            'IntranetRevoked'    => 'Completed',
+            'FileCenterReviewed' => 'In Progress',
+            'CRMRevoked'         => 'Completed',
+            'HelpdeskClosed'     => 'In Progress',
+            'GovernanceVerified' => 'Completed',
+            'AuditLogged'        => 'Completed'
         ];
 
         $stmt = $pdo->prepare("INSERT INTO employee_offboarding (emp_id, step, status, completed_at) VALUES (?, ?, ?, NOW())");
@@ -519,7 +652,7 @@ function hr_initiateOffboarding($empId, $reason = 'Resignation')
         }
 
         $pdo->commit();
-        return ['success' => true, 'message' => "Offboarding initiated for employee {$empId}. Access suspended."];
+        return ['success' => true, 'message' => "Offboarding initiated for employee {$empId}. Access suspended and revoked."];
     } catch (Exception $e) {
         $pdo->rollBack();
         return ['success' => false, 'message' => $e->getMessage()];
@@ -782,9 +915,9 @@ function hr_completeOffboarding($empId)
     $pdo = getDbConnection();
     $pdo->beginTransaction();
     try {
+        $actorId = $_SESSION['vostok_user']['user_id'] ?? ($_SESSION['vostok_user']['emp_id'] ?? 'EMP-1004');
+        hr_revokeAllEmployeeAccess($pdo, $empId, 'Terminated', $actorId);
         $pdo->prepare("UPDATE employee_offboarding SET status = 'Completed', completed_at = NOW() WHERE emp_id = ?")->execute([$empId]);
-        $pdo->prepare("UPDATE employees SET employment_status = 'Terminated' WHERE emp_id = ?")->execute([$empId]);
-        $pdo->prepare("UPDATE employee_accounts SET status = 'Suspended' WHERE emp_id = ?")->execute([$empId]);
 
         $pdo->commit();
         return ['success' => true, 'message' => "Offboarding completed. Employee {$empId} status set to Terminated and credentials locked."];
@@ -809,6 +942,8 @@ function hr_deleteEmployee($empId)
         }
 
         $pdo->beginTransaction();
+        $actorId = $_SESSION['vostok_user']['user_id'] ?? ($_SESSION['vostok_user']['emp_id'] ?? 'EMP-1004');
+        hr_revokeAllEmployeeAccess($pdo, $empId, 'Terminated', $actorId);
 
         $pdo->prepare("UPDATE employees SET manager_emp_id = NULL WHERE manager_emp_id = ?")->execute([$empId]);
         $pdo->prepare("DELETE FROM employee_roles WHERE emp_id = ? OR granted_by_emp_id = ?")->execute([$empId, $empId]);
@@ -827,8 +962,10 @@ function hr_deleteEmployee($empId)
             $pdo->rollBack();
         }
         if (strpos($e->getMessage(), '1451') !== false || strpos($e->getMessage(), 'foreign key') !== false) {
-            $pdo->prepare("UPDATE employees SET employment_status = 'Terminated' WHERE emp_id = ?")->execute([$empId]);
-            $pdo->prepare("UPDATE employee_accounts SET status = 'Suspended' WHERE emp_id = ?")->execute([$empId]);
+            $pdo->beginTransaction();
+            $actorId = $_SESSION['vostok_user']['user_id'] ?? ($_SESSION['vostok_user']['emp_id'] ?? 'EMP-1004');
+            hr_revokeAllEmployeeAccess($pdo, $empId, 'Terminated', $actorId);
+            $pdo->commit();
             return [
                 'success' => true,
                 'message' => "Employee {$empId} has historical operational references (audit logs, documents, tickets) and cannot be hard-deleted. Employee has been permanently Terminated and all accounts suspended in MySQL."
@@ -968,7 +1105,7 @@ function hr_renderSidebar(string $active = ''): void
             <div class="sidebar-item-left"><span class="sidebar-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00E5FF" stroke-width="2">
                   <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
                   <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
-                </svg></span><span class="hr-nav-integrations" style="color: #00E5FF; font-weight: 600;">System Integrations</span></div><span class="sidebar-badge hr-badge-integrations" style="background: rgba(0, 229, 255, 0.15); color: #00E5FF; border: 1px solid rgba(0, 229, 255, 0.3);">SYS08</span>
+                </svg></span><span class="hr-nav-integrations" style="color: #00E5FF; font-weight: 600;">System Integrations</span></div><span class="sidebar-badge hr-badge-integrations" style="background: rgba(0, 229, 255, 0.15); color: #00E5FF; border: 1px solid rgba(0, 229, 255, 0.3);">06 HR</span>
           </a>
         </nav>
       </div>

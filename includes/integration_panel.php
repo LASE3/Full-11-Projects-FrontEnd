@@ -44,7 +44,7 @@ function renderSystemIntegrationView($systemCode, $pageMode = 'standalone')
     // Current user context
     $currentUser = $_SESSION['vostok_user'] ?? null;
     $userClearance = $currentUser['clearance_level'] ?? 'L1';
-    $isSuperAdmin = ($userClearance === 'L4' || ($currentUser['email'] ?? '') === 'admin@gmail.com');
+    $isSuperAdmin = isSuperAdmin($currentUser);
 
     // Query active integrations for this system
     $stmt = $pdo->prepare("

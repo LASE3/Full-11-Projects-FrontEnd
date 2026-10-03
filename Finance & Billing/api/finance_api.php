@@ -10,6 +10,9 @@ if (session_status() === PHP_SESSION_NONE) {
 
 require_once __DIR__ . '/../../config/db.php';
 require_once __DIR__ . '/../../includes/auth_guard.php';
+require_once __DIR__ . '/../../includes/AuditLogger.php';
+require_once __DIR__ . '/../../includes/integration_bus.php';
+require_once __DIR__ . '/../../includes/enterprise_flows.php';
 
 // Ensure user has Finance authorization
 $currUser = $_SESSION['vostok_user'] ?? null;
@@ -139,7 +142,29 @@ try {
 
             $pdo->commit();
 
-            logIntegrationEvent('INT-FIN-01', 'FIN', 'ERP', '/api/invoices/create', "Generated invoice {$invId} for customer {$cusId} value {$totalValue} {$currency}", 'Outbound', 200, $currUser['emp_id'] ?? 'FIN-CTRL');
+            try {
+                vp_emit(
+                    $pdo,
+                    'FIN_TO_CUS',
+                    'FIN',
+                    'CUS',
+                    'INVOICE_GENERATED',
+                    [
+                        'inv_id' => $invId,
+                        'cus_id' => $cusId,
+                        'prj_id' => $prjId,
+                        'total_value' => $totalValue,
+                        'currency' => $currency,
+                        'summary' => "Generated invoice {$invId} for customer {$cusId} value {$totalValue} {$currency}",
+                        'notification_title' => "New Invoice Issued: {$invId}",
+                        'notification_message' => "Invoice {$invId} for {$totalValue} {$currency} has been issued."
+                    ],
+                    $currUser['emp_id'] ?? 'FIN-CTRL',
+                    200
+                );
+            } catch (Throwable $e) {
+                error_log("Failed to emit FIN_TO_CUS: " . $e->getMessage());
+            }
 
             jsonReply([
                 'success' => true,
@@ -212,7 +237,26 @@ try {
                 jsonReply(['success' => false, 'error' => 'Invoice not found'], 404);
             }
 
-            logIntegrationEvent('INT-FIN-NOTIFY', 'FIN', 'CRM', '/api/notifications/dispatch', "Payment reminder dispatched to {$inv['company_name']} for invoice {$invId}", 'Outbound', 200, $currUser['emp_id'] ?? 'FIN-CTRL');
+            try {
+                vp_emit(
+                    $pdo,
+                    'FIN_TO_CUS',
+                    'FIN',
+                    'CUS',
+                    'PAYMENT_REMINDER',
+                    [
+                        'inv_id' => $invId,
+                        'cus_id' => $inv['cus_id'] ?? null,
+                        'summary' => "Payment reminder dispatched to {$inv['company_name']} for invoice {$invId}",
+                        'notification_title' => "Payment Reminder: {$invId}",
+                        'notification_message' => "Payment reminder for invoice {$invId} outstanding balance."
+                    ],
+                    $currUser['emp_id'] ?? 'FIN-CTRL',
+                    200
+                );
+            } catch (Throwable $e) {
+                error_log("Failed to emit FIN_TO_CUS reminder: " . $e->getMessage());
+            }
 
             jsonReply([
                 'success' => true,
@@ -238,38 +282,31 @@ try {
                 jsonReply(['success' => false, 'error' => 'Payment transaction not found'], 404);
             }
 
-            $pdo->beginTransaction();
-
             $targetInvId = $invId ?: $pay['inv_id'];
-
-            // Update payment to reconciled
-            $uStmt = $pdo->prepare("UPDATE payments SET reconciled = 1, inv_id = ? WHERE payment_id = ?");
-            $uStmt->execute([$targetInvId, $paymentId]);
-
-            // If an invoice is associated, check total settled vs invoice value
-            if (!empty($targetInvId)) {
-                $sumStmt = $pdo->prepare("SELECT COALESCE(SUM(amount), 0) FROM payments WHERE inv_id = ? AND reconciled = 1");
-                $sumStmt->execute([$targetInvId]);
-                $settled = (float)$sumStmt->fetchColumn();
-
-                $invStmt = $pdo->prepare("SELECT total_value FROM invoices WHERE inv_id = ?");
-                $invStmt->execute([$targetInvId]);
-                $totalVal = (float)$invStmt->fetchColumn();
-
-                if ($settled >= $totalVal) {
-                    $uInv = $pdo->prepare("UPDATE invoices SET payment_status = 'Paid', paid_at = CURDATE() WHERE inv_id = ?");
-                    $uInv->execute([$targetInvId]);
-                }
+            if (!$targetInvId) {
+                jsonReply(['success' => false, 'error' => 'No target invoice associated with payment'], 400);
             }
 
-            $pdo->commit();
+            try {
+                $recResult = vp_reconcile_payment(
+                    $pdo,
+                    $targetInvId,
+                    (float)$pay['amount'],
+                    $pay['method'] ?? 'BankWire',
+                    $currUser['emp_id'] ?? 'FIN-CTRL'
+                );
 
-            jsonReply([
-                'success' => true,
-                'message' => "Payment #{$paymentId} successfully matched and reconciled to ledger.",
-                'payment_id' => $paymentId,
-                'amount' => $pay['amount']
-            ]);
+                jsonReply([
+                    'success' => true,
+                    'message' => "Payment #{$paymentId} successfully matched and reconciled to ledger.",
+                    'payment_id' => $paymentId,
+                    'inv_id' => $targetInvId,
+                    'amount' => $pay['amount'],
+                    'payment_status' => $recResult['payment_status']
+                ]);
+            } catch (Throwable $e) {
+                jsonReply(['success' => false, 'error' => $e->getMessage()], 400);
+            }
             break;
 
         // ====================================================================

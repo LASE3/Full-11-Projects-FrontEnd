@@ -163,19 +163,18 @@ try {
 
         AuditLogger::logSecurityEvent('ORDER_CREATED', 'CUS', "Created order #{$newOrderId} for customer {$cusId}", 'Low', null, $cusId);
 
-        // Seamless Cross-System Integration: Generate Invoice in FIN and save document in DOC
-        require_once __DIR__ . '/../../includes/integration_service.php';
-        $invRes = vostok_generateInvoiceAndFileForOrder($pdo, $newOrderId, $cusId, $totalAmount, $items ?? []);
+        require_once __DIR__ . '/../../includes/enterprise_flows.php';
+        $flowRes = vp_process_order($pdo, $newOrderId);
 
         Response::success([
             'order_id'     => $newOrderId,
-            'inv_id'       => $invRes['inv_id'] ?? '',
-            'doc_id'       => $invRes['doc_id'] ?? '',
-            'invoice_file' => $invRes['file_name'] ?? '',
+            'inv_id'       => $flowRes['inv_id'] ?? '',
+            'doc_id'       => $flowRes['doc_id'] ?? '',
+            'ops_task_id'  => $flowRes['ops_task_id'] ?? '',
             'status'       => $status,
-            'total_amount' => $totalAmount,
+            'total_amount' => $flowRes['total_amount'] ?? $totalAmount,
             'order_date'   => date('Y-m-d H:i:s')
-        ], "Order #{$newOrderId} placed successfully. Invoice {$invRes['inv_id']} generated.", 201);
+        ], "Order #{$newOrderId} placed successfully. Invoice " . ($flowRes['inv_id'] ?? '') . " generated.", 201);
     }
 
     if ($method === 'PUT' || $method === 'PATCH') {

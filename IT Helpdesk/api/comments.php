@@ -7,6 +7,9 @@ declare(strict_types=1);
  */
 
 require_once __DIR__ . '/db_helper.php';
+require_once __DIR__ . '/../../includes/auth_guard.php';
+
+$user = requireApiAuth();
 
 $pdo = getItDb();
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
@@ -17,6 +20,15 @@ if ($method === 'GET') {
     $tktId = trim((string)($payload['tkt_id'] ?? ''));
     if ($tktId === '') {
         sendJsonError("Ticket ID is required.");
+    }
+
+    if (($user['account_type'] ?? '') === 'Customer') {
+        $chk = $pdo->prepare("SELECT requester_cus_id FROM tickets WHERE tkt_id = ?");
+        $chk->execute([$tktId]);
+        $owner = $chk->fetchColumn();
+        if ($owner !== ($user['cus_id'] ?? $user['user_id'])) {
+            sendJsonError("Forbidden: Unauthorized ticket access.", 403);
+        }
     }
 
     $stmt = $pdo->prepare("

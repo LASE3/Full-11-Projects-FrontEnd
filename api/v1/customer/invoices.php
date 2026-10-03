@@ -6,20 +6,32 @@
  * Methods: GET
  */
 require_once __DIR__ . '/../../../config/db.php';
+require_once __DIR__ . '/../../../includes/auth_guard.php';
 require_once __DIR__ . '/../../helpers/Response.php';
 require_once __DIR__ . '/../../helpers/I18n.php';
 
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
+$user = requireApiAuth();
 
 $pdo = getDbConnection();
-$cusId = $_SESSION['cus_id'] ?? ($_GET['cus_id'] ?? 'CUS-1001');
+$cusId = enforceCustomerTenant($user, $_GET['cus_id'] ?? null);
 $lang  = $_GET['lang'] ?? 'en';
 $invId = $_GET['id'] ?? null;
 
 try {
     if ($invId) {
+        // Tenant ownership check
+        $chkStmt = $pdo->prepare("SELECT cus_id FROM invoices WHERE inv_id = :iid");
+        $chkStmt->execute([':iid' => $invId]);
+        $realOwner = $chkStmt->fetchColumn();
+
+        if ($realOwner === false) {
+            Response::error("Invoice not found.", 404);
+        }
+
+        if (($user['account_type'] ?? '') === 'Customer' && $realOwner !== $cusId) {
+            Response::error("Forbidden: You do not have permission to view this invoice.", 403);
+        }
+
         $stmt = $pdo->prepare("
             SELECT 
                 i.*,
@@ -32,7 +44,7 @@ try {
             LEFT JOIN projects p ON i.prj_id = p.prj_id
             WHERE i.inv_id = :iid AND i.cus_id = :cid
         ");
-        $stmt->execute([':iid' => $invId, ':cid' => $cusId]);
+        $stmt->execute([':iid' => $invId, ':cid' => $realOwner]);
         $invoice = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if (!$invoice) {

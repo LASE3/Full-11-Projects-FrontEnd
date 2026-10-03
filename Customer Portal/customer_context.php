@@ -52,7 +52,7 @@ if ($isSuperAdmin) {
         : 'System Administrator';
     $currUser['role_name'] = 'Executive SuperAdmin';
     $currUser['clearance_level'] = 'L4';
-    $currUser['email'] = !empty($currUser['email']) ? $currUser['email'] : 'admin@gmail.com';
+    $currUser['email'] = $currUser['email'] ?? '';
     $currUser['company_name'] = $customer['company_name'] ?? 'VOSTOKPRIBOR Master Admin';
 } else {
     if (empty($currUser['full_name']) || $currUser['full_name'] === 'Authorized User') {
@@ -64,13 +64,31 @@ if ($isSuperAdmin) {
     $currUser['email'] = !empty($currUser['email']) ? $currUser['email'] : ($customerAccount['email'] ?? ($customer['primary_contact_email'] ?? ''));
 }
 
-// Live badge counters directly from MariaDB
-$badgeOrders = (int)$pdo->query("SELECT COUNT(*) FROM orders WHERE cus_id = '{$cusId}'")->fetchColumn();
-$badgeProjects = (int)$pdo->query("SELECT COUNT(*) FROM projects WHERE cus_id = '{$cusId}'")->fetchColumn();
-$badgeInvoices = (int)$pdo->query("SELECT COUNT(*) FROM invoices WHERE cus_id = '{$cusId}'")->fetchColumn();
-$badgeDocs = (int)$pdo->query("SELECT COUNT(*) FROM documents WHERE related_cus_id = '{$cusId}' OR related_prj_id IN (SELECT prj_id FROM projects WHERE cus_id = '{$cusId}')")->fetchColumn();
-$badgeTickets = (int)$pdo->query("SELECT COUNT(*) FROM tickets WHERE requester_cus_id = '{$cusId}'")->fetchColumn();
-$badgeServices = (int)$pdo->query("SELECT COUNT(*) FROM customer_service_requests WHERE cus_id = '{$cusId}'")->fetchColumn();
+// Live badge counters directly from MariaDB using prepared statements
+$bOrderStmt = $pdo->prepare("SELECT COUNT(*) FROM orders WHERE cus_id = :cid");
+$bOrderStmt->execute([':cid' => $cusId]);
+$badgeOrders = (int)$bOrderStmt->fetchColumn();
+
+$bPrjStmt = $pdo->prepare("SELECT COUNT(*) FROM projects WHERE cus_id = :cid");
+$bPrjStmt->execute([':cid' => $cusId]);
+$badgeProjects = (int)$bPrjStmt->fetchColumn();
+
+$bInvStmt = $pdo->prepare("SELECT COUNT(*) FROM invoices WHERE cus_id = :cid");
+$bInvStmt->execute([':cid' => $cusId]);
+$badgeInvoices = (int)$bInvStmt->fetchColumn();
+
+$bDocStmt = $pdo->prepare("SELECT COUNT(*) FROM documents WHERE related_cus_id = :cid1 OR related_prj_id IN (SELECT prj_id FROM projects WHERE cus_id = :cid2)");
+$bDocStmt->execute([':cid1' => $cusId, ':cid2' => $cusId]);
+$badgeDocs = (int)$bDocStmt->fetchColumn();
+
+$bTktStmt = $pdo->prepare("SELECT COUNT(*) FROM tickets WHERE requester_cus_id = :cid");
+$bTktStmt->execute([':cid' => $cusId]);
+$badgeTickets = (int)$bTktStmt->fetchColumn();
+
+$bSvcStmt = $pdo->prepare("SELECT COUNT(*) FROM customer_service_requests WHERE cus_id = :cid");
+$bSvcStmt->execute([':cid' => $cusId]);
+$badgeServices = (int)$bSvcStmt->fetchColumn();
+
 $badgeCareers = (int)$pdo->query("SELECT COUNT(*) FROM job_postings WHERE is_published = 1")->fetchColumn();
 
 /**

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * VOSTOKPRIBOR Centralized Authentication & Authorization API
  * Handles database authentication, credential verification, system clearance checks,
@@ -43,7 +45,7 @@ function respondAuthError($message, $code = 401, $isJson = true, $systemId = '')
             'success' => false,
             'message' => $message,
             'system_id' => $systemId
-        ]);
+        ], JSON_UNESCAPED_UNICODE);
         exit;
     } else {
         $referer = $_SERVER['HTTP_REFERER'] ?? '';
@@ -73,35 +75,42 @@ if (empty($userId) || empty($password)) {
     respondAuthError("Authentication required: Please enter username or email and password.", 400, $isJsonRequest, $systemId);
 }
 
+$clientIp = $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
+
+// Rate limiting check using authentication_events
+if (isLoginRateLimited($userId, $clientIp)) {
+    respondAuthError("Security Lockout: Too many failed login attempts. Please wait 15 minutes before retrying.", 429, $isJsonRequest, $systemId);
+}
+
 // 2. Query user in database
 $user = queryUserByCredentials($userId);
 
 if (!$user) {
-    logAuthenticationEvent('Unknown', null, $systemId, false, "Unknown account: {$userId}");
+    logAuthenticationEvent('Unknown', null, $systemId, false, "Unknown account: {$userId}", $clientIp);
     respondAuthError("Authentication failed: User account '{$userId}' was not found in the VOSTOKPRIBOR directory.", 401, $isJsonRequest, $systemId);
 }
 
 // 3. Check account status
-if (isset($user['account_status']) && strtolower($user['account_status']) !== 'active') {
-    logAuthenticationEvent($user['account_type'], $user['account_id'], $systemId, false, "Account suspended: {$userId}");
+if (isset($user['account_status']) && strtolower((string)$user['account_status']) !== 'active') {
+    logAuthenticationEvent($user['account_type'], $user['account_id'], $systemId, false, "Account suspended: {$userId}", $clientIp);
     respondAuthError("Access denied: Your account status is marked as '{$user['account_status']}'. Contact VP-SecOps.", 403, $isJsonRequest, $systemId);
 }
 
-if (isset($user['employment_status']) && strtolower($user['employment_status']) !== 'active') {
-    logAuthenticationEvent($user['account_type'], $user['account_id'], $systemId, false, "Employee inactive: {$userId}");
+if (isset($user['employment_status']) && strtolower((string)$user['employment_status']) !== 'active') {
+    logAuthenticationEvent($user['account_type'], $user['account_id'], $systemId, false, "Employee inactive: {$userId}", $clientIp);
     respondAuthError("Access denied: Employment record is '{$user['employment_status']}'.", 403, $isJsonRequest, $systemId);
 }
 
-// 4. Verify password against database
+// 4. Verify password against database strictly via password_verify()
 if (!verifyUserPassword($user, $password)) {
-    logAuthenticationEvent($user['account_type'], $user['account_id'], $systemId, false, "Password mismatch for account {$userId}");
+    logAuthenticationEvent($user['account_type'], $user['account_id'], $systemId, false, "Password mismatch for account {$userId}", $clientIp);
     respondAuthError('Authentication failed: Invalid credentials provided. Please re-check your password.', 401, $isJsonRequest, $systemId);
 }
 
-// 5. System clearance & role authorization check
+// 5. System clearance & role authorization check via role_system_access
 $authCheck = checkSystemAuthorization($user, $systemId);
 if (!$authCheck['authorized']) {
-    logAuthenticationEvent($user['account_type'], $user['account_id'], $systemId, false, "Authorization denied for system {$systemId}: {$authCheck['reason']}");
+    logAuthenticationEvent($user['account_type'], $user['account_id'], $systemId, false, "Authorization denied for system {$systemId}: {$authCheck['reason']}", $clientIp);
     respondAuthError("Authorization Denied: {$authCheck['reason']}", 403, $isJsonRequest, $systemId);
 }
 
@@ -109,6 +118,8 @@ if (!$authCheck['authorized']) {
 $userSessionData = [
     'account_id'      => $user['account_id'],
     'user_id'         => $user['emp_id'] ?? $user['cus_id'],
+    'emp_id'          => $user['emp_id'] ?? null,
+    'cus_id'          => $user['cus_id'] ?? null,
     'username'        => $user['username'],
     'full_name'       => $user['full_name'],
     'email'           => $user['email'] ?? '',
@@ -131,14 +142,19 @@ $_SESSION['vostok_system_' . $systemId] = true;
 $_SESSION['vostok_current_system'] = $systemId;
 $_SESSION['vostok_user'] = $userSessionData;
 
-// Note: Universal L4 multi-system unlock removed. Each system requires its own explicit login event.
+if ($user['account_type'] === 'Customer' && !empty($user['cus_id'])) {
+    $_SESSION['cus_id'] = $user['cus_id'];
+}
 
-// Set persistent cross-system SSO cookie (path = '/')
-createSsoCookie($userSessionData);
+// Generate unique session JTI for token tracking and immediate offboarding revocation
+$jti = bin2hex(random_bytes(16));
 
-// Audit logging
-logAuthenticationEvent($user['account_type'], $user['account_id'], $systemId, true, "Access granted via {$authCheck['reason']}");
-registerUserSession($user['account_type'], $user['account_id'], $systemId);
+// Set persistent cross-system SSO cookie (path = '/', max 8h)
+createSsoCookie($userSessionData, $jti);
+
+// Audit logging & register active session
+logAuthenticationEvent($user['account_type'], $user['account_id'], $systemId, true, "Access granted via {$authCheck['reason']}", $clientIp);
+registerUserSession($user['account_type'], $user['account_id'], $systemId, $jti);
 
 // Update last_login in database
 try {
@@ -159,7 +175,7 @@ if ($isJsonRequest) {
         'user'         => $userSessionData,
         'redirect'     => $redirect,
         'authorization_reason' => $authCheck['reason']
-    ]);
+    ], JSON_UNESCAPED_UNICODE);
     exit;
 } else {
     $sysDirMap = [

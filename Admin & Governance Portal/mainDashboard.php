@@ -9,6 +9,14 @@ $metrics = gov_getGovernanceMetrics();
 $telemetryGrid = gov_getTelemetryGridData();
 $anomaly = gov_getCriticalAnomaly();
 $sidebarBadges = gov_getSidebarBadges();
+
+$pdo = getDbConnection();
+$liveTraffic = gov_getLiveIntegrationTraffic($pdo, 6);
+$critTickets = gov_getCriticalTickets($pdo, 5);
+$privChanges = gov_getPrivilegedAccountChanges($pdo, 5);
+$orphanedAccess = gov_getOrphanedAccessFindings($pdo);
+$secEvents = gov_getSecurityEventsPerSystem($pdo, 6);
+$linkHealth = gov_getLinkHealth($pdo);
 ?>
 <!DOCTYPE html>
 
@@ -540,6 +548,191 @@ $chipRevCount = count(array_filter($telemetryGrid, fn($e) => $e['category'] === 
                             <span class="material-symbols-outlined text-[16px]">verified</span>
                             <span>Verify Ledger Integrity</span>
                         </button>
+                <!-- Flow K: Enterprise Telemetry & Integration Governance Matrix -->
+                <div class="mt-space-md flex flex-col gap-space-md">
+                    <!-- Top Ribbon Header -->
+                    <div class="bg-surface-container-lowest p-space-sm flex items-center justify-between border-l-4 border-secondary-fixed shadow-sm">
+                        <div class="flex items-center gap-space-sm">
+                            <span class="material-symbols-outlined text-[20px] text-secondary-fixed">hub</span>
+                            <span class="font-security-stamp text-security-stamp uppercase tracking-widest text-primary">FLOW K: CENTRAL GOVERNANCE &amp; INTER-SYSTEM TELEMETRY DESK</span>
+                        </div>
+                        <span class="px-space-xs py-[2px] bg-secondary-fixed/20 text-secondary-fixed font-telemetry-micro text-[11px] font-bold">11 SYSTEMS INTEGRATED</span>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-space-md">
+                        <!-- Panel 1: Live Integration Traffic (from system_integration_logs) -->
+                        <div class="bg-surface-container-lowest p-space-base shadow-sm border border-outline/10 flex flex-col">
+                            <div class="flex items-center justify-between pb-space-xs border-b border-outline/20 mb-space-sm">
+                                <span class="font-bold text-[13px] text-primary flex items-center gap-1.5">
+                                    <span class="w-2 h-2 rounded-full bg-secondary-fixed animate-ping"></span> Live Integration Traffic
+                                </span>
+                                <span class="font-telemetry-micro text-[10px] text-on-surface-variant">Real-Time Ingestion Relay</span>
+                            </div>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left font-telemetry-micro text-[11px]">
+                                    <thead>
+                                        <tr class="text-on-surface-variant border-b border-outline/10">
+                                            <th class="py-1">Link</th>
+                                            <th>Route</th>
+                                            <th>Event</th>
+                                            <th>Status</th>
+                                            <th>Time</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-outline/5">
+                                        <?php if (empty($liveTraffic)): ?>
+                                            <tr><td colspan="5" class="py-2 text-center text-on-surface-variant">No integration traffic logged yet.</td></tr>
+                                        <?php else: foreach ($liveTraffic as $lt): ?>
+                                            <tr>
+                                                <td class="py-1 font-bold text-primary"><?= htmlspecialchars((string)$lt['link_code']) ?></td>
+                                                <td><?= htmlspecialchars((string)$lt['source_system_id']) ?> &rarr; <?= htmlspecialchars((string)$lt['target_system_id']) ?></td>
+                                                <td class="truncate max-w-[120px]"><?= htmlspecialchars((string)($lt['payload_summary'] ?? 'OK')) ?></td>
+                                                <td><span class="px-1 bg-green-900/30 text-green-400 rounded"><?= (int)$lt['status_code'] ?></span></td>
+                                                <td class="text-on-surface-variant"><?= date('H:i:s', strtotime((string)$lt['executed_at'])) ?></td>
+                                            </tr>
+                                        <?php endforeach; endif; ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Panel 2: Link Health View (Configured vs Active) -->
+                        <div class="bg-surface-container-lowest p-space-base shadow-sm border border-outline/10 flex flex-col">
+                            <div class="flex items-center justify-between pb-space-xs border-b border-outline/20 mb-space-sm">
+                                <span class="font-bold text-[13px] text-primary flex items-center gap-1.5">
+                                    <span class="material-symbols-outlined text-[15px] text-primary">lan</span> Link-Health (Expected vs 24h Traffic)
+                                </span>
+                                <span class="font-telemetry-micro text-[10px] text-on-surface-variant"><?= count($linkHealth) ?> Configured Relays</span>
+                            </div>
+                            <div class="overflow-x-auto max-h-[220px] overflow-y-auto">
+                                <table class="w-full text-left font-telemetry-micro text-[11px]">
+                                    <thead>
+                                        <tr class="text-on-surface-variant border-b border-outline/10">
+                                            <th class="py-1">Link Code</th>
+                                            <th>Source &rarr; Target</th>
+                                            <th>Matrix Status</th>
+                                            <th>24h Volume</th>
+                                            <th>Health</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-outline/5">
+                                        <?php foreach ($linkHealth as $lh): ?>
+                                            <tr>
+                                                <td class="py-1 font-bold text-primary"><?= htmlspecialchars((string)$lh['link_code']) ?></td>
+                                                <td><?= htmlspecialchars((string)$lh['source_system_id']) ?> &rarr; <?= htmlspecialchars((string)$lh['target_system_id']) ?></td>
+                                                <td><span class="px-1 bg-primary/10 text-primary rounded"><?= htmlspecialchars((string)$lh['configured_status']) ?></span></td>
+                                                <td class="font-bold"><?= (int)$lh['traffic_24h'] ?></td>
+                                                <td>
+                                                    <?php if ((int)$lh['traffic_24h'] > 0): ?>
+                                                        <span class="text-green-500 font-bold flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-green-500"></span> ACTIVE</span>
+                                                    <?php else: ?>
+                                                        <span class="text-slate-400 flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-slate-500"></span> IDLE</span>
+                                                    <?php endif; ?>
+                                                </td>
+                                            </tr>
+                                        <?php endforeach; ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Panel 3: Critical Tickets & Security Incidents -->
+                        <div class="bg-surface-container-lowest p-space-base shadow-sm border border-outline/10 flex flex-col">
+                            <div class="flex items-center justify-between pb-space-xs border-b border-outline/20 mb-space-sm">
+                                <span class="font-bold text-[13px] text-error flex items-center gap-1.5">
+                                    <span class="material-symbols-outlined text-[15px] text-error">emergency</span> Critical Operational Tickets
+                                </span>
+                                <span class="font-telemetry-micro text-[10px] text-error font-bold"><?= count($critTickets) ?> SLA Escalated</span>
+                            </div>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left font-telemetry-micro text-[11px]">
+                                    <thead>
+                                        <tr class="text-on-surface-variant border-b border-outline/10">
+                                            <th class="py-1">Ticket ID</th>
+                                            <th>Title</th>
+                                            <th>System</th>
+                                            <th>Assigned</th>
+                                            <th>Created</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-outline/5">
+                                        <?php if (empty($critTickets)): ?>
+                                            <tr><td colspan="5" class="py-2 text-center text-on-surface-variant">No critical priority tickets active.</td></tr>
+                                        <?php else: foreach ($critTickets as $ct): ?>
+                                            <tr>
+                                                <td class="py-1 font-bold text-error"><?= htmlspecialchars((string)$ct['tkt_id']) ?></td>
+                                                <td class="truncate max-w-[140px]"><?= htmlspecialchars((string)$ct['title']) ?></td>
+                                                <td><?= htmlspecialchars((string)($ct['source_system'] ?? 'IT')) ?></td>
+                                                <td><?= htmlspecialchars((string)($ct['assigned_tech_name'] ?? 'Unassigned')) ?></td>
+                                                <td class="text-on-surface-variant"><?= date('M d H:i', strtotime((string)$ct['created_at'])) ?></td>
+                                            </tr>
+                                        <?php endforeach; endif; ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Panel 4: Orphaned Access Findings & Privileged Changes -->
+                        <div class="bg-surface-container-lowest p-space-base shadow-sm border border-outline/10 flex flex-col">
+                            <div class="flex items-center justify-between pb-space-xs border-b border-outline/20 mb-space-sm">
+                                <span class="font-bold text-[13px] text-primary flex items-center gap-1.5">
+                                    <span class="material-symbols-outlined text-[15px] text-primary">person_off</span> Orphaned Access Findings
+                                </span>
+                                <span class="font-telemetry-micro text-[10px] <?= empty($orphanedAccess) ? 'text-green-500 font-bold' : 'text-error font-bold' ?>">
+                                    <?= empty($orphanedAccess) ? '0 VIOLATIONS (PASS)' : count($orphanedAccess) . ' REMEDIATION REQUIRED' ?>
+                                </span>
+                            </div>
+                            <?php if (empty($orphanedAccess)): ?>
+                                <div class="py-3 px-3 bg-secondary/5 border border-secondary/20 rounded text-[11px] text-on-surface flex items-center gap-2">
+                                    <span class="material-symbols-outlined text-green-500 text-[18px]">verified</span>
+                                    <span>All separated, suspended, or inactive personnel have had their active roles deleted and active sessions revoked. Zero orphaned access detected.</span>
+                                </div>
+                            <?php else: ?>
+                                <div class="overflow-x-auto">
+                                    <table class="w-full text-left font-telemetry-micro text-[11px]">
+                                        <thead>
+                                            <tr class="text-error border-b border-outline/10">
+                                                <th class="py-1">EMP ID</th>
+                                                <th>Name</th>
+                                                <th>Status</th>
+                                                <th>Active Roles</th>
+                                                <th>Active Sessions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="divide-y divide-outline/5">
+                                            <?php foreach ($orphanedAccess as $oa): ?>
+                                                <tr class="bg-error/5">
+                                                    <td class="py-1 font-bold text-error"><?= htmlspecialchars((string)$oa['emp_id']) ?></td>
+                                                    <td><?= htmlspecialchars((string)$oa['full_name']) ?></td>
+                                                    <td><span class="px-1 bg-error text-on-error rounded"><?= htmlspecialchars((string)$oa['employment_status']) ?></span></td>
+                                                    <td class="text-error font-bold"><?= (int)$oa['active_role_count'] ?> (<?= htmlspecialchars((string)($oa['active_roles'] ?? '')) ?>)</td>
+                                                    <td class="text-error font-bold"><?= (int)$oa['active_sessions_count'] ?></td>
+                                                </tr>
+                                            <?php endforeach; ?>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            <?php endif; ?>
+
+                            <!-- Privileged Changes sub-strip -->
+                            <div class="mt-space-sm pt-space-xs border-t border-outline/10">
+                                <div class="text-[11px] font-bold text-on-surface-variant mb-1 flex items-center justify-between">
+                                    <span>Privileged Account Mutations</span>
+                                    <span class="text-[10px] text-secondary-fixed">Audit Logs</span>
+                                </div>
+                                <div class="space-y-1">
+                                    <?php if (empty($privChanges)): ?>
+                                        <div class="text-[10px] text-slate-500">No privileged modifications recorded.</div>
+                                    <?php else: foreach ($privChanges as $pc): ?>
+                                        <div class="text-[10px] flex justify-between items-center text-on-surface-variant">
+                                            <span class="font-bold text-primary"><?= htmlspecialchars((string)$pc['action']) ?></span>
+                                            <span class="truncate max-w-[120px]"><?= htmlspecialchars((string)$pc['target_entity_type']) ?> #<?= htmlspecialchars((string)$pc['target_entity_id']) ?></span>
+                                            <span><?= date('M d H:i', strtotime((string)$pc['occurred_at'])) ?></span>
+                                        </div>
+                                    <?php endforeach; endif; ?>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

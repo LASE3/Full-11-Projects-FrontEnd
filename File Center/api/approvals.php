@@ -156,25 +156,57 @@ try {
         $updDoc = $pdo->prepare("UPDATE documents SET status = 'Approved', updated_at = NOW() WHERE doc_id = :id");
         $updDoc->execute([':id' => $docId]);
 
+        // Flow I: Create customer-visible version in document_versions
+        $vCheck = $pdo->prepare("SELECT COALESCE(MAX(version_number), 0) + 1 FROM document_versions WHERE doc_id = :id");
+        $vCheck->execute([':id' => $docId]);
+        $nextVer = (int)$vCheck->fetchColumn();
+
+        $insVer = $pdo->prepare("
+            INSERT INTO document_versions (doc_id, version_number, uploaded_by_emp_id, uploaded_at, file_path)
+            VALUES (:id, :ver, :emp, NOW(), :path)
+        ");
+        $insVer->execute([
+            ':id'   => $docId,
+            ':ver'  => $nextVer,
+            ':emp'  => $reviewerEmpId,
+            ':path' => "vault/{$docId}_v{$nextVer}.pdf"
+        ]);
+
+        // If related_cus_id is set and classification is <= Confidential, publish to customer portal & emit DOC_TO_CUS
+        $docInfoStmt = $pdo->prepare("SELECT related_cus_id, classification, file_name FROM documents WHERE doc_id = :id");
+        $docInfoStmt->execute([':id' => $docId]);
+        $docInfo = $docInfoStmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($docInfo && !empty($docInfo['related_cus_id']) && in_array($docInfo['classification'], ['Public', 'Internal', 'Confidential'])) {
+            require_once __DIR__ . '/../../includes/integration_bus.php';
+            vp_emit($pdo, 'DOC_TO_CUS', 'DOC', 'CUS', 'document_published_to_customer', [
+                'doc_id'    => $docId,
+                'cus_id'    => $docInfo['related_cus_id'],
+                'file_name' => $docInfo['file_name'],
+                'version'   => $nextVer
+            ], $reviewerEmpId);
+        }
+
         // Audit Trail entry
         logDocumentAction(
             $pdo,
             $docId,
-            'SIGN_REVIEW',
-            "Digital signature affixed by {$custodian['full_name']} ({$reviewerEmpId}). Token: {$signToken}. Routed to L4 Governance release.",
+            'Approve',
+            "Approved version {$nextVer}. Digital signature: {$signToken}. Routed to Customer Portal if customer-linked.",
             $reviewerEmpId
         );
 
         apiSuccess([
             'doc_id'          => $docId,
             'decision'        => 'Approved',
+            'version'         => $nextVer,
             'stage'           => 3,
             'stage_name'      => 'Governance Clearance',
             'token'           => $signToken,
             'signatory_name'  => $custodian['full_name'],
             'signatory_id'    => $reviewerEmpId,
-            'approval_status' => 'PM APPROVED // IN GOVERNANCE REVIEW',
-        ], "Digital electronic signature successfully affixed to {$docId} in database.");
+            'approval_status' => 'APPROVED // RELEASED',
+        ], "Digital electronic signature successfully affixed and version {$nextVer} published.");
     }
 
     apiError('Unsupported HTTP method.', 405);

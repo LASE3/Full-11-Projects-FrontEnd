@@ -13,6 +13,8 @@ if (session_status() === PHP_SESSION_NONE) {
 
 require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/../includes/auth_guard.php';
+require_once __DIR__ . '/../includes/AuditLogger.php';
+require_once __DIR__ . '/../includes/integration_bus.php';
 
 function intra_jsonReply(array $data, int $statusCode = 200): void
 {
@@ -142,7 +144,16 @@ function intra_createAnnouncement(array $data, ?string $empId = null): int
     ]);
 
     $newId = (int)$pdo->lastInsertId();
-    logIntegrationEvent('INTRA-NEWS', 'SYS-04', 'SYS-04', '/announcements/create', "Published announcement #{$newId}", 'BROADCAST', 201, $author);
+    try {
+        vp_emit($pdo, 'EMP_TO_ADM', 'EMP', 'ADM', 'ANNOUNCEMENT_PUBLISHED', [
+            'announcement_id' => $newId,
+            'title'           => $title,
+            'summary'         => "Published announcement #{$newId} by {$author}",
+            'endpoint'        => '/announcements/create'
+        ], $author, 201);
+    } catch (Throwable $e) {
+        error_log("Failed to emit EMP_TO_ADM: " . $e->getMessage());
+    }
     return $newId;
 }
 
@@ -290,7 +301,16 @@ function intra_submitLeaveRequest(string $empId, array $data): int
     ]);
 
     $newId = (int)$pdo->lastInsertId();
-    logIntegrationEvent('INTRA-LEAVE-SUBMIT', 'SYS-04', 'SYS-07', '/leaves/submit', "Leave request #{$newId} by {$empId}", 'WORKFLOW', 201, $empId);
+    try {
+        vp_emit($pdo, 'EMP_TO_ADM', 'EMP', 'ADM', 'LEAVE_SUBMITTED', [
+            'leave_id' => $newId,
+            'emp_id'   => $empId,
+            'summary'  => "Leave request #{$newId} submitted by {$empId}",
+            'endpoint' => '/leaves/submit'
+        ], $empId, 201);
+    } catch (Throwable $e) {
+        error_log("Failed to emit EMP_TO_ADM: " . $e->getMessage());
+    }
     return $newId;
 }
 
@@ -315,7 +335,16 @@ function intra_updateLeaveStatus(int $leaveId, string $decision, ?string $approv
         ':lid'  => $leaveId
     ]);
 
-    logIntegrationEvent('INTRA-LEAVE-DECIDE', 'SYS-04', 'SYS-07', '/leaves/decide', "Leave #{$leaveId} {$decision} by {$approver}", 'WORKFLOW', 200, $approver);
+    try {
+        vp_emit($pdo, 'EMP_TO_ADM', 'EMP', 'ADM', 'LEAVE_DECIDED', [
+            'leave_id' => $leaveId,
+            'decision' => $decision,
+            'summary'  => "Leave #{$leaveId} {$decision} by {$approver}",
+            'endpoint' => '/leaves/decide'
+        ], $approver, 200);
+    } catch (Throwable $e) {
+        error_log("Failed to emit EMP_TO_ADM: " . $e->getMessage());
+    }
     return $res;
 }
 
@@ -394,7 +423,16 @@ function intra_createQuickTicket(string $empId, string $title, string $descripti
         ':sla'   => $slaDeadline
     ]);
 
-    logIntegrationEvent('INTRA-HELP-DISPATCH', 'SYS-04', 'SYS-08', '/tickets/create', "Dispatched ticket {$tktId} for {$empId}", 'DISPATCH', 201, $empId);
+    try {
+        vp_emit($pdo, 'EMP_TO_ADM', 'EMP', 'ADM', 'TICKET_DISPATCHED', [
+            'tkt_id'   => $tktId,
+            'emp_id'   => $empId,
+            'summary'  => "Dispatched ticket {$tktId} for {$empId}",
+            'endpoint' => '/tickets/create'
+        ], $empId, 201);
+    } catch (Throwable $e) {
+        error_log("Failed to emit EMP_TO_ADM: " . $e->getMessage());
+    }
     return $tktId;
 }
 
@@ -463,6 +501,22 @@ if ($action !== null && (isset($_SERVER['HTTP_X_REQUESTED_WITH']) || isset($_GET
                 intra_jsonReply(['success' => true, 'data' => intra_getPoliciesAndForms($_GET['folder'] ?? null)]);
                 break;
 
+            case 'get_ops_tasks':
+                intra_jsonReply(['success' => true, 'data' => intra_getOpsTasks()]);
+                break;
+
+            case 'update_ops_task':
+                $input = json_decode(file_get_contents('php://input'), true) ?: $_POST;
+                $taskId = trim((string)($input['task_id'] ?? ''));
+                $taskStatus = trim((string)($input['status'] ?? 'Pending'));
+                $assignedEmp = trim((string)($input['assigned_emp_id'] ?? ''));
+                if ($taskId === '') {
+                    intra_jsonReply(['success' => false, 'error' => 'Task ID is required'], 400);
+                }
+                intra_updateOpsTask($taskId, $taskStatus, $assignedEmp ?: null);
+                intra_jsonReply(['success' => true, 'message' => "OPS Task {$taskId} updated to {$taskStatus}"]);
+                break;
+
             case 'quick_ticket':
                 $input = json_decode(file_get_contents('php://input'), true) ?: $_POST;
                 $tid = intra_createQuickTicket(
@@ -477,4 +531,42 @@ if ($action !== null && (isset($_SERVER['HTTP_X_REQUESTED_WITH']) || isset($_GET
     } catch (Throwable $e) {
         intra_jsonReply(['success' => false, 'error' => $e->getMessage()], 400);
     }
+}
+
+/**
+ * OPS Fulfillment Queue (Flow D / Department Board)
+ */
+function intra_getOpsTasks(): array
+{
+    $pdo = getDbConnection();
+    $stmt = $pdo->query("
+        SELECT 
+            ot.*,
+            e.full_name AS assigned_emp_name
+        FROM ops_tasks ot
+        LEFT JOIN employees e ON ot.assigned_emp_id = e.emp_id
+        ORDER BY 
+            CASE ot.status 
+                WHEN 'Pending' THEN 1 
+                WHEN 'In Progress' THEN 2 
+                WHEN 'Completed' THEN 3 
+                ELSE 4 
+            END ASC,
+            ot.created_at DESC
+    ");
+    return $stmt ? $stmt->fetchAll(PDO::FETCH_ASSOC) : [];
+}
+
+function intra_updateOpsTask(string $taskId, string $status, ?string $assignedEmpId = null): bool
+{
+    $pdo = getDbConnection();
+    $sql = "UPDATE ops_tasks SET status = :status";
+    $params = [':status' => $status, ':id' => $taskId];
+    if ($assignedEmpId !== null && $assignedEmpId !== '') {
+        $sql .= ", assigned_emp_id = :assigned";
+        $params[':assigned'] = $assignedEmpId;
+    }
+    $sql .= ", updated_at = NOW() WHERE task_id = :id";
+    $stmt = $pdo->prepare($sql);
+    return $stmt->execute($params);
 }

@@ -13,6 +13,8 @@ if (session_status() === PHP_SESSION_NONE) {
 
 require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/../includes/auth_guard.php';
+require_once __DIR__ . '/../includes/AuditLogger.php';
+require_once __DIR__ . '/../includes/integration_bus.php';
 
 /**
  * Helper to respond with JSON for AJAX actions.
@@ -207,7 +209,15 @@ function crm_createLead(array $data, ?string $salesRepEmpId = null): int
     ]);
 
     $newId = (int)$pdo->lastInsertId();
-    logIntegrationEvent('CRM-LEAD-IN', 'SYS-05', 'SYS-05', '/leads/create', "Created lead #{$newId}", 'INBOUND', 201, $user['emp_id']);
+    try {
+        vp_emit($pdo, 'CRM_TO_ADM', 'CRM', 'ADM', 'LEAD_CREATED', [
+            'lead_id'  => $newId,
+            'summary'  => "Created lead #{$newId}",
+            'endpoint' => '/leads/create'
+        ], $user['emp_id'], 201);
+    } catch (Throwable $e) {
+        error_log("Failed to emit CRM_TO_ADM: " . $e->getMessage());
+    }
     return $newId;
 }
 
@@ -247,7 +257,12 @@ function crm_convertLead(int $leadId, float $dealValue, ?string $salesRep = null
     $user = crm_getCurrentUser();
     $salesRep = $salesRep ?: $user['emp_id'];
 
-    $pdo->beginTransaction();
+    $startedTx = false;
+    if (!$pdo->inTransaction()) {
+        $pdo->beginTransaction();
+        $startedTx = true;
+    }
+
     try {
         $leadStmt = $pdo->prepare("SELECT * FROM leads WHERE lead_id = :id FOR UPDATE");
         $leadStmt->execute([':id' => $leadId]);
@@ -263,8 +278,18 @@ function crm_convertLead(int $leadId, float $dealValue, ?string $salesRep = null
         // Establish customer
         $cusId = $lead['converted_cus_id'];
         if (!$cusId) {
-            $maxNum = $pdo->query("SELECT MAX(CAST(SUBSTRING(cus_id, 5) AS UNSIGNED)) FROM customers")->fetchColumn();
-            $cusId = "CUS-" . (($maxNum ? (int)$maxNum : 1000) + 1);
+            $counterStmt = $pdo->prepare("SELECT next_val FROM id_counters WHERE name = 'customers' FOR UPDATE");
+            $counterStmt->execute();
+            $nextNum = (int)$counterStmt->fetchColumn();
+            if ($nextNum < 1001) {
+                $maxNum = $pdo->query("SELECT MAX(CAST(SUBSTRING(cus_id, 5) AS UNSIGNED)) FROM customers")->fetchColumn();
+                $nextNum = $maxNum ? ((int)$maxNum + 1) : 1011;
+            }
+            $cusId = "CUS-" . $nextNum;
+            $updCounter = $pdo->prepare("INSERT INTO id_counters (name, next_val) VALUES ('customers', :val) ON DUPLICATE KEY UPDATE next_val = VALUES(next_val)");
+            $updCounter->execute([':val' => $nextNum + 1]);
+
+            $companyName = !empty($lead['company_name']) ? $lead['company_name'] : $lead['full_name'];
 
             $cusStmt = $pdo->prepare("
                 INSERT INTO customers 
@@ -274,7 +299,7 @@ function crm_convertLead(int $leadId, float $dealValue, ?string $salesRep = null
             ");
             $cusStmt->execute([
                 ':id'      => $cusId,
-                ':comp'    => $lead['company_name'] ?: $lead['full_name'],
+                ':comp'    => $companyName,
                 ':contact' => $lead['full_name'],
                 ':email'   => $lead['email'],
                 ':mgr'     => $salesRep
@@ -290,6 +315,51 @@ function crm_convertLead(int $leadId, float $dealValue, ?string $salesRep = null
                 ':fn'  => $lead['full_name'],
                 ':em'  => $lead['email'],
                 ':ph'  => $lead['phone']
+            ]);
+
+            // Add customer_accounts row with one-time invite token (not a password)
+            $inviteToken = bin2hex(random_bytes(24));
+            $baseUsername = strtolower(preg_replace('/[^a-zA-Z0-9]/', '', $companyName));
+            if (empty($baseUsername)) $baseUsername = 'client';
+            $accUsername = substr($baseUsername, 0, 15) . '_' . substr($cusId, 4);
+
+            $accStmt = $pdo->prepare("
+                INSERT INTO customer_accounts (cus_id, username, email, password_hash, invite_token, status, created_at)
+                VALUES (:cid, :usr, :em, NULL, :tok, 'Invited', NOW())
+                ON DUPLICATE KEY UPDATE invite_token = VALUES(invite_token)
+            ");
+            $accStmt->execute([
+                ':cid' => $cusId,
+                ':usr' => $accUsername,
+                ':em'  => $lead['email'],
+                ':tok' => $inviteToken
+            ]);
+
+            // Create File Center customer workspace (documents folder row with related_cus_id, owner = account manager)
+            $docWsId = 'DOC-WS-' . substr($cusId, 4);
+            $wsStmt = $pdo->prepare("
+                INSERT INTO documents 
+                (doc_id, file_name, description, classification, folder, department, file_size, status, retention_period, customer_ref, owner_emp_id, related_cus_id, created_at)
+                VALUES (:did, :fname, :desc, 'Confidential', 'customer_workspace', 'SAL', '0 KB', 'Approved', '7y', :cref, :owner, :cid, NOW())
+                ON DUPLICATE KEY UPDATE file_name = VALUES(file_name)
+            ");
+            $wsStmt->execute([
+                ':did'   => $docWsId,
+                ':fname' => "Workspace - {$companyName}",
+                ':desc'  => "Dedicated File Center enterprise workspace for {$companyName} ({$cusId})",
+                ':cref'  => $companyName,
+                ':owner' => $salesRep,
+                ':cid'   => $cusId
+            ]);
+
+            // Create finance relationship (billing_cycles row)
+            $bcStmt = $pdo->prepare("
+                INSERT INTO billing_cycles (prj_id, cus_id, milestone_description, milestone_amount, scheduled_date, invoiced)
+                VALUES (NULL, :cid, :desc, 0.00, CURDATE(), 0)
+            ");
+            $bcStmt->execute([
+                ':cid'  => $cusId,
+                ':desc' => "Commercial Account Onboarding & Master Billing Setup for {$companyName}"
             ]);
         }
 
@@ -312,9 +382,40 @@ function crm_convertLead(int $leadId, float $dealValue, ?string $salesRep = null
         $updLead = $pdo->prepare("UPDATE leads SET status = 'Converted', converted_cus_id = :cid WHERE lead_id = :lid");
         $updLead->execute([':cid' => $cusId, ':lid' => $leadId]);
 
-        $pdo->commit();
+        // Emit CRM_TO_CUS, CRM_TO_DOC, CRM_TO_FIN, plus governance to ADM
+        try {
+            vp_emit($pdo, 'CRM_TO_CUS', 'CRM', 'CUS', 'CUSTOMER_ONBOARDED', [
+                'cus_id'  => $cusId,
+                'lead_id' => $leadId,
+                'opp_id'  => $oppId,
+                'summary' => "Customer {$cusId} provisioned from Lead #{$leadId}"
+            ], $salesRep, 201);
 
-        logIntegrationEvent('CRM-CONVERT', 'SYS-05', 'SYS-05', '/leads/convert', "Lead #{$leadId} converted to Opp #{$oppId} for {$cusId}", 'INTERNAL', 200, $salesRep);
+            vp_emit($pdo, 'CRM_TO_DOC', 'CRM', 'DOC', 'WORKSPACE_PROVISIONED', [
+                'cus_id'  => $cusId,
+                'doc_id'  => 'DOC-WS-' . substr($cusId, 4),
+                'summary' => "File Center customer workspace created for {$cusId}"
+            ], $salesRep, 201);
+
+            vp_emit($pdo, 'CRM_TO_FIN', 'CRM', 'FIN', 'BILLING_RELATIONSHIP_CREATED', [
+                'cus_id'  => $cusId,
+                'summary' => "Master billing schedule established for customer {$cusId}"
+            ], $salesRep, 201);
+
+            vp_emit($pdo, 'CRM_TO_ADM', 'CRM', 'ADM', 'CUSTOMER_ACCOUNT_PROVISIONED', [
+                'cus_id'      => $cusId,
+                'governance'  => true,
+                'severity'    => 'High',
+                'summary'     => "Customer account {$cusId} provisioned with invite token",
+                'description' => "Customer account {$cusId} provisioned with invite token"
+            ], $salesRep, 200);
+        } catch (Throwable $e) {
+            error_log("Failed to emit onboarding integration events: " . $e->getMessage());
+        }
+
+        if ($startedTx) {
+            $pdo->commit();
+        }
 
         return [
             'success' => true,
@@ -324,7 +425,9 @@ function crm_convertLead(int $leadId, float $dealValue, ?string $salesRep = null
             'stage'   => 'Proposal'
         ];
     } catch (Exception $e) {
-        $pdo->rollBack();
+        if ($startedTx && $pdo->inTransaction()) {
+            $pdo->rollBack();
+        }
         throw $e;
     }
 }
@@ -428,7 +531,16 @@ function crm_createOpportunity(array $data, ?string $salesRep = null): int
     ]);
 
     $newId = (int)$pdo->lastInsertId();
-    logIntegrationEvent('CRM-OPP-NEW', 'SYS-05', 'SYS-05', '/opportunities/create', "Created Opp #{$newId} ({$stage})", 'INTERNAL', 201, $salesRep);
+    try {
+        vp_emit($pdo, 'CRM_TO_ADM', 'CRM', 'ADM', 'OPPORTUNITY_CREATED', [
+            'opp_id'   => $newId,
+            'stage'    => $stage,
+            'summary'  => "Created Opp #{$newId} ({$stage})",
+            'endpoint' => '/opportunities/create'
+        ], $salesRep, 201);
+    } catch (Throwable $e) {
+        error_log("Failed to emit CRM_TO_ADM: " . $e->getMessage());
+    }
     return $newId;
 }
 
@@ -447,7 +559,121 @@ function crm_updateOpportunityStage(int $oppId, string $newStage, ?string $empId
     $stmt = $pdo->prepare("UPDATE opportunities SET stage = :st WHERE opp_id = :id");
     $res = $stmt->execute([':st' => $newStage, ':id' => $oppId]);
 
-    logIntegrationEvent('CRM-OPP-STAGE', 'SYS-05', 'SYS-05', '/opportunities/stage', "Opp #{$oppId} transitioned to {$newStage}", 'STATE_CHANGE', 200, $empId);
+    // Flow C: CRM opportunity won -> project (SOP-02)
+    if ($newStage === 'Won') {
+        try {
+            $oppStmt = $pdo->prepare("SELECT o.*, c.company_name FROM opportunities o LEFT JOIN customers c ON o.cus_id = c.cus_id WHERE o.opp_id = ?");
+            $oppStmt->execute([$oppId]);
+            $opp = $oppStmt->fetch(PDO::FETCH_ASSOC);
+
+            if ($opp && !empty($opp['cus_id'])) {
+                // Next PRJ-2026-xxx via id_counters
+                $counterStmt = $pdo->prepare("SELECT next_val FROM id_counters WHERE name = 'projects' FOR UPDATE");
+                $counterStmt->execute();
+                $prjNum = (int)$counterStmt->fetchColumn();
+                if ($prjNum < 1) $prjNum = 16;
+                $prjId = 'PRJ-2026-' . str_pad((string)$prjNum, 3, '0', STR_PAD_LEFT);
+                $pdo->prepare("UPDATE id_counters SET next_val = ? WHERE name = 'projects'")->execute([$prjNum + 1]);
+
+                // Assign project manager from ENG (EMP-1016..1020)
+                $engPms = ['EMP-1016', 'EMP-1017', 'EMP-1018', 'EMP-1019', 'EMP-1020'];
+                $pmEmpId = $engPms[$prjNum % count($engPms)];
+
+                // Insert into projects
+                $prjStmt = $pdo->prepare("
+                    INSERT INTO projects 
+                    (prj_id, project_name, cus_id, project_manager_emp_id, budget, currency, status, start_date, progress_percent, scope_summary)
+                    VALUES 
+                    (:pid, :pname, :cid, :pm, :bgt, 'EUR', 'Execution', CURDATE(), 5, :scope)
+                ");
+                $prjStmt->execute([
+                    ':pid'   => $prjId,
+                    ':pname' => "Engineering Project {$prjId}",
+                    ':cid'   => $opp['cus_id'],
+                    ':pm'    => $pmEmpId,
+                    ':bgt'   => $opp['estimated_value'],
+                    ':scope' => "Commissioned from Won Opportunity #{$oppId}"
+                ]);
+
+                // Create File Center project space & documents SOW stub (DOC-2026-xxx)
+                $docId = 'DOC-2026-' . str_pad((string)$prjNum, 3, '0', STR_PAD_LEFT);
+                $docStmt = $pdo->prepare("
+                    INSERT INTO documents 
+                    (doc_id, file_name, description, classification, folder, department, file_size, status, retention_period, project_ref, customer_ref, owner_emp_id, related_prj_id, related_cus_id, created_at)
+                    VALUES (:did, :fname, :desc, 'Confidential', 'projects', 'ENG', '1.5 MB', 'Approved', '7y', :pref, :cref, :owner, :rpid, :rcid, NOW())
+                    ON DUPLICATE KEY UPDATE file_name = VALUES(file_name)
+                ");
+                $docStmt->execute([
+                    ':did'   => $docId,
+                    ':fname' => "SOW-{$prjId}-Specification.pdf",
+                    ':desc'  => "Statement of Work and technical specification stub for project {$prjId}",
+                    ':pref'  => $prjId,
+                    ':cref'  => $opp['company_name'] ?: $opp['cus_id'],
+                    ':owner' => $pmEmpId,
+                    ':rpid'  => $prjId,
+                    ':rcid'  => $opp['cus_id']
+                ]);
+
+                // Create billing milestones in billing_cycles
+                $bcStmt = $pdo->prepare("
+                    INSERT INTO billing_cycles 
+                    (prj_id, cus_id, milestone_description, milestone_amount, scheduled_date, invoiced)
+                    VALUES 
+                    (?, ?, ?, ?, DATE_ADD(CURDATE(), INTERVAL 30 DAY), 0),
+                    (?, ?, ?, ?, DATE_ADD(CURDATE(), INTERVAL 90 DAY), 0)
+                ");
+                $bcStmt->execute([
+                    $prjId,
+                    $opp['cus_id'],
+                    "Milestone 1: Engineering Blueprint & Site Sign-off ({$prjId})",
+                    round($opp['estimated_value'] * 0.4, 2),
+                    $prjId,
+                    $opp['cus_id'],
+                    "Milestone 2: Final Equipment Commissioning & Handover ({$prjId})",
+                    round($opp['estimated_value'] * 0.6, 2)
+                ]);
+
+                // Create an OPS procurement task
+                $taskStmt = $pdo->prepare("
+                    INSERT INTO ops_tasks (task_id, order_id, prj_id, task_type, assigned_emp_id, status, created_at)
+                    VALUES (:tid, NULL, :pid, 'Procurement', 'EMP-1011', 'Pending', NOW())
+                ");
+                $taskStmt->execute([
+                    ':tid' => 'OPS-PRJ-' . substr($prjId, 9),
+                    ':pid' => $prjId
+                ]);
+
+                // Emit CRM->DOC, CRM->FIN
+                vp_emit($pdo, 'CRM_TO_DOC', 'CRM', 'DOC', 'PROJECT_PROVISIONED', [
+                    'prj_id'  => $prjId,
+                    'doc_id'  => $docId,
+                    'cus_id'  => $opp['cus_id'],
+                    'summary' => "Project space and SOW {$docId} created for {$prjId}"
+                ], $empId, 201);
+
+                vp_emit($pdo, 'CRM_TO_FIN', 'CRM', 'FIN', 'PROJECT_BILLING_CREATED', [
+                    'prj_id'  => $prjId,
+                    'cus_id'  => $opp['cus_id'],
+                    'budget'  => $opp['estimated_value'],
+                    'summary' => "Billing milestones generated for project {$prjId} ({$opp['estimated_value']} EUR)"
+                ], $empId, 201);
+            }
+        } catch (Throwable $e) {
+            error_log("Failed in Flow C (Opp Won -> Project): " . $e->getMessage());
+        }
+    }
+
+    try {
+        vp_emit($pdo, 'CRM_TO_ADM', 'CRM', 'ADM', 'OPPORTUNITY_STAGE_CHANGED', [
+            'opp_id'    => $oppId,
+            'new_stage' => $newStage,
+            'summary'   => "Opp #{$oppId} transitioned to {$newStage}",
+            'endpoint'  => '/opportunities/stage'
+        ], $empId, 200);
+    } catch (Throwable $e) {
+        error_log("Failed to emit CRM_TO_ADM: " . $e->getMessage());
+    }
+
     return $res;
 }
 
@@ -610,7 +836,16 @@ function crm_createCustomer(array $data): string
         ':mgr'     => $mgr
     ]);
 
-    logIntegrationEvent('CRM-CUS-NEW', 'SYS-05', 'SYS-05', '/customers/create', "Created customer {$newCusId}", 'INTERNAL', 201, $user['emp_id']);
+    $newCusId = $data['cus_id'] ?? ('CUS-' . (1000 + (int)$pdo->lastInsertId()));
+    try {
+        vp_emit($pdo, 'CRM_TO_CUS', 'CRM', 'CUS', 'CUSTOMER_CREATED', [
+            'cus_id'   => $newCusId,
+            'summary'  => "Created customer {$newCusId}",
+            'endpoint' => '/customers/create'
+        ], $user['emp_id'], 201);
+    } catch (Throwable $e) {
+        error_log("Failed to emit CRM_TO_CUS: " . $e->getMessage());
+    }
     return $newCusId;
 }
 
