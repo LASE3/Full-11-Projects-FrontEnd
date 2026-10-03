@@ -7,6 +7,9 @@ declare(strict_types=1);
  * Methods: GET, POST, PUT/PATCH
  */
 
+require_once __DIR__ . '/../../includes/api_bootstrap.php';
+$_vp_user = vp_api_guard('CUS', ['customer' => true]);
+
 require_once __DIR__ . '/../../config/db.php';
 require_once __DIR__ . '/helpers/Response.php';
 require_once __DIR__ . '/helpers/AuditLogger.php';
@@ -16,13 +19,14 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 $pdo = getDbConnection();
-$cusId = $_SESSION['cus_id'] ?? ($_SESSION['vostok_user']['user_id'] ?? ($_GET['cus_id'] ?? null));
-$method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
-
+// Derive cus_id strictly from the authenticated session — NEVER fall back to a default.
+$cusId = $_vp_user['cus_id'] ?? ($_vp_user['user_id'] ?? null);
 if (empty($cusId)) {
-    $firstCus = $pdo->query("SELECT cus_id FROM customers WHERE status = 'Active' ORDER BY cus_id ASC LIMIT 1")->fetchColumn();
-    $cusId = $firstCus ?: 'CUS-1001';
+    http_response_code(401);
+    echo json_encode(['success' => false, 'error' => 'Customer session required'], JSON_UNESCAPED_UNICODE);
+    exit;
 }
+$method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 
 try {
     if ($method === 'GET') {

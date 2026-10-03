@@ -7,6 +7,9 @@ declare(strict_types=1);
  * Location: Employee Intranet/api/stats.php
  */
 
+require_once __DIR__ . '/../../includes/api_bootstrap.php';
+$_vp_user = vp_api_guard('EMP', []);
+
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }

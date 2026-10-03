@@ -37,6 +37,17 @@ ON DUPLICATE KEY UPDATE
 -- 2. Adjust projects status enum to support 'Contract Review' with space if desired
 ALTER TABLE projects MODIFY COLUMN status ENUM('Planning','Procurement','Design','Integration','Testing','Execution','ContractReview','Contract Review','Maintenance','Closed') DEFAULT 'Planning';
 
+-- 2b. Add price, stock, is_active to products if not present
+ALTER TABLE products
+    ADD COLUMN IF NOT EXISTS `price` DECIMAL(14,2) NOT NULL DEFAULT 0.00 AFTER `billing_model`,
+    ADD COLUMN IF NOT EXISTS `stock` INT NOT NULL DEFAULT 100 AFTER `price`,
+    ADD COLUMN IF NOT EXISTS `is_active` TINYINT(1) NOT NULL DEFAULT 1 AFTER `stock`,
+    ADD COLUMN IF NOT EXISTS `image_url` VARCHAR(255) NULL DEFAULT NULL AFTER `is_active`;
+
+-- 2c. Add Inactive to employment_status
+ALTER TABLE employees
+    MODIFY COLUMN `employment_status` ENUM('Active', 'Inactive', 'On Leave', 'Suspended', 'Terminated', 'Pending Provisioning') NOT NULL DEFAULT 'Active';
+
 -- 3. Document Classification View matching PDF vocab (L1-L4 <-> Public/Internal/Confidential/TopSecret)
 CREATE OR REPLACE VIEW v_document_classifications AS
 SELECT 

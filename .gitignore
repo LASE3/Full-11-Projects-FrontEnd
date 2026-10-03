@@ -1,0 +1,40 @@
+# VOSTOKPRIBOR .gitignore
+# Never commit sensitive files to version control.
+
+# Environment secrets — NEVER commit real .env
+.env
+*.env.local
+*.env.production
+
+# Log files
+*.log
+logs/
+error_log
+
+# Uploaded user files
+uploads/*
+!uploads/.gitkeep
+
+# PHP error dump
+php_errorlog
+
+# IDE and OS files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Composer (if used)
+vendor/
+composer.lock
+
+# Test artifacts
+tests/output/
+tests/*.html
+
+# Backup SQL dumps (keep migrations, exclude generated dumps)
+DataBase/dump_*.sql
+DataBase/*_backup.sql

@@ -1,6 +1,6 @@
 <?php
-
 declare(strict_types=1);
+if (PHP_SAPI !== 'cli') { http_response_code(403); exit; }
 
 /**
  * Acceptance Tests - Phase 2: Integration Event Bus & Rebuilt System Matrix

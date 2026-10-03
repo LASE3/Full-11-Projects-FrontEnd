@@ -14,10 +14,19 @@ requireAuth('CUS');
 $pdo = getDbConnection();
 $cusId = $_SESSION['cus_id'] ?? ($_SESSION['vostok_user']['user_id'] ?? null);
 
-if (empty($cusId)) {
-    $firstCus = $pdo->query("SELECT cus_id FROM customers WHERE status = 'Active' ORDER BY cus_id ASC LIMIT 1")->fetchColumn();
-    $cusId = $firstCus ?: 'CUS-1001';
+// If no customer ID in session, check if employee/SuperAdmin is browsing as a customer
+$currentUser = $_SESSION['vostok_user'] ?? null;
+if (empty($cusId) && $currentUser && ($currentUser['account_type'] ?? '') === 'Employee') {
+    // SuperAdmin may browse Customer Portal — allow but without a default cus_id
+    // The page must handle $customer = null gracefully
 }
+
+if (empty($cusId) && empty($currentUser)) {
+    // Strictly no session — redirect to login
+    header('Location: login.php?error=session_expired');
+    exit;
+}
+
 
 // Fetch authentic customer entity from MariaDB
 $cStmt = $pdo->prepare("SELECT * FROM customers WHERE cus_id = ?");

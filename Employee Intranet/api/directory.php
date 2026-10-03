@@ -5,6 +5,9 @@
  * Location: Employee Intranet/api/directory.php
  * Methods: GET
  */
+require_once __DIR__ . '/../../includes/api_bootstrap.php';
+$_vp_user = vp_api_guard('EMP', []);
+
 require_once __DIR__ . '/../../config/db.php';
 require_once __DIR__ . '/helpers/Response.php';
 require_once __DIR__ . '/helpers/I18n.php';

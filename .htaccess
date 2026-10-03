@@ -1,4 +1,50 @@
-AddDefaultCharset UTF-8
-<IfModule mod_mime.c>
-    AddCharset UTF-8 .html .css .js .php
+# VOSTOKPRIBOR Root .htaccess
+# Apache 2.4 — deny access to sensitive directories and files
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
 </IfModule>
+
+# Block .env files
+<Files ".env">
+    Require all denied
+</Files>
+
+<Files ".env.*">
+    Require all denied
+</Files>
+
+# Block git config
+<Files ".git">
+    Require all denied
+</Files>
+
+# Block PHP info / debug files
+<Files "phpinfo.php">
+    Require all denied
+</Files>
+
+# Deny access to sensitive directories
+<DirectoryMatch "^(.*/)?\.git(/.*)?$">
+    Require all denied
+</DirectoryMatch>
+
+<DirectoryMatch "^(.*/)?DataBase(/.*)?$">
+    Require all denied
+</DirectoryMatch>
+
+<DirectoryMatch "^(.*/)?tests(/.*)?$">
+    Require all denied
+</DirectoryMatch>
+
+<DirectoryMatch "^(.*/)?scripts(/.*)?$">
+    Require all denied
+</DirectoryMatch>
+
+<DirectoryMatch "^(.*/)?config(/.*)?$">
+    Require all denied
+</DirectoryMatch>
+
+<DirectoryMatch "^(.*/)?includes(/.*)?$">
+    Require all denied
+</DirectoryMatch>

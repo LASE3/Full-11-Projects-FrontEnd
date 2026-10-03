@@ -6,6 +6,9 @@
  * Handles individual and global node isolation switches on `systems_catalog`.
  */
 
+require_once __DIR__ . '/../../includes/api_bootstrap.php';
+$_vp_user = vp_api_guard('ADM', ['min_clearance' => 'L3']);
+
 require_once __DIR__ . '/db_helper.php';
 
 try {

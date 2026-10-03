@@ -191,11 +191,7 @@ ON DUPLICATE KEY UPDATE
     manager_emp_id = VALUES(manager_emp_id),
     employment_status = VALUES(employment_status);
 
--- Reassign audit logs from legacy EMP-0001 to EMP-1004, then purge EMP-0001
-UPDATE audit_logs SET actor_emp_id = 'EMP-1004' WHERE actor_emp_id = 'EMP-0001';
-DELETE FROM employee_roles WHERE emp_id = 'EMP-0001';
-DELETE FROM employee_accounts WHERE emp_id = 'EMP-0001';
-DELETE FROM employees WHERE emp_id = 'EMP-0001';
+-- System Account EMP-0001 is preserved and managed via Migration 007 (is_system_account = 1)
 
 -- Employee Accounts & Core Roles
 INSERT INTO employee_accounts (emp_id, username, password_hash, status) VALUES ('EMP-1001', 'viktor.sokolov', '$2y$12$p3oSP14.iTjL486AkBdZu.3G/8tRxQO.up5w13JnW9YxNvBTthG3e', 'Active') ON DUPLICATE KEY UPDATE password_hash = VALUES(password_hash), status = 'Active';

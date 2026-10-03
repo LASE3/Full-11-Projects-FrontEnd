@@ -34,11 +34,30 @@ if (!empty($_SESSION['vostok_user'])) {
     if ($tokenData) {
         $currentUser = $tokenData;
     }
+} else {
+    $currentUser = verifySsoCookie();
+}
+
+if (empty($currentUser)) {
+    http_response_code(401);
+    echo json_encode(['success' => false, 'error' => 'Authentication required', 'message' => 'Please log in.'], JSON_UNESCAPED_UNICODE);
+    exit;
 }
 
 $userClearance = $currentUser['clearance_level'] ?? 'L1';
 $actorId = $currentUser['emp_id'] ?? ($currentUser['user_id'] ?? 'SYSTEM');
 $isSuperAdmin = isSuperAdmin($currentUser);
+
+// Mutating actions require L3+/SuperAdmin
+if ($method !== 'GET') {
+    $clearanceRank = ['L1' => 1, 'L2' => 2, 'L3' => 3, 'L4' => 4];
+    $userRank = $clearanceRank[$userClearance] ?? 1;
+    if (!$isSuperAdmin && $userRank < 3) {
+        http_response_code(403);
+        echo json_encode(['success' => false, 'error' => 'Forbidden', 'message' => 'L3+ clearance or SuperAdmin required for mutating actions.'], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+}
 
 // -----------------------------------------------------------------------------
 // GET: Fetch Integrations and Logs

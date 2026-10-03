@@ -5,6 +5,9 @@
  * Location: Online Shop B2B/api/products.php
  * Methods: GET
  */
+require_once __DIR__ . '/../../includes/api_bootstrap.php';
+$_vp_user = vp_api_guard('SHP', []);
+
 require_once __DIR__ . '/../../config/db.php';
 require_once __DIR__ . '/helpers/Response.php';
 require_once __DIR__ . '/helpers/I18n.php';

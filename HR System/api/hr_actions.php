@@ -10,6 +10,9 @@
  * - Approve or reject leave requests
  */
 
+require_once __DIR__ . '/../../includes/api_bootstrap.php';
+$_vp_user = vp_api_guard('HR', []);
+
 header('Content-Type: application/json; charset=utf-8');
 
 if (session_status() === PHP_SESSION_NONE) {

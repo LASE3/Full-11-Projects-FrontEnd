@@ -62,7 +62,7 @@ class AuditLogger
         string $systemCode,
         string $action,
         string $entityType,
-        string|int $entityId,
+        string|int|null $entityId = null,
         ?string $empId = null,
         mixed $newValues = null,
         ?string $actorEmpId = null
@@ -77,7 +77,7 @@ class AuditLogger
         string $systemCode,
         string $action,
         string $entityType,
-        string|int $entityId,
+        string|int|null $entityId = null,
         mixed $newValues = null,
         string $result = 'SUCCESS'
     ): void {
@@ -107,7 +107,7 @@ class AuditLogger
                 ':sys_id'   => $validSys,
                 ':action'   => substr((string)$action, 0, 200),
                 ':etype'    => substr((string)$entityType, 0, 50),
-                ':eid'      => substr((string)$entityId, 0, 20),
+                ':eid'      => $entityId !== null ? substr((string)$entityId, 0, 20) : null,
                 ':ip'       => substr((string)$ip, 0, 45),
                 ':vals'     => $newValues ? json_encode($newValues, JSON_UNESCAPED_UNICODE) : null,
                 ':result'   => substr((string)$result, 0, 20)

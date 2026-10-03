@@ -250,3 +250,43 @@ function verifyCsrfToken(?string $token = null): bool
     }
     return hash_equals($_SESSION['csrf_token'], (string)$token);
 }
+
+/**
+ * Require SuperAdmin (L4/role=1) or redirect.
+ * Used by pages like SuperAdminConsole.php that must never be accessed by non-SuperAdmins.
+ */
+function requireSuperAdmin(string $systemId = 'ADM', string $loginPath = 'login.php'): void
+{
+    global $isAuthenticated, $currentUser;
+
+    requireAuth($systemId, $loginPath);
+
+    if (!isSuperAdmin($currentUser)) {
+        http_response_code(403);
+        echo '<h1>403 Forbidden</h1><p>SuperAdmin clearance (L4) required for this page.</p>';
+        exit;
+    }
+}
+
+/**
+ * Enforce tenant isolation for customer accounts (alias for enforceCustomerTenant).
+ * Throws a RuntimeException if the requested cus_id does not match the authenticated customer.
+ *
+ * @param string $requestedCusId   The cus_id being requested
+ * @param array<string,mixed> $user The authenticated user
+ */
+function enforceTenantIsolation(string $requestedCusId, array $user): void
+{
+    if (($user['account_type'] ?? '') === 'Customer') {
+        $ownCusId = $user['cus_id'] ?? $user['user_id'] ?? '';
+        if ($requestedCusId !== '' && $requestedCusId !== $ownCusId) {
+            throw new \RuntimeException(
+                "Tenant isolation violation: {$user['account_type']} {$ownCusId} attempted to access {$requestedCusId}"
+            );
+        }
+    }
+}
+
+// Note: verifyUserPassword() is defined in config/db.php and available globally.
+
+

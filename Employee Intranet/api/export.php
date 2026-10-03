@@ -8,6 +8,9 @@ declare(strict_types=1);
  * Handles real CSV / JSON / File exports for Directory, Policies, Announcements, and Leaves.
  */
 
+require_once __DIR__ . '/../../includes/api_bootstrap.php';
+$_vp_user = vp_api_guard('EMP', []);
+
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
@@ -87,6 +90,7 @@ switch ($type) {
             FROM employees e
             LEFT JOIN departments d ON e.department_code = d.dept_code
             WHERE e.employment_status = 'Active'
+              AND (e.is_system_account IS NULL OR e.is_system_account = 0)
             ORDER BY d.dept_code ASC, e.clearance_level DESC, e.full_name ASC
         ");
         $data = $stmt->fetchAll(PDO::FETCH_ASSOC);

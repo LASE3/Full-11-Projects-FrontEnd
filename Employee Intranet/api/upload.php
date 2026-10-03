@@ -8,6 +8,9 @@ declare(strict_types=1);
  * Handles real document, policy, and attachment uploads.
  */
 
+require_once __DIR__ . '/../../includes/api_bootstrap.php';
+$_vp_user = vp_api_guard('EMP', []);
+
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }

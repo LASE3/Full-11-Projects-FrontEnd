@@ -14,3 +14,11 @@ ALTER TABLE `customer_accounts` MODIFY COLUMN `password_hash` VARCHAR(255) NULL;
 
 -- Add invite_token column to customer_accounts if not present
 ALTER TABLE `customer_accounts` ADD COLUMN IF NOT EXISTS `invite_token` VARCHAR(64) NULL AFTER `password_hash`;
+
+-- Add customers CRM columns required for baseline and CRM operations
+ALTER TABLE `customers` ADD COLUMN IF NOT EXISTS `phone` varchar(50) DEFAULT NULL;
+ALTER TABLE `customers` ADD COLUMN IF NOT EXISTS `headquarters` varchar(255) DEFAULT NULL;
+ALTER TABLE `customers` ADD COLUMN IF NOT EXISTS `tax_id` varchar(50) DEFAULT NULL;
+ALTER TABLE `customers` ADD COLUMN IF NOT EXISTS `health_score` int(11) DEFAULT 95;
+ALTER TABLE `customers` ADD COLUMN IF NOT EXISTS `account_tier` varchar(50) DEFAULT 'Tier-1 Enterprise';
+ALTER TABLE `customers` ADD COLUMN IF NOT EXISTS `status` varchar(50) DEFAULT 'Active';

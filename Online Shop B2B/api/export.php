@@ -5,6 +5,9 @@ declare(strict_types=1);
  * Class 2: Online Shop B2B - Live Database CSV & JSON Data Export Engine
  * Location: Online Shop B2B/api/export.php
  */
+require_once __DIR__ . '/../../includes/api_bootstrap.php';
+$_vp_user = vp_api_guard('SHP', []);
+
 require_once __DIR__ . '/../../config/db.php';
 require_once __DIR__ . '/helpers/Response.php';
 

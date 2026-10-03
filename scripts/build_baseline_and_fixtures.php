@@ -1,4 +1,5 @@
 <?php
+if (PHP_SAPI !== 'cli') { http_response_code(403); exit; }
 // Generates DataBase/seed_baseline.sql and DataBase/test_fixtures.sql
 
 $defaultPassHash = password_hash('VostokPribor2026!', PASSWORD_BCRYPT);

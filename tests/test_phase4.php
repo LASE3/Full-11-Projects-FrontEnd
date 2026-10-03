@@ -1,5 +1,6 @@
 <?php
 declare(strict_types=1);
+if (PHP_SAPI !== 'cli') { http_response_code(403); exit; }
 
 /**
  * VOSTOKPRIBOR - PHASE 4 ACCEPTANCE TESTS

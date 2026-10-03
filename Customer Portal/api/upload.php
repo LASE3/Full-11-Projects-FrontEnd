@@ -7,6 +7,9 @@ declare(strict_types=1);
  * Handles multipart/form-data file uploads and registers documents in MariaDB.
  */
 
+require_once __DIR__ . '/../../includes/api_bootstrap.php';
+$_vp_user = vp_api_guard('CUS', ['customer' => true]);
+
 require_once __DIR__ . '/../../config/db.php';
 require_once __DIR__ . '/helpers/Response.php';
 require_once __DIR__ . '/helpers/AuditLogger.php';

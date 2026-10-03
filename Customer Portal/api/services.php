@@ -7,6 +7,9 @@ declare(strict_types=1);
  * Connects Customer Portal (SYS-03) with HR System (SYS-06)
  */
 
+require_once __DIR__ . '/../../includes/api_bootstrap.php';
+$_vp_user = vp_api_guard('CUS', ['customer' => true]);
+
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }

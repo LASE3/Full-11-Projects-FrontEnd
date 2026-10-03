@@ -2,6 +2,9 @@
 
 declare(strict_types=1);
 
+require_once __DIR__ . '/../../includes/api_bootstrap.php';
+$_vp_user = vp_api_guard('DEV', []);
+
 require_once __DIR__ . '/db_helper.php';
 
 try {

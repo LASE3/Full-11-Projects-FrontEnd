@@ -8,6 +8,9 @@ declare(strict_types=1);
  * Methods: GET, POST, PUT, DELETE
  */
 
+require_once __DIR__ . '/../../includes/api_bootstrap.php';
+$_vp_user = vp_api_guard('DOC', []);
+
 require_once __DIR__ . '/db.php';
 
 $pdo = getApiPdo();
