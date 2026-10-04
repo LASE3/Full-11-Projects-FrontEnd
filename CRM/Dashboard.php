@@ -17,6 +17,7 @@ $custCount = (int)($pdo->query("SELECT COUNT(*) FROM customers")->fetchColumn() 
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="csrf-token" content="<?= htmlspecialchars(getCsrfToken()) ?>">
   <title>VOSTOKPRIBOR CRM · Executive Dashboard</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
@@ -90,7 +91,7 @@ $custCount = (int)($pdo->query("SELECT COUNT(*) FROM customers")->fetchColumn() 
         </div>
 
         <!-- Top Bar Sign Out -->
-        <a href="./api/logout.php?redirect=../CRM/login.php" class="top-signout-btn" title="Sign Out of CRM" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" ><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
+        <a href="./api/logout.php?redirect=../login.php" class="top-signout-btn" title="Sign Out of CRM" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" ><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
       </div>
     </header>
 

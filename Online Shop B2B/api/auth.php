@@ -75,6 +75,8 @@ if (!$authCheck['authorized']) {
 $userSessionData = [
     'account_id'        => $user['account_id'],
     'user_id'           => $user['emp_id'] ?? $user['cus_id'],
+    'emp_id'            => $user['emp_id'] ?? null,
+    'cus_id'            => $user['cus_id'] ?? null,
     'username'          => $user['username'],
     'full_name'         => $user['full_name'],
     'email'             => $user['email'] ?? '',
@@ -96,9 +98,14 @@ $_SESSION['vostok_system_' . SYSTEM_ID] = true;
 $_SESSION['vostok_current_system']      = SYSTEM_ID;
 $_SESSION['vostok_user']                = $userSessionData;
 
-createSsoCookie($userSessionData);
+if ($user['account_type'] === 'Customer' && !empty($user['cus_id'])) {
+    $_SESSION['cus_id'] = $user['cus_id'];
+}
+
+$jti = bin2hex(random_bytes(16));
+createSsoCookie($userSessionData, $jti);
 logAuthenticationEvent($user['account_type'], $user['account_id'], SYSTEM_ID, true, "B2B access granted: {$authCheck['reason']}");
-registerUserSession($user['account_type'], $user['account_id'], SYSTEM_ID);
+registerUserSession($user['account_type'], $user['account_id'], SYSTEM_ID, $jti);
 
 try {
     $pdo = getDbConnection();

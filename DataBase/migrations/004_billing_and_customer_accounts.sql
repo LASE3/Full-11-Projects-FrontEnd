@@ -1,7 +1,5 @@
 -- Migration 004: Adjust billing_cycles and customer_accounts for Flow B customer onboarding
--- Database: vostokpribor
-
-USE vostokpribor;
+-- Database: active connection target
 
 -- Allow prj_id in billing_cycles to be NULL for customer-level billing relationships
 ALTER TABLE `billing_cycles` MODIFY COLUMN `prj_id` VARCHAR(15) NULL;

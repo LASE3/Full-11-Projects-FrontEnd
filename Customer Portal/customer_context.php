@@ -94,9 +94,13 @@ $bTktStmt = $pdo->prepare("SELECT COUNT(*) FROM tickets WHERE requester_cus_id =
 $bTktStmt->execute([':cid' => $cusId]);
 $badgeTickets = (int)$bTktStmt->fetchColumn();
 
-$bSvcStmt = $pdo->prepare("SELECT COUNT(*) FROM customer_service_requests WHERE cus_id = :cid");
-$bSvcStmt->execute([':cid' => $cusId]);
-$badgeServices = (int)$bSvcStmt->fetchColumn();
+try {
+    $bSvcStmt = $pdo->prepare("SELECT COUNT(*) FROM customer_service_requests WHERE cus_id = :cid");
+    $bSvcStmt->execute([':cid' => $cusId]);
+    $badgeServices = (int)$bSvcStmt->fetchColumn();
+} catch (Throwable $e) {
+    $badgeServices = 0;
+}
 
 $badgeCareers = (int)$pdo->query("SELECT COUNT(*) FROM job_postings WHERE is_published = 1")->fetchColumn();
 
@@ -163,7 +167,7 @@ function renderCustomerHeader(string $activeSearchPlaceholder = 'Search projects
             </div>
 
             <!-- Top Bar Sign Out -->
-            <a href="./api/logout.php?redirect=../Customer%20Portal/login.php" class="top-signout-btn" title="Sign Out of Customer Portal" onclick="(function(){sessionStorage.clear();localStorage.clear();})()">
+            <a href="./api/logout.php?redirect=../login.php" class="top-signout-btn" title="Sign Out of Customer Portal" onclick="(function(){sessionStorage.clear();localStorage.clear();})()">
                 <span class="material-symbols-outlined">logout</span>
                 <span>Sign Out</span>
             </a>

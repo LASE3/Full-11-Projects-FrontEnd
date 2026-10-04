@@ -26,6 +26,17 @@ if (!$currUser && empty($_SESSION['vostok_authenticated'])) {
 }
 
 $pdo = getDbConnection();
+
+// Support JSON payloads in addition to form-urlencoded POST
+$inputRaw = file_get_contents('php://input');
+if (!empty($inputRaw)) {
+    $jsonDecoded = json_decode($inputRaw, true);
+    if (is_array($jsonDecoded)) {
+        $_POST = array_merge($_POST, $jsonDecoded);
+        $_REQUEST = array_merge($_REQUEST, $jsonDecoded);
+    }
+}
+
 $action = $_REQUEST['action'] ?? '';
 
 // Helper to send JSON response
@@ -522,6 +533,227 @@ try {
             }
             fclose($output);
             exit;
+
+        // ====================================================================
+        // 11. VOID INVOICE (SuperAdmin / CFO / FIN Management)
+        // Never delete a paid invoice; void it with a reason.
+        // ====================================================================
+        case 'void_invoice':
+            $isAuthorized = isSuperAdmin($_vp_user) || (($_vp_user['clearance_level'] ?? '') === 'L4') || (in_array($_vp_user['department_code'] ?? '', ['FIN', 'EXE']) && in_array($_vp_user['clearance_level'] ?? '', ['L3', 'L4']));
+            if (!$isAuthorized) {
+                jsonReply(['success' => false, 'error' => 'Forbidden: CFO or SuperAdmin authorization required to void invoices.'], 403);
+            }
+            $invId = trim($_POST['inv_id'] ?? $_GET['inv_id'] ?? '');
+            $reason = trim($_POST['reason'] ?? '');
+            if (empty($invId)) {
+                jsonReply(['success' => false, 'error' => 'Invoice ID required'], 400);
+            }
+            if (empty($reason)) {
+                jsonReply(['success' => false, 'error' => 'A valid justification reason is required to void an invoice.'], 400);
+            }
+
+            $stmt = $pdo->prepare("SELECT * FROM invoices WHERE inv_id = ?");
+            $stmt->execute([$invId]);
+            $inv = $stmt->fetch();
+            if (!$inv) {
+                jsonReply(['success' => false, 'error' => 'Invoice not found'], 404);
+            }
+            if ($inv['payment_status'] === 'Void') {
+                jsonReply(['success' => false, 'error' => 'Invoice is already voided.'], 400);
+            }
+
+            $pdo->beginTransaction();
+            $uStmt = $pdo->prepare("UPDATE invoices SET payment_status = 'Void', notes = CONCAT(COALESCE(notes, ''), ' [VOIDED: ', ?, ']') WHERE inv_id = ?");
+            $uStmt->execute([$reason, $invId]);
+
+            $actorId = $_vp_user['emp_id'] ?? ($_vp_user['user_id'] ?? 'EMP-0001');
+            AuditLogger::logAction(
+                $actorId,
+                null,
+                'Finance & Billing',
+                'FIN',
+                'VOID_INVOICE',
+                'invoices',
+                $invId,
+                ['payment_status' => 'Void', 'reason' => $reason],
+                'SUCCESS',
+                ['payment_status' => $inv['payment_status']]
+            );
+            $pdo->commit();
+
+            jsonReply([
+                'success' => true,
+                'message' => "Invoice {$invId} successfully voided.",
+                'inv_id' => $invId,
+                'payment_status' => 'Void'
+            ]);
+            break;
+
+        // ====================================================================
+        // 12. EDIT INVOICE (SuperAdmin / CFO / FIN Management)
+        // ====================================================================
+        case 'edit_invoice':
+            $isAuthorized = isSuperAdmin($_vp_user) || (($_vp_user['clearance_level'] ?? '') === 'L4') || (in_array($_vp_user['department_code'] ?? '', ['FIN', 'EXE']) && in_array($_vp_user['clearance_level'] ?? '', ['L3', 'L4']));
+            if (!$isAuthorized) {
+                jsonReply(['success' => false, 'error' => 'Forbidden: CFO or SuperAdmin authorization required to edit invoices.'], 403);
+            }
+            $invId = trim($_POST['inv_id'] ?? '');
+            if (empty($invId)) {
+                jsonReply(['success' => false, 'error' => 'Invoice ID required'], 400);
+            }
+
+            $stmt = $pdo->prepare("SELECT * FROM invoices WHERE inv_id = ?");
+            $stmt->execute([$invId]);
+            $inv = $stmt->fetch();
+            if (!$inv) {
+                jsonReply(['success' => false, 'error' => 'Invoice not found'], 404);
+            }
+            if ($inv['payment_status'] === 'Paid') {
+                jsonReply(['success' => false, 'error' => 'Paid invoices cannot be modified. Void or reverse payment first.'], 400);
+            }
+
+            $pdo->beginTransaction();
+            $newTotal = isset($_POST['total_value']) ? (float)$_POST['total_value'] : (float)$inv['total_value'];
+            $newTerms = trim($_POST['payment_terms'] ?? $inv['payment_terms']);
+            $newDue   = trim($_POST['due_date'] ?? $inv['due_date']);
+            $newNotes = trim($_POST['notes'] ?? $inv['notes']);
+
+            $uStmt = $pdo->prepare("UPDATE invoices SET total_value = ?, payment_terms = ?, due_date = ?, notes = ? WHERE inv_id = ?");
+            $uStmt->execute([$newTotal, $newTerms, $newDue, $newNotes, $invId]);
+
+            $actorId = $_vp_user['emp_id'] ?? ($_vp_user['user_id'] ?? 'EMP-0001');
+            AuditLogger::logAction(
+                $actorId,
+                null,
+                'Finance & Billing',
+                'FIN',
+                'EDIT_INVOICE',
+                'invoices',
+                $invId,
+                ['total_value' => $newTotal, 'payment_terms' => $newTerms, 'due_date' => $newDue, 'notes' => $newNotes],
+                'SUCCESS',
+                ['total_value' => $inv['total_value'], 'payment_terms' => $inv['payment_terms'], 'due_date' => $inv['due_date']]
+            );
+            $pdo->commit();
+
+            jsonReply([
+                'success' => true,
+                'message' => "Invoice {$invId} updated successfully.",
+                'inv_id' => $invId
+            ]);
+            break;
+
+        // ====================================================================
+        // 13. DELETE DRAFT INVOICE (SuperAdmin / CFO / FIN Management)
+        // Rule: Never delete a paid invoice; void it with a reason.
+        // ====================================================================
+        case 'delete_draft_invoice':
+            $isAuthorized = isSuperAdmin($_vp_user) || (($_vp_user['clearance_level'] ?? '') === 'L4') || (in_array($_vp_user['department_code'] ?? '', ['FIN', 'EXE']) && in_array($_vp_user['clearance_level'] ?? '', ['L3', 'L4']));
+            if (!$isAuthorized) {
+                jsonReply(['success' => false, 'error' => 'Forbidden: CFO or SuperAdmin authorization required to delete draft invoices.'], 403);
+            }
+            $invId = trim($_POST['inv_id'] ?? $_GET['inv_id'] ?? '');
+            if (empty($invId)) {
+                jsonReply(['success' => false, 'error' => 'Invoice ID required'], 400);
+            }
+
+            $stmt = $pdo->prepare("SELECT * FROM invoices WHERE inv_id = ?");
+            $stmt->execute([$invId]);
+            $inv = $stmt->fetch();
+            if (!$inv) {
+                jsonReply(['success' => false, 'error' => 'Invoice not found'], 404);
+            }
+            if ($inv['payment_status'] === 'Paid') {
+                jsonReply(['success' => false, 'error' => 'Paid invoices cannot be deleted. Use void_invoice instead.'], 400);
+            }
+
+            $pdo->beginTransaction();
+            $dItems = $pdo->prepare("DELETE FROM invoice_items WHERE inv_id = ?");
+            $dItems->execute([$invId]);
+
+            $dInv = $pdo->prepare("DELETE FROM invoices WHERE inv_id = ?");
+            $dInv->execute([$invId]);
+
+            $actorId = $_vp_user['emp_id'] ?? ($_vp_user['user_id'] ?? 'EMP-0001');
+            AuditLogger::logAction(
+                $actorId,
+                null,
+                'Finance & Billing',
+                'FIN',
+                'DELETE_DRAFT_INVOICE',
+                'invoices',
+                $invId,
+                null,
+                'SUCCESS',
+                ['inv_id' => $invId, 'total_value' => $inv['total_value'], 'cus_id' => $inv['cus_id']]
+            );
+            $pdo->commit();
+
+            jsonReply([
+                'success' => true,
+                'message' => "Draft invoice {$invId} deleted successfully.",
+                'inv_id' => $invId
+            ]);
+            break;
+
+        // ====================================================================
+        // 14. REVERSE PAYMENT (SuperAdmin / CFO)
+        // Reverses reconciled payment and restores invoice status to Pending
+        // ====================================================================
+        case 'reverse_payment':
+            $isAuthorized = isSuperAdmin($_vp_user) || (($_vp_user['clearance_level'] ?? '') === 'L4') || (in_array($_vp_user['department_code'] ?? '', ['FIN', 'EXE']) && in_array($_vp_user['clearance_level'] ?? '', ['L3', 'L4']));
+            if (!$isAuthorized) {
+                jsonReply(['success' => false, 'error' => 'Forbidden: CFO or SuperAdmin authorization required to reverse payments.'], 403);
+            }
+            $paymentId = (int)($_POST['payment_id'] ?? $_GET['payment_id'] ?? 0);
+            $reason = trim($_POST['reason'] ?? '');
+            if ($paymentId <= 0) {
+                jsonReply(['success' => false, 'error' => 'Valid Payment ID required'], 400);
+            }
+            if (empty($reason)) {
+                jsonReply(['success' => false, 'error' => 'A valid justification reason is required to reverse a payment.'], 400);
+            }
+
+            $stmt = $pdo->prepare("SELECT * FROM payments WHERE payment_id = ?");
+            $stmt->execute([$paymentId]);
+            $pay = $stmt->fetch();
+            if (!$pay) {
+                jsonReply(['success' => false, 'error' => 'Payment transaction not found'], 404);
+            }
+
+            $pdo->beginTransaction();
+            $memo = ($pay['remittance_memo'] ? $pay['remittance_memo'] . ' ' : '') . "[REVERSED: {$reason}]";
+            $uPay = $pdo->prepare("UPDATE payments SET reconciled = 0, remittance_memo = ? WHERE payment_id = ?");
+            $uPay->execute([$memo, $paymentId]);
+
+            if (!empty($pay['inv_id'])) {
+                // Revert invoice status to Pending
+                $uInv = $pdo->prepare("UPDATE invoices SET payment_status = 'Pending', paid_at = NULL WHERE inv_id = ?");
+                $uInv->execute([$pay['inv_id']]);
+            }
+
+            $actorId = $_vp_user['emp_id'] ?? ($_vp_user['user_id'] ?? 'EMP-0001');
+            AuditLogger::logAction(
+                $actorId,
+                null,
+                'Finance & Billing',
+                'FIN',
+                'REVERSE_PAYMENT',
+                'payments',
+                (string)$paymentId,
+                ['reconciled' => 0, 'reason' => $reason, 'inv_id' => $pay['inv_id']],
+                'SUCCESS',
+                ['reconciled' => $pay['reconciled'], 'amount' => $pay['amount']]
+            );
+            $pdo->commit();
+
+            jsonReply([
+                'success' => true,
+                'message' => "Payment #{$paymentId} reversed successfully. Linked invoice reset to Pending.",
+                'payment_id' => $paymentId,
+                'inv_id' => $pay['inv_id']
+            ]);
+            break;
 
         default:
             jsonReply(['success' => false, 'error' => "Action '{$action}' not recognized."], 400);

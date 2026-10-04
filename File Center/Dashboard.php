@@ -84,6 +84,7 @@ $documents = $docsStmt->fetchAll(PDO::FETCH_ASSOC);
 <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <meta name="csrf-token" content="<?= htmlspecialchars(getCsrfToken()) ?>" />
     <title>Enterprise Document Repository - VOSTOKPRIBOR File Center</title>
     <link rel="stylesheet" href="css/fc-tokens.css" />
     <link rel="stylesheet" href="css/fc-common.css?v=<?= time() ?>" />

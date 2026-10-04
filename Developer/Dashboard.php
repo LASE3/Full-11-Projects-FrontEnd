@@ -17,6 +17,7 @@ $endpoints = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <meta name="csrf-token" content="<?= htmlspecialchars(getCsrfToken()) ?>" />
     <title>VOSTOKPRIBOR Developer &amp; API Portal - System 10</title>
     <link rel="stylesheet" href="css/dev-tokens.css" />
     <link rel="stylesheet" href="css/dev-common.css?v=<?= time() ?>" />
@@ -73,8 +74,7 @@ $endpoints = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 >
                 <div class="dev-text-right" >
                     <div class="dev-font-size-12px-font-2ab2" ><?= htmlspecialchars($currUser['full_name'] ?? 'Authorized Developer') ?></div>
-                    <div class="dev-font-family-var-font-b636" >CUS-1002 •
-                        BaltNord</div>
+                    <div class="dev-font-family-var-font-b636" ><?= htmlspecialchars($currUser['emp_id'] ?? ($currUser['cus_id'] ?? 'DEV-AUTH')) ?> • <?= htmlspecialchars($currUser['role_name'] ?? ($currUser['company_name'] ?? 'Developer')) ?></div>
                 </div>
                 <div class="dev-width-32px-height-32px-0eaf"
                     >

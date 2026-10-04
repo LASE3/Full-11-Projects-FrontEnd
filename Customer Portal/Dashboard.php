@@ -28,6 +28,7 @@ $totalFeedEvents = count($finEvents) + count($prjEvents) + count($tktEvents);
 <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <meta name="csrf-token" content="<?= htmlspecialchars(getCsrfToken()) ?>" />
     <title>VOSTOKPRIBOR Portal</title>
     <link
         href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap"
@@ -104,7 +105,7 @@ $totalFeedEvents = count($finEvents) + count($prjEvents) + count($tktEvents);
             </div>
 
             <!-- Top Bar Sign Out -->
-            <a href="./api/logout.php?redirect=../Customer%20Portal/login.php" class="top-signout-btn" title="Sign Out of Customer Portal" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" ><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
+            <a href="./api/logout.php?redirect=../login.php" class="top-signout-btn" title="Sign Out of Customer Portal" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" ><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
         </div>
     </header>
     <aside id="portal-sidebar"

@@ -105,7 +105,7 @@ $firstCusName = !empty($customers) ? $customers[0]['company_name'] : 'Severstal 
         </div>
 
         <!-- Top Bar Sign Out -->
-        <a href="./api/logout.php?redirect=../CRM/login.php" class="top-signout-btn" title="Sign Out of CRM" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" ><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
+        <a href="./api/logout.php?redirect=../login.php" class="top-signout-btn" title="Sign Out of CRM" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" ><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
       </div>
     </header>
 

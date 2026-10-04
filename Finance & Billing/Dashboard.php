@@ -103,6 +103,7 @@ $monthlyData = [
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="csrf-token" content="<?= htmlspecialchars(getCsrfToken()) ?>">
   <title>VOSTOKPRIBOR Finance · Executive Financial Operations (SYS-08)</title>
   <link rel="stylesheet" href="css/style.css">
 </head>

@@ -2,7 +2,7 @@
 
 /**
  * B2B Shop Logout Endpoint
- * Terminates the B2B session and redirects to B2B login page.
+ * Terminates the B2B session, clears SSO token, and redirects to B2B login page.
  */
 
 if (session_status() === PHP_SESSION_NONE) {
@@ -23,10 +23,7 @@ if (!empty($sessionId)) {
 }
 
 $_SESSION = [];
-if (function_exists('clearSsoCookie')) {
-    require_once __DIR__ . '/../../includes/auth_guard.php';
-    clearSsoCookie();
-}
+clearSsoCookie();
 if (ini_get('session.use_cookies')) {
     $params = session_get_cookie_params();
     setcookie(session_name(), '', time() - 42000, $params['path'], $params['domain'], $params['secure'], $params['httponly']);
@@ -42,7 +39,7 @@ if ($isJson) {
 }
 
 $redirect = $_GET['redirect'] ?? '../login.php';
-if (str_contains($redirect, 'Online Shop B2B') || str_contains($redirect, 'Online%20Shop%20B2B')) {
+if (empty($redirect) || str_contains($redirect, 'Online Shop B2B') || str_contains($redirect, 'Online%20Shop%20B2B')) {
     $redirect = '../login.php';
 }
 header('Location: ' . $redirect);

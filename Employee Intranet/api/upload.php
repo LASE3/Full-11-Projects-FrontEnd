@@ -16,6 +16,7 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 require_once __DIR__ . '/../../config/db.php';
+require_once __DIR__ . '/../../includes/integration_bus.php';
 require_once __DIR__ . '/helpers/Response.php';
 require_once __DIR__ . '/helpers/AuditLogger.php';
 
@@ -130,6 +131,13 @@ try {
         ['file_name' => $origName, 'sha256' => $hash, 'size' => $sizeStr],
         'SUCCESS'
     );
+
+    // Cross-system integration: EMP -> DOC
+    vp_emit($pdo, 'EMP_TO_DOC', 'EMP', 'DOC', 'DOCUMENT_UPLOADED', [
+        'doc_id'    => $docId,
+        'folder'    => $folder,
+        'file_name' => $origName
+    ], $currentEmpId);
 
     Response::success([
         'doc_id'    => $docId,

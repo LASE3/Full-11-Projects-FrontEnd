@@ -154,8 +154,9 @@ try {
                 $parsedBody = json_decode($body, true) ?: [];
                 $customerId = $parsedBody['customer_id'] ?? 'CUS-1002';
                 $items = $parsedBody['items'] ?? [['prod_id' => 'PROD-1001', 'qty' => 4]];
+                $orderId = 'ORD-2026-' . rand(1000, 9999);
                 $responseData = [
-                    'order_id' => 'ORD-2026-' . rand(1000, 9999),
+                    'order_id' => $orderId,
                     'customer_id' => $customerId,
                     'customer_name' => 'BaltNord Process Systems',
                     'total_eur' => 240000.00,
@@ -163,6 +164,14 @@ try {
                     'invoice_ref' => 'INV-2026-0' . rand(10, 99),
                     'fulfillment_status' => 'PROCESSING_OPS'
                 ];
+
+                // Cross-system integration: DEV -> SHP
+                vp_emit($pdo, 'DEV_TO_SHP', 'DEV', 'SHP', 'API_PARTNER_ORDER_DISPATCH', [
+                    'order_id'    => $orderId,
+                    'customer_id' => $customerId,
+                    'items_count' => count($items),
+                    'total_eur'   => 240000.00
+                ], $_vp_user['user_id'] ?? 'DEV-PARTNER');
             } else {
                 // Generic handler checking database endpoints
                 $statusCode = 200;

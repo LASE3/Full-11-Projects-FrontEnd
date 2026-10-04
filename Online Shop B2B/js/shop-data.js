@@ -49,26 +49,26 @@
             const price = parseFloat(p.effective_price || p.unit_price || 2500);
 
             return `
-            <div class="product-card" data-product-id="${escHtml(pid)}" style="border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.02);border-radius:8px;padding:16px;display:flex;flex-direction:column;justify-content:space-between;">
+            <div class="product-card" data-product-id="${escHtml(pid)}" style="border:1px solid #1b3a5c;background:#0d1e2e;border-radius:8px;padding:18px;display:flex;flex-direction:column;justify-content:space-between;box-shadow:0 4px 16px rgba(0,0,0,0.35);transition:all 0.25s ease;" onmouseover="this.style.borderColor='rgba(0,229,255,0.5)';this.style.transform='translateY(-3px)'" onmouseout="this.style.borderColor='#1b3a5c';this.style.transform='none'">
               <div>
-                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-                  <span class="product-code" style="font-family:monospace;font-size:11px;color:#00E5FF;background:rgba(0,229,255,0.1);padding:2px 6px;border-radius:4px;">${escHtml(pid)}</span>
-                  <span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:12px;background:${st.color}20;color:${st.color};">${st.label}</span>
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+                  <span class="product-code" style="font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;color:#00E5FF;background:rgba(0,229,255,0.12);border:1px solid rgba(0,229,255,0.25);padding:3px 8px;border-radius:4px;">${escHtml(pid)}</span>
+                  <span style="font-size:11px;font-weight:700;padding:3px 8px;border-radius:12px;background:${st.color}20;color:${st.color};border:1px solid ${st.color}40;">${st.label}</span>
                 </div>
-                <div class="product-name" style="font-weight:700;font-size:15px;margin:8px 0 6px;color:#fff;">${escHtml(p.product_name || p.name)}</div>
-                <div class="product-desc" style="font-size:12px;color:rgba(255,255,255,0.6);line-height:1.4;margin-bottom:12px;">
+                <div class="product-name" style="font-weight:700;font-size:15px;margin:8px 0 6px;color:#ffffff;line-height:1.35;">${escHtml(p.product_name || p.name)}</div>
+                <div class="product-desc" style="font-size:12px;color:#94a3b8;line-height:1.45;margin-bottom:14px;">
                   ${escHtml(p.billing_model_display || p.billing_model || "Industrial Precision Equipment")} · Location: ${escHtml(p.warehouse_location || "Warehouse")}
                 </div>
               </div>
               <div>
                 <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px;">
-                  <div style="font-size:18px;font-weight:800;font-family:monospace;color:#D9822B;">
+                  <div style="font-size:18px;font-weight:800;font-family:'JetBrains Mono',monospace;color:#F59E0B;">
                     ${ui.currency(price, "EUR")}
                   </div>
-                  <div style="font-size:11px;opacity:0.5;">Available: ${p.in_stock ?? 45} units</div>
+                  <div style="font-size:11px;color:#94a3b8;font-family:'JetBrains Mono',monospace;">Available: ${p.in_stock ?? 45} units</div>
                 </div>
-                <button class="btn btn-primary-amber btn-sm" style="width:100%;padding:8px 12px;background:#D9822B;color:#000;font-weight:700;border:none;border-radius:4px;cursor:pointer;"
-                  onclick="window.VostokAPI.ui.toast('Order Placed', 'Initiated commercial RFQ for ${escHtml(pid)}', 'success')"
+                <button class="btn btn-primary-amber btn-sm" style="width:100%;padding:9px 14px;background:linear-gradient(135deg,#F59E0B,#D97706);color:#07131e;font-weight:800;font-size:12px;border:none;border-radius:4px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;box-shadow:0 2px 8px rgba(245,158,11,0.3);transition:all 0.2s;"
+                  onclick="window.VostokAPI && window.VostokAPI.ui && window.VostokAPI.ui.toast ? window.VostokAPI.ui.toast('Order Placed', 'Initiated commercial RFQ for ${escHtml(pid)}', 'success') : (window.shopApp && window.shopApp.showToast ? window.shopApp.showToast('Initiated commercial RFQ for ${escHtml(pid)}', 'green') : alert('RFQ initiated for ${escHtml(pid)}'))"
                   ${st.label === "Out of Stock" ? 'disabled style="opacity:.4;cursor:not-allowed;"' : ""}>
                   ${st.label === "Out of Stock" ? "Out of Stock" : "+ Request Quote / Order"}
                 </button>
@@ -172,11 +172,17 @@
       const cusJson = await cusRes.json();
       const customers = cusJson.data || [];
 
+      const urlParams = new URLSearchParams(window.location.search);
+      const urlCusId = urlParams.get("cus_id");
       const activeCusId =
+        urlCusId ||
         sessionStorage.getItem("vp_cus_id") ||
         localStorage.getItem("vp_cus_id") ||
         (customers[0] && (customers[0].cus_id || customers[0].id)) ||
         "";
+      if (urlCusId) {
+        try { sessionStorage.setItem("vp_cus_id", urlCusId); } catch (e) {}
+      }
 
       // Populate header chip with the active customer
       const activeCus = customers.find((c) => (c.cus_id || c.id) === activeCusId) || customers[0];
@@ -192,19 +198,35 @@
         if (elName)   elName.textContent   = name;
       }
 
-      // Populate dropdown switcher items
+      // Populate dropdown switcher items if empty
       const dropdownItems = document.getElementById("customer-dropdown-items");
-      if (dropdownItems && customers.length) {
-        dropdownItems.innerHTML = customers.map((c) => {
-          const code  = c.cus_id || c.id || "—";
-          const cname = c.company_name || c.name || code;
-          return `<div class="dropdown-customer-item" onclick="window.shopApp && window.shopApp.switchCustomer && window.shopApp.switchCustomer('${escHtml(code)}')" style="padding:8px 12px;cursor:pointer;display:flex;gap:10px;align-items:center;font-size:13px;border-bottom:1px solid rgba(255,255,255,0.05);">
-            <span style="font-family:monospace;color:#00E5FF;font-size:11px;">${escHtml(code)}</span>
-            <span style="color:#fff;">${escHtml(cname)}</span>
-          </div>`;
-        }).join("");
-      } else if (dropdownItems) {
-        dropdownItems.innerHTML = "<div style='padding:10px 12px;font-size:12px;opacity:0.5;'>No accounts found</div>";
+      if (dropdownItems && (!dropdownItems.children.length || dropdownItems.children[0].innerText.includes("Loading"))) {
+        if (customers.length) {
+          dropdownItems.innerHTML = customers.map((c) => {
+            const code  = c.cus_id || c.id || "—";
+            const cname = c.company_name || c.name || code;
+            const sector = c.industry_sector || c.sector || "Industrial";
+            const isSelected = code === activeCusId;
+            const initial = (cname || "C").charAt(0).toUpperCase();
+            return `<div class="customer-option-item ${isSelected ? 'selected' : ''}" data-code="${escHtml(code)}" data-name="${escHtml(cname.toLowerCase())}" onclick="window.selectEnterpriseAccount ? window.selectEnterpriseAccount('${escHtml(code)}', event) : (window.location.href='Dashboard.php?cus_id=${encodeURIComponent(code)}')" style="padding:10px 14px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,0.06);transition:background 0.2s;background:${isSelected ? 'rgba(0,229,255,0.12)' : 'transparent'};">
+              <div style="display:flex;align-items:center;gap:10px;flex:1;min-width:0;">
+                <div style="width:28px;height:28px;border-radius:50%;background:${isSelected ? 'rgba(0,229,255,0.2)' : 'rgba(255,255,255,0.06)'};border:1px solid ${isSelected ? '#00E5FF' : 'rgba(255,255,255,0.12)'};display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;color:${isSelected ? '#00E5FF' : '#94a3b8'};flex-shrink:0;">
+                  ${escHtml(initial)}
+                </div>
+                <div style="flex:1;min-width:0;">
+                  <div style="display:flex;align-items:center;gap:6px;">
+                    <span style="font-family:'JetBrains Mono',monospace;color:#00E5FF;font-size:11px;font-weight:600;">${escHtml(code)}</span>
+                    <span style="color:#ffffff;font-size:12.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escHtml(cname)}</span>
+                  </div>
+                  <div style="font-size:11px;color:#94a3b8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escHtml(sector)}</div>
+                </div>
+              </div>
+              ${isSelected ? '<span style="color:#00E5FF;font-size:10px;font-weight:700;background:rgba(0,229,255,0.15);padding:2px 6px;border-radius:4px;margin-left:8px;flex-shrink:0;">ACTIVE</span>' : ''}
+            </div>`;
+          }).join("");
+        } else {
+          dropdownItems.innerHTML = "<div style='padding:12px 14px;font-size:12px;color:#94a3b8;'>No accounts found</div>";
+        }
       }
     } catch (err) {
       /* customer header is optional — fail silently */

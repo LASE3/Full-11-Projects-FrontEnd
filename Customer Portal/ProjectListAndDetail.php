@@ -93,7 +93,7 @@ $activeCount = count($projects);
             </div>
 
             <!-- Top Bar Sign Out -->
-            <a href="./api/logout.php?redirect=../Customer%20Portal/login.php" class="top-signout-btn" title="Sign Out of Customer Portal" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" ><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
+            <a href="./api/logout.php?redirect=../login.php" class="top-signout-btn" title="Sign Out of Customer Portal" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" ><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
         </div>
     </header>
     <aside id="portal-sidebar"

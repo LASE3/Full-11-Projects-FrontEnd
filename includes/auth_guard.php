@@ -45,6 +45,7 @@ if (empty($_SESSION['vostok_authenticated']) || empty($_SESSION['vostok_user']))
             'department_code'   => $cookieUser['department_code'] ?? 'GEN',
             'clearance_level'   => $cookieUser['clearance_level'] ?? 'L1',
             'account_type'      => $cookieUser['account_type'],
+            'must_change_password' => (int)($cookieUser['must_change_password'] ?? 0),
             'authorized_system' => 'ALL',
             'login_time'        => date('Y-m-d H:i:s'),
         ];
@@ -103,6 +104,15 @@ function requireAuth(string $systemId = '', string $loginPath = 'login.php'): vo
         exit;
     }
 
+    // Enforce password change if must_change_password is set (SuperAdmin exempt)
+    if (!empty($currentUser['must_change_password']) && !isSuperAdmin($currentUser)) {
+        $curScript = basename($_SERVER['SCRIPT_NAME'] ?? '');
+        if ($curScript !== 'ChangePassword.php' && $curScript !== 'login.php' && $curScript !== 'logout.php') {
+            header("Location: ../Admin & Governance Portal/ChangePassword.php");
+            exit;
+        }
+    }
+
     // Role system access authorization check
     $check = checkSystemAuthorization($currentUser, $canonicalSys);
     if (!$check['authorized']) {
@@ -130,6 +140,23 @@ function requireApiAuth(?string $requiredSystem = null): array
             'message' => 'Unauthorized: Please log in.'
         ], JSON_UNESCAPED_UNICODE);
         exit;
+    }
+
+    // Enforce password change if must_change_password is set (SuperAdmin exempt)
+    if (!empty($currentUser['must_change_password']) && !isSuperAdmin($currentUser)) {
+        $curScript = basename($_SERVER['SCRIPT_NAME'] ?? '');
+        if ($curScript !== 'ChangePassword.php' && $curScript !== 'auth.php' && $curScript !== 'logout.php' && $curScript !== 'check_auth.php') {
+            http_response_code(403);
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode([
+                'success' => false,
+                'error'   => 'Password change required',
+                'must_change_password' => true,
+                'message' => 'You must change your initial password before accessing system resources.',
+                'redirect'=> 'Admin & Governance Portal/ChangePassword.php'
+            ], JSON_UNESCAPED_UNICODE);
+            exit;
+        }
     }
 
     if ($requiredSystem !== null) {

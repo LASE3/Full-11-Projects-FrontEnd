@@ -1,7 +1,5 @@
 -- Migration 005: Schema adjustments for Flows D, E, H, J
--- Database: vostokpribor
-
-USE vostokpribor;
+-- Database: active connection target
 
 -- 1. Invoices creator column for separation of duties enforcement
 ALTER TABLE `invoices` ADD COLUMN IF NOT EXISTS `created_by_emp_id` VARCHAR(10) NULL AFTER `prj_id`;

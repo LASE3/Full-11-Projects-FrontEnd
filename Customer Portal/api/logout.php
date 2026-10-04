@@ -2,7 +2,7 @@
 
 /**
  * Customer Portal Logout Endpoint
- * Terminates the Customer Portal session and redirects to login page.
+ * Terminates the Customer Portal session, clears SSO token, and redirects to login page.
  */
 
 if (session_status() === PHP_SESSION_NONE) {
@@ -23,10 +23,7 @@ if (!empty($sessionId)) {
 }
 
 $_SESSION = [];
-if (function_exists('clearSsoCookie')) {
-    require_once __DIR__ . '/../../includes/auth_guard.php';
-    clearSsoCookie();
-}
+clearSsoCookie();
 if (ini_get('session.use_cookies')) {
     $params = session_get_cookie_params();
     setcookie(session_name(), '', time() - 42000, $params['path'], $params['domain'], $params['secure'], $params['httponly']);
@@ -41,6 +38,9 @@ if ($isJson) {
     exit;
 }
 
-$redirect = $_GET['redirect'] ?? '../Customer Portal/login.php';
+$redirect = $_GET['redirect'] ?? '../login.php';
+if (empty($redirect) || str_contains($redirect, 'Customer Portal') || str_contains($redirect, 'Customer%20Portal')) {
+    $redirect = '../login.php';
+}
 header('Location: ' . $redirect);
 exit;

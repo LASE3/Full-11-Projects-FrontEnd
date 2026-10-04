@@ -42,6 +42,8 @@ function cleanupTransientTestData(PDO $pdo): void {
     $pdo->exec("DELETE FROM portal_notifications WHERE related_entity_id LIKE 'ORD-TEST-%' OR related_entity_id LIKE 'LEAD-%'");
     $pdo->exec("DELETE FROM ticket_escalations WHERE tkt_id > 'TKT-2026-015'");
     $pdo->exec("DELETE FROM tickets WHERE tkt_id > 'TKT-2026-015' OR title LIKE '%Acceptance%'");
+    $pdo->exec("DELETE FROM product_inventory WHERE prod_id > 'PROD-1010'");
+    $pdo->exec("DELETE FROM products WHERE prod_id > 'PROD-1010'");
     $pdo->exec("DELETE FROM it_assets WHERE emp_id > 'EMP-1095'");
     $pdo->exec("DELETE FROM employee_roles WHERE emp_id > 'EMP-1095'");
     $pdo->exec("DELETE FROM developer_api_keys WHERE partner_id > 'EMP-1095' OR partner_id LIKE 'EMP-109%'");
@@ -63,7 +65,9 @@ cleanupTransientTestData($pdo);
 // 1. EXACT ENTITY COUNTS
 // -------------------------------------------------------------------------
 try {
-    $empCount  = (int)$pdo->query("SELECT COUNT(*) FROM employees")->fetchColumn();
+    $empStaffCount = (int)$pdo->query("SELECT COUNT(*) FROM employees WHERE emp_id BETWEEN 'EMP-1001' AND 'EMP-1095'")->fetchColumn();
+    $empSysCount   = (int)$pdo->query("SELECT COUNT(*) FROM employees WHERE emp_id = 'EMP-0001'")->fetchColumn();
+    $empCount      = (int)$pdo->query("SELECT COUNT(*) FROM employees")->fetchColumn();
     $deptCount = (int)$pdo->query("SELECT COUNT(*) FROM departments")->fetchColumn();
     $cusCount  = (int)$pdo->query("SELECT COUNT(*) FROM customers")->fetchColumn();
     $prjCount  = (int)$pdo->query("SELECT COUNT(*) FROM projects")->fetchColumn();
@@ -73,7 +77,9 @@ try {
     $prodCount = (int)$pdo->query("SELECT COUNT(*) FROM products")->fetchColumn();
 
     $countsPass = (
-        $empCount === 95 &&
+        $empStaffCount === 95 &&
+        $empSysCount === 1 &&
+        $empCount === 96 &&
         $deptCount === 8 &&
         $cusCount === 10 &&
         $prjCount === 15 &&
@@ -85,9 +91,9 @@ try {
 
     recordTest(
         'Counts',
-        'Exact Baseline Entity Counts (95 emp, 8 dept, 10 cus, 15 prj, 10 inv, 15 tkt, 15 doc, 10 prod)',
+        'Exact Baseline Entity Counts (96 emp [95 staff + 1 sys], 8 dept, 10 cus, 15 prj, 10 inv, 15 tkt, 15 doc, 10 prod)',
         $countsPass,
-        "Emp:{$empCount}, Dept:{$deptCount}, Cus:{$cusCount}, Prj:{$prjCount}, Inv:{$invCount}, Tkt:{$tktCount}, Doc:{$docCount}, Prod:{$prodCount}"
+        "Emp:{$empCount} ({$empStaffCount} staff + {$empSysCount} sys), Dept:{$deptCount}, Cus:{$cusCount}, Prj:{$prjCount}, Inv:{$invCount}, Tkt:{$tktCount}, Doc:{$docCount}, Prod:{$prodCount}"
     );
 } catch (Throwable $e) {
     recordTest('Counts', 'Exact Baseline Entity Counts', false, $e->getMessage());
@@ -108,7 +114,7 @@ try {
         'GOV' => 6
     ];
 
-    $stmt = $pdo->query("SELECT department_code, COUNT(*) as cnt FROM employees GROUP BY department_code");
+    $stmt = $pdo->query("SELECT department_code, COUNT(*) as cnt FROM employees WHERE emp_id BETWEEN 'EMP-1001' AND 'EMP-1095' GROUP BY department_code");
     $deptActual = $stmt->fetchAll(PDO::FETCH_KEY_PAIR);
 
     $deptPass = true;
@@ -139,10 +145,19 @@ try {
 }
 
 // -------------------------------------------------------------------------
-// 3. EMPLOYEE INTEGRITY (EMP-0001 purged, EMP-1021 updated, SuperAdmin role)
+// 3. EMPLOYEE INTEGRITY (EMP-0001 System SuperAdmin, EMP-1021 updated, SuperAdmin role)
 // -------------------------------------------------------------------------
 try {
-    $emp0001Exists = (int)$pdo->query("SELECT COUNT(*) FROM employees WHERE emp_id = 'EMP-0001'")->fetchColumn() > 0;
+    $emp0001Stmt = $pdo->query("
+        SELECT e.emp_id, e.is_system_account, ea.username, r.role_name
+        FROM employees e
+        JOIN employee_accounts ea ON e.emp_id = ea.emp_id
+        LEFT JOIN employee_roles er ON e.emp_id = er.emp_id
+        LEFT JOIN roles r ON er.role_id = r.role_id
+        WHERE e.emp_id = 'EMP-0001'
+    ");
+    $emp0001Row = $emp0001Stmt->fetch(PDO::FETCH_ASSOC);
+    $emp0001Valid = ($emp0001Row && (int)$emp0001Row['is_system_account'] === 1 && $emp0001Row['role_name'] === 'SuperAdmin');
     
     $stmt1021 = $pdo->query("SELECT email, clearance_level FROM employees WHERE emp_id = 'EMP-1021'");
     $emp1021 = $stmt1021->fetch(PDO::FETCH_ASSOC);
@@ -155,12 +170,12 @@ try {
     ");
     $saAssigned = ((int)$saStmt->fetchColumn() > 0);
 
-    $empIntegrityPass = (!$emp0001Exists && $emp1021Valid && $saAssigned);
+    $empIntegrityPass = ($emp0001Valid && $emp1021Valid && $saAssigned);
     recordTest(
         'Employees',
-        'EMP-0001 Removed, EMP-1021 Corporate Email/L2, EMP-1004 SuperAdmin Role',
+        'EMP-0001 System SuperAdmin, EMP-1021 Corporate Email/L2, EMP-1004 SuperAdmin Role',
         $empIntegrityPass,
-        "EMP-0001 purged: " . (!$emp0001Exists ? 'Yes' : 'No') . ", EMP-1021 valid: " . ($emp1021Valid ? 'Yes' : 'No') . ", SuperAdmin on EMP-1004: " . ($saAssigned ? 'Yes' : 'No')
+        "EMP-0001 valid SuperAdmin: " . ($emp0001Valid ? 'Yes' : 'No') . ", EMP-1021 valid: " . ($emp1021Valid ? 'Yes' : 'No') . ", SuperAdmin on EMP-1004: " . ($saAssigned ? 'Yes' : 'No')
     );
 } catch (Throwable $e) {
     recordTest('Employees', 'Employee Integrity', false, $e->getMessage());
@@ -241,7 +256,7 @@ try {
 // 6. NO OUT-OF-RANGE IDS IN PRODUCTION SEED
 // -------------------------------------------------------------------------
 try {
-    $badEmp = (int)$pdo->query("SELECT COUNT(*) FROM employees WHERE emp_id NOT BETWEEN 'EMP-1001' AND 'EMP-1095'")->fetchColumn();
+    $badEmp = (int)$pdo->query("SELECT COUNT(*) FROM employees WHERE emp_id NOT BETWEEN 'EMP-1001' AND 'EMP-1095' AND emp_id != 'EMP-0001'")->fetchColumn();
     $badCus = (int)$pdo->query("SELECT COUNT(*) FROM customers WHERE cus_id NOT BETWEEN 'CUS-1001' AND 'CUS-1010'")->fetchColumn();
     $badPrj = (int)$pdo->query("SELECT COUNT(*) FROM projects WHERE prj_id NOT BETWEEN 'PRJ-2026-001' AND 'PRJ-2026-015'")->fetchColumn();
     $badInv = (int)$pdo->query("SELECT COUNT(*) FROM invoices WHERE inv_id NOT BETWEEN 'INV-2026-001' AND 'INV-2026-010'")->fetchColumn();

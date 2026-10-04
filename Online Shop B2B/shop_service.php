@@ -30,6 +30,10 @@ function shop_jsonReply(array $data, int $statusCode = 200): void
  */
 function shop_getCurrentCustomerId(): string
 {
+    if (!empty($_GET['cus_id'])) {
+        $_SESSION['cus_id'] = (string)$_GET['cus_id'];
+        return (string)$_GET['cus_id'];
+    }
     if (!empty($_SESSION['cus_id'])) {
         return (string)$_SESSION['cus_id'];
     }

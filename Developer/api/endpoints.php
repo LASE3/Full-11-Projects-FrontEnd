@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+require_once __DIR__ . '/../../includes/api_bootstrap.php';
 require_once __DIR__ . '/db_helper.php';
 
 try {
@@ -11,6 +12,14 @@ try {
     $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
     $payload = getRequestPayload();
     $action = $payload['action'] ?? ($method === 'GET' ? 'list' : 'create');
+
+    // GET list/get may stay public; every other action (create, update, delete) requires DEV session with at least L3, or SuperAdmin.
+    if ($method !== 'GET' || !in_array($action, ['list', 'get'], true)) {
+        $_vp_user = vp_api_guard('DEV', [
+            'min_clearance' => 'L3',
+            'require_csrf'  => true
+        ]);
+    }
 
     switch ($action) {
         case 'list':

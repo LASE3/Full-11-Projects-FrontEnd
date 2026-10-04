@@ -14,17 +14,26 @@ declare(strict_types=1);
  */
 require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/../includes/auth_guard.php';
-requireAuth('ADM');
-
 require_once __DIR__ . '/../includes/AuditLogger.php';
 
-$pdo  = getDbConnection();
-$user = $_SESSION['vostok_user'] ?? [];
-$empId = $user['emp_id'] ?? '';
+if (empty($_SESSION['vostok_authenticated']) || empty($_SESSION['vostok_user'])) {
+    header("Location: ../index.php");
+    exit;
+}
+
+$pdo   = getDbConnection();
+$user  = $_SESSION['vostok_user'] ?? [];
+$isCustomer = (($user['account_type'] ?? '') === 'Customer');
+$userId = $user['emp_id'] ?? ($user['cus_id'] ?? ($user['user_id'] ?? ''));
 
 // Load account data
-$accStmt = $pdo->prepare("SELECT account_id, username, email, password_hash, must_change_password FROM employee_accounts WHERE emp_id = ? LIMIT 1");
-$accStmt->execute([$empId]);
+if ($isCustomer) {
+    $accStmt = $pdo->prepare("SELECT account_id, username, email, password_hash, must_change_password FROM customer_accounts WHERE cus_id = ? LIMIT 1");
+    $accStmt->execute([$userId]);
+} else {
+    $accStmt = $pdo->prepare("SELECT ea.account_id, ea.username, e.email, ea.password_hash, ea.must_change_password FROM employee_accounts ea LEFT JOIN employees e ON ea.emp_id = e.emp_id WHERE ea.emp_id = ? LIMIT 1");
+    $accStmt->execute([$userId]);
+}
 $account = $accStmt->fetch(PDO::FETCH_ASSOC);
 
 if (!$account) {
@@ -37,10 +46,20 @@ $error   = '';
 $success = '';
 $csrfToken = getCsrfToken();
 
+$isJson = (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest')
+       || (str_contains($_SERVER['HTTP_ACCEPT'] ?? '', 'application/json'))
+       || (str_contains($_SERVER['CONTENT_TYPE'] ?? '', 'application/json'));
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $rawInput = file_get_contents('php://input');
+    $jsonData = json_decode($rawInput, true);
+    if (is_array($jsonData)) {
+        $_POST = array_merge($_POST, $jsonData);
+    }
+
     // CSRF check
-    if (!verifyCsrfToken($_POST['csrf_token'] ?? '')) {
-        $error = 'Invalid CSRF token. Please refresh and try again.';
+    if (!verifyCsrfToken($_POST['csrf_token'] ?? ($_SERVER['HTTP_X_CSRF_TOKEN'] ?? ''))) {
+        $error = 'Invalid or missing CSRF token.';
     } else {
         $oldPass  = $_POST['old_password'] ?? '';
         $newPass  = $_POST['new_password'] ?? '';
@@ -54,17 +73,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $error = 'New password and confirmation do not match.';
         } elseif (
             stripos($newPass, $account['username'] ?? '') !== false ||
-            stripos($newPass, $empId) !== false ||
-            stripos($newPass, $account['email'] ?? '') !== false
+            stripos($newPass, (string)$userId) !== false ||
+            (!empty($account['email']) && stripos($newPass, $account['email']) !== false)
         ) {
-            $error = 'Password must not contain your username, employee ID, or email address.';
+            $error = 'Password must not contain your username, ID, or email address.';
         } else {
             $hash = password_hash($newPass, PASSWORD_BCRYPT, ['cost' => 12]);
-            $pdo->prepare(
-                "UPDATE employee_accounts SET password_hash = ?, must_change_password = 0 WHERE emp_id = ?"
-            )->execute([$hash, $empId]);
+            if ($isCustomer) {
+                $pdo->prepare("UPDATE customer_accounts SET password_hash = ?, must_change_password = 0 WHERE cus_id = ?")->execute([$hash, $userId]);
+                AuditLogger::logAction(null, $userId, 'Customer Portal', 'CUS', 'PASSWORD_CHANGED', 'customer_accounts', (string)$account['account_id']);
+            } else {
+                $pdo->prepare("UPDATE employee_accounts SET password_hash = ?, must_change_password = 0 WHERE emp_id = ?")->execute([$hash, $userId]);
+                AuditLogger::logAction($userId, null, 'Governance', 'ADM', 'PASSWORD_CHANGED', 'employee_accounts', (string)$account['account_id']);
+            }
 
-            AuditLogger::log('ADM', 'PASSWORD_CHANGED', $empId, "Password changed by {$empId}");
             $success = 'Password changed successfully.';
 
             // Update session flag
@@ -72,6 +94,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $_SESSION['vostok_user']['must_change_password'] = 0;
             }
         }
+    }
+
+    if ($isJson) {
+        header('Content-Type: application/json; charset=utf-8');
+        if ($error) {
+            http_response_code(400);
+            echo json_encode(['success' => false, 'error' => $error]);
+        } else {
+            echo json_encode(['success' => true, 'message' => $success]);
+        }
+        exit;
     }
 }
 

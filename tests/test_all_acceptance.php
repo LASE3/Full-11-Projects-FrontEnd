@@ -43,6 +43,8 @@ function cleanupTransientTestData(PDO $pdo): void {
     $pdo->exec("DELETE FROM portal_notifications WHERE related_entity_id LIKE 'ORD-TEST-%' OR related_entity_id LIKE 'LEAD-%'");
     $pdo->exec("DELETE FROM ticket_escalations WHERE tkt_id > 'TKT-2026-015'");
     $pdo->exec("DELETE FROM tickets WHERE tkt_id > 'TKT-2026-015' OR title LIKE '%Acceptance%'");
+    $pdo->exec("DELETE FROM product_inventory WHERE prod_id > 'PROD-1010'");
+    $pdo->exec("DELETE FROM products WHERE prod_id > 'PROD-1010'");
     $pdo->exec("DELETE FROM it_assets WHERE emp_id > 'EMP-1095'");
     $pdo->exec("DELETE FROM employee_roles WHERE emp_id > 'EMP-1095'");
     $pdo->exec("DELETE FROM developer_api_keys WHERE partner_id > 'EMP-1095' OR partner_id LIKE 'EMP-109%'");

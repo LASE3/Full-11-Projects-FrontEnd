@@ -127,9 +127,14 @@ $userSessionData = [
     'department_code' => $user['department_code'] ?? 'GEN',
     'clearance_level' => $user['clearance_level'] ?? 'L1',
     'account_type'    => $user['account_type'],
+    'must_change_password' => (int)($user['must_change_password'] ?? 0),
     'authorized_system' => $systemId,
     'login_time'      => date('Y-m-d H:i:s')
 ];
+
+if (!isSuperAdmin($user) && !empty($user['must_change_password'])) {
+    $redirect = '../Admin & Governance Portal/ChangePassword.php';
+}
 
 // Set PHP session strictly for the authenticated system
 foreach (array_keys($_SESSION) as $sessKey) {
@@ -173,6 +178,7 @@ if ($isJsonRequest) {
         'success'      => true,
         'message'      => "Access Granted: " . $user['full_name'] . " (" . ($user['clearance_level'] ?? 'L1') . " Clearance)",
         'user'         => $userSessionData,
+        'csrf_token'   => getCsrfToken(),
         'redirect'     => $redirect,
         'authorization_reason' => $authCheck['reason']
     ], JSON_UNESCAPED_UNICODE);

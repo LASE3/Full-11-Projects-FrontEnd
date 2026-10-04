@@ -20,6 +20,11 @@ try {
             $stmt = $pdo->query("SELECT * FROM `developer_api_keys` ORDER BY `id` DESC");
             $keys = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+            foreach ($keys as &$k) {
+                unset($k['token_full'], $k['token_hash']);
+            }
+            unset($k);
+
             // Compute live aggregate stats
             $activeCount = 0;
             $prodCount = 0;
@@ -57,6 +62,7 @@ try {
             if (!$key) {
                 sendJsonError('API Key not found', 404);
             }
+            unset($key['token_full'], $key['token_hash']);
             sendJsonSuccess($key, 'API Key retrieved');
             break;
 
@@ -87,12 +93,13 @@ try {
             $randomHex = bin2hex(random_bytes(16));
             $tokenPrefix = 'vk_' . ($env === 'Sandbox' ? 'test' : 'live') . '_' . substr($randomHex, 0, 8);
             $fullToken = 'vk_' . ($env === 'Sandbox' ? 'test' : 'live') . '_' . $randomHex;
+            $tokenHash = password_hash($fullToken, PASSWORD_BCRYPT);
 
             $stmt = $pdo->prepare("
                 INSERT INTO `developer_api_keys`
-                (`key_identifier`, `label`, `partner_id`, `partner_name`, `token_prefix`, `token_full`, `environment`, `rate_limit`, `rate_limit_value`, `classification`, `scopes`, `status`, `usage_count`)
+                (`key_identifier`, `label`, `partner_id`, `partner_name`, `token_prefix`, `token_hash`, `token_full`, `environment`, `rate_limit`, `rate_limit_value`, `classification`, `scopes`, `status`, `usage_count`)
                 VALUES
-                (:key_id, :label, :partner_id, :partner_name, :token_prefix, :token_full, :env, :rate_limit, :rate_val, :classification, :scopes, 'Active', 0)
+                (:key_id, :label, :partner_id, :partner_name, :token_prefix, :token_hash, NULL, :env, :rate_limit, :rate_val, :classification, :scopes, 'Active', 0)
             ");
             $stmt->execute([
                 ':key_id' => $keyIdent,
@@ -100,7 +107,7 @@ try {
                 ':partner_id' => $partnerId,
                 ':partner_name' => $partnerName,
                 ':token_prefix' => $tokenPrefix,
-                ':token_full' => $fullToken,
+                ':token_hash' => $tokenHash,
                 ':env' => $env,
                 ':rate_limit' => $rateLimit,
                 ':rate_val' => $rateLimitClean,

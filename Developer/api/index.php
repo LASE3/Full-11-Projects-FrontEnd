@@ -16,6 +16,11 @@ $payload = getRequestPayload();
 $service = trim($payload['service'] ?? '');
 
 if ($service === '') {
+    if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'GET') {
+        http_response_code(405);
+        echo json_encode(['success' => false, 'error' => 'Method not allowed. Use GET for manifest.']);
+        exit;
+    }
     // If no service specified, output API directory manifest and health check
     $pdo = getDbConnection();
     ensureDeveloperTables($pdo);

@@ -1,7 +1,5 @@
 -- Migration 003: Create counters and ops_tasks tables
--- Database: vostokpribor
-
-USE vostokpribor;
+-- Database: active connection target
 
 -- 1. id_counters for locked atomic sequence generation
 CREATE TABLE IF NOT EXISTS `id_counters` (

@@ -9,11 +9,19 @@
 (function () {
   "use strict";
 
-  const isAuthenticated = localStorage.getItem("vostok_authenticated");
+  let isAuthenticated = localStorage.getItem("vostok_authenticated");
   if (!isAuthenticated || isAuthenticated !== "true") {
-    const p = window.location.pathname.toLowerCase();
-    if (!p.includes("login.php") && !p.includes("register.php") && !p.includes("signup.php")) {
-      window.location.href = "login.php";
+    // If the server already authenticated the session (indicated by meta or signout button), sync localStorage
+    if (document.querySelector(".top-signout-btn") || document.querySelector("meta[name='csrf-token']")) {
+      try {
+        localStorage.setItem("vostok_authenticated", "true");
+        isAuthenticated = "true";
+      } catch (e) {}
+    } else {
+      const p = window.location.pathname.toLowerCase();
+      if (!p.includes("login.php") && !p.includes("register.php") && !p.includes("signup.php")) {
+        window.location.href = "login.php";
+      }
     }
   }
 
@@ -2352,34 +2360,23 @@
       if (menu) menu.classList.toggle("show");
     },
 
+    switchCustomer: function (customerId) {
+      this.selectCustomer(customerId);
+    },
+
     selectCustomer: function (customerId) {
-      const cust = CUSTOMERS.find((c) => c.id === customerId);
-      if (!cust) return;
-      state.activeCustomer = cust;
-
-      const codeEl = document.getElementById("header-customer-code");
-      const nameEl = document.getElementById("header-customer-name");
-      const avatarEl = document.getElementById("header-customer-avatar");
-
-      if (codeEl) codeEl.innerText = cust.id;
-      if (nameEl) nameEl.innerText = cust.name;
-      if (avatarEl) avatarEl.innerText = cust.id.replace("CUS-", "");
-
-      document.querySelectorAll(".customer-option-item").forEach((el) => {
-        el.classList.toggle("selected", el.dataset.customerId === customerId);
-      });
+      try {
+        sessionStorage.setItem("vp_cus_id", customerId);
+        localStorage.setItem("vp_cus_id", customerId);
+      } catch (e) {}
 
       const menu = document.getElementById("customer-dropdown-menu");
       if (menu) menu.classList.remove("show");
 
-      showToast(
-        `Switched active corporate account to: ${cust.name} (${cust.tier})`,
-        "green",
-      );
-
-      if (state.currentScreen === "product-detail") {
-        renderProductDetail(state.selectedProductId);
-      }
+      showToast(`Switched active enterprise client to ${customerId}... Reloading context.`, "green");
+      setTimeout(() => {
+        window.location.href = `Dashboard.php?cus_id=${encodeURIComponent(customerId)}`;
+      }, 250);
     },
 
     submitDirectPO: function () {

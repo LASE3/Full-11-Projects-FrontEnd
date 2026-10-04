@@ -22,7 +22,7 @@ if (session_status() === PHP_SESSION_NONE) {
 require_once __DIR__ . '/../hr_service.php';
 
 // Ensure user is authenticated to HR system
-if (empty($_SESSION['vostok_authenticated']) || empty($_SESSION['vostok_system_HR'])) {
+if (empty($_SESSION['vostok_authenticated']) || (empty($_SESSION['vostok_system_HR']) && !isSuperAdmin($_vp_user))) {
     http_response_code(401);
     echo json_encode(['success' => false, 'message' => 'Unauthorized: Please log in to HR System.']);
     exit;

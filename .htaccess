@@ -1,50 +1,29 @@
 # VOSTOKPRIBOR Root .htaccess
-# Apache 2.4 — deny access to sensitive directories and files
+# Production Apache 2.4 Configuration
+
+# Disable directory browsing
+Options -Indexes
 
 <IfModule mod_rewrite.c>
     RewriteEngine On
 </IfModule>
 
-# Block .env files
-<Files ".env">
-    Require all denied
-</Files>
+# Block .git directory access with 404
+<IfModule mod_alias.c>
+    RedirectMatch 404 (^|/)\.git
+</IfModule>
 
-<Files ".env.*">
+# Block access to hidden files and dotfiles (e.g. .env, .git, .gitignore)
+<FilesMatch "^\.">
     Require all denied
-</Files>
+</FilesMatch>
 
-# Block git config
-<Files ".git">
+# Block sensitive and administrative file extensions
+<FilesMatch "(?i)\.(sql|log|bak|md|rar|zip|tar|gz|7z|env.*|ini|sh|bat)$">
     Require all denied
-</Files>
+</FilesMatch>
 
-# Block PHP info / debug files
+# Block specific sensitive files
 <Files "phpinfo.php">
     Require all denied
 </Files>
-
-# Deny access to sensitive directories
-<DirectoryMatch "^(.*/)?\.git(/.*)?$">
-    Require all denied
-</DirectoryMatch>
-
-<DirectoryMatch "^(.*/)?DataBase(/.*)?$">
-    Require all denied
-</DirectoryMatch>
-
-<DirectoryMatch "^(.*/)?tests(/.*)?$">
-    Require all denied
-</DirectoryMatch>
-
-<DirectoryMatch "^(.*/)?scripts(/.*)?$">
-    Require all denied
-</DirectoryMatch>
-
-<DirectoryMatch "^(.*/)?config(/.*)?$">
-    Require all denied
-</DirectoryMatch>
-
-<DirectoryMatch "^(.*/)?includes(/.*)?$">
-    Require all denied
-</DirectoryMatch>

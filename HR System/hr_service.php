@@ -34,6 +34,7 @@ function hr_getCurrentUser()
 function hr_canManageHR()
 {
     $u = hr_getCurrentUser();
+    if (isSuperAdmin($u)) return true;
     $clearance = $u['clearance_level'] ?? 'L1';
     $dept = $u['department_code'] ?? '';
 

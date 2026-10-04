@@ -40,7 +40,127 @@
   const DEFAULT_LANG = localStorage.getItem("vp_lang") || "en";
 
   /* ──────────────────────────────────────────────────────────────────────────
-   * 2. Core Fetch Transport Wrapper
+   * 2. CSRF Token Resolution & Interceptors
+   * ────────────────────────────────────────────────────────────────────────── */
+  function getCsrfToken() {
+    if (global.__CSRF_TOKEN__) return global.__CSRF_TOKEN__;
+    if (typeof document !== "undefined") {
+      const meta = document.querySelector('meta[name="csrf-token"]');
+      if (meta && meta.content) {
+        global.__CSRF_TOKEN__ = meta.content;
+        return meta.content;
+      }
+    }
+    try {
+      const stored = sessionStorage.getItem("vostok_csrf_token") || localStorage.getItem("vostok_csrf_token");
+      if (stored) {
+        global.__CSRF_TOKEN__ = stored;
+        return stored;
+      }
+    } catch (e) {}
+    return "";
+  }
+
+  async function ensureCsrfToken() {
+    let token = getCsrfToken();
+    if (token) return token;
+    try {
+      const authEndpoint = BASE.replace(/\/api\/v1$/, "") + "/api/check_auth.php";
+      const checkRes = await originalFetch(authEndpoint, {
+        credentials: "include"
+      });
+      if (checkRes.ok) {
+        const data = await checkRes.json();
+        if (data.csrf_token) {
+          global.__CSRF_TOKEN__ = data.csrf_token;
+          try { sessionStorage.setItem("vostok_csrf_token", data.csrf_token); } catch(e) {}
+          return data.csrf_token;
+        }
+      }
+    } catch (e) {
+      console.warn("[VostokCore] Could not auto-resolve CSRF token:", e);
+    }
+    return "";
+  }
+
+  // Intercept global window.fetch to automatically add X-CSRF-Token on non-GET
+  const originalFetch = global.fetch;
+  if (typeof originalFetch === "function") {
+    global.fetch = async function (input, init = {}) {
+      let method = "GET";
+      if (init && init.method) {
+        method = String(init.method).toUpperCase();
+      } else if (typeof Request !== "undefined" && input instanceof Request && input.method) {
+        method = input.method.toUpperCase();
+      }
+
+      if (method !== "GET" && method !== "HEAD" && method !== "OPTIONS") {
+        let token = getCsrfToken();
+        if (!token) {
+          token = await ensureCsrfToken();
+        }
+        if (token) {
+          if (typeof Request !== "undefined" && input instanceof Request) {
+            try { input.headers.set("X-CSRF-Token", token); } catch (e) {}
+          } else {
+            init = init || {};
+            if (!init.headers) {
+              init.headers = { "X-CSRF-Token": token };
+            } else if (typeof Headers !== "undefined" && init.headers instanceof Headers) {
+              if (!init.headers.has("X-CSRF-Token")) init.headers.set("X-CSRF-Token", token);
+            } else if (Array.isArray(init.headers)) {
+              init.headers.push(["X-CSRF-Token", token]);
+            } else if (typeof init.headers === "object") {
+              if (!init.headers["X-CSRF-Token"]) init.headers["X-CSRF-Token"] = token;
+            }
+          }
+        }
+      }
+      return originalFetch.call(this, input, init);
+    };
+  }
+
+  // Intercept XMLHttpRequest
+  if (global.XMLHttpRequest) {
+    const origOpen = global.XMLHttpRequest.prototype.open;
+    const origSend = global.XMLHttpRequest.prototype.send;
+    global.XMLHttpRequest.prototype.open = function (method, url, async, user, password) {
+      this._vpMethod = (method || "GET").toUpperCase();
+      return origOpen.apply(this, arguments);
+    };
+    global.XMLHttpRequest.prototype.send = function (body) {
+      if (this._vpMethod && this._vpMethod !== "GET" && this._vpMethod !== "HEAD" && this._vpMethod !== "OPTIONS") {
+        const token = getCsrfToken();
+        if (token) {
+          try { this.setRequestHeader("X-CSRF-Token", token); } catch (e) {}
+        }
+      }
+      return origSend.apply(this, arguments);
+    };
+  }
+
+  // Intercept standard HTML form POST submissions
+  if (typeof document !== "undefined") {
+    document.addEventListener("submit", function (e) {
+      const form = e.target;
+      if (!form || !form.method || form.method.toUpperCase() !== "POST") return;
+      const token = getCsrfToken();
+      if (!token) return;
+      let input = form.querySelector('input[name="csrf_token"]');
+      if (!input) {
+        input = document.createElement("input");
+        input.type = "hidden";
+        input.name = "csrf_token";
+        input.value = token;
+        form.appendChild(input);
+      } else if (!input.value) {
+        input.value = token;
+      }
+    }, true);
+  }
+
+  /* ──────────────────────────────────────────────────────────────────────────
+   * 3. Core Fetch Transport Wrapper
    * ────────────────────────────────────────────────────────────────────────── */
   /**
    * Universal fetch transport
@@ -67,7 +187,15 @@
       headers: { Accept: "application/json" },
     };
 
-    if (body && method !== "GET") {
+    const upperMethod = (method || "GET").toUpperCase();
+    if (upperMethod !== "GET" && upperMethod !== "HEAD" && upperMethod !== "OPTIONS") {
+      const csrf = getCsrfToken() || await ensureCsrfToken();
+      if (csrf) {
+        fetchOpts.headers["X-CSRF-Token"] = csrf;
+      }
+    }
+
+    if (body && upperMethod !== "GET") {
       fetchOpts.headers["Content-Type"] = "application/json";
       fetchOpts.body = JSON.stringify(body);
     }
@@ -92,7 +220,7 @@
   }
 
   /* ──────────────────────────────────────────────────────────────────────────
-   * 3. UI Helpers & Utilities
+   * 4. UI Helpers & Utilities
    * ────────────────────────────────────────────────────────────────────────── */
   function escHtml(str) {
     return String(str ?? "").replace(
@@ -184,10 +312,10 @@
     console.error(`[VostokCore] ${context} error:`, err);
     const msg =
       err.code === 401
-        ? "Session expired or authentication required — please sign in."
+        ? "Session validation notice: " + (err.message || "access restricted")
         : err.message || "An unexpected error occurred.";
-    ui.toast(context + " Error", msg, "error");
-    if (err.code === 401) {
+    ui.toast(context, msg, err.code === 401 ? "warning" : "error");
+    if (err.code === 401 && (context === "Auth" || context === "Session" || context === "Login")) {
       setTimeout(() => {
         window.location.href = "login.php";
       }, 2000);
@@ -384,6 +512,8 @@
   const VostokCore = {
     BASE,
     call,
+    getCsrfToken,
+    ensureCsrfToken,
     escHtml,
     ui,
     i18n,
@@ -400,6 +530,8 @@
     ui,
     i18n,
     call,
+    getCsrfToken,
+    ensureCsrfToken,
     escHtml,
     handleApiError,
     BASE,

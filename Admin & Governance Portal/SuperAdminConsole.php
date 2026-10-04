@@ -23,16 +23,302 @@ $pdo         = getDbConnection();
 $currentUser = gov_getActiveUserProfile();
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Whitelisted tables (read-only browsing)
+// Whitelisted tables & Security Configurations
 // ─────────────────────────────────────────────────────────────────────────────
+const BUSINESS_TABLES = [
+    'employees'          => ['pk' => 'emp_id',     'status_col' => 'employment_status', 'soft_val' => 'Terminated', 'system' => 'EMP'],
+    'customers'          => ['pk' => 'cus_id',     'status_col' => 'status',            'soft_val' => 'Inactive',   'system' => 'CUS'],
+    'projects'           => ['pk' => 'prj_id',     'status_col' => 'status',            'soft_val' => 'Closed',     'system' => 'EMP'],
+    'invoices'           => ['pk' => 'inv_id',     'status_col' => 'payment_status',    'soft_val' => 'Void',       'system' => 'FIN'],
+    'tickets'            => ['pk' => 'tkt_id',     'status_col' => 'status',            'soft_val' => 'Closed',     'system' => 'IT'],
+    'documents'          => ['pk' => 'doc_id',     'status_col' => 'status',            'soft_val' => 'Archived',   'system' => 'DOC'],
+    'products'           => ['pk' => 'prod_id',    'status_col' => 'is_active',         'soft_val' => 0,            'system' => 'SHP'],
+    'orders'             => ['pk' => 'order_id',   'status_col' => 'status',            'soft_val' => 'Cancelled',  'system' => 'SHP'],
+    'leads'              => ['pk' => 'lead_id',    'status_col' => 'status',            'soft_val' => 'Rejected',   'system' => 'CRM'],
+    'api_partners'       => ['pk' => 'partner_id', 'status_col' => 'status',            'soft_val' => 'Suspended',  'system' => 'DEV'],
+    'job_postings'       => ['pk' => 'posting_id', 'status_col' => 'is_published',     'soft_val' => 0,            'system' => 'HR'],
+    'developer_api_keys' => ['pk' => 'id',         'status_col' => 'status',            'soft_val' => 'Revoked',    'system' => 'DEV'],
+];
+
+const READ_ONLY_TABLES = [
+    'audit_logs', 'security_events', 'authentication_events', 'system_integration_logs', 'integration_logs', 'api_access_logs'
+];
+
+const SENSITIVE_COLUMNS = [
+    'password_hash', 'password', 'token_full', 'token_hash', 'secret', 'sso_secret'
+];
+
 const BROWSABLE_TABLES = [
     'employees', 'employee_accounts', 'employee_roles', 'departments',
     'customers', 'customer_accounts', 'projects', 'invoices', 'invoice_items',
-    'tickets', 'documents', 'products', 'orders', 'order_items',
+    'tickets', 'documents', 'products', 'orders', 'order_items', 'leads',
+    'job_postings', 'api_partners', 'developer_api_keys',
     'system_integrations', 'system_integration_logs', 'systems_catalog',
-    'roles', 'role_system_access', 'developer_api_keys',
-    'portal_notifications', 'security_events',
+    'roles', 'role_system_access',
+    'portal_notifications', 'security_events', 'audit_logs', 'authentication_events'
 ];
+
+// ─────────────────────────────────────────────────────────────────────────────
+// CSV Export Handler
+// ─────────────────────────────────────────────────────────────────────────────
+if (($_GET['action'] ?? '') === 'export_csv') {
+    $table = trim($_GET['table'] ?? '');
+    if (!$table || !in_array($table, BROWSABLE_TABLES, true)) {
+        http_response_code(400);
+        die("Invalid or unpermitted table for export");
+    }
+    header('Content-Type: text/csv; charset=utf-8');
+    header('Content-Disposition: attachment; filename="export_' . $table . '_' . date('Ymd_His') . '.csv"');
+    $out = fopen('php://output', 'w');
+    $stmt = $pdo->query("SELECT * FROM `{$table}`");
+    $first = true;
+    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+        if ($first) {
+            fputcsv($out, array_keys($row));
+            $first = false;
+        }
+        foreach (SENSITIVE_COLUMNS as $sc) {
+            if (isset($row[$sc])) $row[$sc] = '[PROTECTED SECRET]';
+        }
+        fputcsv($out, $row);
+    }
+    fclose($out);
+    exit;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// POST Action Handlers (Create, Edit, Delete, Upload File)
+// ─────────────────────────────────────────────────────────────────────────────
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $rawInput = file_get_contents('php://input');
+    $json = json_decode($rawInput, true);
+    if (is_array($json)) {
+        $_POST = array_merge($_POST, $json);
+    }
+
+    $isAjax = (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest') 
+           || (str_contains($_SERVER['HTTP_ACCEPT'] ?? '', 'application/json'))
+           || !empty($json);
+
+    function saReply(bool $ok, string $msg, mixed $extra = [], int $status = 200, bool $ajax = false): void {
+        if ($ajax) {
+            http_response_code($status);
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode(array_merge(['success' => $ok, 'message' => $msg], (array)$extra), JSON_UNESCAPED_UNICODE);
+            exit;
+        }
+        if (!$ok) {
+            $_SESSION['sa_error'] = $msg;
+        } else {
+            $_SESSION['sa_success'] = $msg;
+        }
+        $ref = $_SERVER['HTTP_REFERER'] ?? 'SuperAdminConsole.php?tab=tables';
+        header("Location: {$ref}");
+        exit;
+    }
+
+    if (!verifyCsrfToken()) {
+        saReply(false, 'CSRF token missing or invalid.', [], 403, $isAjax);
+    }
+
+    $action = $_POST['action'] ?? '';
+    $table  = $_POST['table'] ?? '';
+
+    // Check read-only tables
+    if (in_array($table, READ_ONLY_TABLES, true)) {
+        saReply(false, "Table '{$table}' is an immutable audit/security ledger and cannot be modified.", [], 403, $isAjax);
+    }
+
+    if ($action === 'create_record') {
+        if (!isset(BUSINESS_TABLES[$table])) {
+            saReply(false, "Table '{$table}' is not permitted for record creation.", [], 400, $isAjax);
+        }
+        $cfg = BUSINESS_TABLES[$table];
+        $fields = $_POST['data'] ?? $_POST;
+        unset($fields['action'], $fields['table'], $fields['csrf_token'], $fields['confirm']);
+        foreach (SENSITIVE_COLUMNS as $sc) unset($fields[$sc]);
+
+        if (empty($fields)) {
+            saReply(false, "No data provided for record creation.", [], 400, $isAjax);
+        }
+
+        $cols = array_keys($fields);
+        $placeholders = array_fill(0, count($cols), '?');
+        $sql = "INSERT INTO `{$table}` (`" . implode("`, `", $cols) . "`) VALUES (" . implode(", ", $placeholders) . ")";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute(array_values($fields));
+        $newId = $fields[$cfg['pk']] ?? $pdo->lastInsertId();
+
+        AuditLogger::logAction(
+            $currentUser['emp_id'] ?? 'EMP-0001',
+            null,
+            'SuperAdmin Console',
+            $cfg['system'],
+            'SUPERADMIN_CREATE_RECORD',
+            $table,
+            (string)$newId,
+            $fields
+        );
+
+        saReply(true, "Record created successfully in {$table}.", ['record_id' => $newId], 201, $isAjax);
+    }
+
+    if ($action === 'update_record') {
+        if (!isset(BUSINESS_TABLES[$table])) {
+            saReply(false, "Table '{$table}' is not permitted for record editing.", [], 400, $isAjax);
+        }
+        $cfg = BUSINESS_TABLES[$table];
+        $pkVal = $_POST['id'] ?? ($_POST[$cfg['pk']] ?? null);
+        if (!$pkVal) {
+            saReply(false, "Record ID ({$cfg['pk']}) is required for update.", [], 400, $isAjax);
+        }
+
+        $chk = $pdo->prepare("SELECT * FROM `{$table}` WHERE `{$cfg['pk']}` = ?");
+        $chk->execute([$pkVal]);
+        $existing = $chk->fetch(PDO::FETCH_ASSOC);
+        if (!$existing) {
+            saReply(false, "Record {$pkVal} not found in {$table}.", [], 404, $isAjax);
+        }
+
+        $fields = $_POST['data'] ?? $_POST;
+        unset($fields['action'], $fields['table'], $fields['csrf_token'], $fields['id'], $fields[$cfg['pk']], $fields['confirm']);
+        foreach (SENSITIVE_COLUMNS as $sc) unset($fields[$sc]);
+
+        if (empty($fields)) {
+            saReply(false, "No valid editable fields provided.", [], 400, $isAjax);
+        }
+
+        $sets = [];
+        $vals = [];
+        foreach ($fields as $col => $val) {
+            $sets[] = "`{$col}` = ?";
+            $vals[] = $val;
+        }
+        $vals[] = $pkVal;
+
+        $sql = "UPDATE `{$table}` SET " . implode(", ", $sets) . " WHERE `{$cfg['pk']}` = ?";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute($vals);
+
+        AuditLogger::logAction(
+            $currentUser['emp_id'] ?? 'EMP-0001',
+            null,
+            'SuperAdmin Console',
+            $cfg['system'],
+            'SUPERADMIN_UPDATE_RECORD',
+            $table,
+            (string)$pkVal,
+            $fields,
+            'SUCCESS',
+            $existing
+        );
+
+        saReply(true, "Record {$pkVal} in {$table} updated successfully.", ['record_id' => $pkVal], 200, $isAjax);
+    }
+
+    if ($action === 'delete_record') {
+        if (!isset(BUSINESS_TABLES[$table])) {
+            saReply(false, "Table '{$table}' is not permitted for record deletion.", [], 400, $isAjax);
+        }
+        $cfg = BUSINESS_TABLES[$table];
+        $pkVal = $_POST['id'] ?? ($_POST[$cfg['pk']] ?? null);
+        if (!$pkVal) {
+            saReply(false, "Record ID ({$cfg['pk']}) is required for deletion.", [], 400, $isAjax);
+        }
+
+        // Typed confirmation check
+        $confirm = trim((string)($_POST['confirm'] ?? ''));
+        $expectedConfirm = "DELETE {$pkVal}";
+        if ($confirm !== $expectedConfirm) {
+            saReply(false, "Destructive action requires typed confirmation: '{$expectedConfirm}'.", [], 400, $isAjax);
+        }
+
+        // Application protection check
+        if ($table === 'employees') {
+            if ($pkVal === 'EMP-0001' || $pkVal === ($currentUser['emp_id'] ?? '')) {
+                saReply(false, "Forbidden: Cannot delete SuperAdmin or your own account (application and trigger protection).", [], 403, $isAjax);
+            }
+        }
+
+        $chk = $pdo->prepare("SELECT * FROM `{$table}` WHERE `{$cfg['pk']}` = ?");
+        $chk->execute([$pkVal]);
+        $existing = $chk->fetch(PDO::FETCH_ASSOC);
+        if (!$existing) {
+            saReply(false, "Record {$pkVal} not found in {$table}.", [], 404, $isAjax);
+        }
+
+        $force = !empty($_POST['force']);
+        if (!empty($cfg['status_col']) && !$force) {
+            // Soft delete
+            $stmt = $pdo->prepare("UPDATE `{$table}` SET `{$cfg['status_col']}` = ? WHERE `{$cfg['pk']}` = ?");
+            $stmt->execute([$cfg['soft_val'], $pkVal]);
+            $actionType = 'SUPERADMIN_SOFT_DELETE_RECORD';
+        } else {
+            // Hard delete
+            $stmt = $pdo->prepare("DELETE FROM `{$table}` WHERE `{$cfg['pk']}` = ?");
+            $stmt->execute([$pkVal]);
+            $actionType = 'SUPERADMIN_DELETE_RECORD';
+        }
+
+        AuditLogger::logAction(
+            $currentUser['emp_id'] ?? 'EMP-0001',
+            null,
+            'SuperAdmin Console',
+            $cfg['system'],
+            $actionType,
+            $table,
+            (string)$pkVal,
+            null,
+            'SUCCESS',
+            $existing
+        );
+
+        saReply(true, "Record {$pkVal} in {$table} successfully deleted.", ['record_id' => $pkVal], 200, $isAjax);
+    }
+
+    if ($action === 'upload_file') {
+        if (empty($_FILES['file']['name'])) {
+            saReply(false, "No file uploaded.", [], 400, $isAjax);
+        }
+        $file = $_FILES['file'];
+        if ($file['error'] !== UPLOAD_ERR_OK) {
+            saReply(false, "File upload error code: " . $file['error'], [], 400, $isAjax);
+        }
+        if ($file['size'] > 5 * 1024 * 1024) {
+            saReply(false, "File exceeds maximum size of 5MB.", [], 400, $isAjax);
+        }
+        $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+        $allowed = ['pdf', 'docx', 'txt', 'csv', 'png', 'jpg', 'jpeg', 'webp'];
+        if (!in_array($ext, $allowed, true)) {
+            saReply(false, "File extension '{$ext}' is not permitted.", [], 400, $isAjax);
+        }
+
+        $uploadDir = __DIR__ . '/../uploads/console/';
+        if (!is_dir($uploadDir)) {
+            @mkdir($uploadDir, 0755, true);
+            @file_put_contents($uploadDir . '.htaccess', "Options -Indexes\n<FilesMatch \"\\.(php|phtml|php3|php4|php5|pl|py|cgi)$\">\nRequire all denied\n</FilesMatch>\n");
+        }
+
+        $safeName = 'upload_' . bin2hex(random_bytes(8)) . '.' . $ext;
+        $destPath = $uploadDir . $safeName;
+        if (!move_uploaded_file($file['tmp_name'], $destPath)) {
+            saReply(false, "Failed to store uploaded file.", [], 500, $isAjax);
+        }
+
+        AuditLogger::logAction(
+            $currentUser['emp_id'] ?? 'EMP-0001',
+            null,
+            'SuperAdmin Console',
+            'ADM',
+            'SUPERADMIN_FILE_UPLOAD',
+            'files',
+            $safeName,
+            ['original_name' => $file['name'], 'size' => $file['size']]
+        );
+
+        saReply(true, "File uploaded successfully as {$safeName}.", ['filename' => $safeName], 200, $isAjax);
+    }
+}
 
 // ─────────────────────────────────────────────────────────────────────────────
 // View-as mode
@@ -113,6 +399,7 @@ $totalAuditSystems = (int)$pdo->query(
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="csrf-token" content="<?= htmlspecialchars(getCsrfToken()) ?>"/>
     <title>SuperAdmin Console — VOSTOKPRIBOR</title>
     <meta name="description" content="SuperAdmin read-only console: table browser, audit logs, view-as, integration link health"/>
     <style>
@@ -310,23 +597,56 @@ $totalAuditSystems = (int)$pdo->query(
 
         <!-- ── TABLE BROWSER ─────────────────────────────────────────────── -->
         <?php elseif ($tab === 'tables'): ?>
-        <h2>Table Browser <span class="count">Read-Only</span></h2>
+        <?php 
+        $isReadOnly = in_array($selectedTable, READ_ONLY_TABLES, true);
+        $isBusiness = isset(BUSINESS_TABLES[$selectedTable]);
+        $tablePk = $isBusiness ? BUSINESS_TABLES[$selectedTable]['pk'] : 'id';
+        ?>
+        <h2>Table Browser 
+            <?php if ($isReadOnly): ?>
+            <span class="count" style="color:var(--warn)">Immutable Ledger (Read-Only)</span>
+            <?php elseif ($isBusiness): ?>
+            <span class="count" style="color:var(--ok)">Full CRUD Active</span>
+            <?php else: ?>
+            <span class="count">System Table</span>
+            <?php endif; ?>
+        </h2>
+
+        <?php if (!empty($_SESSION['sa_success'])): ?>
+        <div style="background:rgba(16,185,129,.15);border:1px solid var(--ok);color:var(--ok);padding:10px 14px;border-radius:var(--radius);margin-bottom:12px;">
+            <?= htmlspecialchars($_SESSION['sa_success']) ?>
+        </div>
+        <?php unset($_SESSION['sa_success']); endif; ?>
+
+        <?php if (!empty($_SESSION['sa_error'])): ?>
+        <div class="error-box"><?= htmlspecialchars($_SESSION['sa_error']) ?></div>
+        <?php unset($_SESSION['sa_error']); endif; ?>
 
         <div class="card">
-            <form method="GET" action="">
-                <input type="hidden" name="tab" value="tables"/>
-                <div class="form-row">
+            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:16px;">
+                <form method="GET" action="" style="display:flex;gap:10px;align-items:center;">
+                    <input type="hidden" name="tab" value="tables"/>
                     <select name="table" id="table-select" onchange="this.form.submit()">
                         <option value="">-- Select table --</option>
                         <?php foreach (BROWSABLE_TABLES as $t): ?>
-                        <option value="<?= $t ?>" <?= $selectedTable === $t ? 'selected' : '' ?>><?= $t ?></option>
+                        <option value="<?= $t ?>" <?= $selectedTable === $t ? 'selected' : '' ?>><?= $t ?> <?= isset(BUSINESS_TABLES[$t]) ? '(CRUD)' : (in_array($t, READ_ONLY_TABLES) ? '(Log)' : '') ?></option>
                         <?php endforeach; ?>
                     </select>
                     <?php if ($selectedTable): ?>
                     <span class="info" style="color:var(--muted);font-size:12px;"><?= $tableTotal ?> rows total</span>
                     <?php endif; ?>
+                </form>
+
+                <?php if ($selectedTable): ?>
+                <div style="display:flex;gap:8px;align-items:center;">
+                    <a href="?action=export_csv&table=<?= urlencode($selectedTable) ?>" class="btn btn-sm" style="text-decoration:none;">📥 Export CSV</a>
+                    <?php if ($isBusiness): ?>
+                    <button type="button" onclick="openCreateModal()" class="btn btn-sm" style="background:#2563eb;">➕ Create Record</button>
+                    <button type="button" onclick="openUploadModal()" class="btn btn-sm" style="background:#059669;">📁 Upload File</button>
+                    <?php endif; ?>
                 </div>
-            </form>
+                <?php endif; ?>
+            </div>
 
             <?php if ($tableError): ?>
             <div class="error-box"><?= htmlspecialchars($tableError) ?></div>
@@ -335,10 +655,34 @@ $totalAuditSystems = (int)$pdo->query(
             <?php if ($tableRows): ?>
             <div style="overflow-x:auto">
             <table>
-                <thead><tr><?php foreach ($tableColumns as $c): ?><th><?= htmlspecialchars($c) ?></th><?php endforeach; ?></tr></thead>
+                <thead>
+                    <tr>
+                        <?php foreach ($tableColumns as $c): ?>
+                        <th><?= htmlspecialchars($c) ?></th>
+                        <?php endforeach; ?>
+                        <?php if ($isBusiness): ?>
+                        <th style="text-align:right;">Actions</th>
+                        <?php endif; ?>
+                    </tr>
+                </thead>
                 <tbody>
                 <?php foreach ($tableRows as $row): ?>
-                <tr><?php foreach ($row as $val): ?><td title="<?= htmlspecialchars((string)$val) ?>"><?= htmlspecialchars((string)$val) ?></td><?php endforeach; ?></tr>
+                <tr>
+                    <?php foreach ($row as $colName => $val): ?>
+                    <?php 
+                    $displayVal = in_array($colName, SENSITIVE_COLUMNS, true) ? '[PROTECTED SECRET]' : (string)$val;
+                    ?>
+                    <td title="<?= htmlspecialchars($displayVal) ?>">
+                        <?= htmlspecialchars($displayVal) ?>
+                    </td>
+                    <?php endforeach; ?>
+                    <?php if ($isBusiness): ?>
+                    <td style="text-align:right;white-space:nowrap;">
+                        <button type="button" class="btn btn-sm" style="padding:2px 8px;font-size:11px;" onclick='openEditModal(<?= htmlspecialchars(json_encode($row), ENT_QUOTES, "UTF-8") ?>)'>Edit</button>
+                        <button type="button" class="btn btn-danger btn-sm" style="padding:2px 8px;font-size:11px;" onclick="openDeleteModal('<?= htmlspecialchars((string)($row[$tablePk] ?? ''), ENT_QUOTES, 'UTF-8') ?>')">Delete</button>
+                    </td>
+                    <?php endif; ?>
+                </tr>
                 <?php endforeach; ?>
                 </tbody>
             </table>
@@ -471,5 +815,144 @@ $totalAuditSystems = (int)$pdo->query(
 
     </main>
 </div>
+
+<!-- ── MODALS (CREATE, EDIT, DELETE, UPLOAD) ───────────────────────────── -->
+<div id="sa-modal-backdrop" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:9999;align-items:center;justify-content:center;">
+    <div style="background:var(--bg2);border:1px solid var(--accent);border-radius:var(--radius);padding:24px;max-width:550px;width:90%;max-height:85vh;overflow:auto;box-shadow:0 20px 25px -5px rgba(0,0,0,0.5);">
+        <h3 id="sa-modal-title" style="color:var(--accent2);margin-bottom:16px;font-size:16px;">Action</h3>
+        <div id="sa-modal-body"></div>
+    </div>
+</div>
+
+<script>
+const activeTable = <?= json_encode($selectedTable) ?>;
+const activeColumns = <?= json_encode($tableColumns) ?>;
+const activePk = <?= json_encode($tablePk ?? 'id') ?>;
+const sensitiveCols = <?= json_encode(SENSITIVE_COLUMNS) ?>;
+const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+
+function closeModal() {
+    document.getElementById('sa-modal-backdrop').style.display = 'none';
+}
+
+function openCreateModal() {
+    document.getElementById('sa-modal-title').textContent = '➕ Create New ' + activeTable + ' Record';
+    let fieldsHtml = '';
+    activeColumns.forEach(col => {
+        if (sensitiveCols.includes(col)) return;
+        fieldsHtml += `
+            <div style="margin-bottom:12px;">
+                <label style="display:block;font-size:12px;color:var(--muted);margin-bottom:4px;">${col}</label>
+                <input type="text" name="data[${col}]" style="width:100%;box-sizing:border-box;" />
+            </div>
+        `;
+    });
+
+    document.getElementById('sa-modal-body').innerHTML = `
+        <form method="POST" action="">
+            <input type="hidden" name="csrf_token" value="${csrfToken}" />
+            <input type="hidden" name="action" value="create_record" />
+            <input type="hidden" name="table" value="${activeTable}" />
+            ${fieldsHtml}
+            <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:16px;">
+                <button type="button" class="btn" style="background:var(--border);" onclick="closeModal()">Cancel</button>
+                <button type="submit" class="btn">Create Record</button>
+            </div>
+        </form>
+    `;
+    document.getElementById('sa-modal-backdrop').style.display = 'flex';
+}
+
+function openEditModal(row) {
+    const pkVal = row[activePk];
+    document.getElementById('sa-modal-title').textContent = '✏ Edit ' + activeTable + ' Record #' + pkVal;
+    let fieldsHtml = '';
+    activeColumns.forEach(col => {
+        if (sensitiveCols.includes(col)) return;
+        const val = row[col] !== null ? String(row[col]) : '';
+        const readonlyAttr = (col === activePk) ? 'readonly style="background:var(--bg);color:var(--muted);width:100%;"' : 'style="width:100%;"';
+        fieldsHtml += `
+            <div style="margin-bottom:12px;">
+                <label style="display:block;font-size:12px;color:var(--muted);margin-bottom:4px;">${col} ${col === activePk ? '(Primary Key)' : ''}</label>
+                <input type="text" name="data[${col}]" value="${escapeHtml(val)}" ${readonlyAttr} />
+            </div>
+        `;
+    });
+
+    document.getElementById('sa-modal-body').innerHTML = `
+        <form method="POST" action="">
+            <input type="hidden" name="csrf_token" value="${csrfToken}" />
+            <input type="hidden" name="action" value="update_record" />
+            <input type="hidden" name="table" value="${activeTable}" />
+            <input type="hidden" name="id" value="${escapeHtml(pkVal)}" />
+            ${fieldsHtml}
+            <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:16px;">
+                <button type="button" class="btn" style="background:var(--border);" onclick="closeModal()">Cancel</button>
+                <button type="submit" class="btn">Save Changes</button>
+            </div>
+        </form>
+    `;
+    document.getElementById('sa-modal-backdrop').style.display = 'flex';
+}
+
+function openDeleteModal(pkVal) {
+    const expectedConfirm = 'DELETE ' + pkVal;
+    document.getElementById('sa-modal-title').textContent = '🗑 Confirm Delete: ' + activeTable + ' #' + pkVal;
+    document.getElementById('sa-modal-body').innerHTML = `
+        <form method="POST" action="">
+            <input type="hidden" name="csrf_token" value="${csrfToken}" />
+            <input type="hidden" name="action" value="delete_record" />
+            <input type="hidden" name="table" value="${activeTable}" />
+            <input type="hidden" name="id" value="${escapeHtml(pkVal)}" />
+            
+            <p style="color:var(--danger);font-weight:600;margin-bottom:12px;">
+                ⚠️ This is a destructive operation.
+            </p>
+            <p style="color:var(--text);font-size:13px;margin-bottom:12px;">
+                To confirm deletion, please type exactly <strong style="color:var(--accent2);">${expectedConfirm}</strong> below:
+            </p>
+            <div style="margin-bottom:16px;">
+                <input type="text" name="confirm" placeholder="${expectedConfirm}" required style="width:100%;box-sizing:border-box;border-color:var(--danger);" />
+            </div>
+            <div style="margin-bottom:16px;display:flex;align-items:center;gap:8px;">
+                <input type="checkbox" name="force" id="chk-force" value="1" />
+                <label for="chk-force" style="color:var(--muted);font-size:12px;">Force hard delete (bypasses soft-delete if enabled)</label>
+            </div>
+            <div style="display:flex;justify-content:flex-end;gap:10px;">
+                <button type="button" class="btn" style="background:var(--border);" onclick="closeModal()">Cancel</button>
+                <button type="submit" class="btn btn-danger">Confirm Delete</button>
+            </div>
+        </form>
+    `;
+    document.getElementById('sa-modal-backdrop').style.display = 'flex';
+}
+
+function openUploadModal() {
+    document.getElementById('sa-modal-title').textContent = '📁 Upload File for ' + activeTable;
+    document.getElementById('sa-modal-body').innerHTML = `
+        <form method="POST" action="" enctype="multipart/form-data">
+            <input type="hidden" name="csrf_token" value="${csrfToken}" />
+            <input type="hidden" name="action" value="upload_file" />
+            <input type="hidden" name="table" value="${activeTable}" />
+            
+            <div style="margin-bottom:16px;">
+                <label style="display:block;font-size:12px;color:var(--muted);margin-bottom:8px;">Select document, dataset, or media file (max 5MB):</label>
+                <input type="file" name="file" required style="width:100%;" />
+            </div>
+            <p style="font-size:11px;color:var(--muted);margin-bottom:16px;">Allowed formats: PDF, DOCX, CSV, TXT, PNG, JPG, WEBP.</p>
+            <div style="display:flex;justify-content:flex-end;gap:10px;">
+                <button type="button" class="btn" style="background:var(--border);" onclick="closeModal()">Cancel</button>
+                <button type="submit" class="btn" style="background:#059669;">Upload File</button>
+            </div>
+        </form>
+    `;
+    document.getElementById('sa-modal-backdrop').style.display = 'flex';
+}
+
+function escapeHtml(str) {
+    if (!str) return '';
+    return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+</script>
 </body>
 </html>

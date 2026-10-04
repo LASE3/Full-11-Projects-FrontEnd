@@ -1893,8 +1893,14 @@ table {
 }
 .intra-display-grid-grid-template-4a9e {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: minmax(0, 1fr) 380px;
   gap: 1.75rem;
+  align-items: start;
+}
+@media (max-width: 1024px) {
+  .intra-display-grid-grid-template-4a9e {
+    grid-template-columns: 1fr;
+  }
 }
 .intra-display-flex-flex-direction-f48b {
   display: flex;

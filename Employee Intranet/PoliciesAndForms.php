@@ -201,7 +201,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Elena Morozova', 'role_
 
 
             <!-- Top Bar Sign Out -->
-            <a href="./api/logout.php?redirect=../Employee%20Intranet/login.php" class="top-signout-btn" title="Sign Out of Employee Intranet" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" ><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
+            <a href="./api/logout.php?redirect=../login.php" class="top-signout-btn" title="Sign Out of Employee Intranet" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" ><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
         </div>
     </header>
 

@@ -7,10 +7,9 @@ declare(strict_types=1);
  * Full CRUD, SLA Deadlines, Resolution & Escalation
  */
 
+require_once __DIR__ . '/../../includes/api_bootstrap.php';
+$user = vp_api_guard('IT', []);
 require_once __DIR__ . '/db_helper.php';
-require_once __DIR__ . '/../../includes/auth_guard.php';
-
-$user = requireApiAuth();
 
 $pdo = getItDb();
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';

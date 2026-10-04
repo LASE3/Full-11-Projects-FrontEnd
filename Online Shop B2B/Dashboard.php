@@ -1,19 +1,50 @@
 <?php
-if (session_status() === PHP_SESSION_NONE) {
-  session_start();
-}
-if (empty($_SESSION['vostok_authenticated']) || empty($_SESSION['vostok_system_SHP'])) {
-  header("Location: login.php");
-  exit;
-}
+require_once __DIR__ . '/../includes/auth_guard.php';
 require_once __DIR__ . '/shop_service.php';
+requireAuth('SHP', 'login.php');
+
+$_SESSION['vostok_system_SHP'] = true;
+$_SESSION['vostok_current_system'] = 'SHP';
+
+$currUser = $_SESSION['vostok_user'] ?? [];
+$isSuperAdmin = isSuperAdmin($currUser);
+$isLogistics = false;
+$userRole = (string)($currUser['role_name'] ?? '');
+if (stripos($userRole, 'Logistics') !== false || stripos($userRole, 'Supply Chain') !== false) {
+    $isLogistics = true;
+}
+$canManageProducts = ($isSuperAdmin || $isLogistics);
+$csrfToken = getCsrfToken();
+
+$allCustomers = [];
+try {
+    $stmtAllC = getDbConnection()->query("SELECT cus_id, company_name, sector, headquarters, account_tier, account_manager_emp_id FROM customers ORDER BY cus_id ASC");
+    $allCustomers = $stmtAllC->fetchAll(PDO::FETCH_ASSOC);
+} catch (Throwable $e) {}
 
 $cusId = shop_getCurrentCustomerId();
+if (!$cusId && !empty($allCustomers)) {
+    $cusId = $allCustomers[0]['cus_id'];
+    $_SESSION['cus_id'] = $cusId;
+}
+
 $customer = null;
 if ($cusId) {
-    $stmtC = getDbConnection()->prepare("SELECT * FROM customers WHERE cus_id = ?");
-    $stmtC->execute([$cusId]);
-    $customer = $stmtC->fetch(PDO::FETCH_ASSOC);
+    foreach ($allCustomers as $c) {
+        if ($c['cus_id'] === $cusId) {
+            $customer = $c;
+            break;
+        }
+    }
+    if (!$customer) {
+        $stmtC = getDbConnection()->prepare("SELECT * FROM customers WHERE cus_id = ?");
+        $stmtC->execute([$cusId]);
+        $customer = $stmtC->fetch(PDO::FETCH_ASSOC);
+    }
+}
+if (!$customer && !empty($allCustomers)) {
+    $customer = $allCustomers[0];
+    $cusId = $customer['cus_id'];
 }
 
 $kpis = shop_getDashboardMetrics($cusId);
@@ -32,6 +63,7 @@ if ($cusId) {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="csrf-token" content="<?= htmlspecialchars($csrfToken) ?>">
   <title>VOSTOKPRIBOR | B2B Industrial E-Commerce Platform (shop.vostokpribor.local)</title>
 
 
@@ -84,12 +116,26 @@ if ($cusId) {
 
       <!-- Right Header Actions (Customer Context, Cart, RFQ Button) -->
       <div class="header-actions">
+        <!-- Authenticated User Profile Badge -->
+        <div class="user-profile-badge" style="display:flex;align-items:center;gap:10px;padding:4px 10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:6px;" title="Current Authenticated User">
+          <div style="text-align:right;">
+            <div style="font-size:12px;font-weight:600;color:#fff;line-height:1.2;"><?= htmlspecialchars((string)($currUser['full_name'] ?? 'SuperAdmin')) ?></div>
+            <div style="font-size:10px;font-family:'JetBrains Mono',monospace;color:#F59E0B;line-height:1.2;">
+              <?= htmlspecialchars((string)($currUser['emp_id'] ?? ($currUser['user_id'] ?? 'EMP-0001'))) ?> • <?= htmlspecialchars((string)($currUser['role_name'] ?? 'SuperAdmin')) ?>
+            </div>
+          </div>
+          <div style="width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#00E5FF22,#00E5FF44);border:1px solid #00E5FF66;display:flex;align-items:center;justify-content:center;color:#00E5FF;">
+            <span class="material-symbols-outlined" style="font-size:18px;">person</span>
+          </div>
+        </div>
+
         <!-- Account / Customer Context Switcher -->
-        <div class="customer-context-selector" onclick="window.shopApp.toggleCustomerDropdown(event)">
-          <div class="customer-avatar" id="header-customer-avatar">—</div>
+        <div class="customer-context-selector" onclick="window.shopApp && window.shopApp.toggleCustomerDropdown ? window.shopApp.toggleCustomerDropdown(event) : document.getElementById('customer-dropdown-menu').classList.toggle('show')" title="Active Enterprise Customer Persona">
+          <span style="font-size:10px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;color:#F59E0B;background:rgba(245,158,11,0.15);padding:2px 6px;border-radius:3px;margin-right:2px;">CLIENT</span>
+          <div class="customer-avatar" id="header-customer-avatar"><?= htmlspecialchars(strtoupper(substr($customer['company_name'] ?? 'T', 0, 1))) ?></div>
           <div class="customer-info">
-            <span class="customer-code" id="header-customer-code">—</span>
-            <span class="customer-name" id="header-customer-name">Enterprise Account</span>
+            <span class="customer-code" id="header-customer-code"><?= htmlspecialchars($customer['cus_id'] ?? ($cusId ?: 'CUS-1005')) ?></span>
+            <span class="customer-name" id="header-customer-name"><?= htmlspecialchars($customer['company_name'] ?? 'Tashkent Precision Controls') ?></span>
           </div>
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
             class="shop-text-muted-dark">
@@ -97,10 +143,50 @@ if ($cusId) {
           </svg>
 
           <!-- Dropdown Account Switcher Menu -->
-          <div class="customer-dropdown-menu" id="customer-dropdown-menu">
-            <div class="dropdown-header-label">Switch Enterprise Account</div>
-            <div id="customer-dropdown-items">
-              <!-- Dynamically populated from MySQL database by shop-data.js -->
+          <div class="customer-dropdown-menu" id="customer-dropdown-menu" onclick="event.stopPropagation()">
+            <div class="dropdown-header-label">
+              <div style="display:flex;align-items:center;gap:6px;">
+                <span class="material-symbols-outlined" style="font-size:16px;color:#00E5FF;">switch_account</span>
+                <span>Switch Enterprise Account</span>
+              </div>
+              <span style="font-family:'JetBrains Mono',monospace;font-size:10px;background:rgba(0,229,255,0.15);color:#00E5FF;padding:2px 6px;border-radius:10px;">
+                <?= count($allCustomers) ?> Accounts
+              </span>
+            </div>
+            <div style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,0.08);background:#091827;">
+              <input type="text" id="customer-dropdown-search" placeholder="Search account by name or code..."
+                oninput="filterCustomerDropdownList(this.value)"
+                onclick="event.stopPropagation()"
+                style="width:100%;padding:6px 10px;background:#0d1e2e;border:1px solid #1b3a5c;border-radius:4px;color:#fff;font-size:12px;outline:none;" />
+            </div>
+            <div id="customer-dropdown-items" style="max-height:340px;overflow-y:auto;">
+              <?php foreach ($allCustomers as $c): 
+                $isSelected = ($c['cus_id'] === $cusId);
+                $initial = strtoupper(substr($c['company_name'] ?? 'C', 0, 1));
+              ?>
+              <div class="customer-option-item <?= $isSelected ? 'selected' : '' ?>" 
+                   data-code="<?= htmlspecialchars($c['cus_id']) ?>"
+                   data-name="<?= htmlspecialchars(strtolower($c['company_name'])) ?>"
+                   onclick="window.selectEnterpriseAccount('<?= htmlspecialchars($c['cus_id']) ?>', event)">
+                <div style="display:flex;align-items:center;gap:10px;flex:1;min-width:0;">
+                  <div style="width:28px;height:28px;border-radius:50%;background:<?= $isSelected ? 'rgba(0,229,255,0.2)' : 'rgba(255,255,255,0.06)' ?>;border:1px solid <?= $isSelected ? '#00E5FF' : 'rgba(255,255,255,0.12)' ?>;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;color:<?= $isSelected ? '#00E5FF' : '#94a3b8' ?>;flex-shrink:0;">
+                    <?= htmlspecialchars($initial) ?>
+                  </div>
+                  <div style="flex:1;min-width:0;">
+                    <div style="display:flex;align-items:center;gap:6px;">
+                      <span style="font-family:'JetBrains Mono',monospace;color:#00E5FF;font-size:11px;font-weight:600;"><?= htmlspecialchars($c['cus_id']) ?></span>
+                      <span style="color:#ffffff;font-size:12.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"><?= htmlspecialchars($c['company_name']) ?></span>
+                    </div>
+                    <div style="font-size:11px;color:#94a3b8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+                      <?= htmlspecialchars($c['sector'] ?? 'Industrial Equipment') ?> · <?= htmlspecialchars($c['headquarters'] ?? 'Kazakhstan') ?>
+                    </div>
+                  </div>
+                </div>
+                <?php if ($isSelected): ?>
+                  <span style="color:#00E5FF;font-size:10px;font-weight:700;background:rgba(0,229,255,0.15);padding:2px 6px;border-radius:4px;margin-left:8px;flex-shrink:0;">ACTIVE</span>
+                <?php endif; ?>
+              </div>
+              <?php endforeach; ?>
             </div>
           </div>
         </div>
@@ -179,6 +265,16 @@ if ($cusId) {
         </div>
         <span class="sidebar-badge" style="background:rgba(0,229,255,0.2); color:#00E5FF;">SYS10</span>
       </a>
+
+      <?php if ($canManageProducts): ?>
+      <a class="sidebar-nav-item" data-screen="admin-products" onclick="window.shopApp.navigateTo('admin-products'); loadAdminProducts();" style="cursor:pointer;">
+        <div class="sidebar-item-left">
+          <span class="sidebar-icon material-symbols-outlined" style="color:#F59E0B;">inventory_2</span>
+          <span class="sidebar-label" style="color:#F59E0B; font-weight:600;">Product Admin</span>
+        </div>
+        <span class="sidebar-badge" style="background:rgba(245,158,11,0.2); color:#F59E0B;">L4</span>
+      </a>
+      <?php endif; ?>
     </nav>
 
     <div class="sidebar-footer">
@@ -219,6 +315,53 @@ if ($cusId) {
        MAIN APPLICATION VIEW CONTAINER
        ======================================================================== -->
   <main class="app-container">
+
+    <?php if ($canManageProducts): ?>
+    <!-- ======================================================================
+         SCREEN: PRODUCT ADMINISTRATION (SuperAdmin & Logistics Only)
+         ====================================================================== -->
+    <section class="screen-view" id="view-admin-products" style="padding: 24px; max-width: 1400px; margin: 0 auto; display:none;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:16px;">
+        <div>
+          <div style="display:flex; align-items:center; gap:10px;">
+            <span class="material-symbols-outlined" style="color:#F59E0B; font-size:28px;">inventory_2</span>
+            <h1 style="font-size:22px; font-weight:700; color:#fff; margin:0;">Product Catalog Administration</h1>
+          </div>
+          <p style="color:#94a3b8; font-size:13px; margin-top:4px;">Manage B2B industrial products, prices, stock levels, and upload technical drawings/photos.</p>
+        </div>
+        <div style="display:flex; gap:10px;">
+          <button class="btn-primary-amber" onclick="openAddProductModal()" style="display:flex; align-items:center; gap:8px; padding:10px 16px; border-radius:6px; font-weight:600; cursor:pointer;">
+            <span class="material-symbols-outlined" style="font-size:18px;">add_box</span>
+            <span>Add Product</span>
+          </button>
+          <button onclick="loadAdminProducts()" style="background:#1e293b; color:#cbd5e1; border:1px solid #334155; padding:10px 14px; border-radius:6px; cursor:pointer; display:flex; align-items:center; gap:6px;">
+            <span class="material-symbols-outlined" style="font-size:18px;">refresh</span>
+            <span>Refresh</span>
+          </button>
+        </div>
+      </div>
+
+      <div style="background:#0F2438; border:1px solid #1B3A5C; border-radius:8px; overflow:hidden; box-shadow:0 4px 12px rgba(0,0,0,0.3);">
+        <table style="width:100%; border-collapse:collapse; text-align:left; font-size:13px;" id="admin-products-table">
+          <thead>
+            <tr style="background:#142c44; color:#94a3b8; border-bottom:1px solid #1B3A5C; font-family:'JetBrains Mono',monospace; font-size:11px; text-transform:uppercase;">
+              <th style="padding:12px 16px;">ID</th>
+              <th style="padding:12px 16px;">Image</th>
+              <th style="padding:12px 16px;">Product Name & Description</th>
+              <th style="padding:12px 16px;">Billing Model</th>
+              <th style="padding:12px 16px;">Price (€)</th>
+              <th style="padding:12px 16px;">Stock</th>
+              <th style="padding:12px 16px;">Status</th>
+              <th style="padding:12px 16px; text-align:right;">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="admin-products-tbody">
+            <tr><td colspan="8" style="padding:24px; text-align:center; color:#94a3b8;">Loading product catalog...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+    <?php endif; ?>
 
     <!-- ======================================================================
          SCREEN 1: PRODUCT CATALOG
@@ -707,6 +850,130 @@ if ($cusId) {
   <!-- Toast Container -->
   <div class="toast-container" id="toast-container"></div>
 
+  <?php if ($canManageProducts): ?>
+  <!-- ========================================================================
+       PRODUCT CATALOG ADMIN MODALS (SuperAdmin & Logistics)
+       ======================================================================== -->
+  <!-- 1. Add / Edit Product Modal -->
+  <div id="admin-product-modal" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); z-index:10050; width:90%; max-width:540px; background:#0F2438; border:1px solid #1B3A5C; border-radius:10px; box-shadow:0 20px 50px rgba(0,0,0,0.7); color:#e2e8f0; font-family:'IBM Plex Sans', sans-serif;">
+    <div style="display:flex; justify-content:space-between; align-items:center; padding:16px 20px; border-bottom:1px solid #1B3A5C; background:#142c44;">
+      <h3 id="admin-prod-modal-title" style="margin:0; font-size:16px; font-weight:700; color:#fff; display:flex; align-items:center; gap:8px;">
+        <span class="material-symbols-outlined" style="color:#F59E0B; font-size:20px;">inventory_2</span>
+        <span>Add Industrial Product</span>
+      </h3>
+      <button onclick="closeAllAdminModals()" style="background:none; border:none; color:#94a3b8; font-size:18px; cursor:pointer;">✕</button>
+    </div>
+    <form id="admin-prod-form" onsubmit="submitProductForm(event)" style="padding:20px;">
+      <input type="hidden" id="admin-prod-id" value="">
+      <div style="margin-bottom:14px;">
+        <label style="display:block; font-size:12px; font-weight:600; color:#94a3b8; margin-bottom:6px; text-transform:uppercase;">Product Name *</label>
+        <input type="text" id="admin-prod-name" required placeholder="e.g. VP-9000 High-Precision Flow Sensor" style="width:100%; box-sizing:border-box; background:#091827; border:1px solid #1B3A5C; color:#fff; padding:10px 12px; border-radius:6px; font-size:13px;">
+      </div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:14px;">
+        <div>
+          <label style="display:block; font-size:12px; font-weight:600; color:#94a3b8; margin-bottom:6px; text-transform:uppercase;">Billing Model</label>
+          <select id="admin-prod-model" style="width:100%; box-sizing:border-box; background:#091827; border:1px solid #1B3A5C; color:#fff; padding:10px 12px; border-radius:6px; font-size:13px;">
+            <option value="PerUnit">PerUnit</option>
+            <option value="Monthly">Monthly</option>
+            <option value="Hourly">Hourly</option>
+            <option value="Flat">Flat</option>
+          </select>
+        </div>
+        <div>
+          <label style="display:block; font-size:12px; font-weight:600; color:#94a3b8; margin-bottom:6px; text-transform:uppercase;">Price (€) *</label>
+          <input type="number" step="0.01" min="0" id="admin-prod-price" required placeholder="0.00" style="width:100%; box-sizing:border-box; background:#091827; border:1px solid #1B3A5C; color:#fff; padding:10px 12px; border-radius:6px; font-size:13px;">
+        </div>
+      </div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:14px;">
+        <div>
+          <label style="display:block; font-size:12px; font-weight:600; color:#94a3b8; margin-bottom:6px; text-transform:uppercase;">Initial Stock Qty</label>
+          <input type="number" step="1" min="0" id="admin-prod-stock" value="50" style="width:100%; box-sizing:border-box; background:#091827; border:1px solid #1B3A5C; color:#fff; padding:10px 12px; border-radius:6px; font-size:13px;">
+        </div>
+        <div>
+          <label style="display:block; font-size:12px; font-weight:600; color:#94a3b8; margin-bottom:6px; text-transform:uppercase;">Catalog Status</label>
+          <select id="admin-prod-active" style="width:100%; box-sizing:border-box; background:#091827; border:1px solid #1B3A5C; color:#fff; padding:10px 12px; border-radius:6px; font-size:13px;">
+            <option value="1">Active in Storefront</option>
+            <option value="0">Deactivated / Draft</option>
+          </select>
+        </div>
+      </div>
+      <div style="margin-bottom:14px;">
+        <label style="display:block; font-size:12px; font-weight:600; color:#94a3b8; margin-bottom:6px; text-transform:uppercase;">Technical Description</label>
+        <textarea id="admin-prod-desc" rows="3" placeholder="Industrial specifications, compliance standards, and operating limits..." style="width:100%; box-sizing:border-box; background:#091827; border:1px solid #1B3A5C; color:#fff; padding:10px 12px; border-radius:6px; font-size:13px; resize:vertical;"></textarea>
+      </div>
+      <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px; border-top:1px solid #1B3A5C; padding-top:16px;">
+        <button type="button" onclick="closeAllAdminModals()" style="background:#1e293b; color:#cbd5e1; border:1px solid #334155; padding:9px 16px; border-radius:6px; cursor:pointer; font-weight:600;">Cancel</button>
+        <button type="submit" id="admin-prod-submit-btn" style="background:#F59E0B; color:#000; border:none; padding:9px 18px; border-radius:6px; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:6px;">
+          <span class="material-symbols-outlined" style="font-size:18px;">save</span>
+          <span>Save Product</span>
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- 2. Technical Image Upload Modal -->
+  <div id="admin-upload-modal" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); z-index:10050; width:90%; max-width:480px; background:#0F2438; border:1px solid #1B3A5C; border-radius:10px; box-shadow:0 20px 50px rgba(0,0,0,0.7); color:#e2e8f0; font-family:'IBM Plex Sans', sans-serif;">
+    <div style="display:flex; justify-content:space-between; align-items:center; padding:16px 20px; border-bottom:1px solid #1B3A5C; background:#142c44;">
+      <h3 style="margin:0; font-size:16px; font-weight:700; color:#fff; display:flex; align-items:center; gap:8px;">
+        <span class="material-symbols-outlined" style="color:#00E5FF; font-size:20px;">cloud_upload</span>
+        <span>Upload Product Image</span>
+      </h3>
+      <button onclick="closeAllAdminModals()" style="background:none; border:none; color:#94a3b8; font-size:18px; cursor:pointer;">✕</button>
+    </div>
+    <form id="admin-upload-form" onsubmit="submitImageUpload(event)" style="padding:20px;">
+      <input type="hidden" id="admin-upload-prod-id" value="">
+      <p style="font-size:13px; color:#cbd5e1; margin-bottom:12px;">Upload a technical photograph or CAD render for <strong id="admin-upload-prod-display" style="color:#F59E0B; font-family:'JetBrains Mono',monospace;"></strong>.</p>
+      <div style="background:#091827; border:2px dashed #1B3A5C; border-radius:8px; padding:24px; text-align:center; margin-bottom:14px;">
+        <span class="material-symbols-outlined" style="font-size:36px; color:#64748b; margin-bottom:8px;">photo_library</span>
+        <input type="file" id="admin-upload-file" accept="image/jpeg,image/png,image/webp" required style="display:block; margin:0 auto; font-size:12px; color:#94a3b8;">
+        <span style="display:block; font-size:11px; color:#64748b; margin-top:8px;">Supported formats: JPG, PNG, WebP (Max: 2 MB)</span>
+      </div>
+      <div style="display:flex; justify-content:flex-end; gap:10px; border-top:1px solid #1B3A5C; padding-top:16px;">
+        <button type="button" onclick="closeAllAdminModals()" style="background:#1e293b; color:#cbd5e1; border:1px solid #334155; padding:9px 16px; border-radius:6px; cursor:pointer;">Cancel</button>
+        <button type="submit" id="admin-upload-submit-btn" style="background:#00E5FF; color:#041421; border:none; padding:9px 18px; border-radius:6px; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:6px;">
+          <span class="material-symbols-outlined" style="font-size:18px;">upload</span>
+          <span>Upload Image</span>
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- 3. Force Delete Confirmation Modal -->
+  <div id="admin-forcedel-modal" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); z-index:10050; width:90%; max-width:480px; background:#0F2438; border:1px solid #EF4444; border-radius:10px; box-shadow:0 20px 50px rgba(0,0,0,0.7); color:#e2e8f0; font-family:'IBM Plex Sans', sans-serif;">
+    <div style="display:flex; justify-content:space-between; align-items:center; padding:16px 20px; border-bottom:1px solid rgba(239,68,68,0.3); background:#271216;">
+      <h3 style="margin:0; font-size:16px; font-weight:700; color:#EF4444; display:flex; align-items:center; gap:8px;">
+        <span class="material-symbols-outlined" style="color:#EF4444; font-size:20px;">warning</span>
+        <span>Permanent Force Delete</span>
+      </h3>
+      <button onclick="closeAllAdminModals()" style="background:none; border:none; color:#94a3b8; font-size:18px; cursor:pointer;">✕</button>
+    </div>
+    <form id="admin-forcedel-form" onsubmit="submitForceDelete(event)" style="padding:20px;">
+      <input type="hidden" id="admin-forcedel-prod-id" value="">
+      <p style="font-size:13px; color:#cbd5e1; line-height:1.5; margin-bottom:12px;">
+        You are about to permanently purge product <strong id="admin-forcedel-prod-display" style="color:#F59E0B; font-family:'JetBrains Mono',monospace;"></strong> from the system catalog.
+      </p>
+      <div style="background:rgba(239,68,68,0.1); border-left:4px solid #EF4444; padding:10px 12px; border-radius:4px; font-size:12px; color:#fca5a5; margin-bottom:14px;">
+        <strong>Safety Rule:</strong> Force delete will only succeed if the product has never been ordered or quoted. If referenced in orders, it is automatically soft-deleted with a historical snapshot.
+      </div>
+      <div style="margin-bottom:16px;">
+        <label style="display:block; font-size:12px; font-weight:600; color:#94a3b8; margin-bottom:6px;">
+          Type confirmation: <code id="admin-forcedel-expected" style="color:#F59E0B;"></code>
+        </label>
+        <input type="text" id="admin-forcedel-input" required placeholder="DELETE PROD-xxxx" style="width:100%; box-sizing:border-box; background:#091827; border:1px solid #EF4444; color:#fff; padding:10px 12px; border-radius:6px; font-size:13px; font-family:'JetBrains Mono',monospace;">
+      </div>
+      <div style="display:flex; justify-content:flex-end; gap:10px; border-top:1px solid rgba(239,68,68,0.3); padding-top:16px;">
+        <button type="button" onclick="closeAllAdminModals()" style="background:#1e293b; color:#cbd5e1; border:1px solid #334155; padding:9px 16px; border-radius:6px; cursor:pointer;">Cancel</button>
+        <button type="submit" id="admin-forcedel-submit-btn" style="background:#EF4444; color:#fff; border:none; padding:9px 18px; border-radius:6px; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:6px;">
+          <span class="material-symbols-outlined" style="font-size:18px;">delete_forever</span>
+          <span>Confirm Permanent Delete</span>
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <div id="admin-modal-backdrop" onclick="closeAllAdminModals()" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.7); z-index:10040; backdrop-filter:blur(2px);"></div>
+  <?php endif; ?>
+
   <!-- ========================================================================
        FOOTER (Baseline Architecture Reference)
        ======================================================================== -->
@@ -759,7 +1026,320 @@ if ($cusId) {
       const ctot = document.getElementById("cart-total");
       if (ctot) ctot.textContent = "€0.00";
     });
+
+    window.selectEnterpriseAccount = function(customerId, event) {
+      if (event) {
+        event.stopPropagation();
+        event.preventDefault();
+      }
+      try {
+        sessionStorage.setItem("vp_cus_id", customerId);
+        localStorage.setItem("vp_cus_id", customerId);
+      } catch (e) {}
+
+      const menu = document.getElementById("customer-dropdown-menu");
+      if (menu) menu.classList.remove("show");
+
+      if (window.shopApp && typeof window.shopApp.showToast === 'function') {
+        window.shopApp.showToast(`Switched active enterprise client to ${customerId}... Reloading context.`, "green");
+      }
+      setTimeout(() => {
+        window.location.href = `Dashboard.php?cus_id=${encodeURIComponent(customerId)}`;
+      }, 200);
+    };
+
+    function filterCustomerDropdownList(query) {
+      const q = (query || '').toLowerCase().trim();
+      const items = document.querySelectorAll('#customer-dropdown-items .customer-option-item');
+      items.forEach(el => {
+        const code = (el.dataset.code || '').toLowerCase();
+        const name = (el.dataset.name || '').toLowerCase();
+        if (!q || code.includes(q) || name.includes(q)) {
+          el.style.display = 'flex';
+        } else {
+          el.style.display = 'none';
+        }
+      });
+    }
   </script>
+
+  <?php if ($canManageProducts): ?>
+  <script>
+    let adminProductsCache = [];
+
+    function getAdminCsrfToken() {
+      const meta = document.querySelector('meta[name="csrf-token"]');
+      return meta ? meta.content : '';
+    }
+
+    function showAdminProductsScreen() {
+      document.querySelectorAll('.screen-view').forEach(el => {
+        el.classList.remove('active');
+        el.style.display = 'none';
+      });
+      const adminSec = document.getElementById('view-admin-products');
+      if (adminSec) {
+        adminSec.classList.add('active');
+        adminSec.style.display = 'block';
+      }
+      document.querySelectorAll('.sidebar-nav-item').forEach(el => {
+        el.classList.remove('active');
+        if (el.dataset.screen === 'admin-products') el.classList.add('active');
+      });
+    }
+
+    async function loadAdminProducts() {
+      showAdminProductsScreen();
+      const tbody = document.getElementById('admin-products-tbody');
+      if (!tbody) return;
+      tbody.innerHTML = '<tr><td colspan="8" style="padding:24px; text-align:center; color:#94a3b8;">Loading product catalog...</td></tr>';
+      try {
+        const res = await fetch('api/admin_products.php?action=list');
+        const json = await res.json();
+        if (!json.success) throw new Error(json.message || 'Failed to load products');
+        adminProductsCache = json.data || [];
+        renderAdminProductsTable(adminProductsCache);
+      } catch (err) {
+        tbody.innerHTML = `<tr><td colspan="8" style="padding:24px; text-align:center; color:#EF4444;">Error: ${err.message}</td></tr>`;
+      }
+    }
+
+    function renderAdminProductsTable(products) {
+      const tbody = document.getElementById('admin-products-tbody');
+      if (!tbody) return;
+      if (!products.length) {
+        tbody.innerHTML = '<tr><td colspan="8" style="padding:24px; text-align:center; color:#94a3b8;">No products found. Click "Add Product" to create one.</td></tr>';
+        return;
+      }
+      tbody.innerHTML = products.map(p => {
+        const isActive = parseInt(p.is_active, 10) === 1;
+        const statusBadge = isActive
+          ? '<span style="background:rgba(16,185,129,0.2); color:#10B981; border:1px solid rgba(16,185,129,0.3); padding:3px 8px; border-radius:4px; font-size:11px; font-weight:600;">Active</span>'
+          : '<span style="background:rgba(239,68,68,0.2); color:#EF4444; border:1px solid rgba(239,68,68,0.3); padding:3px 8px; border-radius:4px; font-size:11px; font-weight:600;">Deactivated</span>';
+        
+        const imgSrc = p.image_url ? `../${p.image_url}` : '';
+        const imgCell = imgSrc 
+          ? `<img src="${imgSrc}" alt="${p.prod_id}" style="width:40px; height:40px; object-fit:cover; border-radius:4px; border:1px solid #1B3A5C;">`
+          : `<div style="width:40px; height:40px; background:#142c44; border-radius:4px; border:1px solid #1B3A5C; display:flex; align-items:center; justify-content:center; color:#64748b;"><span class="material-symbols-outlined" style="font-size:20px;">image</span></div>`;
+
+        return `
+          <tr style="border-bottom:1px solid #1B3A5C; transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.02)'" onmouseout="this.style.background=''">
+            <td style="padding:12px 16px; font-family:'JetBrains Mono',monospace; font-weight:600; color:#F59E0B;">${p.prod_id}</td>
+            <td style="padding:12px 16px;">${imgCell}</td>
+            <td style="padding:12px 16px;">
+              <div style="font-weight:600; color:#fff;">${escapeHtml(p.product_name)}</div>
+              <div style="font-size:11px; color:#94a3b8; max-width:320px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${escapeHtml(p.description || '')}</div>
+            </td>
+            <td style="padding:12px 16px; font-family:'JetBrains Mono',monospace; color:#cbd5e1;">${p.billing_model}</td>
+            <td style="padding:12px 16px; font-weight:700; color:#00E5FF;">€${parseFloat(p.price).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+            <td style="padding:12px 16px; font-family:'JetBrains Mono',monospace; color:${p.stock > 10 ? '#10B981' : '#F59E0B'};">${p.stock}</td>
+            <td style="padding:12px 16px;">${statusBadge}</td>
+            <td style="padding:12px 16px; text-align:right;">
+              <div style="display:inline-flex; gap:6px;">
+                <button onclick="openEditProductModal('${p.prod_id}')" title="Edit Product" style="background:#1e293b; color:#cbd5e1; border:1px solid #334155; padding:6px 10px; border-radius:4px; cursor:pointer; font-size:12px;">Edit</button>
+                <button onclick="openUploadModal('${p.prod_id}')" title="Upload Image" style="background:#142c44; color:#00E5FF; border:1px solid #00E5FF44; padding:6px 10px; border-radius:4px; cursor:pointer; font-size:12px;">Upload</button>
+                <button onclick="adminSoftDelete('${p.prod_id}')" title="Soft Delete / Deactivate" style="background:#2d1b1f; color:#F87171; border:1px solid #F8717144; padding:6px 10px; border-radius:4px; cursor:pointer; font-size:12px;">Deactivate</button>
+                <button onclick="openForceDeleteModal('${p.prod_id}')" title="Force Delete" style="background:#3b1117; color:#EF4444; border:1px solid #EF444488; padding:6px 10px; border-radius:4px; cursor:pointer; font-size:12px;">Force Del</button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    }
+
+    function closeAllAdminModals() {
+      document.getElementById('admin-product-modal').style.display = 'none';
+      document.getElementById('admin-upload-modal').style.display = 'none';
+      document.getElementById('admin-forcedel-modal').style.display = 'none';
+      document.getElementById('admin-modal-backdrop').style.display = 'none';
+    }
+
+    function openAddProductModal() {
+      document.getElementById('admin-prod-modal-title').innerHTML = '<span class="material-symbols-outlined" style="color:#F59E0B; font-size:20px;">inventory_2</span><span>Add Industrial Product</span>';
+      document.getElementById('admin-prod-id').value = '';
+      document.getElementById('admin-prod-name').value = '';
+      document.getElementById('admin-prod-model').value = 'PerUnit';
+      document.getElementById('admin-prod-price').value = '';
+      document.getElementById('admin-prod-stock').value = '50';
+      document.getElementById('admin-prod-active').value = '1';
+      document.getElementById('admin-prod-desc').value = '';
+      document.getElementById('admin-modal-backdrop').style.display = 'block';
+      document.getElementById('admin-product-modal').style.display = 'block';
+    }
+
+    function openEditProductModal(prodId) {
+      const p = adminProductsCache.find(x => x.prod_id === prodId);
+      if (!p) return;
+      document.getElementById('admin-prod-modal-title').innerHTML = `<span class="material-symbols-outlined" style="color:#F59E0B; font-size:20px;">edit</span><span>Edit Product ${prodId}</span>`;
+      document.getElementById('admin-prod-id').value = p.prod_id;
+      document.getElementById('admin-prod-name').value = p.product_name;
+      document.getElementById('admin-prod-model').value = p.billing_model;
+      document.getElementById('admin-prod-price').value = p.price;
+      document.getElementById('admin-prod-stock').value = p.stock;
+      document.getElementById('admin-prod-active').value = p.is_active;
+      document.getElementById('admin-prod-desc').value = p.description || '';
+      document.getElementById('admin-modal-backdrop').style.display = 'block';
+      document.getElementById('admin-product-modal').style.display = 'block';
+    }
+
+    async function submitProductForm(e) {
+      e.preventDefault();
+      const prodId = document.getElementById('admin-prod-id').value;
+      const isEdit = !!prodId;
+      const payload = {
+        prod_id: prodId,
+        product_name: document.getElementById('admin-prod-name').value,
+        billing_model: document.getElementById('admin-prod-model').value,
+        price: parseFloat(document.getElementById('admin-prod-price').value),
+        stock: parseInt(document.getElementById('admin-prod-stock').value, 10),
+        is_active: parseInt(document.getElementById('admin-prod-active').value, 10),
+        description: document.getElementById('admin-prod-desc').value
+      };
+
+      const btn = document.getElementById('admin-prod-submit-btn');
+      btn.disabled = true;
+      btn.textContent = 'Saving...';
+
+      try {
+        const res = await fetch('api/admin_products.php', {
+          method: isEdit ? 'PUT' : 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-Token': getAdminCsrfToken()
+          },
+          body: JSON.stringify(payload)
+        });
+        const json = await res.json();
+        if (!json.success) throw new Error(json.message || json.error || 'Failed to save');
+        alert(isEdit ? 'Product updated successfully.' : `Product created successfully: ${json.data.prod_id}`);
+        closeAllAdminModals();
+        loadAdminProducts();
+      } catch (err) {
+        alert(`Error: ${err.message}`);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<span class="material-symbols-outlined" style="font-size:18px;">save</span><span>Save Product</span>';
+      }
+    }
+
+    function openUploadModal(prodId) {
+      document.getElementById('admin-upload-prod-id').value = prodId;
+      document.getElementById('admin-upload-prod-display').textContent = prodId;
+      document.getElementById('admin-upload-file').value = '';
+      document.getElementById('admin-modal-backdrop').style.display = 'block';
+      document.getElementById('admin-upload-modal').style.display = 'block';
+    }
+
+    async function submitImageUpload(e) {
+      e.preventDefault();
+      const prodId = document.getElementById('admin-upload-prod-id').value;
+      const fileInput = document.getElementById('admin-upload-file');
+      if (!fileInput.files || !fileInput.files[0]) {
+        alert('Please select an image file.');
+        return;
+      }
+      const formData = new FormData();
+      formData.append('image', fileInput.files[0]);
+      formData.append('prod_id', prodId);
+      formData.append('action', 'upload');
+      formData.append('csrf_token', getAdminCsrfToken());
+
+      const btn = document.getElementById('admin-upload-submit-btn');
+      btn.disabled = true;
+      btn.textContent = 'Uploading...';
+
+      try {
+        const res = await fetch('api/admin_products.php', {
+          method: 'POST',
+          headers: {
+            'X-CSRF-Token': getAdminCsrfToken()
+          },
+          body: formData
+        });
+        const json = await res.json();
+        if (!json.success) throw new Error(json.message || json.error || 'Upload failed');
+        alert(`Image uploaded successfully: ${json.data.image_url}`);
+        closeAllAdminModals();
+        loadAdminProducts();
+      } catch (err) {
+        alert(`Upload Error: ${err.message}`);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<span class="material-symbols-outlined" style="font-size:18px;">upload</span><span>Upload Image</span>';
+      }
+    }
+
+    async function adminSoftDelete(prodId) {
+      if (!confirm(`Are you sure you want to deactivate (soft-delete) ${prodId}?`)) return;
+      try {
+        const res = await fetch('api/admin_products.php', {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-Token': getAdminCsrfToken()
+          },
+          body: JSON.stringify({ prod_id: prodId, force: 0 })
+        });
+        const json = await res.json();
+        if (!json.success) throw new Error(json.message || json.error || 'Deactivation failed');
+        alert(json.message || 'Product deactivated.');
+        loadAdminProducts();
+      } catch (err) {
+        alert(`Error: ${err.message}`);
+      }
+    }
+
+    function openForceDeleteModal(prodId) {
+      document.getElementById('admin-forcedel-prod-id').value = prodId;
+      document.getElementById('admin-forcedel-prod-display').textContent = prodId;
+      document.getElementById('admin-forcedel-expected').textContent = `DELETE ${prodId}`;
+      document.getElementById('admin-forcedel-input').value = '';
+      document.getElementById('admin-modal-backdrop').style.display = 'block';
+      document.getElementById('admin-forcedel-modal').style.display = 'block';
+    }
+
+    async function submitForceDelete(e) {
+      e.preventDefault();
+      const prodId = document.getElementById('admin-forcedel-prod-id').value;
+      const confirmInput = document.getElementById('admin-forcedel-input').value.trim();
+      const expected = `DELETE ${prodId}`;
+      if (confirmInput !== expected) {
+        alert(`Typed confirmation does not match. You must type exactly: "${expected}"`);
+        return;
+      }
+
+      const btn = document.getElementById('admin-forcedel-submit-btn');
+      btn.disabled = true;
+      btn.textContent = 'Deleting...';
+
+      try {
+        const res = await fetch('api/admin_products.php', {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-Token': getAdminCsrfToken()
+          },
+          body: JSON.stringify({ prod_id: prodId, force: 1, confirm: confirmInput })
+        });
+        const json = await res.json();
+        if (!json.success) throw new Error(json.message || json.error || 'Delete failed');
+        alert(json.message || 'Product deleted.');
+        closeAllAdminModals();
+        loadAdminProducts();
+      } catch (err) {
+        alert(`Error: ${err.message}`);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<span class="material-symbols-outlined" style="font-size:18px;">delete_forever</span><span>Confirm Permanent Delete</span>';
+      }
+    }
+  </script>
+  <?php endif; ?>
 </body>
 
 </html>

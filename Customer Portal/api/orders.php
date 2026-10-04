@@ -20,19 +20,35 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 $pdo = getDbConnection();
-$cusId = $_SESSION['cus_id'] ?? ($_SESSION['vostok_user']['user_id'] ?? ($_GET['cus_id'] ?? null));
-$method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
-
-if (empty($cusId)) {
-    $firstCus = $pdo->query("SELECT cus_id FROM customers WHERE status = 'Active' ORDER BY cus_id ASC LIMIT 1")->fetchColumn();
-    $cusId = $firstCus ?: 'CUS-1001';
+$isSA = isSuperAdmin($_vp_user);
+if ($isSA) {
+    $cusId = $_GET['cus_id'] ?? ($_SESSION['cus_id'] ?? null);
+} else {
+    $cusId = $_SESSION['cus_id'] ?? ($_SESSION['vostok_user']['user_id'] ?? ($_GET['cus_id'] ?? null));
+    if (empty($cusId)) {
+        $firstCus = $pdo->query("SELECT cus_id FROM customers WHERE status = 'Active' ORDER BY cus_id ASC LIMIT 1")->fetchColumn();
+        $cusId = $firstCus ?: 'CUS-1001';
+    }
 }
+$method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 
 try {
     if ($method === 'GET') {
         $orderId = isset($_GET['id']) ? (int)$_GET['id'] : null;
 
         if ($orderId) {
+            $chkStmt = $pdo->prepare("SELECT cus_id FROM orders WHERE order_id = :oid");
+            $chkStmt->execute([':oid' => $orderId]);
+            $owner = $chkStmt->fetchColumn();
+
+            if ($owner === false) {
+                Response::error("Order #{$orderId} not found.", 404);
+            }
+
+            if (!$isSA && $owner !== $cusId) {
+                Response::error("Forbidden: You do not have permission to view this order.", 403);
+            }
+
             $stmt = $pdo->prepare("
                 SELECT 
                     o.*,
@@ -41,9 +57,9 @@ try {
                     c.primary_contact_email
                 FROM orders o
                 LEFT JOIN customers c ON o.cus_id = c.cus_id
-                WHERE o.order_id = :oid AND o.cus_id = :cid
+                WHERE o.order_id = :oid
             ");
-            $stmt->execute([':oid' => $orderId, ':cid' => $cusId]);
+            $stmt->execute([':oid' => $orderId]);
             $order = $stmt->fetch(PDO::FETCH_ASSOC);
 
             if (!$order) {
@@ -66,6 +82,12 @@ try {
 
             Response::success($order, "Order details loaded");
         } else {
+            $whereClause = "";
+            $params = [];
+            if ($cusId) {
+                $whereClause = "WHERE o.cus_id = :cid";
+                $params[':cid'] = $cusId;
+            }
             $stmt = $pdo->prepare("
                 SELECT 
                     o.order_id,
@@ -80,11 +102,11 @@ try {
                 LEFT JOIN order_items oi ON o.order_id = oi.order_id
                 LEFT JOIN products p ON oi.prod_id = p.prod_id
                 LEFT JOIN customers c ON o.cus_id = c.cus_id
-                WHERE o.cus_id = :cid
+                {$whereClause}
                 GROUP BY o.order_id
                 ORDER BY o.order_date DESC
             ");
-            $stmt->execute([':cid' => $cusId]);
+            $stmt->execute($params);
             $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
             Response::success($orders, "Customer orders ledger loaded");
@@ -190,16 +212,19 @@ try {
         }
 
         // Verify ownership
-        $chk = $pdo->prepare("SELECT order_id, status FROM orders WHERE order_id = :oid AND cus_id = :cid");
-        $chk->execute([':oid' => $orderId, ':cid' => $cusId]);
+        $chk = $pdo->prepare("SELECT order_id, cus_id, status FROM orders WHERE order_id = :oid");
+        $chk->execute([':oid' => $orderId]);
         $existing = $chk->fetch(PDO::FETCH_ASSOC);
 
         if (!$existing) {
-            Response::error("Order not found or access denied.", 404);
+            Response::error("Order not found.", 404);
+        }
+        if (!$isSA && $existing['cus_id'] !== $cusId) {
+            Response::error("Order not found or access denied.", 403);
         }
 
         $fields = [];
-        $params = [':oid' => $orderId, ':cid' => $cusId];
+        $params = [':oid' => $orderId];
 
         if (isset($data['status'])) {
             $fields[] = "status = :status";
@@ -214,7 +239,7 @@ try {
             Response::error("No valid fields provided for update.", 400);
         }
 
-        $sql = "UPDATE orders SET " . implode(", ", $fields) . " WHERE order_id = :oid AND cus_id = :cid";
+        $sql = "UPDATE orders SET " . implode(", ", $fields) . " WHERE order_id = :oid";
         $stmt = $pdo->prepare($sql);
         $stmt->execute($params);
 
@@ -236,18 +261,22 @@ try {
         }
 
         // Verify ownership
-        $chk = $pdo->prepare("SELECT order_id FROM orders WHERE order_id = :oid AND cus_id = :cid");
-        $chk->execute([':oid' => $orderId, ':cid' => $cusId]);
-        if (!$chk->fetchColumn()) {
-            Response::error("Order not found or access denied.", 404);
+        $chk = $pdo->prepare("SELECT order_id, cus_id FROM orders WHERE order_id = :oid");
+        $chk->execute([':oid' => $orderId]);
+        $existing = $chk->fetch(PDO::FETCH_ASSOC);
+        if (!$existing) {
+            Response::error("Order not found.", 404);
+        }
+        if (!$isSA && $existing['cus_id'] !== $cusId) {
+            Response::error("Order not found or access denied.", 403);
         }
 
         $pdo->beginTransaction();
         $delItems = $pdo->prepare("DELETE FROM order_items WHERE order_id = :oid");
         $delItems->execute([':oid' => $orderId]);
 
-        $delOrder = $pdo->prepare("DELETE FROM orders WHERE order_id = :oid AND cus_id = :cid");
-        $delOrder->execute([':oid' => $orderId, ':cid' => $cusId]);
+        $delOrder = $pdo->prepare("DELETE FROM orders WHERE order_id = :oid");
+        $delOrder->execute([':oid' => $orderId]);
         $pdo->commit();
 
         AuditLogger::logSecurityEvent('ORDER_DELETED', 'CUS', "Deleted order #{$orderId}", 'Medium', null, $cusId);

@@ -15,14 +15,9 @@ require_once __DIR__ . '/../../../includes/enterprise_flows.php';
 $user = requireApiAuth();
 
 $pdo = getDbConnection();
-// Ignore any cus_id from GET/body: derive strictly from authenticated customer session
-if (($user['account_type'] ?? '') === 'Customer') {
-    $cusId = $user['cus_id'] ?? $user['user_id'];
-} else {
-    $cusId = $_SESSION['cus_id'] ?? null;
-}
+$cusId = enforceCustomerTenant($user, $_GET['cus_id'] ?? null);
 
-if (!$cusId) {
+if (!$cusId && ($user['account_type'] ?? '') === 'Customer') {
     Response::error("Customer account required to access orders.", 401);
 }
 

@@ -26,6 +26,7 @@ $opsTasks = intra_getOpsTasks();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="<?= htmlspecialchars(getCsrfToken()) ?>">
     <title>VOSTOKPRIBOR Intranet • Home Feed</title>
     <meta name="description" content="VOSTOKPRIBOR Enterprise Employee Communications & Operational Hub">
 
@@ -246,7 +247,7 @@ $opsTasks = intra_getOpsTasks();
 
 
             <!-- Top Bar Sign Out -->
-            <a href="./api/logout.php?redirect=../Employee%20Intranet/login.php" class="top-signout-btn" title="Sign Out of Employee Intranet" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" ><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
+            <a href="./api/logout.php?redirect=../login.php" class="top-signout-btn" title="Sign Out of Employee Intranet" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" ><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
         </div>
     </header>
 
@@ -444,7 +445,8 @@ $opsTasks = intra_getOpsTasks();
 
                 <!-- ==========================================================
                      LEFT COLUMN: ANNOUNCEMENT FEED
-                     ==============================                <div class="intra-display-flex-flex-direction-f48b">
+                     ========================================================== -->
+                <div class="intra-display-flex-flex-direction-f48b" style="min-width: 0;">
 
                     <!-- Feed Filter Tabs -->
                     <div class="intra-display-flex-align-items-29ed">

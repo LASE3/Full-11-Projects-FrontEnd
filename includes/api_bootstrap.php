@@ -63,7 +63,14 @@ function vp_api_guard(string $system, array $opts = []): array
     // Step 1: Require valid authentication
     $user = requireApiAuth($system);
 
-    // Step 2: Account type enforcement
+    // Step 2: SuperAdmin short-circuit — bypasses all account type, clearance, and role checks
+    if (isSuperAdmin($user)) {
+        // Still enforce CSRF for SuperAdmin on mutating requests
+        vp_enforce_csrf($opts);
+        return $user;
+    }
+
+    // Step 3: Account type enforcement
     if (!empty($opts['customer']) && ($user['account_type'] ?? '') !== 'Customer') {
         http_response_code(403);
         echo json_encode(['success' => false, 'error' => 'Customer session required'], JSON_UNESCAPED_UNICODE);
@@ -73,13 +80,6 @@ function vp_api_guard(string $system, array $opts = []): array
         http_response_code(403);
         echo json_encode(['success' => false, 'error' => 'Employee session required'], JSON_UNESCAPED_UNICODE);
         exit;
-    }
-
-    // Step 3: SuperAdmin short-circuit — bypasses all clearance/role checks
-    if (isSuperAdmin($user)) {
-        // Still enforce CSRF for SuperAdmin on mutating requests
-        vp_enforce_csrf($opts);
-        return $user;
     }
 
     // Step 4: Clearance level enforcement
@@ -196,11 +196,15 @@ function vp_require_customer_session(): string
         session_start();
     }
 
+    $user = $_SESSION['vostok_user'] ?? null;
+    if ($user && isSuperAdmin($user)) {
+        return (string)($_GET['cus_id'] ?? $_POST['cus_id'] ?? 'CUS-1001');
+    }
+
     $cusId = $_SESSION['cus_id'] ?? null;
 
     if (empty($cusId)) {
         // Also try vostok_user session
-        $user = $_SESSION['vostok_user'] ?? null;
         if ($user && ($user['account_type'] ?? '') === 'Customer') {
             $cusId = $user['cus_id'] ?? $user['user_id'] ?? null;
         }

@@ -72,8 +72,8 @@ $keyQuotas = $pdo->query("SELECT * FROM `developer_api_keys` ORDER BY `id` ASC L
             </div>
             <div class="dev-display-flex-align-items-20f3" >
                 <div class="dev-text-right" >
-                    <div class="dev-font-size-12px-font-2ab2" >Dana Yermak</div>
-                    <div class="dev-font-family-var-font-b636" >EMP-1017 • Integration Eng</div>
+                    <div class="dev-font-size-12px-font-2ab2" ><?= htmlspecialchars($currUser['full_name'] ?? 'Authorized Developer') ?></div>
+                    <div class="dev-font-family-var-font-b636" ><?= htmlspecialchars($currUser['emp_id'] ?? ($currUser['cus_id'] ?? 'DEV-AUTH')) ?> • <?= htmlspecialchars($currUser['role_name'] ?? ($currUser['company_name'] ?? 'Developer')) ?></div>
                 </div>
                 <div class="dev-width-32px-height-32px-0eaf" >
                     <span class="material-symbols-outlined text-[18px] dev-text-white">person</span>

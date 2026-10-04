@@ -51,9 +51,93 @@ $rootPdo->exec("CREATE DATABASE `{$targetDb}` CHARACTER SET utf8mb4 COLLATE utf8
 $rootPdo->exec("USE `{$targetDb}`");
 
 /**
- * Helper to execute large SQL script files reliably
+ * Helper to split SQL script into individual statements safely
  */
-function executeSqlFile(PDO $pdo, string $filePath, string $label): void {
+function splitSqlStatements(string $sql): array {
+    $statements = [];
+    $current = '';
+    $len = strlen($sql);
+    $inSingleQuote = false;
+    $inDoubleQuote = false;
+    $inBacktick = false;
+    $inLineComment = false;
+    $inBlockComment = false;
+
+    for ($i = 0; $i < $len; $i++) {
+        $c = $sql[$i];
+        $next = ($i + 1 < $len) ? $sql[$i + 1] : '';
+
+        if (!$inSingleQuote && !$inDoubleQuote && !$inBacktick) {
+            if (!$inBlockComment && !$inLineComment) {
+                if ($c === '-' && $next === '-') {
+                    $inLineComment = true;
+                    $i++;
+                    continue;
+                }
+                if ($c === '#') {
+                    $inLineComment = true;
+                    continue;
+                }
+                if ($c === '/' && $next === '*') {
+                    $inBlockComment = true;
+                    $i++;
+                    continue;
+                }
+            } elseif ($inLineComment) {
+                if ($c === "\n" || $c === "\r") {
+                    $inLineComment = false;
+                }
+                continue;
+            } elseif ($inBlockComment) {
+                if ($c === '*' && $next === '/') {
+                    $inBlockComment = false;
+                    $i++;
+                }
+                continue;
+            }
+        }
+
+        if (!$inLineComment && !$inBlockComment) {
+            if ($c === "'" && !$inDoubleQuote && !$inBacktick) {
+                $escaped = ($i > 0 && $sql[$i - 1] === '\\');
+                if (!$escaped) {
+                    $inSingleQuote = !$inSingleQuote;
+                }
+            } elseif ($c === '"' && !$inSingleQuote && !$inBacktick) {
+                $escaped = ($i > 0 && $sql[$i - 1] === '\\');
+                if (!$escaped) {
+                    $inDoubleQuote = !$inDoubleQuote;
+                }
+            } elseif ($c === '`' && !$inSingleQuote && !$inDoubleQuote) {
+                $inBacktick = !$inBacktick;
+            }
+        }
+
+        if ($c === ';' && !$inSingleQuote && !$inDoubleQuote && !$inBacktick && !$inLineComment && !$inBlockComment) {
+            $stmt = trim($current);
+            if ($stmt !== '') {
+                $statements[] = $stmt;
+            }
+            $current = '';
+        } else {
+            if (!$inLineComment && !$inBlockComment) {
+                $current .= $c;
+            }
+        }
+    }
+
+    $stmt = trim($current);
+    if ($stmt !== '') {
+        $statements[] = $stmt;
+    }
+
+    return $statements;
+}
+
+/**
+ * Helper to execute SQL script files statement-by-statement, stopping immediately on error
+ */
+function executeSqlFile(PDO $pdo, string $filePath, string $label, string $targetDb): void {
     if (!file_exists($filePath)) {
         throw new RuntimeException("SQL file not found: {$filePath}");
     }
@@ -63,18 +147,33 @@ function executeSqlFile(PDO $pdo, string $filePath, string $label): void {
         throw new RuntimeException("Could not read {$filePath}");
     }
 
-    // Temporarily disable foreign keys during large migrations
+    $statements = splitSqlStatements($sql);
     $pdo->exec("SET FOREIGN_KEY_CHECKS = 0;");
-    $pdo->exec($sql);
-    // Flush any pending multi-statement result sets
-    while ($pdo->query("SELECT 1")->nextRowset()) {}
+
+    foreach ($statements as $idx => $statement) {
+        // Prevent switching away from the active target database
+        if (preg_match('/^\s*USE\s+/i', $statement)) {
+            $statement = "USE `{$targetDb}`";
+        }
+        try {
+            $pdo->exec($statement);
+        } catch (PDOException $e) {
+            $pdo->exec("SET FOREIGN_KEY_CHECKS = 1;");
+            echo "FAILED!\n";
+            fwrite(STDERR, "\n[ERROR] Migration statement failed in file: {$filePath} (Statement #" . ($idx + 1) . ")\n");
+            fwrite(STDERR, "Statement: " . substr($statement, 0, 300) . "...\n");
+            fwrite(STDERR, "MySQL Error: " . $e->getMessage() . "\n\n");
+            exit(1);
+        }
+    }
+
     $pdo->exec("SET FOREIGN_KEY_CHECKS = 1;");
-    echo "DONE\n";
+    echo "DONE (" . count($statements) . " stmts)\n";
 }
 
 // 3. Apply original base dump
 echo "\n[2/6] Applying base schema dump (vostokpribor.sql)...\n";
-executeSqlFile($rootPdo, __DIR__ . '/vostokpribor.sql', 'vostokpribor.sql');
+executeSqlFile($rootPdo, __DIR__ . '/vostokpribor.sql', 'vostokpribor.sql', $targetDb);
 
 // 4. Apply all migrations in order
 echo "\n[3/6] Applying numbered migrations in order...\n";
@@ -83,12 +182,12 @@ sort($migrationFiles, SORT_NATURAL);
 
 foreach ($migrationFiles as $mig) {
     $baseName = basename($mig);
-    executeSqlFile($rootPdo, $mig, $baseName);
+    executeSqlFile($rootPdo, $mig, $baseName, $targetDb);
 }
 
 // 5. Apply baseline seed
 echo "\n[4/6] Applying locked baseline seed (seed_baseline.sql)...\n";
-executeSqlFile($rootPdo, __DIR__ . '/seed_baseline.sql', 'seed_baseline.sql');
+executeSqlFile($rootPdo, __DIR__ . '/seed_baseline.sql', 'seed_baseline.sql', $targetDb);
 
 // 4b. Install DB triggers (DELIMITER not supported in PDO — use direct exec)
 echo "\n[4b] Installing DB safety triggers...\n";
@@ -182,6 +281,7 @@ $rootPdo->exec("DELETE FROM products WHERE prod_id NOT BETWEEN 'PROD-1001' AND '
 // Clean temporary or fake integration logs
 $rootPdo->exec("DELETE FROM system_integration_logs WHERE endpoint = 'BASELINE_HEARTBEAT' OR payload_summary LIKE '%heartbeat%'");
 $rootPdo->exec("DELETE FROM system_integration_logs WHERE source_system_id = 'SYS11' OR target_system_id = 'ALL'");
+$rootPdo->exec("DELETE FROM system_integration_logs WHERE link_code REGEXP '^SYS[0-9]{2}_TO_SYS[0-9]{2}$'");
 
 // Reset id_counters
 $rootPdo->exec("
@@ -242,11 +342,34 @@ foreach ($checks as [$name, $target, $actual]) {
     printf("%-20s | %-10d | %-10d | %s\n", $name, $target, $actual, $ok ? "PASS" : "FAIL");
 }
 
+// 9. Verify table count, views, triggers, and key tables
+echo "\n[Schema Integrity Checks]\n";
+$tables = $rootPdo->query("SHOW FULL TABLES WHERE Table_type = 'BASE TABLE'")->fetchAll(PDO::FETCH_COLUMN);
+$views  = $rootPdo->query("SHOW FULL TABLES WHERE Table_type = 'VIEW'")->fetchAll(PDO::FETCH_COLUMN);
+$trigStmt = $rootPdo->prepare("SELECT TRIGGER_NAME FROM information_schema.TRIGGERS WHERE TRIGGER_SCHEMA = ?");
+$trigStmt->execute([$targetDb]);
+$triggers = $trigStmt->fetchAll(PDO::FETCH_COLUMN);
+
+$keyTables = ['id_counters', 'ops_tasks', 'assignment_counters', 'employees', 'customers', 'projects', 'invoices', 'tickets', 'documents', 'products', 'orders', 'roles', 'employee_roles', 'developer_api_keys'];
+$missingKeyTables = array_diff($keyTables, $tables);
+
+$hasViews = in_array('v_document_classifications', $views, true) && in_array('v_ticket_priorities', $views, true);
+$hasTriggers = in_array('trg_protect_system_account', $triggers, true) && in_array('trg_protect_last_superadmin', $triggers, true);
+
+echo "  Base Tables Count: " . count($tables) . "\n";
+echo "  Views: " . count($views) . " (v_document_classifications, v_ticket_priorities): " . ($hasViews ? "PASS" : "FAIL") . "\n";
+echo "  Triggers: " . count($triggers) . " (trg_protect_system_account, trg_protect_last_superadmin): " . ($hasTriggers ? "PASS" : "FAIL") . "\n";
+echo "  Key Tables Present: " . (empty($missingKeyTables) ? "PASS" : "FAIL (missing: " . implode(', ', $missingKeyTables) . ")") . "\n";
+
+if (!empty($missingKeyTables) || !$hasViews || !$hasTriggers) {
+    $allValid = false;
+}
+
 echo str_repeat("=", 55) . "\n";
 if ($allValid) {
     echo "SUCCESS: Database build completed with 100% baseline accuracy.\n";
     exit(0);
 } else {
-    echo "FAILURE: Database build finished with count mismatches.\n";
+    echo "FAILURE: Database build finished with count or schema mismatches.\n";
     exit(1);
 }
