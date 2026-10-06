@@ -142,25 +142,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             saReply(false, "No data provided for record creation.", [], 400, $isAjax);
         }
 
-        $cols = array_keys($fields);
-        $placeholders = array_fill(0, count($cols), '?');
-        $sql = "INSERT INTO `{$table}` (`" . implode("`, `", $cols) . "`) VALUES (" . implode(", ", $placeholders) . ")";
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute(array_values($fields));
-        $newId = $fields[$cfg['pk']] ?? $pdo->lastInsertId();
+        try {
+            $cols = array_keys($fields);
+            $placeholders = array_fill(0, count($cols), '?');
+            $sql = "INSERT INTO `{$table}` (`" . implode("`, `", $cols) . "`) VALUES (" . implode(", ", $placeholders) . ")";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute(array_values($fields));
+            $newId = $fields[$cfg['pk']] ?? $pdo->lastInsertId();
 
-        AuditLogger::logAction(
-            $currentUser['emp_id'] ?? 'EMP-0001',
-            null,
-            'SuperAdmin Console',
-            $cfg['system'],
-            'SUPERADMIN_CREATE_RECORD',
-            $table,
-            (string)$newId,
-            $fields
-        );
+            AuditLogger::logAction(
+                $currentUser['emp_id'] ?? 'EMP-0001',
+                null,
+                'SuperAdmin Console',
+                $cfg['system'],
+                'SUPERADMIN_CREATE_RECORD',
+                $table,
+                (string)$newId,
+                $fields
+            );
 
-        saReply(true, "Record created successfully in {$table}.", ['record_id' => $newId], 201, $isAjax);
+            saReply(true, "Record created successfully in {$table}.", ['record_id' => $newId], 201, $isAjax);
+        } catch (Throwable $e) {
+            saReply(false, "Insert failed in {$table}: " . $e->getMessage(), [], 400, $isAjax);
+        }
     }
 
     if ($action === 'update_record') {
@@ -188,32 +192,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             saReply(false, "No valid editable fields provided.", [], 400, $isAjax);
         }
 
-        $sets = [];
-        $vals = [];
-        foreach ($fields as $col => $val) {
-            $sets[] = "`{$col}` = ?";
-            $vals[] = $val;
+        try {
+            $sets = [];
+            $vals = [];
+            foreach ($fields as $col => $val) {
+                $sets[] = "`{$col}` = ?";
+                $vals[] = $val;
+            }
+            $vals[] = $pkVal;
+
+            $sql = "UPDATE `{$table}` SET " . implode(", ", $sets) . " WHERE `{$cfg['pk']}` = ?";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute($vals);
+
+            AuditLogger::logAction(
+                $currentUser['emp_id'] ?? 'EMP-0001',
+                null,
+                'SuperAdmin Console',
+                $cfg['system'],
+                'SUPERADMIN_UPDATE_RECORD',
+                $table,
+                (string)$pkVal,
+                $fields,
+                'SUCCESS',
+                $existing
+            );
+
+            saReply(true, "Record {$pkVal} in {$table} updated successfully.", ['record_id' => $pkVal], 200, $isAjax);
+        } catch (Throwable $e) {
+            saReply(false, "Update failed in {$table}: " . $e->getMessage(), [], 400, $isAjax);
         }
-        $vals[] = $pkVal;
-
-        $sql = "UPDATE `{$table}` SET " . implode(", ", $sets) . " WHERE `{$cfg['pk']}` = ?";
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute($vals);
-
-        AuditLogger::logAction(
-            $currentUser['emp_id'] ?? 'EMP-0001',
-            null,
-            'SuperAdmin Console',
-            $cfg['system'],
-            'SUPERADMIN_UPDATE_RECORD',
-            $table,
-            (string)$pkVal,
-            $fields,
-            'SUCCESS',
-            $existing
-        );
-
-        saReply(true, "Record {$pkVal} in {$table} updated successfully.", ['record_id' => $pkVal], 200, $isAjax);
     }
 
     if ($action === 'delete_record') {
@@ -247,33 +255,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             saReply(false, "Record {$pkVal} not found in {$table}.", [], 404, $isAjax);
         }
 
-        $force = !empty($_POST['force']);
-        if (!empty($cfg['status_col']) && !$force) {
-            // Soft delete
-            $stmt = $pdo->prepare("UPDATE `{$table}` SET `{$cfg['status_col']}` = ? WHERE `{$cfg['pk']}` = ?");
-            $stmt->execute([$cfg['soft_val'], $pkVal]);
-            $actionType = 'SUPERADMIN_SOFT_DELETE_RECORD';
-        } else {
-            // Hard delete
-            $stmt = $pdo->prepare("DELETE FROM `{$table}` WHERE `{$cfg['pk']}` = ?");
-            $stmt->execute([$pkVal]);
-            $actionType = 'SUPERADMIN_DELETE_RECORD';
+        try {
+            $force = !empty($_POST['force']);
+            if (!empty($cfg['status_col']) && !$force) {
+                // Soft delete
+                $stmt = $pdo->prepare("UPDATE `{$table}` SET `{$cfg['status_col']}` = ? WHERE `{$cfg['pk']}` = ?");
+                $stmt->execute([$cfg['soft_val'], $pkVal]);
+                $actionType = 'SUPERADMIN_SOFT_DELETE_RECORD';
+            } else {
+                // Hard delete
+                $stmt = $pdo->prepare("DELETE FROM `{$table}` WHERE `{$cfg['pk']}` = ?");
+                $stmt->execute([$pkVal]);
+                $actionType = 'SUPERADMIN_DELETE_RECORD';
+            }
+
+            AuditLogger::logAction(
+                $currentUser['emp_id'] ?? 'EMP-0001',
+                null,
+                'SuperAdmin Console',
+                $cfg['system'],
+                $actionType,
+                $table,
+                (string)$pkVal,
+                null,
+                'SUCCESS',
+                $existing
+            );
+
+            saReply(true, "Record {$pkVal} in {$table} successfully deleted.", ['record_id' => $pkVal], 200, $isAjax);
+        } catch (Throwable $e) {
+            saReply(false, "Deletion failed in {$table}: " . $e->getMessage(), [], 400, $isAjax);
         }
-
-        AuditLogger::logAction(
-            $currentUser['emp_id'] ?? 'EMP-0001',
-            null,
-            'SuperAdmin Console',
-            $cfg['system'],
-            $actionType,
-            $table,
-            (string)$pkVal,
-            null,
-            'SUCCESS',
-            $existing
-        );
-
-        saReply(true, "Record {$pkVal} in {$table} successfully deleted.", ['record_id' => $pkVal], 200, $isAjax);
     }
 
     if ($action === 'upload_file') {

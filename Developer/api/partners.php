@@ -90,10 +90,10 @@ try {
                 $leadId = (int)$pdo->lastInsertId();
 
                 $stmtAct = $pdo->prepare("
-                    INSERT INTO crm_activities (lead_id, activity_type, summary, created_by_emp_id, activity_date)
-                    VALUES (?, 'Partner Registration', ?, 'EMP-1020', NOW())
+                    INSERT INTO crm_activities (activity_type, title, description, emp_id, created_at)
+                    VALUES ('Partner Registration', ?, ?, 'EMP-1020', NOW())
                 ");
-                $stmtAct->execute([$leadId, "Developer Portal partner clearance requested by {$company} ({$contactName})"]);
+                $stmtAct->execute(["Developer Portal Registration", "Developer Portal partner clearance requested by {$company} ({$contactName})"]);
 
                 require_once __DIR__ . '/../../includes/integration_bus.php';
                 vp_emit($pdo, 'DEV_TO_CRM', 'DEV', 'CRM', 'partner_registered_lead', [

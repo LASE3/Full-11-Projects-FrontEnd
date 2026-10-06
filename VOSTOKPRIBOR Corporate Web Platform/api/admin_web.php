@@ -53,6 +53,9 @@ try {
             $title = trim((string)($req['title'] ?? ''));
             $content = trim((string)($req['body'] ?? ($req['content'] ?? '')));
             $dept = trim((string)($req['audience_dept'] ?? 'ALL')) ?: 'ALL';
+            if ($dept === 'ALL' || $dept === '') {
+                $dept = null;
+            }
 
             if (empty($title) || empty($content)) {
                 jsonRes(['success' => false, 'error' => 'Title and announcement content are required.'], 400);
