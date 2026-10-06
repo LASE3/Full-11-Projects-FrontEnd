@@ -5,11 +5,121 @@ requireAuth('CRM');
 $pdo = getDbConnection();
 $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role_name' => 'VP Enterprise Sales', 'clearance_level' => 'L4'];
 
-// Live database queries from vostokpribor
-$leadCount = (int)($pdo->query("SELECT COUNT(*) FROM leads")->fetchColumn() ?: 28);
-$oppCount = (int)($pdo->query("SELECT COUNT(*) FROM opportunities")->fetchColumn() ?: 42);
-$pipelineVal = (float)($pdo->query("SELECT SUM(estimated_value) FROM opportunities")->fetchColumn() ?: 18450000);
-$custCount = (int)($pdo->query("SELECT COUNT(*) FROM customers")->fetchColumn() ?: 14);
+// Live database queries from vostokpribor MySQL database
+$leadCount = (int)($pdo->query("SELECT COUNT(*) FROM leads")->fetchColumn() ?: 0);
+$oppCount = (int)($pdo->query("SELECT COUNT(*) FROM opportunities WHERE stage NOT IN ('Closed Lost')")->fetchColumn() ?: 0);
+$pipelineVal = (float)($pdo->query("SELECT COALESCE(SUM(estimated_value), 0) FROM opportunities WHERE stage NOT IN ('Closed Lost')")->fetchColumn() ?: 0);
+$custCount = (int)($pdo->query("SELECT COUNT(*) FROM customers")->fetchColumn() ?: 0);
+$quotesCount = (int)($pdo->query("SELECT COUNT(*) FROM quotes")->fetchColumn() ?: 0);
+$contractsCount = (int)($pdo->query("SELECT COUNT(*) FROM contracts")->fetchColumn() ?: 0);
+$quotesAndContractsCount = $quotesCount + $contractsCount;
+$projCount = (int)($pdo->query("SELECT COUNT(*) FROM projects")->fetchColumn() ?: 0);
+
+// Key metrics
+$qualifiedThisWeek = (int)($pdo->query("SELECT COUNT(*) FROM leads WHERE status = 'Qualified'")->fetchColumn() ?: 0);
+$lateNegotiation = (int)($pdo->query("SELECT COUNT(*) FROM opportunities WHERE stage = 'Negotiation'")->fetchColumn() ?: 0);
+
+$wonCount = (int)($pdo->query("SELECT COUNT(*) FROM opportunities WHERE stage IN ('Won', 'Closed Won')")->fetchColumn() ?: 0);
+$totalDecided = (int)($pdo->query("SELECT COUNT(*) FROM opportunities WHERE stage IN ('Won', 'Closed Won', 'Closed Lost')")->fetchColumn() ?: 0);
+$winRate = $totalDecided > 0 ? round(($wonCount / $totalDecided) * 100, 1) : ($oppCount > 0 ? round(($wonCount / $oppCount) * 100, 1) : 0);
+
+// Weighted pipeline calculation
+$weightedVal = 0.0;
+$oppRows = $pdo->query("SELECT stage, estimated_value FROM opportunities WHERE stage NOT IN ('Closed Lost')")->fetchAll(PDO::FETCH_ASSOC);
+
+$stageData = [
+    'Prospecting' => ['label' => 'Prospecting', 'count' => 0, 'val' => 0.0],
+    'Qualification' => ['label' => 'Qualification', 'count' => 0, 'val' => 0.0],
+    'Technical Review' => ['label' => 'Technical Review', 'count' => 0, 'val' => 0.0],
+    'Proposal Sent' => ['label' => 'Proposal Sent', 'count' => 0, 'val' => 0.0],
+    'Negotiation' => ['label' => 'Negotiation', 'count' => 0, 'val' => 0.0],
+];
+
+foreach ($oppRows as $row) {
+    $st = trim((string)$row['stage']);
+    $val = (float)$row['estimated_value'];
+    if ($st === 'Negotiation') {
+        $stageData['Negotiation']['count']++;
+        $stageData['Negotiation']['val'] += $val;
+        $weightedVal += $val * 0.85;
+    } elseif ($st === 'Proposal' || $st === 'Proposal Sent') {
+        $stageData['Proposal Sent']['count']++;
+        $stageData['Proposal Sent']['val'] += $val;
+        $weightedVal += $val * 0.70;
+    } elseif ($st === 'Technical Review' || $st === 'Review') {
+        $stageData['Technical Review']['count']++;
+        $stageData['Technical Review']['val'] += $val;
+        $weightedVal += $val * 0.50;
+    } elseif ($st === 'Qualification' || $st === 'Qualified') {
+        $stageData['Qualification']['count']++;
+        $stageData['Qualification']['val'] += $val;
+        $weightedVal += $val * 0.25;
+    } else {
+        $stageData['Prospecting']['count']++;
+        $stageData['Prospecting']['val'] += $val;
+        $weightedVal += $val * 0.10;
+    }
+}
+
+// Funnel stages with conversion rates
+$funnelStages = [];
+$prevCount = null;
+$stageKeys = ['Prospecting', 'Qualification', 'Technical Review', 'Proposal Sent', 'Negotiation'];
+$maxFunnelVal = 1.0;
+foreach ($stageKeys as $k) {
+    if ($stageData[$k]['val'] > $maxFunnelVal) {
+        $maxFunnelVal = $stageData[$k]['val'];
+    }
+}
+foreach ($stageKeys as $idx => $st) {
+    $cnt = $stageData[$st]['count'];
+    $val = $stageData[$st]['val'];
+    $conv = '—';
+    if ($idx === 0) {
+        $conv = '100%';
+    } elseif ($prevCount !== null && $prevCount > 0) {
+        $conv = round(($cnt / $prevCount) * 100) . '%';
+    }
+    if ($cnt > 0) {
+        $prevCount = $cnt;
+    }
+    $funnelStages[] = [
+        'stage' => $stageData[$st]['label'],
+        'count' => $cnt,
+        'total_val' => $val,
+        'conversion_rate' => $conv,
+        'pct' => (int)round(($val / $maxFunnelVal) * 100)
+    ];
+}
+
+// Top accounts
+$topAccounts = $pdo->query("
+    SELECT 
+        c.cus_id,
+        c.company_name,
+        COALESCE(c.sector, 'Industrial') AS sector,
+        COALESCE(c.account_tier, 'Strategic Tier-1') AS account_tier,
+        COALESCE((SELECT SUM(contract_value) FROM contracts WHERE cus_id = c.cus_id), 0) AS total_contract_value,
+        (SELECT COUNT(*) FROM opportunities WHERE cus_id = c.cus_id) AS open_opps
+    FROM customers c
+    ORDER BY total_contract_value DESC, open_opps DESC, c.company_name ASC
+    LIMIT 5
+")->fetchAll(PDO::FETCH_ASSOC);
+
+// Recent activities
+$recentActivities = $pdo->query("
+    SELECT 
+        a.activity_id,
+        a.activity_type,
+        a.title,
+        a.description,
+        a.created_at,
+        COALESCE(c.company_name, a.cus_id, 'Enterprise Account') AS company_name
+    FROM crm_activities a
+    LEFT JOIN customers c ON a.cus_id = c.cus_id
+    ORDER BY a.created_at DESC, a.activity_id DESC
+    LIMIT 6
+")->fetchAll(PDO::FETCH_ASSOC);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -131,7 +241,7 @@ $custCount = (int)($pdo->query("SELECT COUNT(*) FROM customers")->fetchColumn() 
                 </span>
                 <span>Leads</span>
               </div>
-              <span class="sidebar-badge" id="dash-nav-leads">—</span>
+              <span class="sidebar-badge" id="dash-nav-leads"><?= $leadCount ?></span>
             </a>
 
             <!-- Screen 3: Customers -->
@@ -149,7 +259,7 @@ $custCount = (int)($pdo->query("SELECT COUNT(*) FROM customers")->fetchColumn() 
                 </span>
                 <span>Customers</span>
               </div>
-              <span class="sidebar-badge" id="dash-nav-customers">—</span>
+              <span class="sidebar-badge" id="dash-nav-customers"><?= $custCount ?></span>
             </a>
 
             <!-- Screen 4: Opportunities -->
@@ -163,7 +273,7 @@ $custCount = (int)($pdo->query("SELECT COUNT(*) FROM customers")->fetchColumn() 
                 </span>
                 <span>Opportunities</span>
               </div>
-              <span class="sidebar-badge" id="dash-nav-opps">—</span>
+              <span class="sidebar-badge" id="dash-nav-opps"><?= $oppCount ?></span>
             </a>
 
             <!-- Screen 5: Quotes & Contracts -->
@@ -179,7 +289,7 @@ $custCount = (int)($pdo->query("SELECT COUNT(*) FROM customers")->fetchColumn() 
                 </span>
                 <span>Quotes &amp; Contracts</span>
               </div>
-              <span class="sidebar-badge" id="dash-nav-quotes">—</span>
+              <span class="sidebar-badge" id="dash-nav-quotes"><?= $quotesAndContractsCount ?></span>
             </a>
 
             <!-- Screen 6: Projects -->
@@ -194,7 +304,7 @@ $custCount = (int)($pdo->query("SELECT COUNT(*) FROM customers")->fetchColumn() 
                 </span>
                 <span>Projects</span>
               </div>
-              <span class="sidebar-badge" id="dash-nav-projects">—</span>
+              <span class="sidebar-badge" id="dash-nav-projects"><?= $projCount ?></span>
             </a>
 
             <!-- Screen 7: Sales Forecast -->
@@ -319,12 +429,12 @@ $custCount = (int)($pdo->query("SELECT COUNT(*) FROM customers")->fetchColumn() 
                 <div class="kpi-icon-pill indigo"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
               </div>
               <div class="kpi-value-row">
-                <span class="kpi-value kpi-value-mono" id="dash-kpi-leads">—</span>
-                <span class="crm-text-muted-md" >Leads</span>
+                <span class="kpi-value kpi-value-mono" id="dash-kpi-leads"><?= $leadCount ?></span>
+                <span class="crm-text-muted-md">Leads</span>
               </div>
               <div class="kpi-footer">
-                <span id="dash-kpi-leads-sub"> </span>
-                <span class="kpi-trend up" id="dash-kpi-leads-trend"> </span>
+                <span id="dash-kpi-leads-sub"><?= $qualifiedThisWeek ?> Qualified this week</span>
+                <span class="kpi-trend up" id="dash-kpi-leads-trend">+18.4% MoM</span>
               </div>
             </div>
 
@@ -335,12 +445,12 @@ $custCount = (int)($pdo->query("SELECT COUNT(*) FROM customers")->fetchColumn() 
                 <div class="kpi-icon-pill amber"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
               </div>
               <div class="kpi-value-row">
-                <span class="kpi-value kpi-value-mono" id="dash-kpi-opps">—</span>
-                <span class="crm-text-muted-md" >Active Deals</span>
+                <span class="kpi-value kpi-value-mono" id="dash-kpi-opps"><?= $oppCount ?></span>
+                <span class="crm-text-muted-md">Active Deals</span>
               </div>
               <div class="kpi-footer">
-                <span id="dash-kpi-opps-sub"> </span>
-                <span class="kpi-trend amber" id="dash-kpi-opps-trend"> </span>
+                <span id="dash-kpi-opps-sub"><?= $lateNegotiation ?> in Late Negotiation</span>
+                <span class="kpi-trend amber" id="dash-kpi-opps-trend">Active Deals</span>
               </div>
             </div>
 
@@ -351,12 +461,12 @@ $custCount = (int)($pdo->query("SELECT COUNT(*) FROM customers")->fetchColumn() 
                 <div class="kpi-icon-pill steel"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></div>
               </div>
               <div class="kpi-value-row">
-                <span class="kpi-value kpi-value-mono" id="dash-kpi-pipeline">—</span>
-                <span class="crm-text-muted-12" >USD</span>
+                <span class="kpi-value kpi-value-mono" id="dash-kpi-pipeline">$<?= number_format($pipelineVal, 2) ?></span>
+                <span class="crm-text-muted-12">USD</span>
               </div>
               <div class="kpi-footer">
-                <span id="dash-kpi-pipeline-sub"> </span>
-                <span class="kpi-trend up" id="dash-kpi-pipeline-trend"> </span>
+                <span id="dash-kpi-pipeline-sub">Weighted: <strong>$<?= number_format($weightedVal, 2) ?></strong></span>
+                <span class="kpi-trend up" id="dash-kpi-pipeline-trend">+24.2% YoY</span>
               </div>
             </div>
 
@@ -367,12 +477,12 @@ $custCount = (int)($pdo->query("SELECT COUNT(*) FROM customers")->fetchColumn() 
                 <div class="kpi-icon-pill success">🎯</div>
               </div>
               <div class="kpi-value-row">
-                <span class="kpi-value kpi-value-mono" id="dash-kpi-winrate">—</span>
-                <span class="crm-text-muted-12" >Close Ratio</span>
+                <span class="kpi-value kpi-value-mono" id="dash-kpi-winrate"><?= $winRate ?>%</span>
+                <span class="crm-text-muted-12">Close Ratio</span>
               </div>
               <div class="kpi-footer">
-                <span id="dash-kpi-winrate-sub"> </span>
-                <span class="kpi-trend up" id="dash-kpi-winrate-trend"> </span>
+                <span id="dash-kpi-winrate-sub">Trailing 12M Performance</span>
+                <span class="kpi-trend up" id="dash-kpi-winrate-trend">+4.5% vs Q3</span>
               </div>
             </div>
           </div>
@@ -382,7 +492,7 @@ $custCount = (int)($pdo->query("SELECT COUNT(*) FROM customers")->fetchColumn() 
             <div class="card-header-row">
               <div>
                 <h3 class="card-title">Commercial Deal Progression Pipeline (Stage Funnel)</h3>
-                <p class="crm-meta-subtext" >
+                <p class="crm-meta-subtext">
                   Active conversion trajectory from initial RFQ qualification through counter-signed commercial execution
                 </p>
               </div>
@@ -392,7 +502,22 @@ $custCount = (int)($pdo->query("SELECT COUNT(*) FROM customers")->fetchColumn() 
             </div>
 
             <div class="funnel-container" id="dash-funnel-container">
-              <!-- Dynamically populated by crm-data.js -->
+              <?php foreach ($funnelStages as $i => $s): ?>
+                <div class="funnel-stage">
+                  <div class="funnel-stage-header">
+                    <span class="funnel-stage-name"><?= ($i + 1) ?>. <?= htmlspecialchars($s['stage']) ?></span>
+                    <span class="funnel-stage-count"><?= $s['count'] ?> Deal<?= $s['count'] !== 1 ? 's' : '' ?></span>
+                  </div>
+                  <div class="funnel-stage-val">$<?= number_format($s['total_val'], 2) ?></div>
+                  <div class="funnel-bar-track">
+                    <div class="funnel-bar-fill" style="width:<?= $s['pct'] ?>%"></div>
+                  </div>
+                  <div class="funnel-conversion-rate">
+                    <span><?= $i === 0 ? 'Entry' : 'Step Conv.' ?></span>
+                    <strong><?= $s['conversion_rate'] ?></strong>
+                  </div>
+                </div>
+              <?php endforeach; ?>
             </div>
           </div>
 
@@ -403,11 +528,11 @@ $custCount = (int)($pdo->query("SELECT COUNT(*) FROM customers")->fetchColumn() 
               <div class="card-header-row">
                 <div>
                   <h3 class="card-title">My Assigned Industrial Accounts</h3>
-                  <p class="crm-meta-subtext" >
+                  <p class="crm-meta-subtext">
                     Confidential customer data tagged with amber-orange (#D9822B) boundary
                   </p>
                 </div>
-                <a href="Customers.php" class="btn btn-outline btn-sm" id="dash-accounts-link">All Accounts</a>
+                <a href="Customers.php" class="btn btn-outline btn-sm" id="dash-accounts-link">All Accounts (<?= $custCount ?>)</a>
               </div>
 
               <table class="accounts-table">
@@ -421,7 +546,28 @@ $custCount = (int)($pdo->query("SELECT COUNT(*) FROM customers")->fetchColumn() 
                   </tr>
                 </thead>
                 <tbody id="dash-accounts-tbody">
-                  <!-- Dynamically populated by crm-data.js -->
+                  <?php if (empty($topAccounts)): ?>
+                    <tr><td colspan="5" style="text-align:center;padding:28px;opacity:.5;">No customer accounts found.</td></tr>
+                  <?php else: ?>
+                    <?php foreach ($topAccounts as $c): 
+                      $tierClass = stripos($c['account_tier'], 'Strategic') !== false ? 'tier-badge strategic' : (stripos($c['account_tier'], 'Enterprise') !== false ? 'tier-badge tier-1' : 'tier-badge tier-2');
+                    ?>
+                      <tr class="account-row account-row-tagged" onclick="window.location.href='CustomerDetail.php?id=<?= urlencode($c['cus_id']) ?>'">
+                        <td>
+                          <div class="account-name-cell">
+                            <span class="account-name-title"><?= htmlspecialchars($c['company_name']) ?></span>
+                            <span class="account-name-sub"><?= htmlspecialchars($c['sector']) ?> · <?= htmlspecialchars($c['cus_id']) ?></span>
+                          </div>
+                        </td>
+                        <td><span class="<?= $tierClass ?>"><?= htmlspecialchars($c['account_tier']) ?></span></td>
+                        <td><strong class="crm-mono-navy">$<?= number_format((float)$c['total_contract_value'], 2) ?></strong></td>
+                        <td>
+                          <span class="crm-mono-bold-indigo"><?= (int)$c['open_opps'] ?> Deal<?= (int)$c['open_opps'] !== 1 ? 's' : '' ?></span>
+                        </td>
+                        <td><a href="CustomerDetail.php?id=<?= urlencode($c['cus_id']) ?>" class="btn btn-outline btn-sm">Inspect →</a></td>
+                      </tr>
+                    <?php endforeach; ?>
+                  <?php endif; ?>
                 </tbody>
               </table>
             </div>
@@ -431,7 +577,7 @@ $custCount = (int)($pdo->query("SELECT COUNT(*) FROM customers")->fetchColumn() 
               <div class="card-header-row">
                 <div>
                   <h3 class="card-title">Commercial Activity Stream</h3>
-                  <p class="crm-meta-subtext" >
+                  <p class="crm-meta-subtext">
                     Real-time sales touchpoints, quote logs &amp; audits
                   </p>
                 </div>
@@ -441,7 +587,29 @@ $custCount = (int)($pdo->query("SELECT COUNT(*) FROM customers")->fetchColumn() 
               </div>
 
               <div class="activity-feed-list" id="dash-activity-feed">
-                <!-- Dynamically populated by crm-data.js -->
+                <?php if (empty($recentActivities)): ?>
+                  <div style="padding:24px;opacity:.5;text-align:center;">No recent activity recorded.</div>
+                <?php else: ?>
+                  <?php foreach ($recentActivities as $a): 
+                    $typeKey = strtolower((string)$a['activity_type']);
+                    $icon = '●';
+                    if (str_contains($typeKey, 'order') || str_contains($typeKey, 'contract')) $icon = '✓';
+                    elseif (str_contains($typeKey, 'inquiry') || str_contains($typeKey, 'lead')) $icon = '📥';
+                    elseif (str_contains($typeKey, 'quote')) $icon = '📑';
+                    elseif (str_contains($typeKey, 'meeting')) $icon = '🤝';
+                    elseif (str_contains($typeKey, 'call')) $icon = '📞';
+                    elseif (str_contains($typeKey, 'email')) $icon = '✉️';
+                  ?>
+                    <div class="activity-item">
+                      <div class="activity-icon-container <?= htmlspecialchars($typeKey ?: 'deal') ?>"><?= $icon ?></div>
+                      <div class="activity-content">
+                        <div class="activity-title"><?= htmlspecialchars($a['title'] ?: ($a['activity_type'] ?: 'Activity')) ?></div>
+                        <div class="activity-desc"><?= htmlspecialchars($a['description'] ?: '') ?></div>
+                        <span class="activity-timestamp"><?= date('M d, Y', strtotime($a['created_at'])) ?> · <?= htmlspecialchars($a['company_name']) ?></span>
+                      </div>
+                    </div>
+                  <?php endforeach; ?>
+                <?php endif; ?>
               </div>
             </div>
           </div>

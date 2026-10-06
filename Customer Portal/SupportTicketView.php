@@ -430,7 +430,7 @@ window.CURRENT_USER = <?= json_encode($currUser, JSON_HEX_TAG | JSON_HEX_APOS | 
                     </div>
                     <div
                         class="flex items-center justify-end gap-unit-sm border-t lg:border-t-0 pt-unit-xs lg:pt-0 border-outline-variant/30">
-                        <span id="ticketCountLabel" class="font-technical-tag text-technical-tag text-secondary">Showing 4 of 4 Records</span>
+                        <span id="ticketCountLabel" class="font-technical-tag text-technical-tag text-secondary">Showing <?= count($tickets) ?> of <?= count($tickets) ?> Records</span>
                         <button onclick="resetTicketFilters()"
                             class="p-1.5 rounded hover:bg-surface-container text-secondary hover:text-primary transition-colors"
                             title="Reset Filters">
@@ -449,27 +449,27 @@ window.CURRENT_USER = <?= json_encode($currUser, JSON_HEX_TAG | JSON_HEX_APOS | 
                     <div class="overflow-x-auto">
                         <table class="w-full text-left border-collapse min-w-[960px]">
                             <thead>
-                                <tr class="bg-surface-container-low/70 border-b border-outline-variant/40 h-8">
+                                <tr class="bg-surface-container-low/80 border-b border-outline-variant/40 h-10">
                                     <th
-                                        class="py-1 px-unit-base font-label-caps text-label-caps text-secondary uppercase tracking-wider w-28">
+                                        class="py-2.5 px-4 font-label-caps text-label-caps text-secondary uppercase tracking-wider w-32">
                                         Ticket ID</th>
                                     <th
-                                        class="py-1 px-unit-base font-label-caps text-label-caps text-secondary uppercase tracking-wider w-64">
+                                        class="py-2.5 px-4 font-label-caps text-label-caps text-secondary uppercase tracking-wider w-60">
                                         System &amp; Equipment</th>
                                     <th
-                                        class="py-1 px-unit-base font-label-caps text-label-caps text-secondary uppercase tracking-wider">
+                                        class="py-2.5 px-4 font-label-caps text-label-caps text-secondary uppercase tracking-wider">
                                         Subject / Incident Summary</th>
                                     <th
-                                        class="py-1 px-unit-base font-label-caps text-label-caps text-secondary uppercase tracking-wider w-28 text-center">
+                                        class="py-2.5 px-4 font-label-caps text-label-caps text-secondary uppercase tracking-wider w-28 text-center">
                                         Priority</th>
                                     <th
-                                        class="py-1 px-unit-base font-label-caps text-label-caps text-secondary uppercase tracking-wider w-36">
+                                        class="py-2.5 px-4 font-label-caps text-label-caps text-secondary uppercase tracking-wider w-36 text-center">
                                         Status</th>
                                     <th
-                                        class="py-1 px-unit-base font-label-caps text-label-caps text-secondary uppercase tracking-wider w-44">
+                                        class="py-2.5 px-4 font-label-caps text-label-caps text-secondary uppercase tracking-wider w-48">
                                         Assigned Specialist</th>
                                     <th
-                                        class="py-1 px-unit-base font-label-caps text-label-caps text-secondary uppercase tracking-wider w-32 text-right">
+                                        class="py-2.5 px-4 font-label-caps text-label-caps text-secondary uppercase tracking-wider w-32 text-right">
                                         Updated</th>
                                 </tr>
                             </thead>
@@ -493,21 +493,21 @@ window.CURRENT_USER = <?= json_encode($currUser, JSON_HEX_TAG | JSON_HEX_APOS | 
                                     ?>
                                     <tr id="ticket-row-<?= $tId ?>" data-ticket="<?= $tId ?>" data-system="scada" data-priority="<?= $tPriority ?>" data-status="<?= $tStatus ?>" onclick="selectTicket('<?= $tId ?>')"
                                         class="ticket-table-row <?= $isSel ? 'bg-surface-container-low/50' : 'hover:bg-surface-container-low/40' ?> transition-colors relative cursor-pointer">
-                                        <td class="py-unit-sm px-unit-base font-data-mono-lg text-data-mono-lg font-bold text-primary relative">
+                                        <td class="py-3 px-4 font-data-mono-lg text-data-mono-lg font-bold text-primary relative align-middle">
                                             <div class="row-indicator absolute left-0 top-0 bottom-0 w-1 <?= $isSel ? 'bg-tertiary-fixed-dim' : 'bg-transparent' ?>"></div>
-                                            <div class="flex items-center gap-1">
-                                                <span class="material-symbols-outlined text-xs <?= $isSel ? 'text-on-tertiary-container' : 'text-secondary' ?> row-radio"><?= $isSel ? 'radio_button_checked' : 'radio_button_unchecked' ?></span>
+                                            <div class="flex items-center gap-1.5">
+                                                <span class="material-symbols-outlined text-sm <?= $isSel ? 'text-on-tertiary-container' : 'text-secondary' ?> row-radio"><?= $isSel ? 'radio_button_checked' : 'radio_button_unchecked' ?></span>
                                                 <span><?= $tId ?></span>
                                             </div>
                                         </td>
-                                        <td class="py-unit-sm px-unit-base">
-                                            <div class="font-headline-sm text-headline-sm text-primary font-semibold"><?= $systemName ?></div>
-                                            <div class="font-technical-tag text-technical-tag text-secondary flex items-center gap-1">
+                                        <td class="py-3 px-4 align-middle">
+                                            <div class="font-headline-sm text-headline-sm text-primary font-semibold leading-snug"><?= $systemName ?></div>
+                                            <div class="font-technical-tag text-technical-tag text-secondary flex items-center gap-1 mt-0.5">
                                                 <span class="w-1.5 h-1.5 rounded-full <?= $tPriority === 'critical' ? 'bg-error' : 'bg-secondary' ?>"></span>
                                                 <span>VP-GW-09 Telemetry Bus</span>
                                             </div>
                                         </td>
-                                        <td class="py-unit-sm px-unit-base">
+                                        <td class="py-3 px-4 align-middle">
                                             <div class="font-body-sm text-body-sm text-on-surface font-medium truncate max-w-md">
                                                 <?= $title ?>
                                             </div>
@@ -516,29 +516,29 @@ window.CURRENT_USER = <?= json_encode($currUser, JSON_HEX_TAG | JSON_HEX_APOS | 
                                                 <span>SLA Enforced • <?= htmlspecialchars(ucfirst($t['status'] ?? 'Open')) ?></span>
                                             </div>
                                         </td>
-                                        <td class="py-unit-sm px-unit-base text-center">
-                                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded <?= $tPriority === 'critical' ? 'bg-error text-on-error font-bold' : ($tPriority === 'high' ? 'bg-tertiary-fixed-dim text-primary font-semibold' : 'bg-surface-container text-on-surface-variant') ?> font-label-caps text-label-caps uppercase">
+                                        <td class="py-3 px-4 text-center align-middle">
+                                            <span class="inline-flex items-center justify-center gap-1 px-2.5 py-0.5 rounded <?= $tPriority === 'critical' ? 'bg-error text-on-error font-bold' : ($tPriority === 'high' ? 'bg-tertiary-fixed-dim text-primary font-semibold' : 'bg-surface-container text-on-surface-variant') ?> font-label-caps text-label-caps uppercase">
                                                 <?= htmlspecialchars(ucfirst($t['priority'])) ?>
                                             </span>
                                         </td>
-                                        <td class="py-unit-sm px-unit-base">
-                                            <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded border border-outline-variant bg-surface-container text-secondary font-technical-tag text-technical-tag font-semibold">
+                                        <td class="py-3 px-4 text-center align-middle">
+                                            <span class="inline-flex items-center justify-center gap-1.5 px-2.5 py-0.5 rounded border border-outline-variant/60 bg-surface-container text-secondary font-technical-tag text-technical-tag font-semibold">
                                                 <span class="w-1.5 h-1.5 rounded-full <?= $tStatus === 'resolved' ? 'bg-green-500' : 'bg-tertiary-fixed-dim' ?>"></span>
                                                 <span><?= htmlspecialchars(ucfirst($t['status'])) ?></span>
                                             </span>
                                         </td>
-                                        <td class="py-unit-sm px-unit-base">
+                                        <td class="py-3 px-4 align-middle">
                                             <div class="flex items-center gap-2">
-                                                <div class="w-6 h-6 rounded-full bg-primary-container text-tertiary-fixed flex items-center justify-center font-technical-tag text-technical-tag font-bold">
+                                                <div class="w-7 h-7 rounded-full bg-primary-container text-tertiary-fixed flex items-center justify-center font-technical-tag text-technical-tag font-bold shrink-0">
                                                     <?= htmlspecialchars(strtoupper(substr($engineer, 0, 2))) ?>
                                                 </div>
-                                                <div class="flex flex-col">
-                                                    <span class="font-body-sm text-body-sm text-primary font-medium leading-none"><?= $engineer ?></span>
+                                                <div class="flex flex-col min-w-0">
+                                                    <span class="font-body-sm text-body-sm text-primary font-medium leading-none truncate"><?= $engineer ?></span>
                                                     <span class="font-technical-tag text-technical-tag text-secondary leading-none mt-1">Field Diagnostics</span>
                                                 </div>
                                             </div>
                                         </td>
-                                        <td class="py-unit-sm px-unit-base text-right font-data-mono-md text-data-mono-md text-secondary">
+                                        <td class="py-3 px-4 text-right font-data-mono-md text-data-mono-md text-secondary align-middle">
                                             <?= $updatedTime ?>
                                         </td>
                                     </tr>

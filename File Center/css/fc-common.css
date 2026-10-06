@@ -133,6 +133,14 @@ body {
   justify-content: space-between;
   z-index: 900;
   overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.vk-sidebar::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
 }
 
 .vk-sidebar .vk-sidebar-header {

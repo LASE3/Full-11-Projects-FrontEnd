@@ -1073,19 +1073,23 @@ if ($cusId) {
     }
 
     function showAdminProductsScreen() {
-      document.querySelectorAll('.screen-view').forEach(el => {
-        el.classList.remove('active');
-        el.style.display = 'none';
-      });
-      const adminSec = document.getElementById('view-admin-products');
-      if (adminSec) {
-        adminSec.classList.add('active');
-        adminSec.style.display = 'block';
+      if (window.shopApp && typeof window.shopApp.navigateTo === 'function') {
+        window.shopApp.navigateTo('admin-products');
+      } else {
+        document.querySelectorAll('.screen-view').forEach(el => {
+          el.classList.remove('active');
+          el.style.display = 'none';
+        });
+        const adminSec = document.getElementById('view-admin-products');
+        if (adminSec) {
+          adminSec.classList.add('active');
+          adminSec.style.display = 'block';
+        }
+        document.querySelectorAll('.sidebar-nav-item').forEach(el => {
+          el.classList.remove('active');
+          if (el.dataset.screen === 'admin-products') el.classList.add('active');
+        });
       }
-      document.querySelectorAll('.sidebar-nav-item').forEach(el => {
-        el.classList.remove('active');
-        if (el.dataset.screen === 'admin-products') el.classList.add('active');
-      });
     }
 
     async function loadAdminProducts() {

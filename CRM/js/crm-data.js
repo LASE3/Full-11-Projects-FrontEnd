@@ -504,14 +504,15 @@
       }
 
     } catch (err) {
-      api.handleApiError(err, 'CRM Dashboard');
-      if (kpiLeads)    kpiLeads.textContent    = '—';
-      if (kpiOpps)     kpiOpps.textContent     = '—';
-      if (kpiPipeline) kpiPipeline.textContent = '—';
-      if (kpiWinrate)  kpiWinrate.textContent  = '—';
-      if (funnelEl)    funnelEl.innerHTML      = '<div style="padding:24px;color:#e74c3c;text-align:center;">Pipeline unavailable.</div>';
-      if (accountsTbody) accountsTbody.innerHTML = '<tr><td colspan="5" style="color:#e74c3c;padding:24px;text-align:center;">Failed to load accounts.</td></tr>';
-      if (activityFeed)  activityFeed.innerHTML  = '<div style="padding:24px;color:#e74c3c;">Failed to load activity.</div>';
+      console.warn('CRM Dashboard live fetch fallback to pre-rendered database data:', err);
+      // Preserve pre-rendered content from PHP if already present
+      if (kpiLeads && (!kpiLeads.textContent || kpiLeads.textContent.trim() === '')) kpiLeads.textContent = '—';
+      if (kpiOpps && (!kpiOpps.textContent || kpiOpps.textContent.trim() === '')) kpiOpps.textContent = '—';
+      if (kpiPipeline && (!kpiPipeline.textContent || kpiPipeline.textContent.trim() === '')) kpiPipeline.textContent = '—';
+      if (kpiWinrate && (!kpiWinrate.textContent || kpiWinrate.textContent.trim() === '')) kpiWinrate.textContent = '—';
+      if (funnelEl && !funnelEl.children.length) funnelEl.innerHTML = '<div style="padding:24px;color:#e74c3c;text-align:center;">Pipeline unavailable.</div>';
+      if (accountsTbody && !accountsTbody.children.length) accountsTbody.innerHTML = '<tr><td colspan="5" style="color:#e74c3c;padding:24px;text-align:center;">Failed to load accounts.</td></tr>';
+      if (activityFeed && !activityFeed.children.length) activityFeed.innerHTML = '<div style="padding:24px;color:#e74c3c;">Failed to load activity.</div>';
     }
   }
 

@@ -114,18 +114,34 @@ try {
     ");
     $topAccounts = $topAccStmt->fetchAll(PDO::FETCH_ASSOC);
 
-    // 4. Recent Activities (from audit_logs or fallback)
+    // 4. Recent Activities (from crm_activities or fallback)
     $acts = [];
     try {
-        $auditStmt = $pdo->query("
-            SELECT action AS activity_type, record_id AS title, details AS notes, created_at AS activity_date, 'System' AS company_name
-            FROM audit_logs
-            ORDER BY created_at DESC
-            LIMIT 5
+        $actStmt = $pdo->query("
+            SELECT 
+                a.activity_type, 
+                a.title, 
+                a.description AS notes, 
+                a.created_at AS activity_date, 
+                COALESCE(c.company_name, a.cus_id, 'Enterprise Account') AS company_name
+            FROM crm_activities a
+            LEFT JOIN customers c ON a.cus_id = c.cus_id
+            ORDER BY a.created_at DESC, a.activity_id DESC
+            LIMIT 6
         ");
-        $acts = $auditStmt->fetchAll(PDO::FETCH_ASSOC);
-    } catch (Throwable $ae) {
-        $acts = [];
+        $acts = $actStmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch (Throwable $e) {
+        try {
+            $auditStmt = $pdo->query("
+                SELECT action AS activity_type, record_id AS title, details AS notes, created_at AS activity_date, 'System' AS company_name
+                FROM audit_logs
+                ORDER BY created_at DESC
+                LIMIT 5
+            ");
+            $acts = $auditStmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (Throwable $ae) {
+            $acts = [];
+        }
     }
 
     $data = [

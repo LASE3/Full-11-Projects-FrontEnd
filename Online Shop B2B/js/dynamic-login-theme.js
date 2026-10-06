@@ -1259,13 +1259,17 @@
       state.selectedProductId = productId;
     }
 
-    // Update screen views visibility
+    // Update screen views visibility and clear any sticky inline styles
     document
       .querySelectorAll(".screen-view")
-      .forEach((el) => el.classList.remove("active"));
+      .forEach((el) => {
+        el.classList.remove("active");
+        el.style.display = "none";
+      });
     const targetScreen = document.getElementById(`view-${screenName}`);
     if (targetScreen) {
       targetScreen.classList.add("active");
+      targetScreen.style.display = "block";
     }
 
     // Update main nav active indicators
@@ -1286,6 +1290,10 @@
       renderProductDetail(state.selectedProductId);
     } else if (screenName === "tracking") {
       renderTrackingDashboard();
+    } else if (screenName === "admin-products") {
+      if (typeof renderAdminProductsTable === "function" && typeof adminProductsCache !== "undefined" && adminProductsCache.length > 0) {
+        renderAdminProductsTable(adminProductsCache);
+      }
     }
 
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -1297,23 +1305,29 @@
 
     if (state.currentScreen === "catalog") {
       breadcrumbsContainer.innerHTML = `
-        <span class="breadcrumb-item" onclick="window.shopApp.navigateTo('catalog')">Home</span>
+        <span class="breadcrumb-item" onclick="window.shopApp.navigateTo('catalog')" style="cursor:pointer;">Home</span>
         <span class="breadcrumb-separator">/</span>
         <span class="breadcrumb-item active">Industrial B2B Catalog</span>
+      `;
+    } else if (state.currentScreen === "admin-products") {
+      breadcrumbsContainer.innerHTML = `
+        <span class="breadcrumb-item" onclick="window.shopApp.navigateTo('catalog')" style="cursor:pointer;">Home</span>
+        <span class="breadcrumb-separator">/</span>
+        <span class="breadcrumb-item active">Product Catalog Administration</span>
       `;
     } else if (state.currentScreen === "product-detail") {
       const prod =
         PRODUCTS.find((p) => p.id === state.selectedProductId) || PRODUCTS[0];
       breadcrumbsContainer.innerHTML = `
-        <span class="breadcrumb-item" onclick="window.shopApp.navigateTo('catalog')">Catalog</span>
+        <span class="breadcrumb-item" onclick="window.shopApp.navigateTo('catalog')" style="cursor:pointer;">Catalog</span>
         <span class="breadcrumb-separator">/</span>
-        <span class="breadcrumb-item" onclick="window.shopApp.filterByCategory('${prod.category}')">${prod.category}</span>
+        <span class="breadcrumb-item" onclick="window.shopApp.filterByCategory('${prod.category}')" style="cursor:pointer;">${prod.category}</span>
         <span class="breadcrumb-separator">/</span>
         <span class="breadcrumb-item active">${prod.id} (${prod.name})</span>
       `;
     } else if (state.currentScreen === "tracking") {
       breadcrumbsContainer.innerHTML = `
-        <span class="breadcrumb-item" onclick="window.shopApp.navigateTo('catalog')">Operations</span>
+        <span class="breadcrumb-item" onclick="window.shopApp.navigateTo('catalog')" style="cursor:pointer;">Operations</span>
         <span class="breadcrumb-separator">/</span>
         <span class="breadcrumb-item active">Order Tracking & Fulfillment Timeline</span>
       `;
