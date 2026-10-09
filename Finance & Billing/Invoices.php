@@ -324,6 +324,7 @@ $avgBudgetBurn = (float)$pdo->query("SELECT AVG((spent_amount / NULLIF(allocated
                 <input class="fin-search-input"
                   type="text"
                   id="invoice-search"
+                  value="<?= htmlspecialchars($_GET['search'] ?? '') ?>"
                   placeholder="Filter by Invoice ID, customer, or project..."
                   oninput="window.finApp.filterInvoices()"
                    />
@@ -347,7 +348,7 @@ $avgBudgetBurn = (float)$pdo->query("SELECT AVG((spent_amount / NULLIF(allocated
               </div>
             </div>
 
-                        <table class="fin-table">
+            <table class="fin-table">
               <thead>
                 <tr>
                   <th class="fin-w-140" >Invoice ID</th>
@@ -372,8 +373,9 @@ $avgBudgetBurn = (float)$pdo->query("SELECT AVG((spent_amount / NULLIF(allocated
                     <tr
                       class="fin-table-row"
                       data-id="<?= htmlspecialchars($inv['inv_id']) ?>"
-                      data-customer="<?= htmlspecialchars($inv['company_name']) ?>"
-                      data-project="<?= htmlspecialchars($inv['project_name']) ?>"
+                      data-customer="<?= htmlspecialchars($inv['company_name'] . ' ' . $inv['cus_id']) ?>"
+                      data-prjid="<?= htmlspecialchars($inv['prj_id'] ?? '') ?>"
+                      data-project="<?= htmlspecialchars(($inv['prj_id'] ?? '') . ' ' . $inv['project_name']) ?>"
                       data-status="<?= htmlspecialchars($inv['payment_status']) ?>"
                       onclick="window.finApp.inspectInvoice('<?= htmlspecialchars($inv['inv_id']) ?>')">
                       <td>

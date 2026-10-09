@@ -741,8 +741,8 @@ textarea {
 }
 
 .portal-container {
-  max-width: 1600px;
-  margin: 0 auto;
+  max-width: 100%;
+  margin: 0;
   width: 100%;
 }
 

@@ -139,14 +139,13 @@ window.CURRENT_USER = <?= json_encode($currUser, JSON_HEX_TAG | JSON_HEX_APOS | 
             </div><a class="flex items-center text-on-primary-container hover:text-on-primary" href="Documents.php"
                 title="Technical Documentation"><span class="material-symbols-outlined">menu_book</span></a>
             <div class="h-6 w-px bg-outline/30"></div>
-            <div class="flex items-center gap-unit-sm cursor-pointer" id="header-profile-btn">
+            <div class="flex items-center gap-unit-sm cursor-pointer" id="header-profile-btn" onclick="location.href='AccountSettings.php'">
                 <div class="flex flex-col text-right"><span
-                        class="font-headline-sm text-headline-sm text-on-primary font-medium leading-none">Alexey R.
-                        Danilov</span><span
-                        class="font-technical-tag text-technical-tag text-on-primary-container mt-0.5">Chief
-                        Instrumentation Eng.</span></div><img alt="Profile"
-                    class="w-8 h-8 rounded-full object-cover ring-1 ring-tertiary-fixed/50"
-                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuBxrM-O7aJYHYCDtkoA3WwbiOe6BxJ0vK7AcnogxwZN9MACsknTlpyGKyy-lWl2Hwn9IEZLPDCvVGrmxN2kvPEfzbJ5E4u5x6-38EP2exwXW8Dmm-7oMTzMG07_rmRLbT0xvZwQMFEwa4qJO5LcWbn58eWx3fSkVjAmSI3UWO8dCTgRg6GBgrY_MTUl-JF-JUf4K5CGPp0o4tvKoxbSqSysGT8r3j8de3w_sfk4F8p9ysiXXfbUkWPV" />
+                        class="font-headline-sm text-headline-sm text-on-primary font-medium leading-none"><?= htmlspecialchars($currUser['full_name'] ?? 'Authorized User') ?></span><span
+                        class="font-technical-tag text-technical-tag text-on-primary-container mt-0.5"><?= htmlspecialchars($currUser['role_name'] ?? ($currUser['clearance_level'] ?? 'L2')) ?></span></div>
+                <div class="w-8 h-8 rounded-full bg-tertiary-fixed/20 text-tertiary-fixed border border-tertiary-fixed/50 flex items-center justify-center font-bold text-xs">
+                    <?= htmlspecialchars(mb_substr($currUser['full_name'] ?? 'VP', 0, 2)) ?>
+                </div>
             </div>
 
             <!-- Top Bar Sign Out -->

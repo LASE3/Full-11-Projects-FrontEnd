@@ -12,19 +12,16 @@ require_once __DIR__ . '/../../config/db.php';
 require_once __DIR__ . '/helpers/Response.php';
 require_once __DIR__ . '/helpers/I18n.php';
 require_once __DIR__ . '/helpers/AuditLogger.php';
+require_once __DIR__ . '/helpers/CustomerSession.php';
 
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
 $pdo = getDbConnection();
-$cusId = $_SESSION['cus_id'] ?? ($_SESSION['vostok_user']['user_id'] ?? ($_GET['cus_id'] ?? null));
+$cusId = getActiveCustomerPortalId($pdo);
 $lang  = $_GET['lang'] ?? 'en';
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
-
-if (empty($cusId)) {
-    Response::error("Customer session required. Please log in.", 401);
-}
 
 if ($method === 'GET') {
     $tktId = $_GET['id'] ?? null;

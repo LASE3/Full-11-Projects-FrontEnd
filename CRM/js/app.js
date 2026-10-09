@@ -587,8 +587,133 @@
         this.renderKanban();
       }
 
+      // Initialize Customer Directory interactions
+      this.initCustomerDirectory();
+
       // Initialize responsive multi-device layout controls
       this.initResponsiveLayout();
+    },
+
+    showToast: function (title, message, type = "info") {
+      let container = document.getElementById("toast-container");
+      if (!container) {
+        container = document.createElement("div");
+        container.id = "toast-container";
+        document.body.appendChild(container);
+      }
+      const toast = document.createElement("div");
+      toast.className = `toast toast-${type}`;
+      toast.style.cssText = "background: #1e293b; color: #fff; padding: 12px 16px; border-radius: 8px; margin-top: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); border-left: 4px solid " + (type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#3b82f6') + "; font-size: 13px; z-index: 9999; animation: fadeIn 0.2s ease;";
+      toast.innerHTML = `<div style="font-weight:600;margin-bottom:2px;">${title}</div><div style="opacity:0.85;">${message}</div>`;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = "0";
+        toast.style.transition = "opacity 0.3s ease";
+        setTimeout(() => toast.remove(), 300);
+      }, 3500);
+    },
+
+    deleteCustomer: function (cusId) {
+      if (!confirm(`Are you sure you want to permanently delete customer account ${cusId}?\nThis action will remove the account and associated records.`)) {
+        return;
+      }
+      fetch(`api/customers.php?id=${encodeURIComponent(cusId)}`, {
+        method: "DELETE",
+        headers: { "Accept": "application/json" }
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.status === "success" || data.success) {
+          crmApp.showToast("Account Deleted", `Customer ${cusId} was removed successfully.`, "success");
+          const row = document.querySelector(`tr[data-cus-id="${cusId}"]`) || document.querySelector(`tr[data-id="${cusId}"]`);
+          if (row) {
+            row.style.transition = "opacity 0.3s ease";
+            row.style.opacity = "0";
+            setTimeout(() => row.remove(), 300);
+          } else {
+            setTimeout(() => window.location.reload(), 600);
+          }
+        } else {
+          alert(data.message || "Failed to delete customer.");
+        }
+      })
+      .catch(err => {
+        alert("Error deleting customer: " + err.message);
+      });
+    },
+
+    initCustomerDirectory: function () {
+      const pillButtons = document.querySelectorAll(".filter-pills-group .filter-pill-btn");
+      if (pillButtons.length) {
+        pillButtons.forEach(btn => {
+          btn.addEventListener("click", (e) => {
+            e.preventDefault();
+            pillButtons.forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+
+            let sector = btn.getAttribute("data-sector") || "";
+            if (!sector) {
+              const text = btn.textContent.trim();
+              sector = text.replace(/\s*\(\d+\)$/, "").trim();
+            }
+            const target = sector.toLowerCase().trim();
+            const rows = document.querySelectorAll("#customers-tbody tr.account-row");
+            let visibleCount = 0;
+            rows.forEach(r => {
+              const rowSector = (r.getAttribute("data-sector") || "").toLowerCase().trim();
+              const match = target === "all" || rowSector === target || rowSector.includes(target) || target.includes(rowSector);
+              r.style.display = match ? "" : "none";
+              if (match) visibleCount++;
+            });
+
+            let noRowsEl = document.getElementById("no-customers-filter-row");
+            if (visibleCount === 0) {
+              if (!noRowsEl) {
+                const tr = document.createElement("tr");
+                tr.id = "no-customers-filter-row";
+                tr.innerHTML = '<td colspan="7" style="text-align:center;padding:32px;color:var(--crm-text-muted);">No customer accounts found for this sector.</td>';
+                const tbody = document.getElementById("customers-tbody");
+                if (tbody) tbody.appendChild(tr);
+              } else {
+                noRowsEl.style.display = "";
+              }
+            } else if (noRowsEl) {
+              noRowsEl.style.display = "none";
+            }
+          });
+        });
+      }
+
+      // Sort dropdown
+      const sortSelect = document.querySelector(".filter-select");
+      const tbody = document.getElementById("customers-tbody");
+      if (sortSelect && tbody) {
+        sortSelect.addEventListener("change", () => {
+          const rows = Array.from(tbody.querySelectorAll("tr.account-row"));
+          const val = sortSelect.value.toLowerCase();
+          if (val.includes("annual") || val.includes("arr")) {
+            rows.sort((a, b) => {
+              const parseArr = el => {
+                const txt = el.querySelector(".crm-mono-navy-lg")?.textContent || "0";
+                return parseFloat(txt.replace(/[^0-9.-]+/g, "")) || 0;
+              };
+              return parseArr(b) - parseArr(a);
+            });
+          } else if (val.includes("health")) {
+            rows.sort((a, b) => {
+              const parseHealth = el => parseInt(el.querySelector(".crm-mono-bold-success, .crm-mono-bold-amber, .crm-mono-bold-danger")?.textContent || "0");
+              return parseHealth(b) - parseHealth(a);
+            });
+          } else if (val.includes("id") || val.includes("account")) {
+            rows.sort((a, b) => {
+              const idA = a.getAttribute("data-cus-id") || "";
+              const idB = b.getAttribute("data-cus-id") || "";
+              return idA.localeCompare(idB);
+            });
+          }
+          rows.forEach(r => tbody.appendChild(r));
+        });
+      }
     },
 
     initResponsiveLayout: function () {

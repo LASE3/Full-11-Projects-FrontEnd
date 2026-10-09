@@ -1757,9 +1757,11 @@ table {
   font-size: 1.1rem;
 }
 .intra-padding-1-5rem-max-53c0 {
-  padding: 1.5rem;
-  max-width: 86rem;
-  margin: 0 auto;
+  padding: 1.5rem clamp(1rem, 2vw, 2.5rem);
+  max-width: 100%;
+  margin: 0;
+  width: 100%;
+  box-sizing: border-box;
 }
 .intra-display-flex-align-items-3241 {
   display: flex;

@@ -30,15 +30,10 @@ if (empty($_SESSION['vostok_authenticated']) && !isSuperAdmin()) {
     exit;
 }
 
+require_once __DIR__ . '/helpers/CustomerSession.php';
+
 // Resolve customer ID
-$cusId = '';
-if (!empty($_SESSION['vostok_user']['user_id']) && str_starts_with($_SESSION['vostok_user']['user_id'], 'CUS-')) {
-    $cusId = $_SESSION['vostok_user']['user_id'];
-} elseif (!empty($_SESSION['cus_id'])) {
-    $cusId = $_SESSION['cus_id'];
-} else {
-    $cusId = $pdo->query("SELECT cus_id FROM customers ORDER BY cus_id ASC LIMIT 1")->fetchColumn() ?: 'CUS-1001';
-}
+$cusId = getActiveCustomerPortalId($pdo);
 
 if ($method === 'GET') {
     $sql = "

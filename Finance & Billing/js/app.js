@@ -533,13 +533,15 @@
           row.getAttribute("data-customer") || ""
         ).toLowerCase();
         const project = (row.getAttribute("data-project") || "").toLowerCase();
+        const prjid = (row.getAttribute("data-prjid") || "").toLowerCase();
         const status = row.getAttribute("data-status") || "";
 
         const matchQuery =
           !query ||
           id.includes(query) ||
           customer.includes(query) ||
-          project.includes(query);
+          project.includes(query) ||
+          prjid.includes(query);
         const matchStatus =
           selectedStatus === "all" ||
           status.toLowerCase() === selectedStatus.toLowerCase();

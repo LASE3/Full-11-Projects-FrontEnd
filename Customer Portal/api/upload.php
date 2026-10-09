@@ -13,18 +13,14 @@ $_vp_user = vp_api_guard('CUS', ['customer' => true]);
 require_once __DIR__ . '/../../config/db.php';
 require_once __DIR__ . '/helpers/Response.php';
 require_once __DIR__ . '/helpers/AuditLogger.php';
+require_once __DIR__ . '/helpers/CustomerSession.php';
 
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
 $pdo = getDbConnection();
-$cusId = $_SESSION['cus_id'] ?? ($_SESSION['vostok_user']['user_id'] ?? ($_GET['cus_id'] ?? null));
-
-if (empty($cusId)) {
-    $firstCus = $pdo->query("SELECT cus_id FROM customers WHERE status = 'Active' ORDER BY cus_id ASC LIMIT 1")->fetchColumn();
-    $cusId = $firstCus ?: 'CUS-1001';
-}
+$cusId = getActiveCustomerPortalId($pdo);
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     Response::error("Method not allowed. Use POST multipart/form-data.", 405);

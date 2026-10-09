@@ -12,21 +12,29 @@ require_once __DIR__ . '/../includes/auth_guard.php';
 requireAuth('CUS');
 
 $pdo = getDbConnection();
-$cusId = $_SESSION['cus_id'] ?? ($_SESSION['vostok_user']['user_id'] ?? null);
 
-// If no customer ID in session, check if employee/SuperAdmin is browsing as a customer
 $currentUser = $_SESSION['vostok_user'] ?? null;
-if (empty($cusId) && $currentUser && ($currentUser['account_type'] ?? '') === 'Employee') {
-    // SuperAdmin may browse Customer Portal — allow but without a default cus_id
-    // The page must handle $customer = null gracefully
-}
-
-if (empty($cusId) && empty($currentUser)) {
-    // Strictly no session — redirect to login
+if (empty($_SESSION['vostok_authenticated']) && empty($currentUser)) {
     header('Location: login.php?error=session_expired');
     exit;
 }
 
+// Support switching customer via ?cus_id=
+if (!empty($_GET['cus_id']) && !str_starts_with((string)$_GET['cus_id'], 'EMP-')) {
+    $_SESSION['cus_id'] = (string)$_GET['cus_id'];
+}
+
+$cusId = $_SESSION['cus_id'] ?? null;
+if (empty($cusId) || str_starts_with((string)$cusId, 'EMP-')) {
+    if (!empty($_SESSION['vostok_user']['cus_id'])) {
+        $cusId = (string)$_SESSION['vostok_user']['cus_id'];
+    } else {
+        // Employee / SuperAdmin browsing: resolve primary customer from DB
+        $firstCus = $pdo->query("SELECT cus_id FROM customers ORDER BY cus_id ASC LIMIT 1")->fetchColumn();
+        $cusId = $firstCus ?: 'CUS-1001';
+    }
+    $_SESSION['cus_id'] = $cusId;
+}
 
 // Fetch authentic customer entity from MariaDB
 $cStmt = $pdo->prepare("SELECT * FROM customers WHERE cus_id = ?");
@@ -349,6 +357,7 @@ function renderVostokScripts(): void {
     ?>
     <script>
     window.VOSTOK_USER = <?= json_encode($currUser, JSON_UNESCAPED_UNICODE) ?>;
+    window.CURRENT_USER = window.VOSTOK_USER;
     window.VOSTOK_STATS = {
         orders: <?= (int)$badgeOrders ?>,
         projects: <?= (int)$badgeProjects ?>,

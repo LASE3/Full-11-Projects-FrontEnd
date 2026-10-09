@@ -995,14 +995,19 @@
     profileMenu.id = "profile-dropdown-menu";
     profileMenu.className =
       "fixed right-6 top-16 w-72 bg-surface-container-lowest rounded-xl shadow-2xl border border-outline/30 z-[90] hidden flex-col overflow-hidden";
+    const uName = (window.CURRENT_USER && window.CURRENT_USER.full_name) ? window.CURRENT_USER.full_name : 'Authorized User';
+    const uRole = (window.CURRENT_USER && window.CURRENT_USER.role_name) ? window.CURRENT_USER.role_name : (window.CURRENT_USER && window.CURRENT_USER.clearance_level ? window.CURRENT_USER.clearance_level : 'Client Representative');
+    const uInit = uName.substring(0, 2).toUpperCase();
     profileMenu.innerHTML = `
             <div class="p-4 bg-primary-container text-on-primary">
                 <div class="flex items-center gap-3">
-                    <img class="w-10 h-10 rounded-full object-cover ring-2 ring-tertiary-fixed/50" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBxrM-O7aJYHYCDtkoA3WwbiOe6BxJ0vK7AcnogxwZN9MACsknTlpyGKyy-lWl2Hwn9IEZLPDCvVGrmxN2kvPEfzbJ5E4u5x6-38EP2exwXW8Dmm-7oMTzMG07_rmRLbT0xvZwQMFEwa4qJO5LcWbn58eWx3fSkVjAmSI3UWO8dCTgRg6GBgrY_MTUl-JF-JUf4K5CGPp0o4tvKoxbSqSysGT8r3j8de3w_sfk4F8p9ysiXXfbUkWPV" alt="Alexey Danilov">
+                    <div class="w-10 h-10 rounded-full bg-tertiary-fixed/20 text-tertiary-fixed border border-tertiary-fixed/50 flex items-center justify-center font-bold text-sm">
+                        ${uInit}
+                    </div>
                     <div class="flex flex-col">
-                        <span class="font-headline-sm text-sm font-bold text-on-primary leading-tight">Alexey R. Danilov</span>
-                        <span class="text-xs text-tertiary-fixed font-mono">Chief Instrumentation Eng.</span>
-                        <span class="text-[10px] text-on-primary-container mt-0.5">Severstal Plant #4 • VP-88204-EU</span>
+                        <span class="font-headline-sm text-sm font-bold text-on-primary leading-tight">${uName}</span>
+                        <span class="text-xs text-tertiary-fixed font-mono">${uRole}</span>
+                        <span class="text-[10px] text-on-primary-container mt-0.5">Enterprise Portal Account</span>
                     </div>
                 </div>
             </div>

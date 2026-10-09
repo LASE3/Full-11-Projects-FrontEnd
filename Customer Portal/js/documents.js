@@ -440,6 +440,19 @@
     }
   };
 
+  window.showUploadModal = function () {
+    if (typeof window.showUploadPassportModal === "function") {
+      window.showUploadPassportModal();
+    }
+  };
+
+  window.downloadAllDocuments = function () {
+    if (window.showToast) {
+      window.showToast("Export Initiated", "Downloading engineering dossiers register...", "info");
+    }
+    window.location.href = "api/export.php?type=documents&format=csv";
+  };
+
   /**
    * Parse query parameters on load
    */

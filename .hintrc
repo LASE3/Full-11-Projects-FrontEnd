@@ -11,7 +11,8 @@
           "scrollbar-width: none",
           "scrollbar-color",
           "scrollbar-width: thin",
-          "user-select"
+          "user-select",
+          "backdrop-filter"
         ]
       }
     ]
