@@ -19,11 +19,7 @@ $action = $_GET['action'] ?? ($_POST['action'] ?? 'list');
 
 // Helper: next PROD-xxxx id
 function nextProdId(PDO $pdo): string {
-    $max = $pdo->query(
-        "SELECT MAX(CAST(SUBSTRING(prod_id,6) AS UNSIGNED)) FROM products WHERE prod_id REGEXP '^PROD-[0-9]+$'"
-    )->fetchColumn();
-    $next = max(((int)$max) + 1, 1011);
-    return 'PROD-' . str_pad((string)$next, 4, '0', STR_PAD_LEFT);
+    return vp_next_id($pdo, 'products', 'PROD-', 4);
 }
 
 try {

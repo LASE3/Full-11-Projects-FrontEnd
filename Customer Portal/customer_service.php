@@ -31,31 +31,42 @@ function cus_jsonReply(array $data, int $statusCode = 200): void
  */
 function cus_getCurrentCustomerId(): string
 {
-    if (!empty($_GET['cus_id']) && !str_starts_with((string)$_GET['cus_id'], 'EMP-')) {
-        $_SESSION['cus_id'] = (string)$_GET['cus_id'];
-        return (string)$_GET['cus_id'];
+    $pdo = getDbConnection();
+    $user = $_SESSION['vostok_user'] ?? [];
+    if (($user['account_type'] ?? '') === 'Customer') {
+        $cid = (string)($user['cus_id'] ?? ($user['user_id'] ?? ''));
+        $_SESSION['cus_id'] = $cid;
+        return $cid;
     }
-    if (!empty($_SESSION['cus_id']) && !str_starts_with((string)$_SESSION['cus_id'], 'EMP-')) {
-        return (string)$_SESSION['cus_id'];
+
+    // Employee
+    if (!hasEmployeePermission($pdo, $user, 'CUSTOMER_IMPERSONATE')) {
+        return '';
     }
-    if (!empty($_SESSION['vostok_user']['cus_id']) && !str_starts_with((string)$_SESSION['vostok_user']['cus_id'], 'EMP-')) {
-        $_SESSION['cus_id'] = (string)$_SESSION['vostok_user']['cus_id'];
-        return (string)$_SESSION['cus_id'];
-    }
-    if (!empty($_SESSION['vostok_user']['user_id']) && str_starts_with((string)$_SESSION['vostok_user']['user_id'], 'CUS-')) {
-        $_SESSION['cus_id'] = (string)$_SESSION['vostok_user']['user_id'];
-        return (string)$_SESSION['cus_id'];
-    }
-    try {
-        $pdo = getDbConnection();
-        $cid = $pdo->query("SELECT cus_id FROM customers ORDER BY cus_id ASC LIMIT 1")->fetchColumn();
-        if ($cid) {
-            $_SESSION['cus_id'] = (string)$cid;
-            return (string)$cid;
+
+    if (!empty($_GET['switch_cus_id']) || !empty($_POST['switch_cus_id'])) {
+        $req = trim((string)($_GET['switch_cus_id'] ?? $_POST['switch_cus_id']));
+        $chk = $pdo->prepare("SELECT cus_id FROM customers WHERE cus_id = ? LIMIT 1");
+        $chk->execute([$req]);
+        $valid = $chk->fetchColumn();
+        if ($valid) {
+            AuditLogger::logAction(
+                $user['emp_id'] ?? 'EMP-0001',
+                (string)$valid,
+                'Customer Portal',
+                'CUS',
+                'CUSTOMER_IMPERSONATE_SWITCH',
+                'customers',
+                (string)$valid,
+                ['switched_to' => (string)$valid]
+            );
+            $_SESSION['impersonate_cus_id'] = (string)$valid;
+            $_SESSION['cus_id'] = (string)$valid;
+            return (string)$valid;
         }
-    } catch (Throwable $e) {}
-    $_SESSION['cus_id'] = 'CUS-1001';
-    return 'CUS-1001';
+    }
+
+    return (string)($_SESSION['impersonate_cus_id'] ?? '');
 }
 
 function cus_getCustomerContext(?string $cusId = null): array
@@ -383,17 +394,31 @@ function cus_getTicketDetail(string $tktId, ?string $cusId = null): ?array
     $pdo = getDbConnection();
     $cusId = $cusId ?: cus_getCurrentCustomerId();
 
-    $stmt = $pdo->prepare("
-        SELECT 
-            t.*,
-            e.full_name AS assigned_engineer_name,
-            e.email AS assigned_engineer_email,
-            e.job_title AS assigned_engineer_role
-        FROM tickets t
-        LEFT JOIN employees e ON t.assigned_emp_id = e.emp_id
-        WHERE t.tkt_id = :tid AND t.requester_cus_id = :cid
-    ");
-    $stmt->execute([':tid' => $tktId, ':cid' => $cusId]);
+    if (!empty($cusId)) {
+        $stmt = $pdo->prepare("
+            SELECT 
+                t.*,
+                e.full_name AS assigned_engineer_name,
+                e.email AS assigned_engineer_email,
+                e.job_title AS assigned_engineer_role
+            FROM tickets t
+            LEFT JOIN employees e ON t.assigned_emp_id = e.emp_id
+            WHERE t.tkt_id = :tid AND t.requester_cus_id = :cid
+        ");
+        $stmt->execute([':tid' => $tktId, ':cid' => $cusId]);
+    } else {
+        $stmt = $pdo->prepare("
+            SELECT 
+                t.*,
+                e.full_name AS assigned_engineer_name,
+                e.email AS assigned_engineer_email,
+                e.job_title AS assigned_engineer_role
+            FROM tickets t
+            LEFT JOIN employees e ON t.assigned_emp_id = e.emp_id
+            WHERE t.tkt_id = :tid
+        ");
+        $stmt->execute([':tid' => $tktId]);
+    }
     $ticket = $stmt->fetch(PDO::FETCH_ASSOC);
     if (!$ticket) return null;
 

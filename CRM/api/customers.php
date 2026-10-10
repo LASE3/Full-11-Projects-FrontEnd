@@ -174,8 +174,7 @@ if ($method === 'POST') {
     }
 
     try {
-        $maxNum = $pdo->query("SELECT MAX(CAST(SUBSTRING(cus_id, 5) AS UNSIGNED)) FROM customers")->fetchColumn();
-        $newCusId = "CUS-" . (($maxNum ? (int)$maxNum : 1000) + 1);
+        $newCusId = vp_next_id($pdo, 'customers', 'CUS-', 4);
 
         $stmt = $pdo->prepare("
             INSERT INTO customers (cus_id, company_name, sector, primary_contact_name, primary_contact_email, account_manager_emp_id, onboarded_at)

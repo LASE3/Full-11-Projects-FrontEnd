@@ -297,10 +297,20 @@
                 `;
         }
 
-        const isUser = msg.sender.includes("Danilov");
+        const loggedInUser = window.CURRENT_USER || {};
+        const loggedInName = (loggedInUser.full_name || "").trim().toLowerCase();
+        const senderName = (msg.sender || "").trim();
+        const isUser = msg.isClient || 
+          (loggedInName && senderName.toLowerCase() === loggedInName) ||
+          ((msg.role || "").toLowerCase().includes("client")) ||
+          ((msg.role || "").toLowerCase().includes("customer"));
+        
+        const initials = (msg.initials || senderName.split(/\s+/).map((w) => w[0]).join("")).substring(0, 2).toUpperCase() || "VP";
         const avatarHtml = isUser
           ? `
-                <img alt="${msg.sender}" class="w-10 h-10 rounded-full object-cover border border-outline-variant/50 shrink-0" src="${msg.avatar}" />
+                <div class="w-10 h-10 rounded-full bg-surface-container-high text-primary flex items-center justify-center font-bold shrink-0 shadow-sm border border-outline-variant/60">
+                    ${initials}
+                </div>
             `
           : `
                 <div class="w-10 h-10 rounded-full bg-primary-container text-tertiary-fixed flex items-center justify-center font-bold shrink-0 shadow-sm border border-tertiary-fixed/30">
@@ -310,10 +320,10 @@
 
         const roleBadge = isUser
           ? `
-                <span class="px-1.5 py-0.2 rounded bg-surface-container text-on-surface-variant font-technical-tag text-technical-tag">${msg.role}</span>
+                <span class="px-1.5 py-0.2 rounded bg-surface-container text-on-surface-variant font-technical-tag text-technical-tag">${msg.role || "Client Representative"}</span>
             `
           : `
-                <span class="px-1.5 py-0.2 rounded bg-tertiary-fixed text-on-tertiary-fixed font-technical-tag text-technical-tag font-semibold">${msg.role}</span>
+                <span class="px-1.5 py-0.2 rounded bg-tertiary-fixed text-on-tertiary-fixed font-technical-tag text-technical-tag font-semibold">${msg.role || "Support Engineer"}</span>
             `;
 
         const borderClass = msg.isHighlight
@@ -730,6 +740,9 @@
    */
   document.addEventListener("DOMContentLoaded", function () {
     if (window.SERVER_TICKETS && Object.keys(window.SERVER_TICKETS).length > 0) {
+      for (const k in TICKET_DATABASE) {
+        delete TICKET_DATABASE[k];
+      }
       Object.assign(TICKET_DATABASE, window.SERVER_TICKETS);
       currentActiveTicket = Object.keys(window.SERVER_TICKETS)[0];
     }

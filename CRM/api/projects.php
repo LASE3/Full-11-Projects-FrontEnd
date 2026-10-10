@@ -79,8 +79,7 @@ if ($method === 'POST') {
     }
 
     try {
-        $maxPrj = (int)$pdo->query("SELECT MAX(CAST(SUBSTRING(prj_id, 5) AS UNSIGNED)) FROM `projects` WHERE prj_id LIKE 'PRJ-%'")->fetchColumn();
-        $newPrjId = 'PRJ-' . str_pad((string)(($maxPrj > 0 ? $maxPrj : 1000) + 1), 4, '0', STR_PAD_LEFT);
+        $newPrjId = vp_next_id($pdo, 'projects', 'PRJ-2026-', 3);
 
         $stmt = $pdo->prepare("
             INSERT INTO `projects` (

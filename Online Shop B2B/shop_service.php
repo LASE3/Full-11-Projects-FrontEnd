@@ -30,38 +30,43 @@ function shop_jsonReply(array $data, int $statusCode = 200): void
  */
 function shop_getCurrentCustomerId(): string
 {
-    if (!empty($_GET['cus_id'])) {
-        $_SESSION['cus_id'] = (string)$_GET['cus_id'];
-        return (string)$_GET['cus_id'];
+    $pdo = getDbConnection();
+    $user = $_SESSION['vostok_user'] ?? [];
+    if (($user['account_type'] ?? '') === 'Customer') {
+        $cid = (string)($user['cus_id'] ?? ($user['user_id'] ?? ''));
+        $_SESSION['cus_id'] = $cid;
+        return $cid;
     }
-    if (!empty($_SESSION['cus_id'])) {
-        return (string)$_SESSION['cus_id'];
+
+    // Employee impersonation check
+    if (!hasEmployeePermission($pdo, $user, 'CUSTOMER_IMPERSONATE')) {
+        return '';
     }
-    if (!empty($_SESSION['vostok_user']['cus_id'])) {
-        return (string)$_SESSION['vostok_user']['cus_id'];
+
+    if (!empty($_GET['switch_cus_id']) || !empty($_POST['switch_cus_id'])) {
+        $req = trim((string)($_GET['switch_cus_id'] ?? $_POST['switch_cus_id']));
+        $chk = $pdo->prepare("SELECT cus_id FROM customers WHERE cus_id = ? LIMIT 1");
+        $chk->execute([$req]);
+        $valid = $chk->fetchColumn();
+        if ($valid) {
+            require_once __DIR__ . '/../includes/AuditLogger.php';
+            AuditLogger::logAction(
+                $user['emp_id'] ?? 'EMP-0001',
+                (string)$valid,
+                'Online Shop B2B',
+                'SHP',
+                'CUSTOMER_IMPERSONATE_SWITCH',
+                'customers',
+                (string)$valid,
+                ['switched_to' => (string)$valid]
+            );
+            $_SESSION['impersonate_cus_id'] = (string)$valid;
+            $_SESSION['cus_id'] = (string)$valid;
+            return (string)$valid;
+        }
     }
-    $uid = (string)($_SESSION['vostok_user']['user_id'] ?? '');
-    if (str_starts_with($uid, 'CUS-')) {
-        $_SESSION['cus_id'] = $uid;
-        return $uid;
-    }
-    $accId = $_SESSION['vostok_user']['account_id'] ?? null;
-    if ($accId) {
-        try {
-            $pdo = getDbConnection();
-            $stmt = $pdo->prepare("SELECT cus_id FROM customer_accounts WHERE account_id = ?");
-            $stmt->execute([$accId]);
-            $cid = $stmt->fetchColumn();
-            if ($cid) {
-                $_SESSION['cus_id'] = (string)$cid;
-                return (string)$cid;
-            }
-        } catch (Throwable $e) {}
-    }
-    if (!empty($_GET['cus_id'])) {
-        return (string)$_GET['cus_id'];
-    }
-    return '';
+
+    return (string)($_SESSION['impersonate_cus_id'] ?? '');
 }
 
 // ============================================================================

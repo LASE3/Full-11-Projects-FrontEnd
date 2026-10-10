@@ -82,8 +82,7 @@ try {
             }
 
             if (empty($docId)) {
-                $maxId = (int)$pdo->query("SELECT MAX(policy_id) FROM security_policies")->fetchColumn();
-                $docId = 'DOC-2026-' . str_pad($maxId + 1, 3, '0', STR_PAD_LEFT);
+                $docId = vp_next_id($pdo, 'policies', 'POL-2026-', 3);
             }
 
             // Ensure document exists in documents table to satisfy foreign key constraint

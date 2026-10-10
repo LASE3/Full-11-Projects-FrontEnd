@@ -14,7 +14,7 @@ $documents = [];
 
 if ($isSuperAdmin || $cusId) {
     try {
-        $whereDoc = $isSuperAdmin ? '1=1' : '(d.related_cus_id = :cid OR d.related_prj_id IN (SELECT prj_id FROM projects WHERE cus_id = :cid2))';
+        $whereDoc = $isSuperAdmin ? '1=1' : '(d.related_cus_id = :cid OR d.related_prj_id IN (SELECT prj_id FROM projects WHERE cus_id = :cid2) OR d.classification = "Public")';
         $params   = $isSuperAdmin ? [] : [':cid' => $cusId, ':cid2' => $cusId];
 
         // Fetch explicit documents linked to customer or customer's projects
@@ -509,7 +509,7 @@ $firstDoc = $documents[0] ?? null;
                                                         class="p-1 rounded text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors">
                                                         <span class="material-symbols-outlined text-base">verified_user</span>
                                                     </button>
-                                                    <a title="Download Document File" download href="<?= htmlspecialchars($doc['file_path']) ?>"
+                                                    <a title="Download Document File" href="api/download.php?doc_id=<?= urlencode($doc['doc_id']) ?>"
                                                         onclick="event.stopPropagation()"
                                                         class="p-1 rounded text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors">
                                                         <span class="material-symbols-outlined text-base">download</span>

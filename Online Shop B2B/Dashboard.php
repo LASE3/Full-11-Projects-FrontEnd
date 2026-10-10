@@ -22,11 +22,10 @@ try {
     $allCustomers = $stmtAllC->fetchAll(PDO::FETCH_ASSOC);
 } catch (Throwable $e) {}
 
+$isCustomer = (($currUser['account_type'] ?? '') === 'Customer');
+$canImpersonate = hasEmployeePermission(getDbConnection(), $currUser, 'CUSTOMER_IMPERSONATE');
+
 $cusId = shop_getCurrentCustomerId();
-if (!$cusId && !empty($allCustomers)) {
-    $cusId = $allCustomers[0]['cus_id'];
-    $_SESSION['cus_id'] = $cusId;
-}
 
 $customer = null;
 if ($cusId) {
@@ -42,14 +41,10 @@ if ($cusId) {
         $customer = $stmtC->fetch(PDO::FETCH_ASSOC);
     }
 }
-if (!$customer && !empty($allCustomers)) {
-    $customer = $allCustomers[0];
-    $cusId = $customer['cus_id'];
-}
 
-$kpis = shop_getDashboardMetrics($cusId);
-$products = shop_getProducts($cusId);
-$orders = shop_getOrders($cusId);
+$kpis = $cusId ? shop_getDashboardMetrics($cusId) : ['total_orders' => 0, 'active_quotes' => 0, 'linked_projects' => 0, 'total_spent' => 0];
+$products = shop_getProducts($cusId ?: '');
+$orders = $cusId ? shop_getOrders($cusId) : [];
 $projects = [];
 if ($cusId) {
     $stmtP = getDbConnection()->prepare("SELECT prj_id, project_name, budget FROM projects WHERE cus_id = ? ORDER BY prj_id ASC");
@@ -90,8 +85,8 @@ if ($cusId) {
     <div class="top-nav__content">
       <!-- Brand & System Identifier -->
       <div class="brand-section">
-        <button class="mobile-nav-toggle" id="b2b-sidebar-toggle" onclick="document.body.classList.toggle('sidebar-open')" title="Toggle Sidebar Navigation" style="background:transparent;border:none;color:#fff;cursor:pointer;padding:6px;display:none;align-items:center;justify-content:center;border-radius:4px;margin-right:8px;">
-          <span class="material-symbols-outlined" style="font-size:22px;">menu</span>
+        <button class="mobile-nav-toggle" id="b2b-sidebar-toggle" onclick="document.body.classList.toggle('sidebar-open')" title="Toggle Sidebar Navigation">
+          <span class="material-symbols-outlined">menu</span>
         </button>
         <div class="brand-logo-container" onclick="window.shopApp.navigateTo('catalog')">
           <img alt="VOSTOKPRIBOR Official Mark" class="brand-logo-img"
@@ -117,11 +112,17 @@ if ($cusId) {
       <!-- Right Header Actions (Customer Context, Cart, RFQ Button) -->
       <div class="header-actions">
         <!-- Authenticated User Profile Badge -->
+        <?php
+          $userDisplayName = ($isSuperAdmin || ($currUser['email'] ?? '') === 'admin@gmail.com' || ($currUser['emp_id'] ?? '') === 'EMP-0001')
+              ? 'Super Administrator'
+              : (string)($currUser['full_name'] ?? 'Authorized User');
+          $userDisplayRole = $isSuperAdmin ? 'SuperAdmin' : (string)($currUser['role_name'] ?? 'Staff');
+        ?>
         <div class="user-profile-badge" style="display:flex;align-items:center;gap:10px;padding:4px 10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:6px;" title="Current Authenticated User">
           <div style="text-align:right;">
-            <div style="font-size:12px;font-weight:600;color:#fff;line-height:1.2;"><?= htmlspecialchars((string)($currUser['full_name'] ?? 'SuperAdmin')) ?></div>
+            <div style="font-size:12px;font-weight:600;color:#fff;line-height:1.2;"><?= htmlspecialchars($userDisplayName) ?></div>
             <div style="font-size:10px;font-family:'JetBrains Mono',monospace;color:#F59E0B;line-height:1.2;">
-              <?= htmlspecialchars((string)($currUser['emp_id'] ?? ($currUser['user_id'] ?? 'EMP-0001'))) ?> • <?= htmlspecialchars((string)($currUser['role_name'] ?? 'SuperAdmin')) ?>
+              <?= htmlspecialchars((string)($currUser['emp_id'] ?? ($currUser['user_id'] ?? 'EMP-0001'))) ?> • <?= htmlspecialchars($userDisplayRole) ?>
             </div>
           </div>
           <div style="width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#00E5FF22,#00E5FF44);border:1px solid #00E5FF66;display:flex;align-items:center;justify-content:center;color:#00E5FF;">

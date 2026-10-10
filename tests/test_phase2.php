@@ -151,7 +151,8 @@ $_POST = [
 require __DIR__ . "/../VOSTOKPRIBOR Corporate Web Platform/api/contact.php";
 ';
 file_put_contents($runnerScript, $runCode);
-$output = shell_exec("php " . escapeshellarg($runnerScript));
+$phpBin = defined('PHP_BINARY') && PHP_BINARY ? PHP_BINARY : 'C:\\xampp\\php\\php.exe';
+$output = shell_exec(escapeshellarg($phpBin) . ' ' . escapeshellarg($runnerScript));
 @unlink($runnerScript);
 
 $contactJson = json_decode((string)$output, true);

@@ -629,142 +629,71 @@ window.CURRENT_USER = <?= json_encode($currUser, JSON_HEX_TAG | JSON_HEX_APOS | 
                                         <h2 class="font-headline-sm text-headline-sm text-primary font-bold">Diagnostic
                                             &amp; Field Dispatch Timeline</h2>
                                     </div>
-                                    <span id="messageCountLabel" class="font-technical-tag text-technical-tag text-secondary">4 MESSAGES • LIVE
+                                    <span id="messageCountLabel" class="font-technical-tag text-technical-tag text-secondary"><?= count($firstTicket['messages'] ?? []) ?> MESSAGES • LIVE
                                         STREAM REFRESH: AUTO</span>
                                 </div>
                                 <!-- Message Stream -->
                                 <div id="ticketMessageStream" class="flex flex-col gap-unit-base">
-                                    <!-- Message 1 (Customer - Alexey Danilov) -->
-                                    <div class="flex gap-unit-base">
-                                        <img alt="Alexey Danilov"
-                                            class="w-10 h-10 rounded-full object-cover border border-outline-variant/50 shrink-0"
-                                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuBxrM-O7aJYHYCDtkoA3WwbiOe6BxJ0vK7AcnogxwZN9MACsknTlpyGKyy-lWl2Hwn9IEZLPDCvVGrmxN2kvPEfzbJ5E4u5x6-38EP2exwXW8Dmm-7oMTzMG07_rmRLbT0xvZwQMFEwa4qJO5LcWbn58eWx3fSkVjAmSI3UWO8dCTgRg6GBgrY_MTUl-JF-JUf4K5CGPp0o4tvKoxbSqSysGT8r3j8de3w_sfk4F8p9ysiXXfbUkWPV" />
-                                        <div class="flex-1">
-                                            <div class="flex items-baseline justify-between">
-                                                <div class="flex items-center gap-2">
-                                                    <span
-                                                        class="font-headline-sm text-headline-sm text-primary font-bold">Alexey
-                                                        R. Danilov</span>
-                                                    <span
-                                                        class="px-1.5 py-0.2 rounded bg-surface-container text-on-surface-variant font-technical-tag text-technical-tag">Client
-                                                        - Chief Instrumentation Eng.</span>
-                                                </div>
-                                                <span class="font-data-mono-md text-data-mono-md text-secondary">10:14
-                                                    AM MSK</span>
-                                            </div>
-                                            <div
-                                                class="mt-1.5 p-unit-base rounded bg-surface-container-low border border-outline-variant/30 text-body-md text-on-surface">
-                                                At 10:11 AM during the planned furnace temperature ramp-up to 1,350°C,
-                                                sensor channel GC-02 on Skid #4 stopped transmitting 4-20mA signals to
-                                                the main SCADA hub. Error code 0x7E (Analog Loop Open). We have switched
-                                                to secondary backup, but need immediate root-cause diagnostic.
-
-                                                <!-- Attached Diagnostics -->
-                                                <div
-                                                    class="flex flex-wrap items-center gap-2 mt-3 pt-2.5 border-t border-outline-variant/20 font-technical-tag text-technical-tag">
-                                                    <div onclick="window.previewDocument && window.previewDocument('DOC-TEL-9482-01')"
-                                                        class="inline-flex items-center gap-1.5 px-2 py-1 rounded bg-surface-container-lowest border border-outline-variant/60 hover:border-primary cursor-pointer transition-colors">
-                                                        <span
-                                                            class="material-symbols-outlined text-xs text-secondary">description</span>
-                                                        <span
-                                                            class="font-mono text-primary font-semibold">telemetry_dump_skid4_1011.log</span>
-                                                        <span class="text-secondary">(1.4 MB)</span>
-                                                        <span
-                                                            class="material-symbols-outlined text-xs text-secondary">download</span>
-                                                    </div>
-                                                    <div onclick="window.showToast('Diagnostic telemetry capture loaded', 'info')"
-                                                        class="inline-flex items-center gap-1.5 px-2 py-1 rounded bg-surface-container-lowest border border-outline-variant/60 hover:border-primary cursor-pointer transition-colors">
-                                                        <span
-                                                            class="material-symbols-outlined text-xs text-secondary">image</span>
-                                                        <span
-                                                            class="font-mono text-primary font-semibold">scada_error_screenshot.png</span>
-                                                        <span class="text-secondary">(820 KB)</span>
-                                                        <span
-                                                            class="material-symbols-outlined text-xs text-secondary">visibility</span>
+                                    <?php 
+                                    $initialMsgs = $firstTicket['messages'] ?? [];
+                                    if (empty($initialMsgs)): ?>
+                                        <div class="p-unit-lg text-center text-secondary border border-dashed border-outline-variant/40 rounded-lg">
+                                            <span class="material-symbols-outlined text-3xl mb-1 text-secondary">forum</span>
+                                            <p class="font-body-md">No communication messages recorded yet for this incident.</p>
+                                        </div>
+                                    <?php else:
+                                        foreach ($initialMsgs as $m):
+                                            $isSys = !empty($m['isSystem']);
+                                            if ($isSys): ?>
+                                                <div class="pl-12">
+                                                    <div class="p-unit-sm rounded bg-primary-container/10 border-l-4 border-error text-body-sm text-primary flex items-start gap-2">
+                                                        <span class="material-symbols-outlined text-base text-error mt-0.5">smart_toy</span>
+                                                        <div class="flex-1">
+                                                            <div class="flex items-center justify-between font-label-caps text-label-caps text-secondary mb-0.5">
+                                                                <span>SYSTEM AUTOMATED AUDIT</span>
+                                                                <span class="font-data-mono-md text-data-mono-md"><?= htmlspecialchars($m['time'] ?? '') ?></span>
+                                                            </div>
+                                                            <?= $m['text'] ?? '' ?>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <!-- Message 2 (System Automated Alert) -->
-                                    <div class="pl-12">
-                                        <div
-                                            class="p-unit-sm rounded bg-primary-container/10 border-l-4 border-error text-body-sm text-primary flex items-start gap-2">
-                                            <span
-                                                class="material-symbols-outlined text-base text-error mt-0.5">smart_toy</span>
-                                            <div class="flex-1">
-                                                <div
-                                                    class="flex items-center justify-between font-label-caps text-label-caps text-secondary mb-0.5">
-                                                    <span>SYSTEM AUTOMATED AUDIT</span>
-                                                    <span class="font-data-mono-md text-data-mono-md">10:15:04 AM
-                                                        MSK</span>
+                                            <?php else:
+                                                $sName = (string)($m['sender'] ?? '');
+                                                $mRole = (string)($m['role'] ?? '');
+                                                $isUserMsg = !empty($m['isClient']) || stripos($mRole, 'client') !== false || stripos($mRole, 'customer') !== false || (isset($currUser['full_name']) && strcasecmp($sName, $currUser['full_name']) === 0);
+                                                $mInitials = htmlspecialchars($m['initials'] ?? (mb_substr($sName ?: 'VP', 0, 2)));
+                                                $bClass = !empty($m['isHighlight']) ? 'border-l-4 border-tertiary-fixed-dim border-outline-variant/30' : 'border border-outline-variant/30';
+                                            ?>
+                                                <div class="flex gap-unit-base">
+                                                    <?php if ($isUserMsg): ?>
+                                                        <div class="w-10 h-10 rounded-full bg-surface-container-high text-primary flex items-center justify-center font-bold shrink-0 shadow-sm border border-outline-variant/60">
+                                                            <?= $mInitials ?>
+                                                        </div>
+                                                    <?php else: ?>
+                                                        <div class="w-10 h-10 rounded-full bg-primary-container text-tertiary-fixed flex items-center justify-center font-bold shrink-0 shadow-sm border border-tertiary-fixed/30">
+                                                            <?= $mInitials ?>
+                                                        </div>
+                                                    <?php endif; ?>
+                                                    <div class="flex-1">
+                                                        <div class="flex items-baseline justify-between">
+                                                            <div class="flex items-center gap-2">
+                                                                <span class="font-headline-sm text-headline-sm text-primary font-bold"><?= htmlspecialchars($sName) ?></span>
+                                                                <?php if ($isUserMsg): ?>
+                                                                    <span class="px-1.5 py-0.2 rounded bg-surface-container text-on-surface-variant font-technical-tag text-technical-tag"><?= htmlspecialchars($mRole ?: 'Client Representative') ?></span>
+                                                                <?php else: ?>
+                                                                    <span class="px-1.5 py-0.2 rounded bg-tertiary-fixed text-on-tertiary-fixed font-technical-tag text-technical-tag font-semibold"><?= htmlspecialchars($mRole ?: 'Support Engineer') ?></span>
+                                                                <?php endif; ?>
+                                                            </div>
+                                                            <span class="font-data-mono-md text-data-mono-md text-secondary"><?= htmlspecialchars($m['time'] ?? '') ?></span>
+                                                        </div>
+                                                        <div class="mt-1.5 p-unit-base rounded bg-surface-container-low <?= $bClass ?> text-body-md text-on-surface">
+                                                            <?= $m['text'] ?? '' ?>
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                                <span class="font-semibold text-primary">Automated Incident
-                                                    Classification: Severity 1 (Critical Production Impact).</span> SLA
-                                                countdown initiated (15 min SLA window). Assigned to Industrial
-                                                Automation Escalation Pool. Dispatched high-priority SMS alert to
-                                                On-call Specialist: Denis Sokolov.
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <!-- Message 3 (Assigned Specialist - Denis Sokolov) -->
-                                    <div class="flex gap-unit-base">
-                                        <div
-                                            class="w-10 h-10 rounded-full bg-primary-container text-tertiary-fixed flex items-center justify-center font-bold shrink-0 shadow-sm border border-tertiary-fixed/30">
-                                            DS
-                                        </div>
-                                        <div class="flex-1">
-                                            <div class="flex items-baseline justify-between">
-                                                <div class="flex items-center gap-2">
-                                                    <span
-                                                        class="font-headline-sm text-headline-sm text-primary font-bold">Denis
-                                                        Sokolov</span>
-                                                    <span
-                                                        class="px-1.5 py-0.2 rounded bg-tertiary-fixed text-on-tertiary-fixed font-technical-tag text-technical-tag font-semibold">VOSTOKPRIBOR
-                                                        - Tier-3 Automation Engineer</span>
-                                                </div>
-                                                <span class="font-data-mono-md text-data-mono-md text-secondary">10:21
-                                                    AM MSK</span>
-                                            </div>
-                                            <div
-                                                class="mt-1.5 p-unit-base rounded bg-surface-container-low border border-outline-variant/30 text-body-md text-on-surface">
-                                                Alexey, good morning. I have reviewed the telemetry dump. The loop
-                                                resistance spiked to infinity indicating either an open terminal at
-                                                junction box JB-104 or a thermal overload on the galvanic isolator card.
-                                                Our on-site field tech Boris K. has been dispatched to Blast Furnace #5
-                                                control room with a replacement isolator module. In the meantime, I am
-                                                running a remote diagnostic script on Gateway VP-GW-09.
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <!-- Message 4 (Assigned Specialist Update - Denis Sokolov) -->
-                                    <div class="flex gap-unit-base">
-                                        <div
-                                            class="w-10 h-10 rounded-full bg-primary-container text-tertiary-fixed flex items-center justify-center font-bold shrink-0 shadow-sm border border-tertiary-fixed/30">
-                                            DS
-                                        </div>
-                                        <div class="flex-1">
-                                            <div class="flex items-baseline justify-between">
-                                                <div class="flex items-center gap-2">
-                                                    <span
-                                                        class="font-headline-sm text-headline-sm text-primary font-bold">Denis
-                                                        Sokolov</span>
-                                                    <span
-                                                        class="px-1.5 py-0.2 rounded bg-tertiary-fixed text-on-tertiary-fixed font-technical-tag text-technical-tag font-semibold">VOSTOKPRIBOR
-                                                        - Tier-3 Automation Engineer</span>
-                                                </div>
-                                                <span class="font-data-mono-md text-data-mono-md text-secondary">10:38
-                                                    AM MSK</span>
-                                            </div>
-                                            <div
-                                                class="mt-1.5 p-unit-base rounded bg-surface-container-low border-l-4 border-tertiary-fixed-dim border-outline-variant/30 text-body-md text-on-surface">
-                                                <span class="font-semibold text-primary">Update:</span> Remote handshake
-                                                re-established with the transmitter microcontroller. Boris is now at the
-                                                cabinet verifying the terminal screws and power rails. Stand by for live
-                                                calibration test.
-                                            </div>
-                                        </div>
-                                    </div>
+                                            <?php endif; ?>
+                                        <?php endforeach; ?>
+                                    <?php endif; ?>
                                 </div>
                                 <!-- Interactive Engineer Response Composer -->
                                 <div

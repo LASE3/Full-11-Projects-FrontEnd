@@ -84,8 +84,7 @@ try {
             }
 
             if (empty($code)) {
-                $maxId = (int)$pdo->query("SELECT MAX(control_id) FROM compliance_controls")->fetchColumn();
-                $code = 'CTRL-GOV-' . str_pad($maxId + 1, 2, '0', STR_PAD_LEFT);
+                $code = vp_next_id($pdo, 'compliance_controls', 'CTRL-GOV-', 2);
             }
 
             $stmt = $pdo->prepare("

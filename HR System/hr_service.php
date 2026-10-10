@@ -1062,6 +1062,71 @@ function hr_getUnonboardedEmployees()
     return $stmt->fetchAll();
 }
 
+/**
+ * Fetch all job postings joined with department names and candidate metrics
+ */
+function hr_getJobPostings(): array
+{
+    $pdo = getDbConnection();
+    $stmt = $pdo->query("
+        SELECT 
+            jp.posting_id,
+            jp.title,
+            jp.department_code,
+            d.dept_name,
+            jp.is_published,
+            jp.posted_at,
+            'Almaty Industrial Complex (HQ)' AS location,
+            'Full-Time' AS employment_type,
+            'Mid-Senior Level' AS experience_level,
+            CONCAT('High-precision engineering and operational role within ', COALESCE(d.dept_name, 'Engineering'), '.') AS description,
+            (SELECT COUNT(*) FROM recruitment_candidates rc WHERE rc.department_code = jp.department_code OR rc.applied_position LIKE CONCAT('%', jp.title, '%')) AS candidate_count
+        FROM job_postings jp
+        LEFT JOIN departments d ON jp.department_code = d.dept_code
+        ORDER BY jp.posted_at DESC, jp.posting_id DESC
+    ");
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+/**
+ * Fetch customer service requests joined with client and assigned engineer details
+ */
+function hr_getServiceRequests(string $status = 'ALL'): array
+{
+    $pdo = getDbConnection();
+    $sql = "
+        SELECT 
+            csr.request_id,
+            csr.cus_id,
+            COALESCE(c.company_name, csr.cus_id) AS company_name,
+            csr.service_type,
+            csr.title,
+            csr.description,
+            csr.facility_location,
+            csr.priority,
+            csr.requested_date,
+            csr.status,
+            csr.assigned_emp_id,
+            e.full_name AS assigned_engineer_name,
+            e.job_title AS assigned_engineer_title,
+            csr.assigned_at,
+            csr.hr_notes,
+            csr.created_at,
+            csr.updated_at
+        FROM customer_service_requests csr
+        LEFT JOIN customers c ON csr.cus_id = c.cus_id
+        LEFT JOIN employees e ON csr.assigned_emp_id = e.emp_id
+    ";
+    $params = [];
+    if ($status !== 'ALL' && !empty($status)) {
+        $sql .= " WHERE csr.status = ? ";
+        $params[] = $status;
+    }
+    $sql .= " ORDER BY csr.created_at DESC, csr.request_id DESC ";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute($params);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
 
 /**
  * Universal HR Sidebar renderer for subpages

@@ -362,6 +362,21 @@ $avgBudgetBurn = (float)$pdo->query("SELECT AVG((spent_amount / NULLIF(allocated
                 </tr>
               </thead>
               <tbody class="invoice-table-body">
+                <tr id="invoice-no-match-row" style="display: none;">
+                  <td colspan="8" style="text-align: center; padding: 48px 24px; color: var(--fin-muted, #64748b);">
+                    <div style="font-size: 32px; margin-bottom: 8px;">🔍</div>
+                    <div style="font-weight: 700; font-size: 15px; color: var(--fin-navy, #0f172a); margin-bottom: 4px;">No Invoices Found</div>
+                    <div id="invoice-no-match-msg" style="font-size: 12.5px; margin-bottom: 16px;">No invoices match the specified query or filters.</div>
+                    <div class="fin-flex-gap-sm" style="justify-content: center; display: inline-flex;">
+                      <button class="btn btn-outline btn-sm" onclick="document.getElementById('invoice-search').value=''; document.getElementById('invoice-status-filter').value='all'; window.finApp.filterInvoices();">
+                        Clear Search &amp; Show All
+                      </button>
+                      <button class="btn btn-primary-amber btn-sm" onclick="window.finApp.openModal('modal-create-invoice')">
+                        + Issue Invoice
+                      </button>
+                    </div>
+                  </td>
+                </tr>
                 <?php if (empty($invoices)): ?>
                   <tr>
                     <td class="fin-empty-state-lg" colspan="8" >

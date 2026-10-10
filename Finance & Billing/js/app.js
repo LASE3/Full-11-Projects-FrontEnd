@@ -554,6 +554,24 @@
         }
       });
 
+      const noMatchRow = document.getElementById("invoice-no-match-row");
+      const noMatchMsg = document.getElementById("invoice-no-match-msg");
+
+      if (visibleCount === 0) {
+        if (noMatchRow) {
+          noMatchRow.style.display = "";
+          if (noMatchMsg) {
+            noMatchMsg.textContent = query
+              ? `No database invoices match query "${query}".`
+              : "No invoices match the selected filter criteria.";
+          }
+        }
+      } else {
+        if (noMatchRow) {
+          noMatchRow.style.display = "none";
+        }
+      }
+
       const countEl = document.getElementById("invoice-visible-count");
       if (countEl) {
         countEl.textContent = visibleCount;
@@ -606,13 +624,15 @@
         }
       });
 
-      // Check URL search parameter if on Invoices page
-      const urlParams = new URLSearchParams(window.location.search);
-      const searchParam = urlParams.get("search");
-      if (searchParam) {
-        const searchInput = document.getElementById("invoice-search");
-        if (searchInput) {
+      // Check URL search parameter or existing input value on Invoices page
+      const searchInput = document.getElementById("invoice-search");
+      if (searchInput) {
+        const urlParams = new URLSearchParams(window.location.search);
+        const searchParam = urlParams.get("search");
+        if (searchParam) {
           searchInput.value = searchParam;
+        }
+        if (searchInput.value.trim() !== "") {
           this.filterInvoices();
         }
       }

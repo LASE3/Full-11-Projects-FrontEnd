@@ -62,14 +62,17 @@ try {
             break;
 
         case 'create_webhook':
-            $eventType = trim($payload['event_type'] ?? 'telemetry.event.custom');
-            $endpoint = trim($payload['target_endpoint'] ?? 'https://api.baltnord.lv/v1/vostok/events');
-            $status = trim($payload['status'] ?? 'Delivered');
-            $statusCode = trim($payload['status_code'] ?? ($status === 'Delivered' ? '200 OK' : '504 TIMEOUT'));
+            $eventType = trim((string)($payload['event_type'] ?? ''));
+            $endpoint = trim((string)($payload['target_endpoint'] ?? ''));
+            if ($eventType === '' || $endpoint === '') {
+                sendJsonError('event_type and target_endpoint are required fields.', 422);
+            }
+            $status = trim((string)($payload['status'] ?? 'Delivered'));
+            $statusCode = trim((string)($payload['status_code'] ?? ($status === 'Delivered' ? '200 OK' : '504 TIMEOUT')));
             $latency = (int)($payload['latency_ms'] ?? rand(20, 50));
-            $classification = trim($payload['classification'] ?? 'Internal');
+            $classification = trim((string)($payload['classification'] ?? 'Internal'));
             $deliveryId = 'WH-2026-' . rand(9000, 9999);
-            $rawPayload = trim($payload['payload'] ?? '{"event": "' . $eventType . '", "timestamp": ' . time() . '}');
+            $rawPayload = trim((string)($payload['payload'] ?? '{"event": "' . $eventType . '", "timestamp": ' . time() . '}'));
 
             $stmt = $pdo->prepare("
                 INSERT INTO `developer_webhooks`
@@ -94,13 +97,13 @@ try {
         case 'update_webhook':
             $id = (int)($payload['id'] ?? 0);
             if ($id <= 0) {
-                sendJsonError('Valid Webhook ID is required');
+                sendJsonError('Valid Webhook ID is required', 422);
             }
 
-            $eventType = trim($payload['event_type'] ?? '');
-            $endpoint = trim($payload['target_endpoint'] ?? '');
-            $status = trim($payload['status'] ?? 'Delivered');
-            $statusCode = trim($payload['status_code'] ?? '200 OK');
+            $eventType = trim((string)($payload['event_type'] ?? ''));
+            $endpoint = trim((string)($payload['target_endpoint'] ?? ''));
+            $status = trim((string)($payload['status'] ?? 'Delivered'));
+            $statusCode = trim((string)($payload['status_code'] ?? '200 OK'));
             $latency = (int)($payload['latency_ms'] ?? 30);
 
             $stmt = $pdo->prepare("
@@ -126,7 +129,7 @@ try {
 
         case 'retry_webhook':
             $id = (int)($payload['id'] ?? 0);
-            $deliveryId = trim($payload['delivery_id'] ?? '');
+            $deliveryId = trim((string)($payload['delivery_id'] ?? ''));
 
             if ($id > 0) {
                 $stmt = $pdo->prepare("
@@ -143,7 +146,7 @@ try {
                 ");
                 $stmt->execute([':did' => $deliveryId, ':lat' => rand(25, 45)]);
             } else {
-                sendJsonError('Missing webhook ID');
+                sendJsonError('Missing webhook ID', 422);
             }
 
             sendJsonSuccess(null, 'Event frame re-delivered successfully to target listener (200 OK)');
@@ -152,7 +155,7 @@ try {
         case 'delete_webhook':
             $id = (int)($payload['id'] ?? 0);
             if ($id <= 0) {
-                sendJsonError('Valid Webhook ID is required');
+                sendJsonError('Valid Webhook ID is required', 422);
             }
 
             $stmt = $pdo->prepare("DELETE FROM `developer_webhooks` WHERE `id` = :id");
@@ -162,9 +165,10 @@ try {
             break;
 
         default:
-            sendJsonError('Invalid action for metrics service');
+            sendJsonError('Invalid action for metrics service', 422);
             break;
     }
 } catch (Throwable $e) {
-    sendJsonError('Database error: ' . $e->getMessage(), 500);
+    error_log("Developer metrics API error: " . $e->getMessage() . " at " . $e->getFile() . ":" . $e->getLine());
+    sendJsonError('An internal server error occurred while processing metrics.', 500);
 }

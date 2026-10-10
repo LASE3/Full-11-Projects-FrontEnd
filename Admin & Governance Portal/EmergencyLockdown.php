@@ -20,6 +20,7 @@ $defconStatus = ($isolatedCount === $totalSystems && $totalSystems > 0) ? 'MAXIM
 <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <meta name="csrf-token" content="<?= htmlspecialchars(getCsrfToken()) ?>" />
     <title>VOSTOKPRIBOR Administration &amp; Governance Portal - System 11</title>
     <link rel="stylesheet" href="css/common.css" />
     <link rel="stylesheet" href="css/emergencyLockdown.css" />
@@ -702,11 +703,11 @@ $defconStatus = ($isolatedCount === $totalSystems && $totalSystems > 0) ? 'MAXIM
                         </div>
                     </div>
                 </div>
-                <!-- Simple Modal / Toast for Abort / Action Micro-Interactions -->
+                <!-- Simple Modal / Dialog for Abort / Lockdown Interlock Actions -->
                 <div class="fixed inset-0 bg-primary/70 backdrop-blur-[2px] z-50 flex items-center justify-center p-space-base hidden"
-                    id="modalOverlay">
+                    id="modalOverlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
                     <div
-                        class="bg-surface-container-lowest rounded max-w-md w-full p-space-base shadow-xl border-l-4 border-error">
+                        class="bg-surface-container-lowest rounded max-w-md w-full p-space-base shadow-xl border-l-4 border-error" id="modalDialogBox">
                         <div
                             class="flex items-center justify-between mb-space-sm pb-space-xs border-b border-surface-container-high">
                             <div
@@ -714,14 +715,34 @@ $defconStatus = ($isolatedCount === $totalSystems && $totalSystems > 0) ? 'MAXIM
                                 <span class="material-symbols-outlined text-[20px]">warning</span>
                                 <span id="modalTitle">Critical Action Interlock</span>
                             </div>
-                            <button class="text-on-surface-variant hover:text-on-surface" id="modalClose">
+                            <button class="text-on-surface-variant hover:text-on-surface p-1 rounded" id="modalClose" aria-label="Close modal">
                                 <span class="material-symbols-outlined text-[18px]">close</span>
                             </button>
                         </div>
-                        <p class="font-body-compact text-body-compact text-on-surface-variant mb-space-base"
+                        <p class="font-body-compact text-body-compact text-on-surface-variant mb-space-sm"
                             id="modalBody">
                             Executing this command requires physical dual cryptographic hardware cancellation.
                         </p>
+                        <div class="space-y-space-xs mb-space-base">
+                            <div>
+                                <label class="block font-label-uppercase text-[11px] text-on-surface-variant mb-1" id="modalPhraseLabel">
+                                    Type confirmation phrase: <span class="font-mono font-bold text-error" id="modalTargetPhrase">CONFIRM-DEFCON-1</span>
+                                </label>
+                                <input type="text" id="modalPhraseInput" class="h-control-height-sm w-full bg-surface-container px-space-sm font-mono text-sm text-on-surface rounded border border-outline/30 focus:outline-none focus:border-error" placeholder="Type phrase exactly" autocomplete="off" />
+                            </div>
+                            <div>
+                                <label class="block font-label-uppercase text-[11px] text-on-surface-variant mb-1">
+                                    Mandatory Operational Reason:
+                                </label>
+                                <input type="text" id="modalReasonInput" class="h-control-height-sm w-full bg-surface-container px-space-sm font-body-compact text-sm text-on-surface rounded border border-outline/30 focus:outline-none focus:border-error" placeholder="Specify justification..." value="Emergency Galvanic Isolation Order" />
+                            </div>
+                            <div>
+                                <label class="block font-label-uppercase text-[11px] text-on-surface-variant mb-1">
+                                    Authorization Key / Password / TOTP:
+                                </label>
+                                <input type="password" id="modalAuthKeyInput" class="h-control-height-sm w-full bg-surface-container px-space-sm font-mono text-sm text-on-surface rounded border border-outline/30 focus:outline-none focus:border-error" placeholder="Enter current password or PIN" value="" />
+                            </div>
+                        </div>
                         <div class="flex items-center justify-end gap-space-xs">
                             <button
                                 class="h-control-height-sm px-space-base bg-surface-container text-on-surface font-body-compact text-body-compact font-semibold rounded hover:bg-surface-container-high transition-colors"
@@ -729,8 +750,8 @@ $defconStatus = ($isolatedCount === $totalSystems && $totalSystems > 0) ? 'MAXIM
                                 Dismiss
                             </button>
                             <button
-                                class="h-control-height-sm px-space-base bg-error text-on-error font-body-compact text-body-compact font-semibold rounded hover:bg-on-error-container transition-colors"
-                                id="modalBtnConfirm">
+                                class="h-control-height-sm px-space-base bg-error text-on-error font-body-compact text-body-compact font-semibold rounded hover:bg-on-error-container transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                id="modalBtnConfirm" disabled>
                                 Confirm Action
                             </button>
                         </div>

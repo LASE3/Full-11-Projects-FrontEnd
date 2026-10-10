@@ -107,8 +107,7 @@ if ($method === 'POST') {
             // 1. Establish Master Customer Record if not existing
             $cusId = $lead['converted_cus_id'];
             if (!$cusId) {
-                $maxNum = $pdo->query("SELECT MAX(CAST(SUBSTRING(cus_id, 5) AS UNSIGNED)) FROM customers")->fetchColumn();
-                $cusId = "CUS-" . (($maxNum ?: 1000) + 1);
+                $cusId = vp_next_id($pdo, 'customers', 'CUS-', 4);
 
                 $cusStmt = $pdo->prepare("
                     INSERT INTO customers (cus_id, company_name, sector, primary_contact_name, primary_contact_email, account_manager_emp_id, onboarded_at)

@@ -258,15 +258,61 @@
       });
     }
 
-    // Filter Engine
+    // Filter & Pagination Engine
     const searchInput = document.getElementById("policySearchInput") || document.querySelector('input[placeholder*="Query policy"]');
     const rows = document.querySelectorAll(".policy-row");
     const categoryButtons = document.querySelectorAll("#policyCategoryPills button, .policy-tab-btn");
     let currentCategory = "ALL";
 
+    let policyCurrentPage = 1;
+    const policyPageSize = 5;
+    const btnPolicyPrev = document.getElementById("btnPolicyPrev");
+    const btnPolicyNext = document.getElementById("btnPolicyNext");
+    const policyPageIndicator = document.getElementById("policyPageIndicator");
+
+    function renderPolicyPagination() {
+      const rowList = Array.from(rows);
+      const matchedRows = rowList.filter((r) => r.getAttribute("data-filtered") !== "false");
+      const totalPages = Math.max(1, Math.ceil(matchedRows.length / policyPageSize));
+
+      if (policyCurrentPage > totalPages) policyCurrentPage = totalPages;
+      if (policyCurrentPage < 1) policyCurrentPage = 1;
+
+      matchedRows.forEach((r, idx) => {
+        const start = (policyCurrentPage - 1) * policyPageSize;
+        const end = start + policyPageSize;
+        r.style.display = (idx >= start && idx < end) ? "" : "none";
+      });
+
+      if (policyPageIndicator) {
+        policyPageIndicator.textContent = `${policyCurrentPage} / ${totalPages}`;
+      }
+      if (btnPolicyPrev) {
+        btnPolicyPrev.disabled = (policyCurrentPage <= 1);
+      }
+      if (btnPolicyNext) {
+        btnPolicyNext.disabled = (policyCurrentPage >= totalPages);
+      }
+    }
+
+    if (btnPolicyPrev) {
+      btnPolicyPrev.addEventListener("click", () => {
+        if (policyCurrentPage > 1) {
+          policyCurrentPage--;
+          renderPolicyPagination();
+        }
+      });
+    }
+
+    if (btnPolicyNext) {
+      btnPolicyNext.addEventListener("click", () => {
+        policyCurrentPage++;
+        renderPolicyPagination();
+      });
+    }
+
     function applyPolicyFilter() {
       const q = (searchInput ? searchInput.value : "").toLowerCase().trim();
-      let matchCount = 0;
 
       rows.forEach((r) => {
         const text = r.innerText.toLowerCase();
@@ -293,13 +339,19 @@
         }
 
         if (matchesCat && matchesSearch) {
-          r.style.display = "";
-          matchCount++;
+          r.setAttribute("data-filtered", "true");
         } else {
+          r.setAttribute("data-filtered", "false");
           r.style.display = "none";
         }
       });
+
+      policyCurrentPage = 1;
+      renderPolicyPagination();
     }
+
+    // Initial pagination render
+    renderPolicyPagination();
 
     if (searchInput) {
       searchInput.addEventListener("input", applyPolicyFilter);

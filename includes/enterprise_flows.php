@@ -101,13 +101,8 @@ function vp_process_order(PDO $pdo, int|string $orderId): array
         $updOrder = $pdo->prepare("UPDATE orders SET total_amount = ?, status = 'Processing' WHERE order_id = ?");
         $updOrder->execute([$totalOrderAmount, $orderId]);
 
-        // 3. Generate sequential invoice (INV-2026-xxx) via id_counters
-        $invCounterStmt = $pdo->prepare("SELECT next_val FROM id_counters WHERE name = 'invoices' FOR UPDATE");
-        $invCounterStmt->execute();
-        $nextInvNum = (int)$invCounterStmt->fetchColumn();
-        if ($nextInvNum < 1) $nextInvNum = 11;
-        $invId = 'INV-2026-' . str_pad((string)$nextInvNum, 3, '0', STR_PAD_LEFT);
-        $pdo->prepare("UPDATE id_counters SET next_val = ? WHERE name = 'invoices'")->execute([$nextInvNum + 1]);
+        // 3. Generate sequential invoice (INV-2026-xxx) via vp_next_id
+        $invId = vp_next_id($pdo, 'invoices', 'INV-2026-', 3);
 
         // Check if customer has an active project link
         $prjStmt = $pdo->prepare("SELECT prj_id FROM projects WHERE cus_id = ? ORDER BY prj_id DESC LIMIT 1");
@@ -145,13 +140,8 @@ function vp_process_order(PDO $pdo, int|string $orderId): array
             ]);
         }
 
-        // 4. Create billing document in File Center (DOC-2026-xxx)
-        $docCounterStmt = $pdo->prepare("SELECT next_val FROM id_counters WHERE name = 'documents' FOR UPDATE");
-        $docCounterStmt->execute();
-        $nextDocNum = (int)$docCounterStmt->fetchColumn();
-        if ($nextDocNum < 1) $nextDocNum = 16;
-        $docId = 'DOC-2026-' . str_pad((string)$nextDocNum, 3, '0', STR_PAD_LEFT);
-        $pdo->prepare("UPDATE id_counters SET next_val = ? WHERE name = 'documents'")->execute([$nextDocNum + 1]);
+        // 4. Create billing document in File Center (DOC-2026-xxx) via vp_next_id
+        $docId = vp_next_id($pdo, 'documents', 'DOC-2026-', 3);
 
         $insDoc = $pdo->prepare("
             INSERT INTO documents 
@@ -458,13 +448,8 @@ function vp_create_ticket(PDO $pdo, array $data, string $actor): string
     }
 
     try {
-        // 1. Next TKT ID via id_counters
-        $counterStmt = $pdo->prepare("SELECT next_val FROM id_counters WHERE name = 'tickets' FOR UPDATE");
-        $counterStmt->execute();
-        $nextNum = (int)$counterStmt->fetchColumn();
-        if ($nextNum < 1) $nextNum = 16;
-        $tktId = 'TKT-2026-' . str_pad((string)$nextNum, 3, '0', STR_PAD_LEFT);
-        $pdo->prepare("UPDATE id_counters SET next_val = ? WHERE name = 'tickets'")->execute([$nextNum + 1]);
+        // 1. Next TKT ID via vp_next_id
+        $tktId = vp_next_id($pdo, 'tickets', 'TKT-2026-', 3);
 
         // 2. SLA deadline lookup from sla_policies
         $slaStmt = $pdo->prepare("SELECT resolution_time_hours, resolution_time_minutes FROM sla_policies WHERE priority = ? LIMIT 1");
@@ -493,7 +478,8 @@ function vp_create_ticket(PDO $pdo, array $data, string $actor): string
             ORDER BY emp_id ASC
         ")->fetchAll(PDO::FETCH_COLUMN);
 
-        $assignedTech = !empty($itTechs) ? $itTechs[$nextNum % count($itTechs)] : 'EMP-1004';
+        $tktNum = (int)preg_replace('/\D/', '', $tktId);
+        $assignedTech = !empty($itTechs) ? $itTechs[$tktNum % count($itTechs)] : 'EMP-1004';
 
         // 4. Resolve requester info
         $reqType = str_starts_with($actor, 'CUS-') ? 'Customer' : 'Employee';

@@ -444,10 +444,12 @@ $sidebarBadges = gov_getSidebarBadges();
                             </div>
                             <div class="flex items-center gap-space-xs">
                                 <button
+                                    id="btnMatrixPrev"
                                     class="h-control-height-sm px-space-sm bg-surface hover:bg-surface-container-high text-on-surface rounded border border-outline-variant disabled:opacity-50"
                                     disabled="">Previous</button>
-                                <span class="px-space-xs font-bold font-mono text-primary">01 / 03</span>
+                                <span id="matrixPageIndicator" class="px-space-xs font-bold font-mono text-primary">01 / 03</span>
                                 <button
+                                    id="btnMatrixNext"
                                     class="h-control-height-sm px-space-sm bg-surface hover:bg-surface-container-high text-on-surface rounded border border-outline-variant">Next</button>
                             </div>
                         </div>

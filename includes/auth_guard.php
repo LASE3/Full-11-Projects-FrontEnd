@@ -185,10 +185,36 @@ function requireApiAuth(?string $requiredSystem = null): array
  * @param string|null $requestedCusId Optional cus_id requested in query/payload
  * @return string Verified customer ID
  */
+function hasEmployeePermission(PDO $pdo, array $user, string $permissionName): bool
+{
+    if (isSuperAdmin($user)) {
+        return true;
+    }
+    $empId = $user['emp_id'] ?? ($user['account_type'] === 'Employee' ? ($user['user_id'] ?? null) : null);
+    if (!$empId) {
+        return false;
+    }
+    try {
+        $stmt = $pdo->prepare("
+            SELECT 1 FROM employee_roles er
+            JOIN role_permissions rp ON er.role_id = rp.role_id
+            JOIN permissions p ON rp.permission_id = p.permission_id
+            WHERE er.emp_id = ? AND (LOWER(p.permission_name) = LOWER(?))
+            LIMIT 1
+        ");
+        $stmt->execute([$empId, $permissionName]);
+        return (bool)$stmt->fetchColumn();
+    } catch (Throwable) {
+        return false;
+    }
+}
+
 function enforceCustomerTenant(array $user, ?string $requestedCusId = null): string
 {
+    $pdo = getDbConnection();
+
     if (($user['account_type'] ?? '') === 'Customer') {
-        $ownCusId = $user['cus_id'] ?? $user['user_id'] ?? '';
+        $ownCusId = (string)($user['cus_id'] ?? $user['user_id'] ?? '');
         if ($requestedCusId !== null && $requestedCusId !== '' && $requestedCusId !== $ownCusId) {
             http_response_code(403);
             header('Content-Type: application/json; charset=utf-8');
@@ -202,8 +228,45 @@ function enforceCustomerTenant(array $user, ?string $requestedCusId = null): str
         return $ownCusId;
     }
 
-    // For employee accounts, allow requested customer or default
-    return $requestedCusId ?: ($user['cus_id'] ?? 'CUS-1001');
+    // For employee accounts, check explicit customer_impersonate permission
+    if (!hasEmployeePermission($pdo, $user, 'CUSTOMER_IMPERSONATE')) {
+        http_response_code(403);
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode([
+            'success' => false,
+            'error'   => 'Permission denied',
+            'message' => 'Forbidden: You do not have permission to view customer perspectives.'
+        ], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+
+    $target = $requestedCusId ?: ($_SESSION['impersonate_cus_id'] ?? null);
+    if (!empty($target)) {
+        $chk = $pdo->prepare("SELECT cus_id FROM customers WHERE cus_id = ? LIMIT 1");
+        $chk->execute([$target]);
+        $valid = $chk->fetchColumn();
+        if ($valid) {
+            if (($_SESSION['impersonate_cus_id'] ?? '') !== $valid) {
+                require_once __DIR__ . '/AuditLogger.php';
+                AuditLogger::logAction(
+                    $user['emp_id'] ?? 'EMP-0001',
+                    (string)$valid,
+                    'Customer Portal',
+                    'CUS',
+                    'CUSTOMER_IMPERSONATE_SWITCH',
+                    'customers',
+                    (string)$valid,
+                    ['switched_to' => (string)$valid]
+                );
+                $_SESSION['impersonate_cus_id'] = (string)$valid;
+                $_SESSION['cus_id'] = (string)$valid;
+            }
+            return (string)$valid;
+        }
+    }
+
+    // Without an explicit choice, an employee sees an empty state, never "the first customer in the table"
+    return '';
 }
 
 /**

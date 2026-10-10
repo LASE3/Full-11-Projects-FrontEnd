@@ -309,7 +309,14 @@ $rootPdo->exec("
 
 $rootPdo->exec("SET FOREIGN_KEY_CHECKS = 1");
 
-// 8. Verify exact baseline counts
+// 8. Generate physical baseline seed documents in storage/documents/
+echo "\n[5b] Generating physical seed documents in storage/documents/...\n";
+$seedScript = __DIR__ . '/../scripts/generate_seed_documents.php';
+if (file_exists($seedScript)) {
+    require_once $seedScript;
+}
+
+// 9. Verify exact baseline counts & PDF specification alignments
 echo "\n[6/6] Verifying baseline counts against locked enterprise targets...\n";
 $empCount  = (int)$rootPdo->query("SELECT COUNT(*) FROM employees WHERE is_system_account = 0 OR is_system_account IS NULL")->fetchColumn();
 $sysEmp    = (int)$rootPdo->query("SELECT COUNT(*) FROM employees WHERE is_system_account = 1")->fetchColumn();
@@ -342,7 +349,72 @@ foreach ($checks as [$name, $target, $actual]) {
     printf("%-20s | %-10d | %-10d | %s\n", $name, $target, $actual, $ok ? "PASS" : "FAIL");
 }
 
-// 9. Verify table count, views, triggers, and key tables
+// 10. PDF Baseline Alignments (Titles, Ticket Assignees, Product Names & Models)
+echo "\n[PDF Alignment Verifications]\n";
+$expectedTitles = [
+    'EMP-1001' => 'Chief Executive Officer (CEO)',
+    'EMP-1002' => 'Chief Operating Officer (COO)',
+    'EMP-1003' => 'Chief Financial Officer (CFO)',
+    'EMP-1004' => 'Chief Technology Officer (CTO)',
+    'EMP-1005' => 'Chief Governance Manager',
+    'EMP-1006' => 'Sales Manager',
+    'EMP-1007' => 'Senior Account Manager',
+    'EMP-1008' => 'Account Manager',
+    'EMP-1009' => 'Strategic Sales Manager',
+    'EMP-1010' => 'Regional Sales Manager',
+    'EMP-1011' => 'Operations Manager',
+    'EMP-1012' => 'Logistics Manager',
+    'EMP-1013' => 'Procurement Manager',
+    'EMP-1014' => 'Warehouse Supervisor',
+    'EMP-1015' => 'Supply Chain Analyst',
+    'EMP-1016' => 'Senior Automation Engineer',
+    'EMP-1017' => 'Software Integration Engineer',
+    'EMP-1018' => 'Systems Engineer',
+    'EMP-1019' => 'Project Manager',
+    'EMP-1020' => 'Senior Developer',
+];
+
+$titlesMatch = true;
+foreach ($expectedTitles as $empId => $expectedTitle) {
+    $stmt = $rootPdo->prepare("SELECT job_title FROM employees WHERE emp_id = ?");
+    $stmt->execute([$empId]);
+    $actTitle = $stmt->fetchColumn();
+    if ($actTitle !== $expectedTitle) {
+        $titlesMatch = false;
+        echo "  [FAIL] Title mismatch for {$empId}: expected '{$expectedTitle}', got '{$actTitle}'\n";
+    }
+}
+echo "  20 Baseline Job Titles (EMP-1001..1020): " . ($titlesMatch ? "PASS" : "FAIL") . "\n";
+if (!$titlesMatch) $allValid = false;
+
+// Ticket Assignees: All 15 tickets assigned to EMP-1018
+$tktNon1018 = (int)$rootPdo->query("SELECT COUNT(*) FROM tickets WHERE tkt_id BETWEEN 'TKT-2026-001' AND 'TKT-2026-015' AND (assigned_emp_id != 'EMP-1018' OR assigned_emp_id IS NULL)")->fetchColumn();
+echo "  15 Baseline Ticket Assignees (EMP-1018): " . ($tktNon1018 === 0 ? "PASS" : "FAIL ({$tktNon1018} tickets unassigned/mismatched)") . "\n";
+if ($tktNon1018 !== 0) $allValid = false;
+
+// Products 1006..1010
+$expectedProducts = [
+    'PROD-1006' => ['Optical Inspection System', 'PerProject'],
+    'PROD-1007' => ['Industrial Lifecycle Support', 'SubscriptionAnnual'],
+    'PROD-1008' => ['Automation Software Integration', 'PerProject'],
+    'PROD-1009' => ['Enterprise Logistics Management', 'SubscriptionMonthly'],
+    'PROD-1010' => ['Preventive Instrument Maintenance', 'AnnualContract'],
+];
+
+$prodsMatch = true;
+foreach ($expectedProducts as $pId => [$pName, $pModel]) {
+    $stmt = $rootPdo->prepare("SELECT product_name, billing_model FROM products WHERE prod_id = ?");
+    $stmt->execute([$pId]);
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    if (!$row || $row['product_name'] !== $pName || $row['billing_model'] !== $pModel) {
+        $prodsMatch = false;
+        echo "  [FAIL] Product mismatch for {$pId}: expected '{$pName}' / '{$pModel}'\n";
+    }
+}
+echo "  Catalog Products (PROD-1006..1010): " . ($prodsMatch ? "PASS" : "FAIL") . "\n";
+if (!$prodsMatch) $allValid = false;
+
+// 11. Verify table count, views, triggers, and key tables
 echo "\n[Schema Integrity Checks]\n";
 $tables = $rootPdo->query("SHOW FULL TABLES WHERE Table_type = 'BASE TABLE'")->fetchAll(PDO::FETCH_COLUMN);
 $views  = $rootPdo->query("SHOW FULL TABLES WHERE Table_type = 'VIEW'")->fetchAll(PDO::FETCH_COLUMN);

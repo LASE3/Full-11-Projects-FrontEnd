@@ -391,10 +391,7 @@ function vostok_createCustomerServiceRequest(PDO $pdo, array $data): array
         }
 
         // Generate next request ID (SRV-2026-xxx)
-        $stmtMax = $pdo->query("SELECT MAX(CAST(SUBSTRING(request_id, 10) AS UNSIGNED)) FROM customer_service_requests WHERE request_id LIKE 'SRV-2026-%'");
-        $maxNum = $stmtMax->fetchColumn();
-        $nextNum = ($maxNum ? (int)$maxNum : 10) + 1;
-        $reqId = sprintf('SRV-2026-%03d', $nextNum);
+        $reqId = vp_next_id($pdo, 'service_requests', 'SRV-2026-', 3);
 
         $serviceType = trim((string)($data['service_type'] ?? 'Calibration & Metrology'));
         $title       = trim((string)($data['title'] ?? 'Technical Service Dispatch Request'));

@@ -203,34 +203,14 @@
         downloadBtn.onclick = () => {
           if (window.showToast) {
             window.showToast(
-              "DECRYPTING VAULT RECORD",
-              `Retrieving ${docName} and verifying SHA-256 seal against database...`,
+              "STREAMING VAULT RECORD",
+              `Authorizing and downloading ${docName}...`,
               "info",
-              "lock_open"
+              "download"
             );
           }
-          // Log to audit API
-          fetch("api/audit.php", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              action: "log",
-              doc_id: docId,
-              access_type: "Download",
-              notes: `Decrypted and downloaded ${docName} via TLS 1.3`,
-            }),
-          }).catch(() => {});
-
-          setTimeout(() => {
-            if (window.showToast) {
-              window.showToast(
-                "DECRYPTION COMPLETE",
-                `${docName} downloaded successfully with zero integrity errors.`,
-                "success",
-                "download_done"
-              );
-            }
-          }, 800);
+          // Trigger actual file download
+          window.location.href = "api/download.php?doc_id=" + encodeURIComponent(docId);
         };
       }
 

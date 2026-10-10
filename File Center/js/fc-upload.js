@@ -159,25 +159,47 @@
         '<span class="material-symbols-outlined text-[16px] animate-spin">sync</span> Ingesting into MySQL Database...';
 
       try {
-        const response = await fetch("api/documents.php", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            action: "create",
-            title: title,
-            department: dept,
-            project_ref: projectRef,
-            customer_ref: customerRef,
-            classification: classification,
-            retention_period: retention,
-            custodian: custodian,
-            description: description,
-            file_size: fileSize,
-            status: classification === "highly-confidential" ? "In Review" : "Approved",
-          }),
-        });
+        let response;
+        if (currentSelectedFile) {
+          const fd = new FormData();
+          fd.append("file", currentSelectedFile);
+          fd.append("action", "create");
+          fd.append("title", title);
+          fd.append("department", dept);
+          fd.append("project_ref", projectRef);
+          fd.append("customer_ref", customerRef);
+          fd.append("classification", classification);
+          fd.append("retention_period", retention);
+          fd.append("custodian", custodian);
+          fd.append("description", description);
+          fd.append("file_size", fileSize);
+          fd.append("status", classification === "highly-confidential" ? "In Review" : "Approved");
+
+          response = await fetch("api/documents.php", {
+            method: "POST",
+            body: fd,
+          });
+        } else {
+          response = await fetch("api/documents.php", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              action: "create",
+              title: title,
+              department: dept,
+              project_ref: projectRef,
+              customer_ref: customerRef,
+              classification: classification,
+              retention_period: retention,
+              custodian: custodian,
+              description: description,
+              file_size: fileSize,
+              status: classification === "highly-confidential" ? "In Review" : "Approved",
+            }),
+          });
+        }
 
         const res = await response.json();
 

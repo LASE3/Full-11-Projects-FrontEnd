@@ -67,25 +67,28 @@ try {
             break;
 
         case 'create':
-            $label = trim($payload['label'] ?? '');
+            $label = trim((string)($payload['label'] ?? ''));
             if ($label === '') {
-                $label = 'Custom Enterprise Service';
+                sendJsonError('Field label is required for credential creation.', 422);
             }
-            $env = trim($payload['environment'] ?? 'Production');
+            $partnerId = trim((string)($payload['partner_id'] ?? ''));
+            if ($partnerId === '') {
+                sendJsonError('Field partner_id is required for credential creation.', 422);
+            }
+            $env = trim((string)($payload['environment'] ?? 'Production'));
             if (!in_array($env, ['Production', 'Sandbox', 'Staging'], true)) {
                 $env = 'Production';
             }
 
-            $rateLimitStr = trim($payload['rate_limit'] ?? '10,000');
+            $rateLimitStr = trim((string)($payload['rate_limit'] ?? '10,000'));
             $rateLimitClean = (int)preg_replace('/[^0-9]/', '', $rateLimitStr);
             if ($rateLimitClean <= 0) {
                 $rateLimitClean = 10000;
             }
             $rateLimit = number_format($rateLimitClean) . ' req/min';
 
-            $scopes = trim($payload['scopes'] ?? 'telemetry:read,scada:ingest');
-            $partnerId = trim($payload['partner_id'] ?? 'CUS-1002');
-            $partnerName = trim($payload['partner_name'] ?? 'BaltNord Process Systems');
+            $scopes = trim((string)($payload['scopes'] ?? 'telemetry:read,scada:ingest'));
+            $partnerName = trim((string)($payload['partner_name'] ?? 'BaltNord Process Systems'));
             $classification = ($env === 'Sandbox') ? 'Internal QA' : 'Confidential';
 
             // Generate unique Key ID and cryptographic token
@@ -182,7 +185,7 @@ try {
         case 'delete':
             $id = (int)($payload['id'] ?? 0);
             if ($id <= 0) {
-                sendJsonError('Key ID is required to delete');
+                sendJsonError('Key ID is required to delete', 422);
             }
 
             $stmt = $pdo->prepare("DELETE FROM `developer_api_keys` WHERE `id` = :id");
@@ -192,9 +195,10 @@ try {
             break;
 
         default:
-            sendJsonError('Invalid action for credentials service');
+            sendJsonError('Invalid action for credentials service', 422);
             break;
     }
 } catch (Throwable $e) {
-    sendJsonError('Database error: ' . $e->getMessage(), 500);
+    error_log("Developer credentials API error: " . $e->getMessage() . " at " . $e->getFile() . ":" . $e->getLine());
+    sendJsonError('An internal server error occurred while processing credentials.', 500);
 }

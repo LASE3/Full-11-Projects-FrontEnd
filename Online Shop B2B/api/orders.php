@@ -130,7 +130,10 @@ if ($method === 'POST') {
     $rawInput = file_get_contents('php://input');
     $input = json_decode($rawInput, true) ?: $_POST;
 
-    $targetCusId = $cusId ?: ($input['cus_id'] ?? 'CUS-1001');
+    $targetCusId = ($user['account_type'] ?? '') === 'Customer' ? $cusId : ($cusId ?: ($input['cus_id'] ?? null));
+    if (empty($targetCusId)) {
+        Response::error("Target customer ID is required.", 422);
+    }
 
     $items = $input['items'] ?? [];
     if (empty($items) || !is_array($items)) {

@@ -19,98 +19,142 @@ if (empty($_SESSION['vostok_authenticated']) && empty($currentUser)) {
     exit;
 }
 
-// Support switching customer via ?cus_id=
-if (!empty($_GET['cus_id']) && !str_starts_with((string)$_GET['cus_id'], 'EMP-')) {
-    $_SESSION['cus_id'] = (string)$_GET['cus_id'];
-}
+$isCustomer = (($currentUser['account_type'] ?? '') === 'Customer');
+$canImpersonate = hasEmployeePermission($pdo, $currentUser, 'CUSTOMER_IMPERSONATE');
 
-$cusId = $_SESSION['cus_id'] ?? null;
-if (empty($cusId) || str_starts_with((string)$cusId, 'EMP-')) {
-    if (!empty($_SESSION['vostok_user']['cus_id'])) {
-        $cusId = (string)$_SESSION['vostok_user']['cus_id'];
-    } else {
-        // Employee / SuperAdmin browsing: resolve primary customer from DB
-        $firstCus = $pdo->query("SELECT cus_id FROM customers ORDER BY cus_id ASC LIMIT 1")->fetchColumn();
-        $cusId = $firstCus ?: 'CUS-1001';
+if ($isCustomer) {
+    // 1. Strict tenant isolation: customer cus_id comes ONLY from authenticated session
+    $cusId = !empty($currentUser['cus_id']) ? (string)$currentUser['cus_id'] : null;
+    if (!$cusId) {
+        header('Location: login.php?error=no_customer_assigned');
+        exit;
     }
     $_SESSION['cus_id'] = $cusId;
+} else {
+    // 2. Employee / Staff perspective: only view as customer if holding explicit permission
+    if (isset($_GET['switch_cus_id']) || isset($_POST['switch_cus_id']) || (isset($_GET['cus_id']) && $canImpersonate)) {
+        $reqCusId = trim((string)($_GET['switch_cus_id'] ?? ($_POST['switch_cus_id'] ?? ($_GET['cus_id'] ?? ''))));
+        if ($canImpersonate && $reqCusId !== '') {
+            $chk = $pdo->prepare("SELECT cus_id FROM customers WHERE cus_id = ? LIMIT 1");
+            $chk->execute([$reqCusId]);
+            $validCus = $chk->fetchColumn();
+            if ($validCus) {
+                if (($_SESSION['impersonate_cus_id'] ?? '') !== $validCus) {
+                    require_once __DIR__ . '/../includes/AuditLogger.php';
+                    AuditLogger::logAction(
+                        $currentUser['emp_id'] ?? 'EMP-0001',
+                        (string)$validCus,
+                        'Customer Portal',
+                        'CUS',
+                        'CUSTOMER_IMPERSONATE_SWITCH',
+                        'customers',
+                        (string)$validCus,
+                        ['switched_to' => (string)$validCus]
+                    );
+                }
+                $_SESSION['impersonate_cus_id'] = (string)$validCus;
+                $_SESSION['cus_id'] = (string)$validCus;
+            }
+        }
+    } elseif (isset($_GET['clear_customer'])) {
+        unset($_SESSION['impersonate_cus_id'], $_SESSION['cus_id']);
+    }
+
+    if ($canImpersonate && !empty($_SESSION['impersonate_cus_id'])) {
+        $chk = $pdo->prepare("SELECT cus_id FROM customers WHERE cus_id = ? LIMIT 1");
+        $chk->execute([$_SESSION['impersonate_cus_id']]);
+        $cusId = $chk->fetchColumn() ?: null;
+        if (!$cusId) {
+            unset($_SESSION['impersonate_cus_id'], $_SESSION['cus_id']);
+        }
+    } else {
+        // Without an explicit choice, an employee sees an empty "select a customer" state, never "the first customer in the table"
+        $cusId = null;
+        unset($_SESSION['cus_id']);
+    }
 }
 
-// Fetch authentic customer entity from MariaDB
-$cStmt = $pdo->prepare("SELECT * FROM customers WHERE cus_id = ?");
-$cStmt->execute([$cusId]);
-$customer = $cStmt->fetch(PDO::FETCH_ASSOC);
-
-if (!$customer) {
-    $customer = [
-        'cus_id' => $cusId,
-        'company_name' => 'Authorized Enterprise Client',
-        'primary_contact_name' => 'Client Representative',
-        'primary_contact_email' => 'client@vostokpribor.local',
-        'account_tier' => 'Enterprise SLA',
-        'tax_id' => 'VAT-ACTIVE',
-        'phone' => '+7 (800) 555-0199',
-        'headquarters' => 'Central Operations',
-        'sector' => 'Industrial Instrumentation'
-    ];
+// Fetch all customers for employee picker dropdown if employee has impersonate permission
+$allCustomersList = [];
+if (!$isCustomer && $canImpersonate) {
+    try {
+        $allCustomersList = $pdo->query("SELECT cus_id, company_name FROM customers ORDER BY cus_id ASC")->fetchAll(PDO::FETCH_ASSOC);
+    } catch (Throwable) {}
 }
 
-// Fetch customer account username if available
-$accStmt = $pdo->prepare("SELECT username, email, last_login FROM customer_accounts WHERE cus_id = ? LIMIT 1");
-$accStmt->execute([$cusId]);
-$customerAccount = $accStmt->fetch(PDO::FETCH_ASSOC) ?: [];
+$customer = null;
+$customerAccount = [];
+$badgeOrders = 0;
+$badgeProjects = 0;
+$badgeInvoices = 0;
+$badgeDocs = 0;
+$badgeTickets = 0;
+$badgeServices = 0;
+
+if ($cusId) {
+    $cStmt = $pdo->prepare("SELECT * FROM customers WHERE cus_id = ?");
+    $cStmt->execute([$cusId]);
+    $customer = $cStmt->fetch(PDO::FETCH_ASSOC) ?: null;
+
+    $accStmt = $pdo->prepare("SELECT username, email, last_login FROM customer_accounts WHERE cus_id = ? LIMIT 1");
+    $accStmt->execute([$cusId]);
+    $customerAccount = $accStmt->fetch(PDO::FETCH_ASSOC) ?: [];
+
+    // Live badge counters
+    $bOrderStmt = $pdo->prepare("SELECT COUNT(*) FROM orders WHERE cus_id = :cid");
+    $bOrderStmt->execute([':cid' => $cusId]);
+    $badgeOrders = (int)$bOrderStmt->fetchColumn();
+
+    $bPrjStmt = $pdo->prepare("SELECT COUNT(*) FROM projects WHERE cus_id = :cid");
+    $bPrjStmt->execute([':cid' => $cusId]);
+    $badgeProjects = (int)$bPrjStmt->fetchColumn();
+
+    $bInvStmt = $pdo->prepare("SELECT COUNT(*) FROM invoices WHERE cus_id = :cid");
+    $bInvStmt->execute([':cid' => $cusId]);
+    $badgeInvoices = (int)$bInvStmt->fetchColumn();
+
+    $bDocStmt = $pdo->prepare("SELECT COUNT(*) FROM documents WHERE related_cus_id = :cid1 OR related_prj_id IN (SELECT prj_id FROM projects WHERE cus_id = :cid2)");
+    $bDocStmt->execute([':cid1' => $cusId, ':cid2' => $cusId]);
+    $badgeDocs = (int)$bDocStmt->fetchColumn();
+
+    $bTktStmt = $pdo->prepare("SELECT COUNT(*) FROM tickets WHERE requester_cus_id = :cid");
+    $bTktStmt->execute([':cid' => $cusId]);
+    $badgeTickets = (int)$bTktStmt->fetchColumn();
+
+    try {
+        $bSvcStmt = $pdo->prepare("SELECT COUNT(*) FROM customer_service_requests WHERE cus_id = :cid");
+        $bSvcStmt->execute([':cid' => $cusId]);
+        $badgeServices = (int)$bSvcStmt->fetchColumn();
+    } catch (Throwable $e) {
+        $badgeServices = 0;
+    }
+}
+
+$badgeCareers = (int)$pdo->query("SELECT COUNT(*) FROM job_postings WHERE is_published = 1")->fetchColumn();
 
 $currUser = $_SESSION['vostok_user'] ?? [];
 $isSuperAdmin = isSuperAdmin($currUser);
 
-if ($isSuperAdmin) {
-    $currUser['full_name'] = (!empty($currUser['full_name']) && $currUser['full_name'] !== 'Alexey R. Danilov' && $currUser['full_name'] !== 'Authorized User')
-        ? $currUser['full_name']
-        : 'System Administrator';
-    $currUser['role_name'] = 'Executive SuperAdmin';
-    $currUser['clearance_level'] = 'L4';
-    $currUser['email'] = $currUser['email'] ?? '';
-    $currUser['company_name'] = $customer['company_name'] ?? 'VOSTOKPRIBOR Master Admin';
-} else {
+// User profile presentation: preserve real logged in user's identity
+if ($isCustomer) {
     if (empty($currUser['full_name']) || $currUser['full_name'] === 'Authorized User') {
-        $currUser['full_name'] = $customer['primary_contact_name'] ?? 'Client Representative';
+        $currUser['full_name'] = $customer['primary_contact_name'] ?? ($currUser['username'] ?? 'Client Representative');
     }
-    $currUser['company_name'] = $customer['company_name'] ?? 'Authorized Client';
+    $currUser['company_name'] = $customer['company_name'] ?? 'Authorized Enterprise Client';
     $currUser['clearance_level'] = $currUser['clearance_level'] ?? 'L1';
     $currUser['role_name'] = $currUser['role_name'] ?? ($customer['account_tier'] ?? 'Strategic Client');
     $currUser['email'] = !empty($currUser['email']) ? $currUser['email'] : ($customerAccount['email'] ?? ($customer['primary_contact_email'] ?? ''));
+} else {
+    // Employee identity
+    if (($currUser['email'] ?? '') === 'admin@gmail.com' || ($currUser['emp_id'] ?? '') === 'EMP-0001' || $isSuperAdmin) {
+        $currUser['full_name'] = 'Super Administrator';
+        $currUser['role_name'] = 'SuperAdmin';
+    } else {
+        $currUser['full_name'] = !empty($currUser['full_name']) ? $currUser['full_name'] : ($currUser['username'] ?? 'Staff Engineer');
+        $currUser['role_name'] = !empty($currUser['role_name']) ? $currUser['role_name'] : ($currUser['position'] ?? 'Staff Engineer');
+    }
+    $currUser['company_name'] = $customer ? ($customer['company_name'] . ' (Perspective)') : 'VOSTOKPRIBOR Internal';
 }
-
-// Live badge counters directly from MariaDB using prepared statements
-$bOrderStmt = $pdo->prepare("SELECT COUNT(*) FROM orders WHERE cus_id = :cid");
-$bOrderStmt->execute([':cid' => $cusId]);
-$badgeOrders = (int)$bOrderStmt->fetchColumn();
-
-$bPrjStmt = $pdo->prepare("SELECT COUNT(*) FROM projects WHERE cus_id = :cid");
-$bPrjStmt->execute([':cid' => $cusId]);
-$badgeProjects = (int)$bPrjStmt->fetchColumn();
-
-$bInvStmt = $pdo->prepare("SELECT COUNT(*) FROM invoices WHERE cus_id = :cid");
-$bInvStmt->execute([':cid' => $cusId]);
-$badgeInvoices = (int)$bInvStmt->fetchColumn();
-
-$bDocStmt = $pdo->prepare("SELECT COUNT(*) FROM documents WHERE related_cus_id = :cid1 OR related_prj_id IN (SELECT prj_id FROM projects WHERE cus_id = :cid2)");
-$bDocStmt->execute([':cid1' => $cusId, ':cid2' => $cusId]);
-$badgeDocs = (int)$bDocStmt->fetchColumn();
-
-$bTktStmt = $pdo->prepare("SELECT COUNT(*) FROM tickets WHERE requester_cus_id = :cid");
-$bTktStmt->execute([':cid' => $cusId]);
-$badgeTickets = (int)$bTktStmt->fetchColumn();
-
-try {
-    $bSvcStmt = $pdo->prepare("SELECT COUNT(*) FROM customer_service_requests WHERE cus_id = :cid");
-    $bSvcStmt->execute([':cid' => $cusId]);
-    $badgeServices = (int)$bSvcStmt->fetchColumn();
-} catch (Throwable $e) {
-    $badgeServices = 0;
-}
-
-$badgeCareers = (int)$pdo->query("SELECT COUNT(*) FROM job_postings WHERE is_published = 1")->fetchColumn();
 
 /**
  * Render universal customer portal top header with authentic user and organization

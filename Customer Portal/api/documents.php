@@ -29,6 +29,24 @@ try {
         $docId = $_GET['id'] ?? ($_GET['doc_id'] ?? null);
 
         if ($docId) {
+            $chk = $pdo->prepare("SELECT related_cus_id, related_prj_id FROM documents WHERE doc_id = ?");
+            $chk->execute([$docId]);
+            $rawDoc = $chk->fetch(PDO::FETCH_ASSOC);
+            if (!$rawDoc) {
+                Response::error("Document #{$docId} not found.", 404);
+            }
+            $belongs = ($rawDoc['related_cus_id'] === $cusId);
+            if (!$belongs && !empty($rawDoc['related_prj_id'])) {
+                $pChk = $pdo->prepare("SELECT cus_id FROM projects WHERE prj_id = ?");
+                $pChk->execute([$rawDoc['related_prj_id']]);
+                if ($pChk->fetchColumn() === $cusId) {
+                    $belongs = true;
+                }
+            }
+            if (!$belongs) {
+                Response::error("Forbidden: You do not have permission to view this document.", 403);
+            }
+
             $stmt = $pdo->prepare("
                 SELECT d.*, p.project_name
                 FROM documents d

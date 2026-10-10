@@ -421,11 +421,13 @@ $metrics = gov_getGovernanceMetrics();
                             </div>
                             <div class="flex items-center gap-space-xs">
                                 <button
-                                    class="px-space-xs py-[1px] bg-surface-container-high text-on-surface hover:bg-surface-variant"
+                                    id="btnPolicyPrev"
+                                    class="px-space-xs py-[1px] bg-surface-container-high text-on-surface hover:bg-surface-variant disabled:opacity-50"
                                     type="button">PREV</button>
-                                <span class="px-space-xs text-primary font-bold">1 / 7</span>
+                                <span id="policyPageIndicator" class="px-space-xs text-primary font-bold font-mono">1 / 1</span>
                                 <button
-                                    class="px-space-xs py-[1px] bg-surface-container-high text-on-surface hover:bg-surface-variant"
+                                    id="btnPolicyNext"
+                                    class="px-space-xs py-[1px] bg-surface-container-high text-on-surface hover:bg-surface-variant disabled:opacity-50"
                                     type="button">NEXT</button>
                             </div>
                         </div>

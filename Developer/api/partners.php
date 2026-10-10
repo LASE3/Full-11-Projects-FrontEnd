@@ -52,7 +52,7 @@ try {
             $compNda = !empty($payload['compliance_nda']) ? 1 : 0;
 
             if ($company === '' || $contactName === '' || $contactEmail === '') {
-                sendJsonError('Company name, contact name, and engineering email are required');
+                sendJsonError('Company name, contact name, and engineering email are required', 422);
             }
 
             $ticketId = 'ENCLAVE-REQ-' . rand(100000, 999999);

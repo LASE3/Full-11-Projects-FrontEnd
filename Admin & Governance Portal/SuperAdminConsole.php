@@ -348,8 +348,16 @@ if ($viewAsEmpId) {
     $vaStmt->execute([$viewAsEmpId]);
     $viewAsProfile = $vaStmt->fetch(PDO::FETCH_ASSOC) ?: null;
     if ($viewAsProfile) {
-        AuditLogger::log('ADM', 'SUPERADMIN_VIEW_AS', $viewAsEmpId,
-            "Admin {$currentUser['emp_id']} activated view-as for {$viewAsEmpId}");
+        AuditLogger::logAction(
+            $currentUser['emp_id'] ?? 'EMP-0001',
+            null,
+            'Governance',
+            'ADM',
+            'SUPERADMIN_VIEW_AS',
+            'employees',
+            $viewAsEmpId,
+            ['target_emp' => $viewAsEmpId]
+        );
     }
 }
 
@@ -387,8 +395,8 @@ $auditOffset = ($auditPage - 1) * $perPage;
 $auditWhere  = $auditFilter ? "WHERE system_id = " . $pdo->quote($auditFilter) : '';
 $auditTotal  = (int)$pdo->query("SELECT COUNT(*) FROM audit_logs {$auditWhere}")->fetchColumn();
 $auditRows   = $pdo->query(
-    "SELECT log_id, system_id, action, entity_type, entity_id, actor_emp_id, created_at
-     FROM audit_logs {$auditWhere} ORDER BY created_at DESC LIMIT {$perPage} OFFSET {$auditOffset}"
+    "SELECT audit_id AS log_id, system_id, action, target_entity_type AS entity_type, target_entity_id AS entity_id, actor_emp_id, occurred_at AS created_at
+     FROM audit_logs {$auditWhere} ORDER BY occurred_at DESC LIMIT {$perPage} OFFSET {$auditOffset}"
 )->fetchAll(PDO::FETCH_ASSOC);
 
 // ─────────────────────────────────────────────────────────────────────────────

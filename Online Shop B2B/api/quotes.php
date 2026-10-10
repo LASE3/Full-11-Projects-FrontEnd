@@ -18,7 +18,13 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 $pdo = getDbConnection();
-$cusId = $_SESSION['cus_id'] ?? ($_SESSION['vostok_user']['user_id'] ?? ($_GET['cus_id'] ?? null));
+$isCustomer = (($user['account_type'] ?? '') === 'Customer');
+if ($isCustomer) {
+    $cusId = (string)($user['cus_id'] ?? ($user['user_id'] ?? ''));
+} else {
+    $canImpersonate = hasEmployeePermission($pdo, $user, 'CUSTOMER_IMPERSONATE');
+    $cusId = $canImpersonate ? (string)($_SESSION['impersonate_cus_id'] ?? ($_GET['cus_id'] ?? '')) : '';
+}
 $lang  = $_GET['lang'] ?? 'en';
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 
@@ -53,30 +59,55 @@ if ($method === 'GET') {
 }
 
 if ($method === 'POST') {
-    $input = json_decode(file_get_contents('php://input'), true);
-    $targetCus = $cusId ?: ($input['cus_id'] ?? null);
+    $input = json_decode(file_get_contents('php://input'), true) ?: $_POST;
+    $targetCus = $isCustomer ? $cusId : (trim($input['cus_id'] ?? $cusId));
     $prodId    = trim($input['prod_id'] ?? '');
     $qty       = (int)($input['quantity'] ?? 0);
     $unitPrice = (float)($input['unit_price'] ?? 0.0);
-    $empId = $_SESSION['emp_id'] ?? ($_SESSION['vostok_user']['emp_id'] ?? ($_SESSION['vostok_user']['user_id'] ?? ($input['emp_id'] ?? null)));
-    if (!$empId && $targetCus) {
-        $mgrStmt = $pdo->prepare("SELECT account_manager_emp_id FROM customers WHERE cus_id = ?");
-        $mgrStmt->execute([$targetCus]);
-        $empId = $mgrStmt->fetchColumn() ?: null;
+    $empId     = trim((string)($input['emp_id'] ?? ($user['emp_id'] ?? '')));
+
+    if (!$targetCus) {
+        Response::error("Customer ID is required.", 422);
     }
-    if (!$empId) {
-        $empId = $pdo->query("SELECT emp_id FROM employees WHERE department_code = 'SAL' AND employment_status = 'Active' LIMIT 1")->fetchColumn() ?: null;
+    $cChk = $pdo->prepare("SELECT account_manager_emp_id FROM customers WHERE cus_id = ?");
+    $cChk->execute([$targetCus]);
+    $mgrEmpId = $cChk->fetchColumn();
+    if ($mgrEmpId === false) {
+        Response::error("Customer #{$targetCus} does not exist.", 422);
     }
 
-    if (!$targetCus || !$prodId || $qty <= 0) {
-        Response::error("Customer ID, Product ID, and valid quantity required.", 422);
+    if (!$prodId) {
+        Response::error("Product ID is required.", 422);
+    }
+    $pChk = $pdo->prepare("SELECT price FROM products WHERE prod_id = ?");
+    $pChk->execute([$prodId]);
+    $catPrice = $pChk->fetchColumn();
+    if ($catPrice === false) {
+        Response::error("Product #{$prodId} does not exist.", 422);
+    }
+
+    if ($qty <= 0) {
+        Response::error("Valid quantity > 0 is required.", 422);
+    }
+
+    if (!$empId) {
+        $empId = $mgrEmpId ?: 'EMP-1006';
+    } else {
+        $eChk = $pdo->prepare("SELECT 1 FROM employees WHERE emp_id = ?");
+        $eChk->execute([$empId]);
+        if (!$eChk->fetchColumn()) {
+            Response::error("Employee #{$empId} does not exist.", 422);
+        }
     }
 
     if ($unitPrice <= 0) {
-        // Fetch baseline price
-        $pStmt = $pdo->prepare("SELECT COALESCE(special_price, 2500.00) FROM customer_pricing WHERE cus_id = :cid AND prod_id = :pid");
-        $pStmt->execute([':cid' => $targetCus, ':pid' => $prodId]);
-        $unitPrice = (float)($pStmt->fetchColumn() ?: 2500.00);
+        $cpStmt = $pdo->prepare("SELECT special_price FROM customer_pricing WHERE cus_id = :cid AND prod_id = :pid");
+        $cpStmt->execute([':cid' => $targetCus, ':pid' => $prodId]);
+        $spPrice = $cpStmt->fetchColumn();
+        $unitPrice = ($spPrice !== false && (float)$spPrice > 0) ? (float)$spPrice : (float)$catPrice;
+    }
+    if ($unitPrice <= 0) {
+        Response::error("Unit price must be greater than zero.", 422);
     }
 
     try {

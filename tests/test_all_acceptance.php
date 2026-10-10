@@ -411,15 +411,16 @@ try {
                  !verifyUserPassword($testUser, 'password123');
 
     // b. Unauthenticated API access returns 401
-    $out1 = shell_exec('php -r "require_once \'includes/auth_guard.php\'; requireApiAuth(\'IT\');"');
+    $phpBin = defined('PHP_BINARY') && PHP_BINARY ? PHP_BINARY : 'C:\\xampp\\php\\php.exe';
+    $out1 = shell_exec(escapeshellarg($phpBin) . ' -r "require_once \'includes/auth_guard.php\'; requireApiAuth(\'IT\');"');
     $json1 = json_decode((string)$out1, true);
     $unauth1 = (isset($json1['error']) && $json1['error'] === 'Authentication required');
 
-    $out2 = shell_exec('php -r "require_once \'IT Helpdesk/api/tickets.php\';"');
+    $out2 = shell_exec(escapeshellarg($phpBin) . ' -r "require_once \'IT Helpdesk/api/tickets.php\';"');
     $json2 = json_decode((string)$out2, true);
     $unauth2 = (isset($json2['error']) && $json2['error'] === 'Authentication required');
 
-    $out3 = shell_exec('php -r "require_once \'api/v1/invoices.php\';"');
+    $out3 = shell_exec(escapeshellarg($phpBin) . ' -r "require_once \'api/v1/invoices.php\';"');
     $json3 = json_decode((string)$out3, true);
     $unauth3 = (isset($json3['error']) && $json3['error'] === 'Authentication required');
 

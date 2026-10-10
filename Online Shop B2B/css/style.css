@@ -2731,12 +2731,91 @@ input[type="checkbox"]:checked + .custom-checkbox::after {
   padding: 0 0.85rem;
 }
 
-@media (min-width: 769px) {
+/* Mobile Navigation Toggle */
+.mobile-nav-toggle {
+  display: none !important;
+  background: transparent;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 4px;
+  margin-right: 8px;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (max-width: 1023px) {
+  .mobile-nav-toggle {
+    display: inline-flex !important;
+  }
+}
+
+/* Tier 1: Desktop (> 1024px) - Fully Expanded Professional Layout */
+@media (min-width: 1024px) {
+  .b2b-sidebar {
+    width: 250px !important;
+    transition: width 0.25s cubic-bezier(0.2, 0, 0, 1), box-shadow 0.25s ease;
+    z-index: 1000;
+  }
+
+  .sub-header-bar,
+  .app-container {
+    margin-left: 250px !important;
+    width: calc(100% - 250px) !important;
+    max-width: calc(100% - 250px) !important;
+    box-sizing: border-box !important;
+  }
+
+  .b2b-sidebar .sidebar-nav {
+    padding: 0 0.75rem;
+  }
+
+  .b2b-sidebar .sidebar-nav-item {
+    padding: 0.65rem 0.85rem;
+    justify-content: flex-start;
+  }
+
+  .b2b-sidebar .sidebar-item-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+  }
+
+  .b2b-sidebar .sidebar-item-left > span:not(.sidebar-icon),
+  .b2b-sidebar .sidebar-label {
+    opacity: 1 !important;
+    max-width: 180px !important;
+    pointer-events: auto !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .b2b-sidebar .sidebar-badge {
+    opacity: 1 !important;
+    display: inline-flex !important;
+  }
+
+  .b2b-sidebar .sidebar-section-title {
+    opacity: 1 !important;
+    height: auto !important;
+    padding: 0 1.25rem 0.65rem !important;
+  }
+
+  .b2b-sidebar .sidebar-footer {
+    opacity: 1 !important;
+    max-height: 200px !important;
+    pointer-events: auto !important;
+  }
+}
+
+/* Tier 2: Tablet (769px - 1023px) - Compact Icon Bar with Hover Expand */
+@media (min-width: 769px) and (max-width: 1023px) {
   .b2b-sidebar {
     width: 72px;
-    transition:
-      width 0.25s cubic-bezier(0.2, 0, 0, 1),
-      box-shadow 0.25s ease;
+    transition: width 0.25s cubic-bezier(0.2, 0, 0, 1), box-shadow 0.25s ease;
     z-index: 1000;
   }
 
@@ -2792,9 +2871,7 @@ input[type="checkbox"]:checked + .custom-checkbox::after {
     overflow: hidden;
     white-space: nowrap;
     pointer-events: none;
-    transition:
-      opacity 0.2s ease,
-      max-width 0.28s cubic-bezier(0.2, 0, 0, 1);
+    transition: opacity 0.2s ease, max-width 0.28s cubic-bezier(0.2, 0, 0, 1);
   }
 
   .b2b-sidebar .sidebar-badge {
@@ -2808,9 +2885,7 @@ input[type="checkbox"]:checked + .custom-checkbox::after {
     height: 0;
     padding: 0;
     overflow: hidden;
-    transition:
-      opacity 0.2s ease,
-      height 0.28s ease;
+    transition: opacity 0.2s ease, height 0.28s ease;
   }
 
   .b2b-sidebar .sidebar-footer {
@@ -2818,16 +2893,10 @@ input[type="checkbox"]:checked + .custom-checkbox::after {
     max-height: 0;
     overflow: hidden;
     pointer-events: none;
-    transition:
-      opacity 0.2s ease,
-      max-height 0.28s ease;
+    transition: opacity 0.2s ease, max-height 0.28s ease;
   }
 
-  /* Hover Open */
-  .b2b-sidebar:hover .sidebar-item-left {
-    gap: 12px;
-  }
-
+  /* Hover Open on Tablet */
   .b2b-sidebar:hover .sidebar-item-left > span:not(.sidebar-icon),
   .b2b-sidebar:hover .sidebar-label {
     opacity: 1;
@@ -2853,13 +2922,12 @@ input[type="checkbox"]:checked + .custom-checkbox::after {
   }
 }
 
+/* Tier 3: Mobile (<= 768px) - Off-Canvas Slide Drawer */
 @media (max-width: 768px) {
   .b2b-sidebar {
     width: 250px;
     transform: translateX(-100%);
-    transition:
-      transform 0.28s cubic-bezier(0.16, 1, 0.3, 1),
-      box-shadow 0.28s ease;
+    transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.28s ease;
     z-index: 1050;
   }
 
@@ -2871,6 +2939,8 @@ input[type="checkbox"]:checked + .custom-checkbox::after {
   .sub-header-bar,
   .app-container {
     margin-left: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
   }
 }
 

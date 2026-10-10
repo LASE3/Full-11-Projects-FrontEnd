@@ -596,3 +596,5 @@ function logIntegrationEvent(
         return false;
     }
 }
+
+require_once __DIR__ . '/../includes/id_generator.php';

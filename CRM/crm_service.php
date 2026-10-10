@@ -278,16 +278,7 @@ function crm_convertLead(int $leadId, float $dealValue, ?string $salesRep = null
         // Establish customer
         $cusId = $lead['converted_cus_id'];
         if (!$cusId) {
-            $counterStmt = $pdo->prepare("SELECT next_val FROM id_counters WHERE name = 'customers' FOR UPDATE");
-            $counterStmt->execute();
-            $nextNum = (int)$counterStmt->fetchColumn();
-            if ($nextNum < 1001) {
-                $maxNum = $pdo->query("SELECT MAX(CAST(SUBSTRING(cus_id, 5) AS UNSIGNED)) FROM customers")->fetchColumn();
-                $nextNum = $maxNum ? ((int)$maxNum + 1) : 1011;
-            }
-            $cusId = "CUS-" . $nextNum;
-            $updCounter = $pdo->prepare("INSERT INTO id_counters (name, next_val) VALUES ('customers', :val) ON DUPLICATE KEY UPDATE next_val = VALUES(next_val)");
-            $updCounter->execute([':val' => $nextNum + 1]);
+            $cusId = vp_next_id($pdo, 'customers', 'CUS-', 4);
 
             $companyName = !empty($lead['company_name']) ? $lead['company_name'] : $lead['full_name'];
 
@@ -815,8 +806,7 @@ function crm_getCustomerDetail(string $cusId): ?array
 function crm_createCustomer(array $data): string
 {
     $pdo = getDbConnection();
-    $maxNum = $pdo->query("SELECT MAX(CAST(SUBSTRING(cus_id, 5) AS UNSIGNED)) FROM customers")->fetchColumn();
-    $newCusId = "CUS-" . (($maxNum ? (int)$maxNum : 1000) + 1);
+    $newCusId = vp_next_id($pdo, 'customers', 'CUS-', 4);
 
     $user = crm_getCurrentUser();
     $mgr = !empty($data['account_manager_emp_id']) ? $data['account_manager_emp_id'] : $user['emp_id'];

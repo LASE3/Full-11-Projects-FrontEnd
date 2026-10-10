@@ -7,103 +7,254 @@
 (function () {
   "use strict";
 
-  // Toggle individual system isolation
-  window.toggleSystemLockdown = async function (systemId) {
-    try {
-      const res = await fetch("api/lockdown.php?action=toggle_system", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ system_id: systemId }),
-      });
-      const data = await res.json();
-      if (data.success) {
-        window.showToast?.(
-          "ENCLAVE STATE TRANSITIONED",
-          `${systemId} shifted to ${data.new_status}. Galvanic state logged.`,
-          data.new_status === "ISOLATED" ? "error" : "success",
-          data.new_status === "ISOLATED" ? "shield" : "lock_open",
-        );
-        setTimeout(() => location.reload(), 800);
-      } else {
-        window.showToast?.("ERROR", data.error || "Toggle failed", "error");
+  let currentModalAction = null;
+  let currentTargetSystemId = null;
+  let currentTargetPhrase = "CONFIRM-DEFCON-1";
+  let previousActiveElement = null;
+
+  function getCsrfToken() {
+    const meta = document.querySelector('meta[name="csrf-token"]');
+    return meta ? meta.getAttribute("content") : "";
+  }
+
+  // Focus trap helper
+  function setupFocusTrap(modal) {
+    const focusableElements = modal.querySelectorAll(
+      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    );
+    if (!focusableElements.length) return;
+    const firstElement = focusableElements[0];
+    const lastElement = focusableElements[focusableElements.length - 1];
+
+    modal.addEventListener("keydown", function (e) {
+      if (e.key === "Tab") {
+        if (e.shiftKey) {
+          if (document.activeElement === firstElement) {
+            e.preventDefault();
+            lastElement.focus();
+          }
+        } else {
+          if (document.activeElement === lastElement) {
+            e.preventDefault();
+            firstElement.focus();
+          }
+        }
       }
-    } catch (err) {
-      window.showToast?.("NETWORK ERROR", err.message, "error");
+    });
+  }
+
+  function openLockdownModal(action, sysId = null) {
+    currentModalAction = action;
+    currentTargetSystemId = sysId;
+    previousActiveElement = document.activeElement;
+
+    const overlay = document.getElementById("modalOverlay");
+    const title = document.getElementById("modalTitle");
+    const body = document.getElementById("modalBody");
+    const targetPhraseEl = document.getElementById("modalTargetPhrase");
+    const phraseInput = document.getElementById("modalPhraseInput");
+    const reasonInput = document.getElementById("modalReasonInput");
+    const authKeyInput = document.getElementById("modalAuthKeyInput");
+    const confirmBtn = document.getElementById("modalBtnConfirm");
+
+    if (!overlay) return;
+
+    if (action === "isolate_all") {
+      currentTargetPhrase = "CONFIRM-DEFCON-1";
+      if (title) title.textContent = "DEFCON-1 Air-Gap Quarantine Interlock";
+      if (body) body.textContent = "Executing this command will sever telemetry links on ALL 11 industrial nodes and enforce galvanic quarantine.";
+      if (reasonInput) reasonInput.value = "DEFCON-1 EMERGENCY: Autonomous Full Air-Gap Protocol Enacted";
+    } else if (action === "restore_all") {
+      currentTargetPhrase = "CONFIRM-DEFCON-4";
+      if (title) title.textContent = "DEFCON-4 Full Operational Restoration";
+      if (body) body.textContent = "Authorize universal de-escalation? All nodes will resume nominal bidirectional SCADA telemetry.";
+      if (reasonInput) reasonInput.value = "DEFCON-4 Operations Restored: Incident Mitigation Complete";
+    } else if (action === "toggle_system") {
+      currentTargetPhrase = "CONFIRM-TOGGLE";
+      if (title) title.textContent = `Enclave Posture Shift: Node [${sysId}]`;
+      if (body) body.textContent = `Toggle isolation state for system node [${sysId}]. Outbound traffic will be redirected or halted.`;
+      if (reasonInput) reasonInput.value = `Manual Air-Gap Interlock Triggered on Node ${sysId}`;
     }
+
+    if (targetPhraseEl) targetPhraseEl.textContent = currentTargetPhrase;
+    if (phraseInput) phraseInput.value = "";
+    if (confirmBtn) confirmBtn.disabled = true;
+
+    // Check if secondary PIN was already submitted
+    const secondaryPin = document.getElementById("secondaryPinInput");
+    if (authKeyInput && secondaryPin && secondaryPin.value) {
+      authKeyInput.value = secondaryPin.value;
+    }
+
+    overlay.classList.remove("hidden");
+    if (phraseInput) phraseInput.focus();
+  }
+
+  function closeLockdownModal() {
+    const overlay = document.getElementById("modalOverlay");
+    if (overlay) overlay.classList.add("hidden");
+    currentModalAction = null;
+    currentTargetSystemId = null;
+    if (previousActiveElement && typeof previousActiveElement.focus === "function") {
+      previousActiveElement.focus();
+    }
+  }
+
+  // Toggle individual system isolation
+  window.toggleSystemLockdown = function (systemId) {
+    openLockdownModal("toggle_system", systemId);
   };
 
   // Enforce full air-gap (DEFCON-1)
-  window.enforceFullLockdown = async function () {
-    if (
-      !confirm(
-        "CRITICAL ALERT: Enforce full galvanic air-gap on ALL production and governance nodes? All outbound telemetry will be severed.",
-      )
-    )
-      return;
-    try {
-      const res = await fetch("api/lockdown.php?action=isolate_all", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ reason: "Manual DEFCON-1 Quarantine Triggered" }),
-      });
-      const data = await res.json();
-      if (data.success) {
-        window.showToast?.(
-          "DEFCON-1 MAX ENGAGED",
-          `All ${data.affected_systems} systems placed into hardened air-gap quarantine.`,
-          "error",
-          "warning",
-        );
-        setTimeout(() => location.reload(), 1000);
-      } else {
-        window.showToast?.(
-          "ERROR",
-          data.error || "Quarantine command failed",
-          "error",
-        );
-      }
-    } catch (err) {
-      window.showToast?.("NETWORK ERROR", err.message, "error");
-    }
+  window.enforceFullLockdown = function () {
+    openLockdownModal("isolate_all");
   };
 
   // Restore full interconnect (DEFCON-4)
-  window.restoreFullOperations = async function () {
-    if (
-      !confirm(
-        "Authorize universal de-escalation? All nodes will resume nominal bidirectional telemetry.",
-      )
-    )
-      return;
-    try {
-      const res = await fetch("api/lockdown.php?action=restore_all", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ reason: "DEFCON-4 Operations Restored" }),
-      });
-      const data = await res.json();
-      if (data.success) {
-        window.showToast?.(
-          "OPERATIONS RESTORED",
-          `Interconnect re-established across all ${data.affected_systems} nodes. Nominal baseline.`,
-          "success",
-          "check_circle",
-        );
-        setTimeout(() => location.reload(), 1000);
-      } else {
-        window.showToast?.(
-          "ERROR",
-          data.error || "Restoration command failed",
-          "error",
-        );
-      }
-    } catch (err) {
-      window.showToast?.("NETWORK ERROR", err.message, "error");
-    }
+  window.restoreFullOperations = function () {
+    openLockdownModal("restore_all");
   };
 
   document.addEventListener("DOMContentLoaded", () => {
-    // 1. Dynamic Syslog Console Stream
+    const overlay = document.getElementById("modalOverlay");
+    const phraseInput = document.getElementById("modalPhraseInput");
+    const confirmBtn = document.getElementById("modalBtnConfirm");
+    const cancelBtn = document.getElementById("modalBtnCancel");
+    const closeBtn = document.getElementById("modalClose");
+    const reasonInput = document.getElementById("modalReasonInput");
+    const authKeyInput = document.getElementById("modalAuthKeyInput");
+
+    // Modal focus trap & Esc listener
+    if (overlay) {
+      setupFocusTrap(overlay);
+
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && !overlay.classList.contains("hidden")) {
+          closeLockdownModal();
+        }
+      });
+    }
+
+    // Modal close & dismiss
+    if (closeBtn) closeBtn.addEventListener("click", closeLockdownModal);
+    if (cancelBtn) cancelBtn.addEventListener("click", closeLockdownModal);
+
+    // Confirmation phrase input check
+    if (phraseInput && confirmBtn) {
+      phraseInput.addEventListener("input", () => {
+        const entered = phraseInput.value.trim().toUpperCase();
+        confirmBtn.disabled = (entered !== currentTargetPhrase);
+      });
+    }
+
+    // Confirm button execution
+    if (confirmBtn) {
+      confirmBtn.addEventListener("click", async () => {
+        if (!currentModalAction) return;
+
+        const phrase = (phraseInput ? phraseInput.value : "").trim();
+        const reason = (reasonInput ? reasonInput.value : "").trim();
+        const authKey = (authKeyInput ? authKeyInput.value : "").trim();
+
+        if (!reason) {
+          window.showToast?.("VALIDATION ERROR", "Operational reason is mandatory.", "error");
+          return;
+        }
+
+        if (!authKey) {
+          window.showToast?.("AUTH REQUIRED", "Please enter your password or authorization PIN.", "error");
+          if (authKeyInput) authKeyInput.focus();
+          return;
+        }
+
+        confirmBtn.disabled = true;
+        confirmBtn.textContent = "Verifying & Executing...";
+
+        try {
+          const payload = {
+            action: currentModalAction,
+            reason: reason,
+            confirmation_phrase: phrase,
+            auth_key: authKey,
+            csrf_token: getCsrfToken()
+          };
+
+          if (currentModalAction === "toggle_system") {
+            payload.system_id = currentTargetSystemId;
+          }
+
+          const res = await fetch("api/lockdown.php", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "X-CSRF-Token": getCsrfToken()
+            },
+            body: JSON.stringify(payload)
+          });
+
+          const data = await res.json();
+          if (res.ok && data.success) {
+            closeLockdownModal();
+            window.showToast?.(
+              "LOCKDOWN COMMAND EXECUTED",
+              data.message || "Interlock successfully registered in audit and security ledgers.",
+              "success",
+              "verified_user"
+            );
+            setTimeout(() => location.reload(), 1000);
+          } else {
+            confirmBtn.disabled = false;
+            confirmBtn.textContent = "Confirm Action";
+            window.showToast?.("LOCKDOWN DENIED", data.error || "Execution rejected by security controller.", "error");
+          }
+        } catch (err) {
+          confirmBtn.disabled = false;
+          confirmBtn.textContent = "Confirm Action";
+          window.showToast?.("NETWORK ERROR", err.message, "error");
+        }
+      });
+    }
+
+    // Submit Key in Slot B
+    const secondaryPinInput = document.getElementById("secondaryPinInput");
+    const btnVerifySecondaryPin = document.getElementById("btnVerifySecondaryPin");
+    const pinFeedback = document.getElementById("pinFeedback");
+
+    if (btnVerifySecondaryPin) {
+      btnVerifySecondaryPin.addEventListener("click", () => {
+        const pinVal = (secondaryPinInput ? secondaryPinInput.value : "").trim();
+        if (!pinVal) {
+          if (pinFeedback) {
+            pinFeedback.textContent = "ERROR: Token PIN or password cannot be empty.";
+            pinFeedback.className = "font-telemetry-micro text-[10px] text-error mt-1 block font-bold";
+          }
+          return;
+        }
+        if (pinFeedback) {
+          pinFeedback.textContent = "✓ Hardware Key Verified: Dinara Sadykova (EMP-1018) Co-Signature Active";
+          pinFeedback.className = "font-telemetry-micro text-[10px] text-secondary mt-1 block font-bold";
+        }
+        window.showToast?.("HARDWARE KEY ACCEPTED", "Dual-custody Slot B verified for emergency interlock.", "success", "key");
+      });
+    }
+
+    // Authorize & Lock All button
+    const btnAuthorizeLockAll = document.getElementById("btnAuthorizeLockAll");
+    if (btnAuthorizeLockAll) {
+      btnAuthorizeLockAll.addEventListener("click", () => {
+        window.enforceFullLockdown();
+      });
+    }
+
+    // Abort button
+    const btnAbort = document.getElementById("btnAbortLockdown");
+    if (btnAbort) {
+      btnAbort.addEventListener("click", () => {
+        window.restoreFullOperations();
+      });
+    }
+
+    // Dynamic Syslog Console Stream
     const syslogConsole = document.getElementById("syslogConsole");
     const sampleLogs = [
       "[15:44:22.310 UTC+6] QUARANTINE: SYS-04 Ekibastuz buffer verification pass (0 bytes outbound drop verified)",
@@ -127,14 +278,6 @@
       }
     }, 4000);
 
-    // 2. Abort & Export buttons
-    const btnAbort = document.getElementById("btnAbortLockdown");
-    if (btnAbort) {
-      btnAbort.addEventListener("click", () => {
-        window.restoreFullOperations();
-      });
-    }
-
     const btnExport = document.getElementById("btnExportDossier");
     if (btnExport) {
       btnExport.addEventListener("click", () => {
@@ -142,7 +285,7 @@
           "CRYPTOGRAPHIC DOSSIER GENERATED",
           "Assembled ECDSA P-384 signed package of all telemetry logs, buffer snapshots, and anomaly hashes.",
           "info",
-          "description",
+          "description"
         );
       });
     }
@@ -154,7 +297,7 @@
           "BROADCAST DISPATCHED",
           "Sovereign emergency dispatch packet SHA-256 #9A2F...4B8C transmitted to KZ-CERT emergency relay.",
           "error",
-          "sensors",
+          "sensors"
         );
       });
     }

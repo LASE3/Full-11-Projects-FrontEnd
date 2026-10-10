@@ -131,8 +131,7 @@ try {
             }
 
             if (empty($prodId)) {
-                $maxNum = $pdo->query("SELECT MAX(CAST(SUBSTRING(prod_id, 6) AS UNSIGNED)) FROM products WHERE prod_id LIKE 'PROD-%'")->fetchColumn();
-                $prodId = sprintf('PROD-%04d', ($maxNum ? (int)$maxNum : 1000) + 1);
+                $prodId = vp_next_id($pdo, 'products', 'PROD-', 4);
             }
 
             $stmt = $pdo->prepare("INSERT INTO products (prod_id, product_name, billing_model, price, description, is_active) VALUES (?, ?, ?, ?, ?, 1)");

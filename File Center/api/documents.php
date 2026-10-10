@@ -12,6 +12,8 @@ require_once __DIR__ . '/../../includes/api_bootstrap.php';
 $_vp_user = vp_api_guard('DOC', []);
 
 require_once __DIR__ . '/db.php';
+require_once __DIR__ . '/../../includes/id_generator.php';
+require_once __DIR__ . '/../../includes/document_storage.php';
 
 $pdo = getApiPdo();
 $method = $_SERVER['REQUEST_METHOD'];
@@ -110,18 +112,7 @@ try {
 
         // Return next available DOC ID
         if ($action === 'next_id') {
-            $lastDoc = $pdo->query("
-                SELECT doc_id FROM documents 
-                WHERE doc_id LIKE 'DOC-2026-%' 
-                ORDER BY CAST(SUBSTRING(doc_id, 10) AS UNSIGNED) DESC 
-                LIMIT 1
-            ")->fetchColumn();
-
-            $nextNum = 16;
-            if ($lastDoc && preg_match('/DOC-2026-(\d+)/', $lastDoc, $m)) {
-                $nextNum = ((int)$m[1]) + 1;
-            }
-            $nextId = sprintf('DOC-2026-%03d', $nextNum);
+            $nextId = vp_next_id($pdo, 'DOC', 'DOC-2026-', 3);
             apiSuccess(['next_doc_id' => $nextId]);
         }
 
@@ -272,29 +263,92 @@ try {
     }
 
     // -------------------------------------------------------------
-    // POST: Ingest / Create a new document in Database
+    // POST: Ingest / Actions / Create a new document in Database
     // -------------------------------------------------------------
     if ($method === 'POST') {
+        // Toggle Legal Preservation Hold
+        if ($action === 'toggle_legal_hold') {
+            $docId = trim((string)($req['doc_id'] ?? $req['id'] ?? ''));
+            if (empty($docId)) apiError('doc_id required for legal hold toggle', 422);
+
+            $stmt = $pdo->prepare("SELECT is_legal_hold, file_name FROM documents WHERE doc_id = :id");
+            $stmt->execute([':id' => $docId]);
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            if (!$row) apiError("Document {$docId} not found", 404);
+
+            $newHold = empty($row['is_legal_hold']) ? 1 : 0;
+            $upd = $pdo->prepare("UPDATE documents SET is_legal_hold = :h, updated_at = NOW() WHERE doc_id = :id");
+            $upd->execute([':h' => $newHold, ':id' => $docId]);
+
+            logDocumentAction(
+                $pdo,
+                $docId,
+                'LEGAL_HOLD',
+                ($newHold ? 'Applied' : 'Released') . " Statutory Preservation Hold on '{$row['file_name']}'"
+            );
+
+            apiSuccess([
+                'doc_id' => $docId,
+                'is_legal_hold' => $newHold,
+            ], "Legal hold updated to: " . ($newHold ? 'ACTIVE' : 'RELEASED'));
+        }
+
+        // Approval Decision (Approve / Reject)
+        if ($action === 'approve' || $action === 'reject') {
+            $docId = trim((string)($req['doc_id'] ?? $req['id'] ?? ''));
+            if (empty($docId)) apiError('doc_id required for approval action', 422);
+
+            $stmt = $pdo->prepare("SELECT status, file_name FROM documents WHERE doc_id = :id");
+            $stmt->execute([':id' => $docId]);
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            if (!$row) apiError("Document {$docId} not found", 404);
+
+            $newStatus = ($action === 'approve') ? 'Approved' : 'Rejected';
+            $upd = $pdo->prepare("UPDATE documents SET status = :s, updated_at = NOW() WHERE doc_id = :id");
+            $upd->execute([':s' => $newStatus, ':id' => $docId]);
+
+            // Update latest approval stage if exists
+            $appUpd = $pdo->prepare("
+                UPDATE document_approvals 
+                SET decision = :d, decision_date = NOW(), comments = :c
+                WHERE doc_id = :id 
+                ORDER BY approval_id DESC LIMIT 1
+            ");
+            $appUpd->execute([
+                ':d' => $newStatus,
+                ':c' => "Executive review marked as {$newStatus}",
+                ':id' => $docId
+            ]);
+
+            logDocumentAction(
+                $pdo,
+                $docId,
+                strtoupper($action),
+                "Document '{$row['file_name']}' status updated to '{$newStatus}'"
+            );
+
+            apiSuccess([
+                'doc_id' => $docId,
+                'status' => $newStatus,
+            ], "Document {$docId} decision recorded: {$newStatus}");
+        }
+
         $title = trim((string)($req['title'] ?? $req['file_name'] ?? ''));
         if (empty($title)) {
-            apiError('Document Title / Filename is required.');
+            // Check if file uploaded and take basename
+            if (!empty($_FILES['file']['name'])) {
+                $title = basename($_FILES['file']['name']);
+            } elseif (!empty($_FILES['document']['name'])) {
+                $title = basename($_FILES['document']['name']);
+            } else {
+                apiError('Document Title / Filename is required.', 422);
+            }
         }
 
         // Auto-generate doc_id if not provided
         $docId = trim((string)($req['doc_id'] ?? ''));
         if (empty($docId)) {
-            $lastDoc = $pdo->query("
-                SELECT doc_id FROM documents 
-                WHERE doc_id LIKE 'DOC-2026-%' 
-                ORDER BY CAST(SUBSTRING(doc_id, 10) AS UNSIGNED) DESC 
-                LIMIT 1
-            ")->fetchColumn();
-
-            $nextNum = 16;
-            if ($lastDoc && preg_match('/DOC-2026-(\d+)/', $lastDoc, $m)) {
-                $nextNum = ((int)$m[1]) + 1;
-            }
-            $docId = sprintf('DOC-2026-%03d', $nextNum);
+            $docId = vp_next_id($pdo, 'DOC', 'DOC-2026-', 3);
         }
 
         // Ensure unique doc_id
@@ -332,8 +386,7 @@ try {
         $projectRef = trim((string)($req['project_ref'] ?? $req['meta_project_ref'] ?? ''));
         $customerRef = trim((string)($req['customer_ref'] ?? $req['meta_customer_ref'] ?? ''));
         $retention = trim((string)($req['retention_period'] ?? $req['retention'] ?? '7y'));
-        $fileSize = trim((string)($req['file_size'] ?? '2.4 MB'));
-        $status = trim((string)($req['status'] ?? 'Approved'));
+        $status = trim((string)($req['status'] ?? ($classification === 'TopSecret' ? 'In Review' : 'Approved')));
         $custodian = getCurrentCustodian();
         $ownerEmpId = trim((string)($req['owner_emp_id'] ?? $custodian['emp_id']));
 
@@ -365,26 +418,39 @@ try {
             }
         }
 
-        // Generate cryptographic hardware SHA-256 seal
-        $fileHash = hash('sha256', $docId . '|' . $title . '|' . microtime(true) . '|VOSTOKPRIBOR_SEAL');
+        // Handle physical file storage
+        $storedData = null;
+        if (!empty($_FILES['file']) && $_FILES['file']['error'] === UPLOAD_ERR_OK) {
+            $storedData = vp_validate_and_save_upload($_FILES['file'], $docId);
+        } elseif (!empty($_FILES['document']) && $_FILES['document']['error'] === UPLOAD_ERR_OK) {
+            $storedData = vp_validate_and_save_upload($_FILES['document'], $docId);
+        } else {
+            $storedData = vp_generate_default_document_file($docId, $title, $classification);
+        }
+
+        $storagePath = $storedData['storage_path'];
+        $mime = $storedData['mime'];
+        $fileSize = $storedData['file_size'];
+        $fileHash = $storedData['file_hash'];
+        $fileName = $storedData['file_name'];
 
         // Insert into `documents`
         $insertStmt = $pdo->prepare("
             INSERT INTO documents (
                 doc_id, file_name, description, classification, folder, department,
                 owning_system, owner_emp_id, related_prj_id, related_cus_id,
-                project_ref, customer_ref, file_size, file_hash, status,
+                project_ref, customer_ref, file_size, file_hash, storage_path, mime, status,
                 retention_period, is_legal_hold, created_at
             ) VALUES (
                 :doc_id, :file_name, :description, :classification, :folder, :department,
                 :owning_system, :owner_emp_id, :related_prj_id, :related_cus_id,
-                :project_ref, :customer_ref, :file_size, :file_hash, :status,
+                :project_ref, :customer_ref, :file_size, :file_hash, :storage_path, :mime, :status,
                 :retention_period, 0, NOW()
             )
         ");
         $insertStmt->execute([
             ':doc_id'           => $docId,
-            ':file_name'        => $title,
+            ':file_name'        => $fileName,
             ':description'     => $description ?: 'Registered via File Center secure ingestion enclave',
             ':classification'   => $classification,
             ':folder'           => $folder,
@@ -397,6 +463,8 @@ try {
             ':customer_ref'     => $customerRef,
             ':file_size'        => $fileSize,
             ':file_hash'        => $fileHash,
+            ':storage_path'     => $storagePath,
+            ':mime'             => $mime,
             ':status'           => $status,
             ':retention_period' => $retention,
         ]);
@@ -411,7 +479,7 @@ try {
             $vStmt->execute([
                 ':doc_id' => $docId,
                 ':emp_id' => $ownerEmpId,
-                ':path'   => "/storage/vault/{$docId}_v1.0.pdf",
+                ':path'   => $storagePath,
             ]);
         } catch (Throwable $ve) {
             error_log('Notice: version creation skipped: ' . $ve->getMessage());
@@ -439,18 +507,19 @@ try {
             $pdo,
             $docId,
             'INGEST_DRAFT',
-            "Uploaded and ingested new document '{$title}' into vault partition '{$folder}'",
+            "Uploaded and ingested new document '{$fileName}' into vault partition '{$folder}'",
             $ownerEmpId
         );
 
         apiSuccess([
             'doc_id'         => $docId,
-            'file_name'      => $title,
+            'file_name'      => $fileName,
             'classification' => $classification,
             'folder'         => $folder,
             'department'     => $department,
             'file_size'      => $fileSize,
             'file_hash'      => $fileHash,
+            'storage_path'   => $storagePath,
             'status'         => $status,
         ], "Document {$docId} created and secured in database successfully!", 201);
     }
@@ -544,7 +613,7 @@ try {
             apiError('Document ID (doc_id) is required for deletion.');
         }
 
-        $checkStmt = $pdo->prepare("SELECT doc_id, file_name, is_legal_hold FROM documents WHERE doc_id = :id");
+        $checkStmt = $pdo->prepare("SELECT doc_id, file_name, is_legal_hold, storage_path FROM documents WHERE doc_id = :id");
         $checkStmt->execute([':id' => $docId]);
         $existing = $checkStmt->fetch(PDO::FETCH_ASSOC);
 
@@ -572,6 +641,14 @@ try {
             $delDoc->execute([':id' => $docId]);
 
             $pdo->commit();
+
+            // Unlink physical file from storage if present
+            if (!empty($existing['storage_path'])) {
+                $targetFile = dirname(__DIR__, 2) . '/' . ltrim($existing['storage_path'], '/\\');
+                if (file_exists($targetFile)) {
+                    @unlink($targetFile);
+                }
+            }
         } catch (Throwable $de) {
             $pdo->rollBack();
             throw $de;
@@ -583,5 +660,5 @@ try {
     apiError('Unsupported HTTP method: ' . $method, 405);
 } catch (Throwable $e) {
     error_log("API Error in documents.php: " . $e->getMessage());
-    apiError("Database operation failed: " . $e->getMessage(), 500);
+    apiError("Operation failed. An internal error occurred.", 500);
 }

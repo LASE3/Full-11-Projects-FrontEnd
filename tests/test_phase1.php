@@ -99,7 +99,8 @@ require '{$escapedScript}';
 ";
     file_put_contents($tmpRunner, $runnerContent);
 
-    $output = shell_exec("php " . escapeshellarg($tmpRunner));
+    $phpBin = defined('PHP_BINARY') && PHP_BINARY ? escapeshellarg(PHP_BINARY) : 'php';
+    $output = shell_exec("{$phpBin} " . escapeshellarg($tmpRunner));
     @unlink($tmpInput);
     @unlink($tmpRunner);
 

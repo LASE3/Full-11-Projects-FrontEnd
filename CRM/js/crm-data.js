@@ -312,7 +312,7 @@
         body.innerHTML = '';
 
         if (!cards.length) {
-          body.innerHTML = '<div class="kanban-empty">( There's no Opportunities in the moment )</div>';
+          body.innerHTML = '<div class="kanban-empty">( No opportunities at the moment. )</div>';
           return;
         }
 

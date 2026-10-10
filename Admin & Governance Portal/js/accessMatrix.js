@@ -21,6 +21,55 @@
     let currentNodeFilter = "ALL";
     let currentClearanceFilter = "ALL";
 
+    let matrixCurrentPage = 1;
+    const matrixPageSize = 5;
+    const btnMatrixPrev = document.getElementById("btnMatrixPrev");
+    const btnMatrixNext = document.getElementById("btnMatrixNext");
+    const matrixPageIndicator = document.getElementById("matrixPageIndicator");
+
+    function renderMatrixPagination() {
+      const rowList = Array.from(roleRows);
+      const matched = rowList.filter((r) => r.getAttribute("data-filtered") !== "false");
+      const totalPages = Math.max(1, Math.ceil(matched.length / matrixPageSize));
+
+      if (matrixCurrentPage > totalPages) matrixCurrentPage = totalPages;
+      if (matrixCurrentPage < 1) matrixCurrentPage = 1;
+
+      matched.forEach((row, idx) => {
+        const start = (matrixCurrentPage - 1) * matrixPageSize;
+        const end = start + matrixPageSize;
+        row.style.display = (idx >= start && idx < end) ? "" : "none";
+      });
+
+      const pageStr = String(matrixCurrentPage).padStart(2, "0");
+      const totalStr = String(totalPages).padStart(2, "0");
+      if (matrixPageIndicator) {
+        matrixPageIndicator.textContent = `${pageStr} / ${totalStr}`;
+      }
+      if (btnMatrixPrev) {
+        btnMatrixPrev.disabled = (matrixCurrentPage <= 1);
+      }
+      if (btnMatrixNext) {
+        btnMatrixNext.disabled = (matrixCurrentPage >= totalPages);
+      }
+    }
+
+    if (btnMatrixPrev) {
+      btnMatrixPrev.addEventListener("click", () => {
+        if (matrixCurrentPage > 1) {
+          matrixCurrentPage--;
+          renderMatrixPagination();
+        }
+      });
+    }
+
+    if (btnMatrixNext) {
+      btnMatrixNext.addEventListener("click", () => {
+        matrixCurrentPage++;
+        renderMatrixPagination();
+      });
+    }
+
     // 1. Filter Engine
     function filterRoles() {
       const q = (searchInput ? searchInput.value : "").trim().toLowerCase();
@@ -46,12 +95,19 @@
         }
 
         if (matchesNode && matchesClearance && matchesQuery) {
-          row.style.display = "";
+          row.setAttribute("data-filtered", "true");
         } else {
+          row.setAttribute("data-filtered", "false");
           row.style.display = "none";
         }
       });
+
+      matrixCurrentPage = 1;
+      renderMatrixPagination();
     }
+
+    // Initial render
+    renderMatrixPagination();
 
     if (searchInput) {
       searchInput.addEventListener("input", filterRoles);

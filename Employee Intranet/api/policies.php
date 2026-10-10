@@ -161,9 +161,7 @@ if ($method === 'POST') {
 
     if (empty($docId)) {
         $year = date('Y');
-        $maxNum = (int)$pdo->query("SELECT MAX(CAST(SUBSTRING(doc_id, 10) AS UNSIGNED)) FROM documents WHERE doc_id LIKE 'DOC-{$year}-%'")->fetchColumn();
-        $nextNum = sprintf('%03d', max(1, $maxNum + 1));
-        $docId = "DOC-{$year}-{$nextNum}";
+        $docId = vp_next_id($pdo, 'documents', "DOC-{$year}-", 3);
     }
 
     // Normalize classification

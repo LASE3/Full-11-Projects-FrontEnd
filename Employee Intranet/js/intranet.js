@@ -1322,6 +1322,8 @@
       `Downloading "${name}" (${doc ? doc.size : "PDF"}). Secure audit log registered.`,
       "success",
     );
+    // Real download from secure download endpoint
+    window.location.href = "../File%20Center/api/download.php?doc_id=" + encodeURIComponent(docId);
   };
 
   window.openQuickRequestModal = function (type) {

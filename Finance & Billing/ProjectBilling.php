@@ -25,6 +25,7 @@ $stmt = $pdo->query("
         p.currency,
         p.status,
         COALESCE(SUM(i.total_value), 0) as billed_to_date,
+        (SELECT COUNT(*) FROM invoices inv WHERE inv.prj_id = p.prj_id) as invoice_count,
         (SELECT bc.milestone_description FROM billing_cycles bc WHERE bc.prj_id = p.prj_id AND bc.invoiced = 0 ORDER BY bc.scheduled_date ASC LIMIT 1) as next_milestone_desc,
         (SELECT bc.scheduled_date FROM billing_cycles bc WHERE bc.prj_id = p.prj_id AND bc.invoiced = 0 ORDER BY bc.scheduled_date ASC LIMIT 1) as next_milestone_date,
         (SELECT bc.milestone_amount FROM billing_cycles bc WHERE bc.prj_id = p.prj_id AND bc.invoiced = 0 ORDER BY bc.scheduled_date ASC LIMIT 1) as next_milestone_amount,
@@ -426,8 +427,12 @@ $avgBudgetBurn = (float)$pdo->query("SELECT AVG((spent_amount / NULLIF(allocated
                           <button class="btn btn-primary-amber btn-sm" onclick="window.finApp.billMilestone(<?= $prj['next_cycle_id'] ?>)">
                             Bill →
                           </button>
-                        <?php else: ?>
+                        <?php elseif ((int)$prj['invoice_count'] > 0): ?>
                           <a href="Invoices.php?search=<?= urlencode($prj['prj_id']) ?>" class="btn btn-outline btn-sm">
+                            Invoices (<?= (int)$prj['invoice_count'] ?>)
+                          </a>
+                        <?php else: ?>
+                          <a href="Invoices.php?search=<?= urlencode($prj['prj_id']) ?>" class="btn btn-outline btn-sm" title="Inspect invoice ledger for this project">
                             Invoices
                           </a>
                         <?php endif; ?>

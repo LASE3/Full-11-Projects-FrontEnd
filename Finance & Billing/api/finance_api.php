@@ -51,10 +51,7 @@ function jsonReply($data, $statusCode = 200)
 // Generate Next Invoice ID
 function generateNextInvoiceId($pdo)
 {
-    $stmt = $pdo->query("SELECT MAX(CAST(SUBSTRING(inv_id, 10) AS UNSIGNED)) as max_num FROM invoices WHERE inv_id LIKE 'INV-2026-%'");
-    $maxNum = $stmt->fetchColumn();
-    $nextNum = ($maxNum ? (int)$maxNum : 10) + 1;
-    return sprintf('INV-2026-%03d', $nextNum);
+    return vp_next_id($pdo, 'invoices', 'INV-2026-', 3);
 }
 
 try {

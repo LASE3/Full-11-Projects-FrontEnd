@@ -28,6 +28,16 @@ if ($method === 'GET') {
 
     try {
         if ($tktId) {
+            $chk = $pdo->prepare("SELECT requester_cus_id FROM tickets WHERE tkt_id = :tid");
+            $chk->execute([':tid' => $tktId]);
+            $owner = $chk->fetchColumn();
+            if ($owner === false) {
+                Response::error("Ticket not found.", 404);
+            }
+            if (($currentUser['account_type'] ?? '') === 'Customer' && $owner !== $cusId) {
+                Response::error("Forbidden: You do not have permission to view this ticket.", 403);
+            }
+
             $stmt = $pdo->prepare("
                 SELECT 
                     t.*,

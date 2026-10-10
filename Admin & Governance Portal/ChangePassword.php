@@ -25,6 +25,7 @@ $pdo   = getDbConnection();
 $user  = $_SESSION['vostok_user'] ?? [];
 $isCustomer = (($user['account_type'] ?? '') === 'Customer');
 $userId = $user['emp_id'] ?? ($user['cus_id'] ?? ($user['user_id'] ?? ''));
+$empId  = (string)($user['emp_id'] ?? ($user['cus_id'] ?? $userId));
 
 // Load account data
 if ($isCustomer) {
@@ -67,6 +68,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if (!password_verify($oldPass, $account['password_hash'])) {
             $error = 'Current password is incorrect.';
+        } elseif (password_verify($newPass, $account['password_hash'])) {
+            $error = 'New password cannot be the same as your current password.';
         } elseif (strlen($newPass) < 14) {
             $error = 'New password must be at least 14 characters.';
         } elseif ($newPass !== $confPass) {
@@ -90,8 +93,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $success = 'Password changed successfully.';
 
             // Update session flag
-            if (isset($_SESSION['vostok_user']['must_change_password'])) {
+            if (isset($_SESSION['vostok_user'])) {
                 $_SESSION['vostok_user']['must_change_password'] = 0;
+            }
+
+            if (function_exists('createSsoCookie')) {
+                createSsoCookie($_SESSION['vostok_user']);
+            }
+
+            $targetDash = $isCustomer 
+                ? '../Customer Portal/CustomerDashboard.php' 
+                : 'mainDashboard.php';
+
+            if (!$isJson) {
+                header("Location: " . $targetDash);
+                exit;
             }
         }
     }
@@ -102,7 +118,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             http_response_code(400);
             echo json_encode(['success' => false, 'error' => $error]);
         } else {
-            echo json_encode(['success' => true, 'message' => $success]);
+            echo json_encode(['success' => true, 'message' => $success, 'redirect' => $targetDash ?? 'mainDashboard.php']);
         }
         exit;
     }

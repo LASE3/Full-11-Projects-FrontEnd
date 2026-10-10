@@ -182,6 +182,24 @@ function vp_enforce_csrf(array $opts): void
 }
 
 /**
+ * Read request payload consistently for JSON, POST, PUT, PATCH, DELETE.
+ */
+function vp_get_payload(): array
+{
+    $method = strtoupper($_SERVER['REQUEST_METHOD'] ?? 'GET');
+    $contentType = $_SERVER['CONTENT_TYPE'] ?? $_SERVER['HTTP_CONTENT_TYPE'] ?? '';
+    
+    if (str_contains(strtolower($contentType), 'application/json') || in_array($method, ['PUT', 'PATCH', 'DELETE'], true)) {
+        $raw = (string)file_get_contents('php://input');
+        $json = json_decode($raw, true);
+        if (is_array($json)) {
+            return $json;
+        }
+    }
+    return !empty($_POST) ? $_POST : [];
+}
+
+/**
  * Require a valid customer session (for Customer Portal API endpoints).
  * Returns the authenticated customer ID.
  * Never falls back to a default customer.
@@ -197,25 +215,24 @@ function vp_require_customer_session(): string
     }
 
     $user = $_SESSION['vostok_user'] ?? null;
-    if ($user && isSuperAdmin($user)) {
-        return (string)($_GET['cus_id'] ?? $_POST['cus_id'] ?? 'CUS-1001');
-    }
-
-    $cusId = $_SESSION['cus_id'] ?? null;
-
-    if (empty($cusId)) {
-        // Also try vostok_user session
-        if ($user && ($user['account_type'] ?? '') === 'Customer') {
-            $cusId = $user['cus_id'] ?? $user['user_id'] ?? null;
-        }
-    }
-
-    if (empty($cusId)) {
+    if (!$user) {
         http_response_code(401);
         echo json_encode([
             'success' => false,
             'error'   => 'Authentication required',
             'message' => 'Customer session required. Please log in.',
+        ], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+
+    $cusId = enforceCustomerTenant($user, $_GET['cus_id'] ?? $_POST['cus_id'] ?? null);
+
+    if (empty($cusId)) {
+        http_response_code(403);
+        echo json_encode([
+            'success' => false,
+            'error'   => 'No customer selected',
+            'message' => 'Please select a customer perspective.',
         ], JSON_UNESCAPED_UNICODE);
         exit;
     }
