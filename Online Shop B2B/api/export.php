@@ -16,13 +16,17 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 $pdo = getDbConnection();
-$cusId = $_SESSION['cus_id'] ?? ($_SESSION['vostok_user']['user_id'] ?? ($_GET['cus_id'] ?? 'CUS-1001'));
-if (!$cusId && !empty($_SESSION['vostok_user']['cus_id'])) {
-    $cusId = $_SESSION['vostok_user']['cus_id'];
+$isCustomer = (($_vp_user['account_type'] ?? '') === 'Customer');
+if ($isCustomer) {
+    $cusId = (string)($_vp_user['cus_id'] ?? ($_vp_user['user_id'] ?? ''));
+} else {
+    $canImpersonate = hasEmployeePermission($pdo, $_vp_user, 'CUSTOMER_IMPERSONATE');
+    $cusId = $canImpersonate ? (string)($_SESSION['impersonate_cus_id'] ?? '') : '';
 }
 if (!$cusId) {
-    $cusId = 'CUS-1001';
+    Response::error("Customer session required.", 401);
 }
+
 
 $type   = strtolower(trim((string)($_GET['type'] ?? 'orders')));
 $format = strtolower(trim((string)($_GET['format'] ?? 'csv')));

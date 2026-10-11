@@ -497,8 +497,7 @@ $totalFeedEvents = count($finEvents) + count($prjEvents) + count($tktEvents);
                                             class="font-label-caps text-label-caps text-on-surface-variant uppercase">SCADA
                                             Gateway VP-GW-09</span>
                                         <span
-                                            class="font-data-mono-md text-data-mono-md text-primary font-semibold">Cherepovets
-                                            Unit #2</span>
+                                            class="font-data-mono-md text-data-mono-md text-primary font-semibold">Facility Unit #1</span>
                                     </div>
                                     <div class="text-right">
                                         <span
@@ -550,7 +549,7 @@ $totalFeedEvents = count($finEvents) + count($prjEvents) + count($tktEvents);
                             <div class="flex items-center gap-unit-md py-unit-xs">
                                 <img class="w-14 h-14 rounded-full object-cover shadow-sm ring-2 ring-tertiary-fixed/50"
                                     data-alt="Professional portrait of Senior Lead Systems Engineer Viktor Morozov"
-                                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuDoVYMImYMOrFG-GImEjxCUij3YIwCjbxiUVg9-84NgNQUnx44rwhCbh4EVKLngwn6R5_hzNhRQkfTglEUz1jtP83GRGR8WbDdiIQblwg1fLV0mqc04y19GGKO27NGBpanqADz4vwO3ANY9KcZiOXBusZHAE_PU_FuuwKqChSLXXJsGo289bHOL3MFrKWoXXMoxnqoUIglg-NYsM99jg8cA3e1CeWhqlY0x7isLHdQfGbcFE_XiNNJg" />
+                                    src="<?= vp_avatar_svg($currUser['full_name'] ?? 'User') ?>" />
                                 <div class="flex flex-col">
                                     <span
                                         class="font-headline-sm text-headline-sm text-primary font-bold leading-tight">Viktor
@@ -558,7 +557,7 @@ $totalFeedEvents = count($finEvents) + count($prjEvents) + count($tktEvents);
                                     <span class="font-body-sm text-body-sm text-on-surface-variant">Senior Lead Systems
                                         Engineer</span>
                                     <span class="font-technical-tag text-technical-tag text-secondary mt-0.5">ID:
-                                        VP-ENG-4410 • Severstal Liaison</span>
+                                        VP-ENG-4410 • Engineering Liaison</span>
                                 </div>
                             </div>
                             <div

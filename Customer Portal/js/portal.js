@@ -188,7 +188,7 @@
       type: "Settings",
       id: "SET-ORG",
       title: "Organization Profile & Facility Identification",
-      meta: "Severstal Metallurgy Plant #4 • VP-90214-EU",
+      meta: "Primary Operations Facility • Node 01",
       url: "AccountSettings.php?tab=panel-org",
       icon: "corporate_fare",
       badge: "Settings",
@@ -206,7 +206,7 @@
       type: "Settings",
       id: "SET-ROSTER",
       title: "User Roster & Security Clearance Credentials",
-      meta: "Alexey Danilov (Chief Eng.) • Dr. Elena Rostova",
+      meta: "Authorized Engineering Personnel",
       url: "AccountSettings.php?tab=panel-user",
       icon: "badge",
       badge: "Team Roster",
@@ -1179,7 +1179,7 @@
                     </div>
                     <div>
                         <h3 class="font-headline-sm text-base font-bold text-primary">Switch Industrial Operational Facility</h3>
-                        <p class="text-xs text-on-surface-variant">Active Entity: Severstal Metallurgy Division</p>
+                        <p class="text-xs text-on-surface-variant">Active Entity: Authorized Client Facility</p>
                     </div>
                 </div>
                 <div class="flex flex-col gap-2">
@@ -1187,7 +1187,7 @@
                         <div class="flex items-center gap-3">
                             <input type="radio" name="facility_choice" checked class="accent-secondary">
                             <div>
-                                <div class="font-headline-sm text-sm font-semibold text-primary">Cherepovets Hot Rolling Mill #2 & Blast Furnace #5</div>
+                                <div class="font-headline-sm text-sm font-semibold text-primary">Primary Operations & Automation Facility</div>
                                 <div class="text-xs text-on-surface-variant font-mono">Node ID: VP-88204-EU • 14 Active Projects</div>
                             </div>
                         </div>
@@ -1207,7 +1207,7 @@
                         <div class="flex items-center gap-3">
                             <input type="radio" name="facility_choice" class="accent-secondary">
                             <div>
-                                <div class="font-headline-sm text-sm font-semibold text-primary">Cherepovets Sinter Sizing & Pelletizing Plant</div>
+                                <div class="font-headline-sm text-sm font-semibold text-primary">Secondary Processing & Instrumentation Facility</div>
                                 <div class="text-xs text-on-surface-variant font-mono">Node ID: VP-99104-RU • 3 Active Projects</div>
                             </div>
                         </div>
@@ -1275,14 +1275,14 @@
                     </div>
                     <div>
                         <h3 class="font-headline-sm text-base font-bold text-primary">Request Urgent Equipment Dispatch</h3>
-                        <p class="text-xs text-on-surface-variant">Tier-1 SLA Priority Supply for Severstal Plant #4</p>
+                        <p class="text-xs text-on-surface-variant">Tier-1 SLA Priority Supply for Client Facility</p>
                     </div>
                 </div>
                 <div class="flex flex-col gap-3 text-xs">
                     <div>
                         <label class="font-medium text-on-surface block mb-1">Target Plant Sector / Bay</label>
                         <select class="w-full p-2 rounded bg-surface-container border border-outline/30 text-primary font-body-sm">
-                            <option>Cherepovets Plant #4 — Blast Furnace #5 (Mezzanine Bay C)</option>
+                            <option>Primary Facility Unit #1 (Mezzanine Bay A)</option>
                             <option>Hot Rolling Mill #2 — Hydraulic Profiler Unit</option>
                             <option>Sinter Sizing Plant #3 — Optical Pyrometer Array</option>
                         </select>

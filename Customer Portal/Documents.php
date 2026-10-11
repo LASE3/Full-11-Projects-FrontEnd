@@ -53,7 +53,7 @@ if (empty($documents)) {
             'status' => 'ROSTEST CERTIFIED',
             'created_at' => '2024-11-04',
             'order_id' => 'ORD-8819',
-            'facility_name' => 'Severstal Metallurgy Plant #4'
+            'facility_name' => $customer['company_name'] ?? 'Industrial Operations Facility'
         ],
         [
             'doc_id' => 'SCH-2024-BF5-0112',
@@ -64,7 +64,7 @@ if (empty($documents)) {
             'status' => 'ACTIVE SPECIFICATION',
             'created_at' => '2024-10-22',
             'order_id' => 'ORD-8819',
-            'facility_name' => 'Severstal Metallurgy Plant #4'
+            'facility_name' => $customer['company_name'] ?? 'Industrial Operations Facility'
         ],
         [
             'doc_id' => 'FAT-2024-GS4-0021',
@@ -75,7 +75,7 @@ if (empty($documents)) {
             'status' => 'FAT PASSED / SIGNED',
             'created_at' => '2024-09-29',
             'order_id' => 'ORD-8818',
-            'facility_name' => 'Severstal Metallurgy Plant #4'
+            'facility_name' => $customer['company_name'] ?? 'Industrial Operations Facility'
         ],
         [
             'doc_id' => 'AGR-2024-SPC-0089',
@@ -86,7 +86,7 @@ if (empty($documents)) {
             'status' => 'PENDING CLIENT SIGNATURE',
             'created_at' => '2024-09-15',
             'order_id' => 'ORD-8815',
-            'facility_name' => 'Severstal Metallurgy Plant #4'
+            'facility_name' => $customer['company_name'] ?? 'Industrial Operations Facility'
         ],
         [
             'doc_id' => 'HSE-2024-OPT-0402',
@@ -97,7 +97,7 @@ if (empty($documents)) {
             'status' => 'COMPLIANT',
             'created_at' => '2024-08-11',
             'order_id' => 'ORD-8810',
-            'facility_name' => 'Severstal Metallurgy Plant #4'
+            'facility_name' => $customer['company_name'] ?? 'Industrial Operations Facility'
         ],
         [
             'doc_id' => 'CAL-2024-CLM-0331',
@@ -108,7 +108,7 @@ if (empty($documents)) {
             'status' => 'VALIDATED',
             'created_at' => '2024-07-20',
             'order_id' => 'ORD-8802',
-            'facility_name' => 'Severstal Metallurgy Plant #4'
+            'facility_name' => $customer['company_name'] ?? 'Industrial Operations Facility'
         ]
     ];
 }
@@ -412,7 +412,7 @@ $firstDoc = $documents[0] ?? null;
                             <div class="flex items-center gap-unit-xs text-on-surface-variant">
                                 <span class="material-symbols-outlined text-base">domain</span>
                                 <span class="font-body-sm text-body-sm">Facility:</span>
-                                <span class="text-on-surface font-semibold font-body-sm">Severstal Plant #4 (All Sectors)</span>
+                                <span class="text-on-surface font-semibold font-body-sm">Primary Facility (All Sectors)</span>
                             </div>
                             <span
                                 class="material-symbols-outlined text-base text-on-surface-variant">arrow_drop_down</span>
@@ -605,7 +605,7 @@ $firstDoc = $documents[0] ?? null;
                                     </div>
                                     <div class="flex justify-between text-on-surface-variant">
                                         <span>Signer 02:</span>
-                                        <span class="text-on-surface font-semibold">Alexey R. Danilov (Chief Eng.)</span>
+                                        <span class="text-on-surface font-semibold">Client Lead Engineer</span>
                                     </div>
                                     <div class="flex justify-between text-on-surface-variant">
                                         <span>Algorithm:</span>
@@ -626,7 +626,7 @@ $firstDoc = $documents[0] ?? null;
                                         <span class="font-technical-tag text-technical-tag text-on-surface-variant">Nov 04, 2024 • Official cryptographic certificate attached by State Metrologyist.</span>
                                     </div>
                                     <div class="flex flex-col">
-                                        <span class="font-headline-sm text-body-sm font-semibold text-on-surface">v2.0 - Severstal QA Review</span>
+                                        <span class="font-headline-sm text-body-sm font-semibold text-on-surface">v2.0 - Client QA Review</span>
                                         <span class="font-technical-tag text-technical-tag text-on-surface-variant">Oct 18, 2024 • Calibration parameters signed off by plant instrumentation crew.</span>
                                     </div>
                                     <div class="flex flex-col">

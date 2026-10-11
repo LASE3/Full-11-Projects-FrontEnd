@@ -34,7 +34,7 @@ $customers = $pdo->query("
 ")->fetchAll(PDO::FETCH_ASSOC);
 
 $firstCusId = !empty($customers) ? $customers[0]['cus_id'] : 'CUS-1001';
-$firstCusName = !empty($customers) ? $customers[0]['company_name'] : 'Severstal Metallurgy PJSC';
+$firstCusName = !empty($customers) ? $customers[0]['company_name'] : 'Aral Geomatics Group';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -76,7 +76,7 @@ $firstCusName = !empty($customers) ? $customers[0]['company_name'] : 'Severstal 
         <div class="top-search-bar">
           <div class="search-input-wrapper">
             <span class="search-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span>
-            <input type="text" class="search-input" id="global-omni-search" placeholder="Search enterprise clients (e.g. Severstal, NLMK, Norilsk)..." />
+            <input type="text" class="search-input" id="global-omni-search" placeholder="Search enterprise clients (e.g. Aral, BaltNord, Steppe)..." />
             <span class="search-kbd">Ctrl+K</span>
           </div>
         </div>
@@ -96,7 +96,7 @@ $firstCusName = !empty($customers) ? $customers[0]['company_name'] : 'Severstal 
             </svg>
           </button>
           <div class="top-user-profile" onclick="window.crmApp.showToast('Active User Session', '<?= htmlspecialchars($currUser['full_name'] ?? 'Mikhail Sorokin') ?> · <?= htmlspecialchars($currUser['role_name'] ?? 'VP Enterprise Sales') ?> · <?= htmlspecialchars($currUser['clearance_level'] ?? 'L4') ?> Clearance')">
-            <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDoVYMImYMOrFG-GImEjxCUij3YIwCjbxiUVg9-84NgNQUnx44rwhCbh4EVKLngwn6R5_hzNhRQkfTglEUz1jtP83GRGR8WbDdiIQblwg1fLV0mqc04y19GGKO27NGBpanqADz4vwO3ANY9KcZiOXBusZHAE_PU_FuuwKqChSLXXJsGo289bHOL3MFrKWoXXMoxnqoUIglg-NYsM99jg8cA3e1CeWhqlY0x7isLHdQfGbcFE_XiNNJg" alt="<?= htmlspecialchars($currUser['full_name'] ?? 'User') ?>" class="user-avatar-top" />
+            <img src="<?= vp_avatar_svg($currUser['full_name'] ?? 'User') ?>" alt="<?= htmlspecialchars($currUser['full_name'] ?? 'User') ?>" class="user-avatar-top" />
             <div class="user-details-top">
               <span class="user-name-top"><?= htmlspecialchars($currUser['full_name'] ?? 'Mikhail Sorokin') ?></span>
               <span class="user-role-top"><?= htmlspecialchars($currUser['role_name'] ?? 'VP Enterprise Sales') ?></span>
@@ -305,7 +305,7 @@ $firstCusName = !empty($customers) ? $customers[0]['company_name'] : 'Severstal 
                 <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Export Client Matrix</span>
               </button>
               <a href="CustomerDetail.php" class="btn btn-primary-amber">
-                <span>View Severstal Profile →</span>
+                <span>View Primary Profile →</span>
               </a>
             </div>
           </div>
@@ -425,7 +425,7 @@ $firstCusName = !empty($customers) ? $customers[0]['company_name'] : 'Severstal 
                         <span class="<?= $tierClass ?>"><?= htmlspecialchars($c['sector'] ?: 'Enterprise') ?></span>
                       </td>
                       <td>
-                        <strong><?= htmlspecialchars($c['account_manager_name'] ?: 'Dr. Elena Rostova') ?></strong>
+                        <strong><?= htmlspecialchars($c['account_manager_name'] ?: 'Unassigned Lead') ?></strong>
                         <div class="crm-text-muted-sm">Key Account Lead</div>
                       </td>
                       <td>

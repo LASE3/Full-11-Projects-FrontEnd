@@ -305,7 +305,7 @@
                     </div>
                     <div>
                         <div class="text-xl sm:text-2xl font-bold font-mono text-neutral-900 leading-tight">10</div>
-                        <div class="text-xs text-neutral-600 font-medium">Enterprise Consortia (Severstal, Steppe)</div>
+                        <div class="text-xs text-neutral-600 font-medium">Enterprise Consortia (Aral Geomatics, Steppe)</div>
                     </div>
                 </div>
                 <div class="telemetry-node-card">
@@ -486,7 +486,7 @@
                         </p>
                         <div class="flex flex-wrap gap-1 mb-4">
                             <span
-                                class="text-[10px] font-mono px-2 py-0.5 rounded bg-neutral-100 text-neutral-700">Severstal
+                                class="text-[10px] font-mono px-2 py-0.5 rounded bg-neutral-100 text-neutral-700">Aral Geomatics
                                 Plant #4</span>
                             <span
                                 class="text-[10px] font-mono px-2 py-0.5 rounded bg-neutral-100 text-neutral-700">PRJ-2026-001</span>
@@ -956,12 +956,12 @@
                             <label for="rfqCompanyName" class="form-label-enterprise">Company / Industrial Entity
                                 *</label>
                             <input type="text" id="rfqCompanyName" required
-                                placeholder="e.g. Severstal Metallurgy Plant #4" class="form-input-enterprise" />
+                                placeholder="e.g. Aral Geomatics Metallurgy Plant #4" class="form-input-enterprise" />
                         </div>
                         <div>
                             <label for="rfqContactName" class="form-label-enterprise">Contact Name & Title *</label>
                             <input type="text" id="rfqContactName" required
-                                placeholder="e.g. Alexey Danilov (Chief Eng.)" class="form-input-enterprise" />
+                                placeholder="e.g. Sergei Makarov (Chief Eng.)" class="form-input-enterprise" />
                         </div>
                     </div>
 

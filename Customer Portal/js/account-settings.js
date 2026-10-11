@@ -99,7 +99,7 @@
                     <label class="block font-label-caps text-label-caps text-secondary uppercase">Authorization Factor</label>
                     <div class="flex items-center gap-2 p-2 rounded bg-surface-container border border-outline-variant/50 font-technical-tag text-xs">
                         <span class="material-symbols-outlined text-sm text-primary">verified_user</span>
-                        <span>YubiKey 5 FIPS hardware token detected (Alexey R. Danilov)</span>
+                        <span>YubiKey 5 FIPS hardware token detected (Authenticated Officer)</span>
                     </div>
                 </div>
                 <div class="flex items-center justify-end gap-2 pt-2 border-t border-outline-variant/30">

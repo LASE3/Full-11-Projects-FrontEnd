@@ -24,6 +24,9 @@ if (!function_exists('getDbConnection')) {
 if (!function_exists('requireApiAuth')) {
     require_once __DIR__ . '/../includes/auth_guard.php';
 }
+if (!function_exists('vp_authorize')) {
+    require_once __DIR__ . '/authorize.php';
+}
 
 /**
  * Clearance level numeric values for comparison.
@@ -225,7 +228,8 @@ function vp_require_customer_session(): string
         exit;
     }
 
-    $cusId = enforceCustomerTenant($user, $_GET['cus_id'] ?? $_POST['cus_id'] ?? null);
+    $reqCus = (($user['account_type'] ?? '') === 'Customer') ? null : ($_GET['cus_id'] ?? $_POST['cus_id'] ?? null);
+    $cusId = enforceCustomerTenant($user, $reqCus);
 
     if (empty($cusId)) {
         http_response_code(403);

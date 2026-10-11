@@ -90,7 +90,7 @@
                     </div>
                     <div class="flex items-center justify-between text-[11px] text-outline font-mono">
                         <span>Origin: Kolpino Facility</span>
-                        <span>Destination: Cherepovets Plant #4</span>
+                        <span>Destination: Primary Facility Depot</span>
                     </div>
                 </div>
                 <div class="flex items-center justify-between pt-2">

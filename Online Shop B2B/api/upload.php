@@ -19,7 +19,16 @@ if (session_status() === PHP_SESSION_NONE) {
 
 $pdo = getDbConnection();
 $method = strtoupper($_SERVER['REQUEST_METHOD'] ?? 'GET');
-$cusId = $_SESSION['cus_id'] ?? ($_SESSION['vostok_user']['user_id'] ?? ($_POST['cus_id'] ?? 'CUS-1001'));
+$isCustomer = (($_vp_user['account_type'] ?? '') === 'Customer');
+if ($isCustomer) {
+    $cusId = (string)($_vp_user['cus_id'] ?? ($_vp_user['user_id'] ?? ''));
+} else {
+    $canImpersonate = hasEmployeePermission($pdo, $_vp_user, 'CUSTOMER_IMPERSONATE');
+    $cusId = $canImpersonate ? (string)($_SESSION['impersonate_cus_id'] ?? '') : '';
+}
+if (!$cusId) {
+    Response::error("Customer session required.", 401);
+}
 
 if ($method !== 'POST') {
     Response::error("Method not allowed. Only POST is accepted for file upload.", 405);

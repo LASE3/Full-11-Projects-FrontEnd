@@ -131,6 +131,11 @@ function requireApiAuth(?string $requiredSystem = null): array
 {
     global $currentUser, $isAuthenticated;
 
+    if ((!$isAuthenticated || empty($currentUser)) && !empty($_SESSION['vostok_authenticated']) && !empty($_SESSION['vostok_user'])) {
+        $isAuthenticated = true;
+        $currentUser = $_SESSION['vostok_user'];
+    }
+
     if (!$isAuthenticated || empty($currentUser)) {
         http_response_code(401);
         header('Content-Type: application/json; charset=utf-8');
@@ -380,3 +385,29 @@ function enforceTenantIsolation(string $requestedCusId, array $user): void
 // Note: verifyUserPassword() is defined in config/db.php and available globally.
 
 
+
+
+/**
+ * Generate a dynamic initials SVG avatar as a data URI.
+ * Guarantees zero reliance on third-party external CDNs/images.
+ */
+function vp_avatar_svg(?string $name = null, int $size = 36): string {
+    $name = trim((string)($name ?? 'User'));
+    $words = preg_split('/\s+/', $name) ?: [];
+    $initials = '';
+    foreach ($words as $w) {
+        if ($w !== '') {
+            $initials .= mb_strtoupper(mb_substr($w, 0, 1));
+        }
+        if (mb_strlen($initials) >= 2) break;
+    }
+    if ($initials === '') {
+        $initials = 'VP';
+    }
+    $fontSize = (int)round($size * 0.4);
+    $svg = '<svg xmlns="http://www.w3.org/2000/svg" width="'.$size.'" height="'.$size.'" viewBox="0 0 '.$size.' '.$size.'">'
+         . '<circle cx="'.($size/2).'" cy="'.($size/2).'" r="'.($size/2).'" fill="#0d1e2e" stroke="#1b3a5c" stroke-width="1.5"/>'
+         . '<text x="50%" y="54%" fill="#00E5FF" font-family="system-ui, -apple-system, sans-serif" font-size="'.$fontSize.'" font-weight="700" text-anchor="middle" dominant-baseline="middle">'.htmlspecialchars($initials).'</text>'
+         . '</svg>';
+    return 'data:image/svg+xml;utf8,' . rawurlencode($svg);
+}

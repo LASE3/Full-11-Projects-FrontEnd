@@ -86,7 +86,7 @@ $opsNames = [
     ['Svetlana Borisova', 'Fulfilment Dispatch Coordinator'],
     ['Valery Stepanov', 'Shipping & Receiving Inspector'],
     ['Lyudmila Alexandrova', 'Supply Quality Specialist'],
-    ['Grigory Danilov', 'Materials Management Planner'],
+    ['Grigory Demidov', 'Materials Management Planner'],
     ['Polina Yakovleva', 'B2B Order Expeditor'],
     ['Vladislav Sorokin', 'Equipment Packaging Engineer'],
     ['Ksenia Vorobyeva', 'Procurement Auditor'],

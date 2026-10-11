@@ -133,7 +133,7 @@
                     <select id="paymentGatewaySelect" class="w-full bg-surface-container px-3 py-2 rounded text-sm text-on-surface border border-outline-variant/30 focus:outline-none">
                         <option value="sberbank">PJSC Sberbank Corporate Escrow Direct Wire (044525225)</option>
                         <option value="vtb">VTB Enterprise SWIFT MT103 Settlement (SABRRUMM)</option>
-                        <option value="gazprom">Severstal Central Treasury Direct Clearing</option>
+                        <option value="treasury">Corporate Treasury Clearing</option>
                     </select>
                 </div>
 
@@ -147,7 +147,7 @@
                     <input type="checkbox" id="cryptoTokenAuth" checked class="mt-0.5 rounded border-outline" />
                     <label for="cryptoTokenAuth" class="text-xs text-on-surface cursor-pointer">
                         <span class="font-semibold text-on-surface">Crypto-Pro EDS Token Authentication:</span>
-                        Attach qualified electronic digital signature of Alexey R. Danilov (Key #RU-SVR-77401-EDS).
+                        Attach qualified electronic digital signature of authorized procurement officer.
                     </label>
                 </div>
 

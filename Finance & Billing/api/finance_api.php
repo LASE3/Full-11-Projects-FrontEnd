@@ -107,6 +107,7 @@ try {
         // 2. CREATE NEW INVOICE
         // ====================================================================
         case 'create_invoice':
+            vp_authorize($_vp_user, 'finance:create');
             $cusId = trim($_POST['cus_id'] ?? '');
             $prjId = trim($_POST['prj_id'] ?? '') ?: null;
             $totalValue = (float)($_POST['total_value'] ?? 0);
@@ -460,6 +461,7 @@ try {
         // 9. UPDATE BUDGET ALLOCATION / REVISION
         // ====================================================================
         case 'update_budget':
+            vp_authorize($_vp_user, 'finance:update_budget');
             $budgetId = (int)($_POST['budget_id'] ?? 0);
             $deptCode = trim($_POST['department_code'] ?? '');
             $allocated = (float)($_POST['allocated_amount'] ?? 0);

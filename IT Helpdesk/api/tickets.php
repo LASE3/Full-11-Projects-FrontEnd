@@ -354,7 +354,13 @@ if ($action === 'bulk_assign') {
 if ($action === 'delete') {
     $tktId = trim((string)($payload['tkt_id'] ?? ($payload['ticket_id'] ?? ($payload['id'] ?? ''))));
     if ($tktId === '') {
-        sendJsonError("Ticket ID is required for delete.");
+        sendJsonError("Ticket ID is required for delete.", 400);
+    }
+
+    try {
+        vp_authorize($user, 'ticket:delete', ['tkt_id' => $tktId], $pdo);
+    } catch (VpAuthorizationException $ae) {
+        sendJsonError($ae->getMessage(), $ae->getCode());
     }
 
     // Delete comments first

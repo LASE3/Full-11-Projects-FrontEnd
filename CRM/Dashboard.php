@@ -168,7 +168,7 @@ $recentActivities = $pdo->query("
         <div class="top-search-bar">
           <div class="search-input-wrapper">
             <span class="search-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span>
-            <input type="text" class="search-input" id="global-omni-search" placeholder="Search accounts, opportunities, quotes, contracts (e.g. Severstal, HPF-900X)..." />
+            <input type="text" class="search-input" id="global-omni-search" placeholder="Search accounts, opportunities, quotes, contracts (e.g. Aral, Steppe, BaltNord)..." />
             <span class="search-kbd">Ctrl+K</span>
           </div>
         </div>
@@ -192,7 +192,7 @@ $recentActivities = $pdo->query("
           </button>
 
           <div class="top-user-profile" onclick="window.crmApp.showToast('Active User Session', '<?= htmlspecialchars($currUser['full_name'] ?? 'Mikhail Sorokin') ?> · <?= htmlspecialchars($currUser['role_name'] ?? 'VP Enterprise Sales') ?> · <?= htmlspecialchars($currUser['clearance_level'] ?? 'L4') ?> Clearance')">
-            <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDoVYMImYMOrFG-GImEjxCUij3YIwCjbxiUVg9-84NgNQUnx44rwhCbh4EVKLngwn6R5_hzNhRQkfTglEUz1jtP83GRGR8WbDdiIQblwg1fLV0mqc04y19GGKO27NGBpanqADz4vwO3ANY9KcZiOXBusZHAE_PU_FuuwKqChSLXXJsGo289bHOL3MFrKWoXXMoxnqoUIglg-NYsM99jg8cA3e1CeWhqlY0x7isLHdQfGbcFE_XiNNJg" alt="<?= htmlspecialchars($currUser['full_name'] ?? 'User') ?>" class="user-avatar-top" />
+            <img src="<?= vp_avatar_svg($currUser['full_name'] ?? 'User') ?>" alt="<?= htmlspecialchars($currUser['full_name'] ?? 'User') ?>" class="user-avatar-top" />
             <div class="user-details-top">
               <span class="user-name-top"><?= htmlspecialchars($currUser['full_name'] ?? 'Mikhail Sorokin') ?></span>
               <span class="user-role-top"><?= htmlspecialchars($currUser['role_name'] ?? 'VP Enterprise Sales') ?></span>
@@ -405,7 +405,7 @@ $recentActivities = $pdo->query("
                 <span class="breadcrumb-current">Executive Dashboard</span>
               </div>
               <h1 class="page-title">Executive Sales &amp; Pipeline Dashboard</h1>
-              <p class="page-subtitle">Enterprise industrial accounts, live deal flow, and revenue forecast for Severstal, NLMK, and Norilsk Nickel</p>
+              <p class="page-subtitle">Enterprise industrial accounts, live deal flow, and revenue forecast for Aral Geomatics, BaltNord, and Steppe Mining</p>
             </div>
             <div class="page-header-actions">
               <div class="filter-select crm-inline-flex-sm" >
@@ -637,12 +637,12 @@ $recentActivities = $pdo->query("
             <div class="form-group">
               <label class="form-label" for="new-opp-client">Client Enterprise Account</label>
               <select id="new-opp-client" class="form-select" required>
-                <option value="Severstal Metallurgy PJSC">Severstal Metallurgy PJSC</option>
+                <option value="Aral Geomatics Group">Aral Geomatics Group</option>
                 <option value="NLMK Group Lipetsk">NLMK Group Lipetsk</option>
-                <option value="Norilsk Nickel Mining">Norilsk Nickel Mining</option>
+                <option value="Steppe Mining Technologies">Steppe Mining Technologies</option>
                 <option value="EVRAZ Consolidated">EVRAZ Consolidated</option>
                 <option value="PhosAgro Chemical">PhosAgro Chemical</option>
-                <option value="Gazprom Neft Omsk">Gazprom Neft Omsk</option>
+                <option value="Daugava Optical Research">Daugava Optical Research</option>
               </select>
             </div>
 
@@ -706,9 +706,9 @@ $recentActivities = $pdo->query("
         <div class="form-group">
           <label class="form-label">Account / Facility</label>
           <select class="form-select">
-            <option>Severstal Metallurgy PJSC (Cherepovets)</option>
+            <option>Aral Geomatics Group (Almaty)</option>
             <option>NLMK Group Lipetsk (Blast Furnace #7)</option>
-            <option>Norilsk Nickel Mining (Talnakh)</option>
+            <option>Steppe Mining Technologies (Karaganda)</option>
           </select>
         </div>
         <div class="form-group">

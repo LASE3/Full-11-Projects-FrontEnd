@@ -47,7 +47,7 @@
                     </div>
                     <div>
                         <h3 class="font-headline-sm text-base font-bold text-primary">Request Project Scope Change / New RFQ</h3>
-                        <p class="text-xs text-on-surface-variant">Severstal Metallurgy Plant #4 • Engineering Expansion</p>
+                        <p class="text-xs text-on-surface-variant">Engineering & Systems Expansion</p>
                     </div>
                 </div>
                 <div class="flex flex-col gap-3 text-xs">

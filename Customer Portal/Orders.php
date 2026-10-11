@@ -120,7 +120,7 @@ if ($isSuperAdmin || $cusId) {
                     <span class="px-unit-xs py-0.5 rounded bg-surface-container-high/10 text-tertiary-fixed font-technical-tag text-technical-tag border border-tertiary-fixed/30">PORTAL</span>
                 </div>
                 <div class="flex items-center gap-unit-xs text-on-primary-container font-technical-tag text-technical-tag">
-                    <span>Severstal Metallurgy Plant #4</span>
+                    <span><?= htmlspecialchars($customer['company_name'] ?? 'Industrial Operations Client') ?></span>
                     <span class="text-on-primary-container/50">|</span>
                     <span class="text-primary-fixed-dim">VP-88204-EU</span>
                 </div>
@@ -250,7 +250,7 @@ if ($isSuperAdmin || $cusId) {
                             </div>
                             <p class="font-body-md text-body-md text-on-surface-variant mt-0.5">
                                 Tracking physical shipments, manufacturing stages, and customs clearance for 
-                                <span class="font-semibold text-on-surface">Severstal Metallurgy Plant #4</span>
+                                <span class="font-semibold text-on-surface"><?= htmlspecialchars($customer['company_name'] ?? 'Authorized Client') ?></span>
                             </p>
                         </div>
                         <div class="flex items-center gap-unit-sm shrink-0">
@@ -344,7 +344,7 @@ if ($isSuperAdmin || $cusId) {
                                 <span class="font-headline-md text-headline-md text-on-surface-variant font-semibold">Days to SLA</span>
                             </div>
                             <div class="flex items-center gap-unit-xs font-technical-tag text-technical-tag text-on-surface-variant mt-1">
-                                <span>Scheduled air freight to Cherepovets</span>
+                                <span>Scheduled freight to <?= htmlspecialchars($customer['headquarters'] ?? 'Primary Facility') ?></span>
                             </div>
                         </div>
                         <div class="mt-unit-sm w-full bg-surface-container-high h-1 rounded overflow-hidden flex">

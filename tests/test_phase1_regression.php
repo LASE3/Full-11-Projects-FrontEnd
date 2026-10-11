@@ -88,6 +88,9 @@ if (session_status() === PHP_SESSION_NONE) {
 // Establish authenticated session with CSRF token
 if (!empty(\$_SESSION['vostok_user'])) {
     \$_SESSION['vostok_authenticated'] = true;
+    if (empty(\$req['session']['test_must_change_password'])) {
+        \$_SESSION['vostok_user']['must_change_password'] = 0;
+    }
     if (empty(\$_SESSION['csrf_token'])) {
         \$_SESSION['csrf_token'] = 'test_csrf_token_12345';
     }
@@ -130,6 +133,7 @@ require '{$escapedScript}';
         1 => ['pipe', 'w'],
         2 => ['pipe', 'w']
     ];
+    $pipes = [];
     $process = proc_open("{$phpBin} " . escapeshellarg($tmpRunner), $descriptors, $pipes);
     $output = '';
     if (is_resource($process)) {

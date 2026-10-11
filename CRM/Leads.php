@@ -64,7 +64,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
             </svg>
           </button>
           <div class="top-user-profile" onclick="window.crmApp.showToast('Active User Session', '<?= htmlspecialchars($currUser['full_name'] ?? 'Mikhail Sorokin') ?> · <?= htmlspecialchars($currUser['role_name'] ?? 'VP Enterprise Sales') ?> · <?= htmlspecialchars($currUser['clearance_level'] ?? 'L4') ?> Clearance')">
-            <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDoVYMImYMOrFG-GImEjxCUij3YIwCjbxiUVg9-84NgNQUnx44rwhCbh4EVKLngwn6R5_hzNhRQkfTglEUz1jtP83GRGR8WbDdiIQblwg1fLV0mqc04y19GGKO27NGBpanqADz4vwO3ANY9KcZiOXBusZHAE_PU_FuuwKqChSLXXJsGo289bHOL3MFrKWoXXMoxnqoUIglg-NYsM99jg8cA3e1CeWhqlY0x7isLHdQfGbcFE_XiNNJg" alt="<?= htmlspecialchars($currUser['full_name'] ?? 'User') ?>" class="user-avatar-top" />
+            <img src="<?= vp_avatar_svg($currUser['full_name'] ?? 'User') ?>" alt="<?= htmlspecialchars($currUser['full_name'] ?? 'User') ?>" class="user-avatar-top" />
             <div class="user-details-top">
               <span class="user-name-top"><?= htmlspecialchars($currUser['full_name'] ?? 'Mikhail Sorokin') ?></span>
               <span class="user-role-top"><?= htmlspecialchars($currUser['role_name'] ?? 'VP Enterprise Sales') ?></span>
@@ -490,12 +490,12 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
                 <tr class="account-row account-row-tagged">
                   <td>
                     <div class="account-name-cell">
-                      <span class="account-name-title">Oleg Marchenko</span>
+                      <span class="account-name-title">Yerbol Sadykov</span>
                       <span class="account-name-sub">Lead Maintenance Tech · +7 (3812) 69-7000</span>
                     </div>
                   </td>
                   <td>
-                    <strong>Gazprom Neft Omsk Refinery</strong>
+                    <strong>Bogatyr Coal Mining</strong>
                     <div class="crm-text-muted-sm" >Catalytic Cracking Unit 43-103 · Омск</div>
                   </td>
                   <td>
@@ -514,7 +514,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
                     <span class="tier-badge tier-1">Qualification</span>
                   </td>
                   <td>
-                    <button class="btn btn-primary-amber btn-sm" onclick="window.crmApp.convertLeadToCustomer('Oleg Marchenko', 'Gazprom Neft Omsk Refinery', '$890,000.00')">
+                    <button class="btn btn-primary-amber btn-sm" onclick="window.crmApp.convertLeadToCustomer('Yerbol Sadykov', 'Bogatyr Coal Mining', '$890,000.00')">
                       <span>Convert to Customer</span>
                     </button>
                   </td>
@@ -545,7 +545,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
         <div class="form-group">
           <label class="form-label">Assign Enterprise Account Manager</label>
           <select class="form-select">
-            <option>Dr. Elena Rostova (Senior Technical Sales Lead)</option>
+            <option>Pavel Orlov (Sales Manager)</option>
             <option>Mikhail Sorokin (VP Enterprise Sales)</option>
             <option>Viktor Morozov (Key Account Director)</option>
           </select>

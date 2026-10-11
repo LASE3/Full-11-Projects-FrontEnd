@@ -210,8 +210,8 @@ require_once __DIR__ . '/customer_context.php';
                         </h1>
                         <p class="font-body-md text-body-md text-on-surface-variant max-w-3xl">
                             Organization credentials, user access privileges, API SCADA tokens, and operational
-                            communication preferences for <span class="text-primary font-medium">Severstal Metallurgy
-                                Plant #4</span>.
+                            communication preferences for <span class="text-primary font-medium"><?= htmlspecialchars($customer['company_name'] ?? 'Authorized Client') ?>
+                                </span>.
                         </p>
                     </div>
                     <!-- Global Actions -->
@@ -299,7 +299,7 @@ require_once __DIR__ . '/customer_context.php';
                                                 ACTIVE</span>
                                         </div>
                                         <h2 class="font-headline-md text-headline-sm text-primary font-semibold">
-                                            Severstal Engineering Division — Plant #4</h2>
+                                            <?= htmlspecialchars($customer['company_name'] ?? 'Enterprise Engineering Division') ?></h2>
                                     </div>
                                 </div>
                                 <div class="text-right">
@@ -326,9 +326,9 @@ require_once __DIR__ . '/customer_context.php';
                                         class="font-label-caps text-label-caps text-on-surface-variant uppercase">Facility
                                         Identifier</span>
                                     <span
-                                        class="font-data-mono-lg text-data-mono-lg text-primary mt-0.5">CHEREPOVETS-MET-04</span>
+                                        class="font-data-mono-lg text-data-mono-lg text-primary mt-0.5"><?= htmlspecialchars($customer['tax_id'] ?? 'VP-FAC-01') ?></span>
                                     <span class="font-technical-tag text-technical-tag text-outline mt-1">Grid Zone:
-                                        Severstal Industrial-E</span>
+                                        <?= htmlspecialchars($customer['sector'] ?? 'Industrial Sector') ?></span>
                                 </div>
                                 <div class="flex flex-col p-unit-sm rounded bg-surface-container-low">
                                     <span
@@ -346,8 +346,7 @@ require_once __DIR__ . '/customer_context.php';
                                 <div
                                     class="flex items-center gap-unit-sm p-unit-sm rounded bg-surface-container-low text-on-surface font-body-md text-body-md">
                                     <span class="material-symbols-outlined text-outline text-lg">pin_drop</span>
-                                    <span class="grow font-mono text-body-sm text-on-surface">Mira Street 30,
-                                        Cherepovets, Vologda Region, 162600, Russian Federation</span>
+                                    <span class="grow font-mono text-body-sm text-on-surface"><?= htmlspecialchars($customer['headquarters'] ?? 'Registered Industrial Facility Location') ?></span>
                                     <span
                                         class="px-2 py-0.5 rounded bg-surface text-outline font-technical-tag text-technical-tag">VERIFIED
                                         BY VOSTOKPRIBOR CADASTRE</span>
@@ -407,7 +406,7 @@ require_once __DIR__ . '/customer_context.php';
                                         class="flex items-center justify-between p-unit-sm rounded bg-surface-container-low">
                                         <span
                                             class="font-data-mono-md text-data-mono-md text-primary font-semibold">VP-GW-09
-                                            (Cherepovets Unit #2)</span>
+                                            (Facility Unit #1)</span>
                                         <span class="material-symbols-outlined text-outline text-base">router</span>
                                     </div>
                                     <span class="font-technical-tag text-technical-tag text-outline">MAC:
@@ -470,7 +469,7 @@ require_once __DIR__ . '/customer_context.php';
                                     <div class="flex items-center gap-unit-sm p-unit-sm rounded bg-surface-container-low">
                                         <span
                                             class="font-data-mono-md text-body-sm text-primary grow overflow-hidden text-ellipsis whitespace-nowrap">
-                                            https://scada-core.cherepovets.severstal.ru/vostokpribor/v1/telemetry
+                                            https://telemetry.vostokpribor.local/v1/stream
                                         </span>
                                         <span
                                             class="px-2 py-0.5 rounded bg-surface text-on-surface-variant font-technical-tag text-technical-tag shrink-0">TLS
@@ -496,7 +495,7 @@ require_once __DIR__ . '/customer_context.php';
                                             Incident Escalation &amp; Notification Preferences</h2>
                                     </div>
                                 </div>
-                                <span class="font-data-mono-md text-technical-tag text-outline">CHEREPOVETS CENTRAL
+                                <span class="font-data-mono-md text-technical-tag text-outline">PRIMARY FACILITY
                                     DISPATCH MATRIX</span>
                             </div>
                             <div class="flex flex-col gap-unit-md">
@@ -521,7 +520,7 @@ require_once __DIR__ . '/customer_context.php';
                                                 within &lt; 15 minutes.
                                             </p>
                                             <div class="font-data-mono-md text-technical-tag text-outline mt-1">Targets:
-                                                +7 (8202) 53-88-01, +7 (8202) 53-88-02, dispatch@severstal-plant4.local
+                                                +7 (8202) 53-88-01, +7 (8202) 53-88-02, <?= htmlspecialchars($customer['primary_contact_email'] ?? 'dispatch@enterprise.local') ?>
                                             </div>
                                         </div>
                                     </div>
@@ -581,11 +580,10 @@ require_once __DIR__ . '/customer_context.php';
                                                     DIADOC ROUTE</span>
                                             </div>
                                             <p class="font-body-md text-body-sm text-on-surface-variant mt-0.5">
-                                                Transmit legally binding electronic documentation straight to Severstal
-                                                Accounts Payable and Russian State EDI network.
+                                                Transmit legally binding electronic documentation straight to Client Accounts Payable and Russian State EDI network.
                                             </p>
                                             <div class="font-data-mono-md text-technical-tag text-outline mt-1">
-                                                Operator: SBIS / Tensor (Severstal Enterprise Gateway)</div>
+                                                Operator: SBIS / Tensor (Enterprise Clearing Gateway)</div>
                                         </div>
                                     </div>
                                     <div class="shrink-0 pt-1">
@@ -647,8 +645,7 @@ require_once __DIR__ . '/customer_context.php';
                                             </td>
                                             <td class="py-2.5 px-unit-sm text-on-surface">Workstation Linux x86_64 /
                                                 Chrome Ent. 126</td>
-                                            <td class="py-2.5 px-unit-sm text-on-surface-variant">Cherepovets (Control
-                                                Room #2)</td>
+                                            <td class="py-2.5 px-unit-sm text-on-surface-variant">Primary Facility (Control Room #1)</td>
                                             <td
                                                 class="py-2.5 px-unit-sm font-data-mono-md text-technical-tag text-secondary">
                                                 FIPS Token + GOST Cert</td>
@@ -684,7 +681,7 @@ require_once __DIR__ . '/customer_context.php';
                                             </td>
                                             <td class="py-2.5 px-unit-sm text-on-surface">Admin Terminal / OpenSSH v9.4
                                             </td>
-                                            <td class="py-2.5 px-unit-sm text-on-surface-variant">Severstal HQ, Moscow
+                                            <td class="py-2.5 px-unit-sm text-on-surface-variant">Corporate Gateway Node
                                             </td>
                                             <td
                                                 class="py-2.5 px-unit-sm font-data-mono-md text-technical-tag text-outline">
@@ -699,7 +696,7 @@ require_once __DIR__ . '/customer_context.php';
                     </div>
                     <!-- Right Pillar: Operator Dossier & Security Credentials (4 Columns) -->
                     <div class="col-span-12 lg:col-span-4 flex flex-col gap-unit-lg">
-                        <!-- SECTION 5: Authenticated User Profile (Alexey R. Danilov) -->
+                        <!-- SECTION 5: Authenticated User Profile  -->
                         <div class="rounded-lg bg-surface-container-lowest p-unit-lg shadow-sm flex flex-col gap-unit-base"
                             id="panel-user">
                             <div class="flex items-center justify-between pb-unit-sm border-b border-surface-container">
@@ -773,7 +770,7 @@ require_once __DIR__ . '/customer_context.php';
                                         <span class="truncate">Crypto-Pro CSP GOST R 34.10-2012</span>
                                     </div>
                                     <span class="font-technical-tag text-technical-tag text-outline">Valid until Dec
-                                        2025 • Cert #RU-77-9844-01</span>
+                                        2025 • Cert #VP-EDS-9844-01</span>
                                 </div>
                             </div>
                             <button onclick="requestClearanceElevation()"
@@ -818,7 +815,7 @@ require_once __DIR__ . '/customer_context.php';
                                 Need Emergency Metrology Support?
                             </div>
                             <p class="font-body-sm text-body-sm text-primary-fixed-dim">
-                                Direct engineering intervention for Severstal Blast Furnace #4 is available 24/7/365 via
+                                Direct engineering intervention for client facilities is available 24/7/365 via
                                 encrypted line.
                             </p>
                             <a class="mt-unit-xs inline-flex items-center justify-between p-unit-sm rounded bg-surface-container-lowest/10 text-tertiary-fixed hover:bg-surface-container-lowest/20 transition-colors font-data-mono-md text-body-sm cursor-pointer"

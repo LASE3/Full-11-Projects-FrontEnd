@@ -60,7 +60,7 @@ if ($count < 5) {
     $seedNotifications = [
         [
             'system_code' => 'CRM',
-            'title' => 'Opportunity Won: Severstal PJSC',
+            'title' => 'Opportunity Won: Aral Geomatics Group',
             'message' => 'Deal #OPP-2026-089 valued at $2,450,000 transitioned to Closed / Won in Sales Pipeline.',
             'related_entity_type' => 'Opportunity',
             'related_entity_id' => 'OPP-2026-089',

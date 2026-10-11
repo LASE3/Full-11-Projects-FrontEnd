@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * Class 4: Employee Intranet - Staff Directory API
  * Location: Employee Intranet/api/directory.php
@@ -20,6 +22,10 @@ $pdo = getDbConnection();
 $lang = $_GET['lang'] ?? 'en';
 $deptFilter = trim($_GET['dept'] ?? '');
 $searchQuery = trim($_GET['query'] ?? '');
+
+$callerDept = strtoupper(trim((string)($_vp_user['department_code'] ?? '')));
+$callerClearance = strtoupper(trim((string)($_vp_user['clearance_level'] ?? 'L1')));
+$isHrOrAdmin = isSuperAdmin($_vp_user) || ($callerDept === 'HRA') || ($callerClearance === 'L4');
 
 try {
     $sql = "
@@ -59,12 +65,27 @@ try {
     $directory = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     foreach ($directory as &$emp) {
-        $emp['department_display'] = I18n::translate($emp['department_code'], $lang);
-        $emp['status_display']     = I18n::translate($emp['employment_status'], $lang);
+        $emp['department_display'] = I18n::translate((string)$emp['department_code'], $lang);
+        $emp['phone'] = '+7 (812) 555-0100'; // Default VOSTOKPRIBOR PBX
+        $emp['photo'] = null; // Dynamically generated initials avatar in UI
+
+        // Data Isolation: Mask sensitive fields for non-HR / non-admin users
+        if (!$isHrOrAdmin) {
+            unset(
+                $emp['clearance_level'],
+                $emp['hire_date'],
+                $emp['employment_status'],
+                $emp['status_display'],
+                $emp['manager_name']
+            );
+        } else {
+            $emp['status_display'] = I18n::translate((string)$emp['employment_status'], $lang);
+        }
     }
+    unset($emp);
 
     Response::success($directory, "Staff directory loaded", 200, ['total' => count($directory)]);
 } catch (Exception $e) {
     error_log("Failed to load directory: " . $e->getMessage());
-        Response::error("Failed to load directory. Please try again later.", 500);
+    Response::error("Failed to load directory. Please try again later.", 500);
 }

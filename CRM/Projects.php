@@ -64,7 +64,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
             </svg>
           </button>
           <div class="top-user-profile" onclick="window.crmApp.showToast('Active User Session', '<?= htmlspecialchars($currUser['full_name'] ?? 'Mikhail Sorokin') ?> · <?= htmlspecialchars($currUser['role_name'] ?? 'VP Enterprise Sales') ?> · <?= htmlspecialchars($currUser['clearance_level'] ?? 'L4') ?> Clearance')">
-            <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDoVYMImYMOrFG-GImEjxCUij3YIwCjbxiUVg9-84NgNQUnx44rwhCbh4EVKLngwn6R5_hzNhRQkfTglEUz1jtP83GRGR8WbDdiIQblwg1fLV0mqc04y19GGKO27NGBpanqADz4vwO3ANY9KcZiOXBusZHAE_PU_FuuwKqChSLXXJsGo289bHOL3MFrKWoXXMoxnqoUIglg-NYsM99jg8cA3e1CeWhqlY0x7isLHdQfGbcFE_XiNNJg" alt="<?= htmlspecialchars($currUser['full_name'] ?? 'User') ?>" class="user-avatar-top" />
+            <img src="<?= vp_avatar_svg($currUser['full_name'] ?? 'User') ?>" alt="<?= htmlspecialchars($currUser['full_name'] ?? 'User') ?>" class="user-avatar-top" />
             <div class="user-details-top">
               <span class="user-name-top"><?= htmlspecialchars($currUser['full_name'] ?? 'Mikhail Sorokin') ?></span>
               <span class="user-role-top"><?= htmlspecialchars($currUser['role_name'] ?? 'VP Enterprise Sales') ?></span>
@@ -371,8 +371,8 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
                     <strong class="crm-mono-indigo-13" >PRJ-VP-7721</strong>
                   </td>
                   <td>
-                    <strong>Severstal Metallurgy PJSC</strong>
-                    <div class="crm-text-secondary-11" >Blast Furnace #5 Automation &amp; Gas Analysis Instrumentation (Cherepovets)</div>
+                    <strong>Aral Geomatics Group</strong>
+                    <div class="crm-text-secondary-11" >Blast Furnace #5 Automation &amp; Gas Analysis Instrumentation (Almaty)</div>
                   </td>
                   <td>
                     <div class="crm-flex-gap-sm" >
@@ -385,7 +385,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
                   <td>
                     <strong class="crm-mono-navy-13" >$1,850,000.00</strong>
                   </td>
-                  <td>Dr. Elena Rostova</td>
+                  <td>Pavel Orlov</td>
                   <td><span class="crm-mono-semibold-11" >Nov 28, 2024</span></td>
                   <td>
                     <button class="btn btn-outline btn-sm" onclick="window.location.href='CustomerDetail.php'">Inspect →</button>
@@ -398,7 +398,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
                     <strong class="crm-mono-indigo-13" >PRJ-VP-7804</strong>
                   </td>
                   <td>
-                    <strong>Severstal Hot Strip Mill #2</strong>
+                    <strong>BaltNord Process Systems</strong>
                     <div class="crm-text-secondary-11" >Hydraulic Pressure Sensor Telemetry Retrofit</div>
                   </td>
                   <td>
@@ -425,7 +425,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
                     <strong class="crm-mono-indigo-13" >PRJ-VP-6610</strong>
                   </td>
                   <td>
-                    <strong>Norilsk Nickel Mining (Talnakh)</strong>
+                    <strong>Steppe Mining Technologies</strong>
                     <div class="crm-text-secondary-11" >Talnakh Concentrator Flotation Telemetry Grid</div>
                   </td>
                   <td>
@@ -442,7 +442,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
                   <td>Mikhail Sorokin</td>
                   <td><span class="crm-mono-semibold-11" >Dec 18, 2024</span></td>
                   <td>
-                    <button class="btn btn-outline btn-sm" onclick="window.crmApp.showToast('Project View', 'Opening Norilsk Nickel Talnakh Blueprint.')">Inspect →</button>
+                    <button class="btn btn-outline btn-sm" onclick="window.crmApp.showToast('Project View', 'Opening Karaganda Nickel Talnakh Blueprint.')">Inspect →</button>
                   </td>
                 </tr>
 
@@ -452,7 +452,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
                     <strong class="crm-mono-indigo-13" >PRJ-VP-8902</strong>
                   </td>
                   <td>
-                    <strong>Severstal Casting Bay #3</strong>
+                    <strong>BaltNord Casting Bay #3</strong>
                     <div class="crm-text-secondary-11" >Continuous Casting Machine #3 Optical Thickness Gauges</div>
                   </td>
                   <td>

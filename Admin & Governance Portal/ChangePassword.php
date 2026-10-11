@@ -84,9 +84,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $hash = password_hash($newPass, PASSWORD_BCRYPT, ['cost' => 12]);
             if ($isCustomer) {
                 $pdo->prepare("UPDATE customer_accounts SET password_hash = ?, must_change_password = 0 WHERE cus_id = ?")->execute([$hash, $userId]);
+                // Invalidate all other active customer sessions
+                $pdo->prepare("UPDATE user_sessions SET status = 'Revoked', ended_at = CURRENT_TIMESTAMP WHERE customer_account_id = ? AND status = 'Active'")->execute([$account['account_id']]);
                 AuditLogger::logAction(null, $userId, 'Customer Portal', 'CUS', 'PASSWORD_CHANGED', 'customer_accounts', (string)$account['account_id']);
             } else {
                 $pdo->prepare("UPDATE employee_accounts SET password_hash = ?, must_change_password = 0 WHERE emp_id = ?")->execute([$hash, $userId]);
+                // Invalidate all other active employee sessions
+                $pdo->prepare("UPDATE user_sessions SET status = 'Revoked', ended_at = CURRENT_TIMESTAMP WHERE employee_account_id = ? AND status = 'Active'")->execute([$account['account_id']]);
                 AuditLogger::logAction($userId, null, 'Governance', 'ADM', 'PASSWORD_CHANGED', 'employee_accounts', (string)$account['account_id']);
             }
 

@@ -779,8 +779,7 @@ window.CURRENT_USER = <?= json_encode($currUser, JSON_HEX_TAG | JSON_HEX_APOS | 
                                     </div>
                                     <div class="py-2 flex justify-between">
                                         <span class="text-secondary">Physical Placement:</span>
-                                        <span id="detailPlacement" class="text-primary text-right font-medium">Cherepovets Plant, BF
-                                            #5,<br />Mezzanine Level 2, Bay C</span>
+                                        <span id="detailPlacement" class="text-primary text-right font-medium">Primary Facility, Unit #1, Bay A</span>
                                     </div>
                                     <div class="py-2 flex justify-between">
                                         <span class="text-secondary">Linked Contract / Project:</span>

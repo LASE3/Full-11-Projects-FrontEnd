@@ -29,7 +29,7 @@
         "Ingress Protection": "IP67 / NEMA 4X Hermetic Seal",
         Certification: "GOST R 8.568, ISO/IEC 17025 Metrology Verified",
       },
-      primaryApplication: "Severstal Blast Furnace #4, Steppe Mining Smelter",
+      primaryApplication: "Aral Metrology Unit #1, Steppe Mining Smelter",
     },
     "PROD-1002": {
       id: "PROD-1002",
@@ -128,7 +128,7 @@
         "Classification Engine": "On-board FPGA Neural Inference Model",
         "Lighting Subsystem": "Custom High-Flux Uniform LED Strobes (>1M Lux)",
       },
-      primaryApplication: "Severstal Metallurgy Plant #4, Daugava Optical",
+      primaryApplication: "BaltNord Automation Plant #2, Daugava Optical",
     },
     "PROD-1007": {
       id: "PROD-1007",
@@ -150,7 +150,7 @@
           "Assigned Senior Systems Engineer (e.g. Viktor Morozov)",
       },
       primaryApplication:
-        "Tier-1 Industrial Accounts (Severstal, Steppe Mining)",
+        "Tier-1 Industrial Accounts (Aral Geomatics, Steppe Mining)",
     },
     "PROD-1008": {
       id: "PROD-1008",

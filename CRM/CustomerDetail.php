@@ -1,8 +1,33 @@
 <?php
 require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/../includes/auth_guard.php';
+require_once __DIR__ . '/../includes/authorize.php';
 requireAuth('CRM');
 $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role_name' => 'VP Enterprise Sales', 'clearance_level' => 'L4'];
+
+$pdo = getDbConnection();
+$cusId = trim((string)($_GET['id'] ?? 'CUS-1001'));
+$stmt = $pdo->prepare("
+    SELECT c.*, e.full_name AS account_manager_name
+    FROM customers c
+    LEFT JOIN employees e ON c.account_manager_emp_id = e.emp_id
+    WHERE c.cus_id = ?
+");
+$stmt->execute([$cusId]);
+$customer = $stmt->fetch(PDO::FETCH_ASSOC);
+
+if (!$customer) {
+    $c1 = $pdo->query("SELECT c.*, e.full_name AS account_manager_name FROM customers c LEFT JOIN employees e ON c.account_manager_emp_id = e.emp_id LIMIT 1")->fetch(PDO::FETCH_ASSOC);
+    $customer = $c1 ?: ['cus_id' => 'CUS-1001', 'company_name' => 'Aral Geomatics Group', 'sector' => 'Geomatics'];
+}
+
+try {
+    vp_authorize($currUser, 'crm:read', $customer);
+} catch (VpAuthorizationException $ex) {
+    http_response_code($ex->getCode());
+    echo json_encode(['error' => $ex->getMessage()]);
+    exit;
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -10,7 +35,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>VOSTOKPRIBOR CRM · Severstal Metallurgy PJSC</title>
+  <title>VOSTOKPRIBOR CRM · <?= htmlspecialchars($customer['company_name']) ?></title>
   <link rel="stylesheet" href="css/style.css">
 </head>
 
@@ -64,7 +89,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
             </svg>
           </button>
           <div class="top-user-profile" onclick="window.crmApp.showToast('Active User Session', '<?= htmlspecialchars($currUser['full_name'] ?? 'Mikhail Sorokin') ?> · <?= htmlspecialchars($currUser['role_name'] ?? 'VP Enterprise Sales') ?> · <?= htmlspecialchars($currUser['clearance_level'] ?? 'L4') ?> Clearance')">
-            <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDoVYMImYMOrFG-GImEjxCUij3YIwCjbxiUVg9-84NgNQUnx44rwhCbh4EVKLngwn6R5_hzNhRQkfTglEUz1jtP83GRGR8WbDdiIQblwg1fLV0mqc04y19GGKO27NGBpanqADz4vwO3ANY9KcZiOXBusZHAE_PU_FuuwKqChSLXXJsGo289bHOL3MFrKWoXXMoxnqoUIglg-NYsM99jg8cA3e1CeWhqlY0x7isLHdQfGbcFE_XiNNJg" alt="<?= htmlspecialchars($currUser['full_name'] ?? 'User') ?>" class="user-avatar-top" />
+            <img src="<?= vp_avatar_svg($currUser['full_name'] ?? 'User') ?>" alt="<?= htmlspecialchars($currUser['full_name'] ?? 'User') ?>" class="user-avatar-top" />
             <div class="user-details-top">
               <span class="user-name-top"><?= htmlspecialchars($currUser['full_name'] ?? 'Mikhail Sorokin') ?></span>
               <span class="user-role-top"><?= htmlspecialchars($currUser['role_name'] ?? 'VP Enterprise Sales') ?></span>
@@ -263,13 +288,13 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
                 <span class="breadcrumb-separator">/</span>
                 <a class="crm-text-indigo" href="Customers.php" >Customers Directory</a>
                 <span class="breadcrumb-separator">/</span>
-                <span class="breadcrumb-current">Severstal Metallurgy PJSC (#VP-90214)</span>
+                <span class="breadcrumb-current"><?= htmlspecialchars($customer['company_name']) ?> (#VP-90214)</span>
               </div>
               <h1 class="page-title">Enterprise Account Dossier</h1>
               <p class="page-subtitle">Strategic Key Account · Unified Telemetry &amp; SLA Contracts Management</p>
             </div>
             <div class="page-header-actions">
-              <button class="btn btn-outline" onclick="window.crmApp.showToast('Dossier Export', 'Severstal account dossier generated with signed audit stamps.')">
+              <button class="btn btn-outline" onclick="window.crmApp.showToast('Dossier Export', 'Account dossier generated with signed audit stamps.')">
                 <span>📄 Export Complete Dossier</span>
               </button>
               <button class="btn btn-primary-amber" onclick="window.crmApp.openModal('modal-new-opportunity')">
@@ -283,15 +308,15 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
             <div class="customer-header-top-row">
               <div>
                 <div class="crm-flex-gap-md" >
-                  <h2 class="customer-company-title">Severstal Metallurgy PJSC</h2>
+                  <h2 class="customer-company-title"><?= htmlspecialchars($customer['company_name']) ?></h2>
                   <span class="tier-badge strategic">Strategic Tier-1 Account</span>
                   <span class="tier-badge crm-badge-success-outline" >● SLA Active</span>
                 </div>
                 <div class="customer-meta-pills">
-                  <span class="meta-pill">🏭 Sector: Ferrous Metallurgy &amp; Blast Furnace Operations</span>
-                  <span class="meta-pill">📍 Headquarters: Cherepovets, Vologda Oblast</span>
-                  <span class="meta-pill">🔏 Master Tax Code: INN 3528000597</span>
-                  <span class="meta-pill crm-mono" >ID: #VP-90214</span>
+                  <span class="meta-pill">🏭 Sector: <?= htmlspecialchars($customer['sector'] ?? 'Industrial Sector') ?></span>
+                  <span class="meta-pill">📍 Headquarters: <?= htmlspecialchars($customer['headquarters'] ?? 'Primary Facility Location') ?></span>
+                  <span class="meta-pill">🔏 Master Tax Code: <?= htmlspecialchars($customer['tax_id'] ?? 'TAX-ID-REG') ?></span>
+                  <span class="meta-pill crm-mono" >ID: #<?= htmlspecialchars($customer['cus_id']) ?></span>
                 </div>
               </div>
               <div class="crm-text-right" >
@@ -305,18 +330,18 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
             <div class="customer-info-grid">
               <div class="customer-info-col">
                 <span class="info-label">Lead Account Manager</span>
-                <span class="info-val">Dr. Elena Rostova</span>
+                <span class="info-val"><?= htmlspecialchars($customer['account_manager_name'] ?? 'Pavel Orlov') ?></span>
                 <span class="crm-text-muted-sm" >Senior Sales Director</span>
               </div>
               <div class="customer-info-col">
                 <span class="info-label">Customer Executive Contact</span>
-                <span class="info-val">P. V. Cherepanov</span>
+                <span class="info-val"><?= htmlspecialchars($customer['primary_contact_name'] ?? 'Primary Representative') ?></span>
                 <span class="crm-text-muted-sm" >VP Procurement &amp; Automation</span>
               </div>
               <div class="customer-info-col">
                 <span class="info-label">Direct Secure Channel</span>
-                <span class="info-val info-val-mono">+7 (8202) 53-0900</span>
-                <span class="crm-text-muted-sm" >procurement@severstal.com</span>
+                <span class="info-val info-val-mono"><?= htmlspecialchars($customer['phone'] ?? '+7 727 344-9001') ?></span>
+                <span class="crm-text-muted-sm" ><?= htmlspecialchars($customer['primary_contact_email'] ?? 'procurement@client.local') ?></span>
               </div>
               <div class="customer-info-col">
                 <span class="info-label">Client Health Score</span>
@@ -371,7 +396,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
                       <div>
                         <div class="crm-mono-indigo-11" >PRJ-VP-7721</div>
                         <div class="crm-title-13" >Blast Furnace #5 Automation &amp; Gas Analysis</div>
-                        <div class="crm-meta-subtext" >Facility: Cherepovets Ironmaking Plant #4</div>
+                        <div class="crm-meta-subtext" >Facility: Primary Ironmaking Facility #1</div>
                       </div>
                       <span class="tier-badge crm-badge-warning-bold" >Execution (72%)</span>
                     </div>
@@ -387,7 +412,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
                       <div>
                         <div class="crm-mono-info-11" >PRJ-VP-7804</div>
                         <div class="crm-title-13" >Hot Strip Mill #2 Hydraulic Pressure Sensor Telemetry</div>
-                        <div class="crm-meta-subtext" >Facility: Rolling Mill Bay 2 · Cherepovets</div>
+                        <div class="crm-meta-subtext" >Facility: Rolling Mill Bay 2</div>
                       </div>
                       <span class="tier-badge crm-badge-info-bold" >Integration (45%)</span>
                     </div>
@@ -494,7 +519,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
           <!-- TAB 2: PROJECTS PANEL -->
           <div id="tab-panel-projects" class="tab-content-panel">
             <div class="crm-card">
-              <h3 class="card-title crm-mb-4" >Complete Severstal Engineering Projects Matrix</h3>
+              <h3 class="card-title crm-mb-4" >Complete Engineering Projects Matrix</h3>
               <table class="accounts-table">
                 <thead>
                   <tr>
@@ -510,10 +535,10 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
                   <tr class="account-row account-row-tagged">
                     <td><strong class="crm-mono-indigo" >PRJ-VP-7721</strong></td>
                     <td>Blast Furnace #5 Automation &amp; Gas Analysis Instrumentation</td>
-                    <td>Cherepovets Plant #4</td>
+                    <td>Almaty Metrology Hub</td>
                     <td><span class="tier-badge crm-badge-warning" >Execution (72%)</span></td>
                     <td><strong class="crm-mono" >$1,850,000.00</strong></td>
-                    <td>Dr. Elena Rostova</td>
+                    <td><?= htmlspecialchars($customer['account_manager_name'] ?? 'Pavel Orlov') ?></td>
                   </tr>
                   <tr class="account-row account-row-tagged">
                     <td><strong class="crm-mono-indigo" >PRJ-VP-7804</strong></td>
@@ -607,7 +632,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
           <!-- TAB 5: SUPPORT HISTORY PANEL -->
           <div id="tab-panel-support" class="tab-content-panel">
             <div class="crm-card">
-              <h3 class="card-title crm-mb-4" >Service Desk &amp; Field Incident History (Severstal #VP-90214)</h3>
+              <h3 class="card-title crm-mb-4" >Service Desk &amp; Field Incident History (Client Incident Log)</h3>
               <div class="activity-feed-list">
                 <div class="activity-item">
                   <div class="activity-icon-container deal crm-badge-danger-soft" >⚠️</div>
@@ -638,7 +663,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
   <div id="modal-new-opportunity" class="modal-backdrop">
     <div class="modal-card">
       <div class="modal-header">
-        <h3 class="modal-title">+ Log New Industrial Opportunity for Severstal</h3>
+        <h3 class="modal-title">+ Log New Industrial Opportunity for Client</h3>
         <button class="icon-button" onclick="window.crmApp.closeModal('modal-new-opportunity')">✕</button>
       </div>
       <form id="form-new-opportunity">
@@ -652,7 +677,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
             <div class="form-group">
               <label class="form-label" for="new-opp-client">Client Enterprise Account</label>
               <select id="new-opp-client" class="form-select" required>
-                <option value="Severstal Metallurgy PJSC" selected>Severstal Metallurgy PJSC</option>
+                <option value="<?= htmlspecialchars($customer['company_name']) ?>" selected><?= htmlspecialchars($customer['company_name']) ?></option>
               </select>
             </div>
 

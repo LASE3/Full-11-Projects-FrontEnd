@@ -38,3 +38,10 @@ tests/*.html
 # Backup SQL dumps (keep migrations, exclude generated dumps)
 DataBase/dump_*.sql
 DataBase/*_backup.sql
+
+# Seeded credentials
+storage/credentials/
+storage/credentials/*
+
+# Archived mock files
+_trash/

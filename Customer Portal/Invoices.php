@@ -270,8 +270,8 @@ if ($isSuperAdmin || $cusId) {
                         </div>
                         <p class="font-body-md text-body-md text-on-surface-variant">
                             Corporate accounts payable, milestone disbursements, and VAT tax invoices for <span
-                                class="font-semibold text-on-surface">Severstal Metallurgy Plant #4</span> (Entity
-                            ID: <span class="font-data-mono-md text-data-mono-md">RU-SVR-77401</span>).
+                                class="font-semibold text-on-surface"><?= htmlspecialchars($customer['company_name'] ?? 'Authorized Client') ?></span> (Entity
+                            ID: <span class="font-data-mono-md text-data-mono-md"><?= htmlspecialchars($customer['tax_id'] ?? 'VP-CORP-01') ?></span>).
                         </p>
                     </div>
                     <div class="flex flex-wrap items-center gap-unit-sm">
@@ -792,8 +792,7 @@ if ($isSuperAdmin || $cusId) {
                                 <span
                                     class="font-label-caps text-label-caps text-on-surface-variant uppercase">Billing
                                     &amp; Treasury Lead</span>
-                                <div class="font-headline-sm text-body-md font-bold text-on-surface">Elena V.
-                                    Rostova</div>
+                                <div class="font-headline-sm text-body-md font-bold text-on-surface"><?= htmlspecialchars($customer['account_manager_name'] ?? 'Commercial Liaison') ?></div>
                                 <div class="font-technical-tag text-technical-tag text-on-surface-variant">Direct
                                     Desk: Plant #4 Commercial Liaison</div>
                             </div>
@@ -804,7 +803,7 @@ if ($isSuperAdmin || $cusId) {
                                 </div>
                                 <div class="flex items-center justify-between">
                                     <span class="text-on-surface-variant">Email:</span>
-                                    <span class="text-on-surface font-medium">e.rostova@vostokpribor.ru</span>
+                                    <span class="text-on-surface font-medium">finance@vostokpribor.local</span>
                                 </div>
                             </div>
                         </div>

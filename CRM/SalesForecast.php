@@ -64,7 +64,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
             </svg>
           </button>
           <div class="top-user-profile" onclick="window.crmApp.showToast('Active User Session', '<?= htmlspecialchars($currUser['full_name'] ?? 'Mikhail Sorokin') ?> · <?= htmlspecialchars($currUser['role_name'] ?? 'VP Enterprise Sales') ?> · <?= htmlspecialchars($currUser['clearance_level'] ?? 'L4') ?> Clearance')">
-            <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDoVYMImYMOrFG-GImEjxCUij3YIwCjbxiUVg9-84NgNQUnx44rwhCbh4EVKLngwn6R5_hzNhRQkfTglEUz1jtP83GRGR8WbDdiIQblwg1fLV0mqc04y19GGKO27NGBpanqADz4vwO3ANY9KcZiOXBusZHAE_PU_FuuwKqChSLXXJsGo289bHOL3MFrKWoXXMoxnqoUIglg-NYsM99jg8cA3e1CeWhqlY0x7isLHdQfGbcFE_XiNNJg" alt="<?= htmlspecialchars($currUser['full_name'] ?? 'User') ?>" class="user-avatar-top" />
+            <img src="<?= vp_avatar_svg($currUser['full_name'] ?? 'User') ?>" alt="<?= htmlspecialchars($currUser['full_name'] ?? 'User') ?>" class="user-avatar-top" />
             <div class="user-details-top">
               <span class="user-name-top"><?= htmlspecialchars($currUser['full_name'] ?? 'Mikhail Sorokin') ?></span>
               <span class="user-role-top"><?= htmlspecialchars($currUser['role_name'] ?? 'VP Enterprise Sales') ?></span>
@@ -422,14 +422,14 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
                 <tr class="account-row account-row-tagged">
                   <td>
                     <div class="crm-flex-gap-65" >
-                      <img class="crm-avatar-32" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDZ9P2QbrRU2xObdFOu9aNA-iyUeUZ6UvBFT0l0KnTu1MKDRX0c84gVy9VkzAjtaXzw0JcEGYWbxd3RDqaIh7AyD6h4njnD-XTgLNnu6wa-UaOplKQCaWIDACINffaFufLMrEaDfvX7J3bqgPCT5b9oY66PI4s0dfAwRgA_V8p0oKzRnCAU0tihwWPq8xzU4FbT1iUoh0cBzt9pq7gPkXJVjA32ZA7kWXQvcLq090IXW-8Ihh_efhmM"  alt="Elena" />
+                      <img class="crm-avatar-32" src="<?= vp_avatar_svg($currUser['full_name'] ?? 'User') ?>"  alt="Elena" />
                       <div>
-                        <strong>Dr. Elena Rostova</strong>
+                        <strong>Sara Lindholm</strong>
                         <div class="crm-text-muted-sm" >Lead Technical Director</div>
                       </div>
                     </div>
                   </td>
-                  <td>Severstal Metallurgy PJSC, PhosAgro Chemical</td>
+                  <td>Aral Geomatics Group, BaltNord Process</td>
                   <td><strong class="crm-mono-navy" >$6,850,000.00</strong></td>
                   <td><span class="crm-mono-muted" >$6,000,000.00</span></td>
                   <td>
@@ -446,14 +446,14 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
                 <tr class="account-row account-row-tagged">
                   <td>
                     <div class="crm-flex-gap-65" >
-                      <img class="crm-avatar-32" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDoVYMImYMOrFG-GImEjxCUij3YIwCjbxiUVg9-84NgNQUnx44rwhCbh4EVKLngwn6R5_hzNhRQkfTglEUz1jtP83GRGR8WbDdiIQblwg1fLV0mqc04y19GGKO27NGBpanqADz4vwO3ANY9KcZiOXBusZHAE_PU_FuuwKqChSLXXJsGo289bHOL3MFrKWoXXMoxnqoUIglg-NYsM99jg8cA3e1CeWhqlY0x7isLHdQfGbcFE_XiNNJg"  alt="Mikhail" />
+                      <img class="crm-avatar-32" src="<?= vp_avatar_svg($currUser['full_name'] ?? 'User') ?>"  alt="Mikhail" />
                       <div>
                         <strong>Mikhail Sorokin</strong>
                         <div class="crm-text-muted-sm" >VP Enterprise Sales</div>
                       </div>
                     </div>
                   </td>
-                  <td>Norilsk Nickel Mining, Gazprom Neft Omsk</td>
+                  <td>Steppe Mining Technologies, Daugava Optical</td>
                   <td><strong class="crm-mono-navy" >$8,400,000.00</strong></td>
                   <td><span class="crm-mono-muted" >$8,000,000.00</span></td>
                   <td>
@@ -470,7 +470,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
                 <tr class="account-row account-row-tagged">
                   <td>
                     <div class="crm-flex-gap-65" >
-                      <img class="crm-avatar-32" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDoVYMImYMOrFG-GImEjxCUij3YIwCjbxiUVg9-84NgNQUnx44rwhCbh4EVKLngwn6R5_hzNhRQkfTglEUz1jtP83GRGR8WbDdiIQblwg1fLV0mqc04y19GGKO27NGBpanqADz4vwO3ANY9KcZiOXBusZHAE_PU_FuuwKqChSLXXJsGo289bHOL3MFrKWoXXMoxnqoUIglg-NYsM99jg8cA3e1CeWhqlY0x7isLHdQfGbcFE_XiNNJg"  alt="Viktor" />
+                      <img class="crm-avatar-32" src="<?= vp_avatar_svg($currUser['full_name'] ?? 'User') ?>"  alt="Viktor" />
                       <div>
                         <strong>Viktor Morozov</strong>
                         <div class="crm-text-muted-sm" >Key Account Lead</div>

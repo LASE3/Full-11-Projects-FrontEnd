@@ -286,9 +286,7 @@ $activeCount = count($projects);
                             <div class="relative">
                                 <select
                                     class="appearance-none bg-surface-container-low text-on-surface font-technical-tag text-technical-tag pl-3 pr-8 py-2 rounded focus:outline-none cursor-pointer">
-                                    <option selected="">FACILITY: <?= htmlspecialchars($customer['company_name'] ?? 'CHEREPOVETS PLANT #4') ?></option>
-                                    <option>FACILITY: CHEREPOVETS SINTER PLANT</option>
-                                    <option>FACILITY: KOLPINO SHEET MILL</option>
+                                    <option selected="">FACILITY: <?= htmlspecialchars($customer['company_name'] ?? 'PRIMARY FACILITY') ?></option>
                                 </select>
                                 <span
                                     class="material-symbols-outlined absolute right-2 top-2.5 text-xs text-outline pointer-events-none">expand_more</span>
@@ -343,7 +341,7 @@ $activeCount = count($projects);
                                         $pStatus = htmlspecialchars($p['status'] ?? 'Active');
                                         $pBudget = '$' . number_format((float)($p['budget'] ?? 0), 2);
                                         $pProgress = (int)($p['progress_percent'] ?? 50);
-                                        $pManager = htmlspecialchars($p['project_manager_name'] ?? 'Dr. Elena Rostova');
+                                        $pManager = htmlspecialchars($p['project_manager_name'] ?? 'Senior Systems Engineer');
                                         $pScope = htmlspecialchars($p['scope_summary'] ?? ($pName . ' - Automation, telemetry & sensor integration suite'));
                                         $pLocation = htmlspecialchars($p['facility_location'] ?? ($customer['company_name'] ?? 'Facility #4'));
                                         $pMilestones = cus_getProjectDetail($p['prj_id'], $cusId)['milestones'] ?? [];

@@ -127,7 +127,7 @@ INSERT INTO employees (emp_id, full_name, job_title, department_code, clearance_
 ('EMP-1038', 'Svetlana Borisova', 'Fulfilment Dispatch Coordinator', 'OPS', 'L2', 's.borisova@vostokpribor.local', 'EMP-1011', 'Active', '2026-01-20'),
 ('EMP-1039', 'Valery Stepanov', 'Shipping & Receiving Inspector', 'OPS', 'L2', 'v.stepanov@vostokpribor.local', 'EMP-1011', 'Active', '2026-01-20'),
 ('EMP-1040', 'Lyudmila Alexandrova', 'Supply Quality Specialist', 'OPS', 'L2', 'l.alexandrova@vostokpribor.local', 'EMP-1011', 'Active', '2026-01-20'),
-('EMP-1041', 'Grigory Danilov', 'Materials Management Planner', 'OPS', 'L2', 'g.danilov@vostokpribor.local', 'EMP-1011', 'Active', '2026-01-20'),
+('EMP-1041', 'Grigory Demidov', 'Materials Management Planner', 'OPS', 'L2', 'g.demidov@vostokpribor.local', 'EMP-1011', 'Active', '2026-01-20'),
 ('EMP-1042', 'Polina Yakovleva', 'B2B Order Expeditor', 'OPS', 'L2', 'p.yakovleva@vostokpribor.local', 'EMP-1011', 'Active', '2026-01-20'),
 ('EMP-1043', 'Vladislav Sorokin', 'Equipment Packaging Engineer', 'OPS', 'L2', 'v.sorokin@vostokpribor.local', 'EMP-1011', 'Active', '2026-01-20'),
 ('EMP-1044', 'Ksenia Vorobyeva', 'Procurement Auditor', 'OPS', 'L2', 'k.vorobyeva@vostokpribor.local', 'EMP-1011', 'Active', '2026-01-20'),
@@ -234,7 +234,7 @@ INSERT INTO employee_accounts (emp_id, username, password_hash, status) VALUES (
 INSERT INTO employee_accounts (emp_id, username, password_hash, status) VALUES ('EMP-1038', 's.borisova', '$2y$12$p3oSP14.iTjL486AkBdZu.3G/8tRxQO.up5w13JnW9YxNvBTthG3e', 'Active') ON DUPLICATE KEY UPDATE password_hash = VALUES(password_hash), status = 'Active';
 INSERT INTO employee_accounts (emp_id, username, password_hash, status) VALUES ('EMP-1039', 'v.stepanov', '$2y$12$p3oSP14.iTjL486AkBdZu.3G/8tRxQO.up5w13JnW9YxNvBTthG3e', 'Active') ON DUPLICATE KEY UPDATE password_hash = VALUES(password_hash), status = 'Active';
 INSERT INTO employee_accounts (emp_id, username, password_hash, status) VALUES ('EMP-1040', 'l.alexandrova', '$2y$12$p3oSP14.iTjL486AkBdZu.3G/8tRxQO.up5w13JnW9YxNvBTthG3e', 'Active') ON DUPLICATE KEY UPDATE password_hash = VALUES(password_hash), status = 'Active';
-INSERT INTO employee_accounts (emp_id, username, password_hash, status) VALUES ('EMP-1041', 'g.danilov', '$2y$12$p3oSP14.iTjL486AkBdZu.3G/8tRxQO.up5w13JnW9YxNvBTthG3e', 'Active') ON DUPLICATE KEY UPDATE password_hash = VALUES(password_hash), status = 'Active';
+INSERT INTO employee_accounts (emp_id, username, password_hash, status) VALUES ('EMP-1041', 'g.demidov', '$2y$12$p3oSP14.iTjL486AkBdZu.3G/8tRxQO.up5w13JnW9YxNvBTthG3e', 'Active') ON DUPLICATE KEY UPDATE password_hash = VALUES(password_hash), status = 'Active';
 INSERT INTO employee_accounts (emp_id, username, password_hash, status) VALUES ('EMP-1042', 'p.yakovleva', '$2y$12$p3oSP14.iTjL486AkBdZu.3G/8tRxQO.up5w13JnW9YxNvBTthG3e', 'Active') ON DUPLICATE KEY UPDATE password_hash = VALUES(password_hash), status = 'Active';
 INSERT INTO employee_accounts (emp_id, username, password_hash, status) VALUES ('EMP-1043', 'v.sorokin', '$2y$12$p3oSP14.iTjL486AkBdZu.3G/8tRxQO.up5w13JnW9YxNvBTthG3e', 'Active') ON DUPLICATE KEY UPDATE password_hash = VALUES(password_hash), status = 'Active';
 INSERT INTO employee_accounts (emp_id, username, password_hash, status) VALUES ('EMP-1044', 'k.vorobyeva', '$2y$12$p3oSP14.iTjL486AkBdZu.3G/8tRxQO.up5w13JnW9YxNvBTthG3e', 'Active') ON DUPLICATE KEY UPDATE password_hash = VALUES(password_hash), status = 'Active';

@@ -44,7 +44,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
         <div class="top-search-bar">
           <div class="search-input-wrapper">
             <span class="search-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span>
-            <input type="text" class="search-input" id="global-omni-search" placeholder="Search master contracts, NDAs, quotes (e.g. MSA-2024, Severstal)..." />
+            <input type="text" class="search-input" id="global-omni-search" placeholder="Search master contracts, NDAs, quotes (e.g. MSA-2026, Aral Geomatics)..." />
             <span class="search-kbd">Ctrl+K</span>
           </div>
         </div>
@@ -64,7 +64,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
             </svg>
           </button>
           <div class="top-user-profile" onclick="window.crmApp.showToast('Active User Session', '<?= htmlspecialchars($currUser['full_name'] ?? 'Mikhail Sorokin') ?> · <?= htmlspecialchars($currUser['role_name'] ?? 'VP Enterprise Sales') ?> · <?= htmlspecialchars($currUser['clearance_level'] ?? 'L4') ?> Clearance')">
-            <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDoVYMImYMOrFG-GImEjxCUij3YIwCjbxiUVg9-84NgNQUnx44rwhCbh4EVKLngwn6R5_hzNhRQkfTglEUz1jtP83GRGR8WbDdiIQblwg1fLV0mqc04y19GGKO27NGBpanqADz4vwO3ANY9KcZiOXBusZHAE_PU_FuuwKqChSLXXJsGo289bHOL3MFrKWoXXMoxnqoUIglg-NYsM99jg8cA3e1CeWhqlY0x7isLHdQfGbcFE_XiNNJg" alt="<?= htmlspecialchars($currUser['full_name'] ?? 'User') ?>" class="user-avatar-top" />
+            <img src="<?= vp_avatar_svg($currUser['full_name'] ?? 'User') ?>" alt="<?= htmlspecialchars($currUser['full_name'] ?? 'User') ?>" class="user-avatar-top" />
             <div class="user-details-top">
               <span class="user-name-top"><?= htmlspecialchars($currUser['full_name'] ?? 'Mikhail Sorokin') ?></span>
               <span class="user-role-top"><?= htmlspecialchars($currUser['role_name'] ?? 'VP Enterprise Sales') ?></span>
@@ -370,35 +370,35 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
               <tbody>
                 <tr>
                   <td>
-                    <strong class="crm-mono-confidential" >MSA-2024-SVST-088</strong>
+                    <strong class="crm-mono-confidential" >MSA-2026-ARAL-001</strong>
                     <div class="crm-text-navy-11" >Master Automation Equipment &amp; SCADA Services Agreement</div>
                   </td>
                   <td>
-                    <strong>Severstal Metallurgy PJSC</strong>
-                    <div class="crm-text-muted-sm" >Cherepovets Plant #4</div>
+                    <strong>Aral Geomatics Group</strong>
+                    <div class="crm-text-muted-sm" >Almaty Metrology Hub</div>
                   </td>
                   <td>Jan 01, 2024 – Dec 31, 2026</td>
                   <td><strong class="crm-mono-navy-lg" >$14,250,000.00</strong></td>
                   <td><span class="tier-badge crm-badge-success" >✓ Counter-Signed</span></td>
                   <td>
-                    <button class="btn btn-outline btn-sm" onclick="window.crmApp.showToast('Secure Download', 'Decrypted document MSA-2024-SVST-088.pdf downloaded.')">Download <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></button>
+                    <button class="btn btn-outline btn-sm" onclick="window.crmApp.showToast('Secure Download', 'Decrypted document MSA-2026-ARAL-001.pdf downloaded.')">Download <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></button>
                   </td>
                 </tr>
 
                 <tr>
                   <td>
-                    <strong class="crm-mono-confidential" >MSA-2023-NN-014</strong>
+                    <strong class="crm-mono-confidential" >MSA-2026-STEP-002</strong>
                     <div class="crm-text-navy-11" >Talnakh Concentrator Multi-Year Telemetry &amp; Field Sensor MSA</div>
                   </td>
                   <td>
-                    <strong>Norilsk Nickel Mining</strong>
+                    <strong>Steppe Mining Technologies</strong>
                     <div class="crm-text-muted-sm" >Polar Division</div>
                   </td>
                   <td>Nov 15, 2023 – Nov 14, 2025</td>
                   <td><strong class="crm-mono-navy-lg" >$8,400,000.00</strong></td>
                   <td><span class="tier-badge crm-badge-success" >✓ Counter-Signed</span></td>
                   <td>
-                    <button class="btn btn-outline btn-sm" onclick="window.crmApp.showToast('Secure Download', 'Decrypted document MSA-2023-NN-014.pdf downloaded.')">Download <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></button>
+                    <button class="btn btn-outline btn-sm" onclick="window.crmApp.showToast('Secure Download', 'Decrypted document MSA-2026-STEP-002.pdf downloaded.')">Download <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></button>
                   </td>
                 </tr>
 
@@ -408,7 +408,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
                     <div class="crm-text-navy-11" >24/7 Field Engineering Specialist &amp; Incident SLA Support Coverage</div>
                   </td>
                   <td>
-                    <strong>Severstal Metallurgy PJSC</strong>
+                    <strong>Aral Geomatics Group</strong>
                     <div class="crm-text-muted-sm" >Enterprise Wide</div>
                   </td>
                   <td>Jan 01, 2024 – Dec 31, 2025</td>
@@ -425,7 +425,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
                     <div class="crm-text-navy-11" >Bilateral Non-Disclosure Agreement for Industrial Proprietary Telemetry</div>
                   </td>
                   <td>
-                    <strong>Severstal Metallurgy PJSC</strong>
+                    <strong>Aral Geomatics Group</strong>
                     <div class="crm-text-muted-sm" >Legal Dept.</div>
                   </td>
                   <td>Dec 01, 2023 – Dec 01, 2028</td>
@@ -474,7 +474,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
                 </tr>
                 <tr class="account-row account-row-tagged">
                   <td><strong class="crm-mono-indigo" >QUO-2024-9918</strong></td>
-                  <td><strong>Norilsk Nickel Mining</strong></td>
+                  <td><strong>Steppe Mining Technologies</strong></td>
                   <td>Flotation Sensor Array &amp; SCADA Gateway Hardware</td>
                   <td><strong class="crm-mono" >$2,400,000.00</strong></td>
                   <td>Valid thru Jan 10, 2025</td>
@@ -500,9 +500,9 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
         <div class="form-group">
           <label class="form-label">Client Enterprise Account</label>
           <select class="form-select">
-            <option>Severstal Metallurgy PJSC</option>
+            <option>Aral Geomatics Group</option>
             <option>NLMK Group Lipetsk</option>
-            <option>Norilsk Nickel Mining</option>
+            <option>Steppe Mining Technologies</option>
             <option>EVRAZ Consolidated</option>
           </select>
         </div>

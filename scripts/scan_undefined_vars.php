@@ -310,6 +310,21 @@ foreach ($iterator as $file) {
                 continue;
             }
 
+            // Check if class property declaration (e.g. private string $action; protected int $code;)
+            $isPropertyDecl = false;
+            for ($k = $i - 1; $k >= max(0, $i - 8); $k--) {
+                if (is_array($tokens[$k]) && in_array($tokens[$k][0], [T_PRIVATE, T_PROTECTED, T_PUBLIC, T_VAR], true)) {
+                    $isPropertyDecl = true;
+                    break;
+                }
+                if ($tokens[$k] === ';' || $tokens[$k] === '{' || $tokens[$k] === '}' || $tokens[$k] === '(') {
+                    break;
+                }
+            }
+            if ($isPropertyDecl) {
+                continue;
+            }
+
             if ($isAssign) {
                 $assigned[$varName] = true;
                 if (!empty($functionParams)) {

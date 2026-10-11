@@ -229,13 +229,97 @@ try {
         BEFORE DELETE ON employees
         FOR EACH ROW
         BEGIN
-            IF OLD.emp_id = 'EMP-0001' OR OLD.is_system_account = 1 THEN
+            IF OLD.emp_id = 'EMP-0001' OR OLD.is_system_account = 1 OR (OLD.emp_id >= 'EMP-1001' AND OLD.emp_id <= 'EMP-1020') THEN
                 SIGNAL SQLSTATE '45000'
-                    SET MESSAGE_TEXT = 'Cannot delete system account EMP-0001';
+                    SET MESSAGE_TEXT = 'Locked baseline employee records cannot be deleted. Deactivate instead.';
             END IF;
         END
     ");
     echo "  trg_protect_system_account... DONE\n";
+
+    $rootPdo->exec("DROP TRIGGER IF EXISTS trg_protect_baseline_customers");
+    $rootPdo->exec("
+        CREATE TRIGGER trg_protect_baseline_customers
+        BEFORE DELETE ON customers
+        FOR EACH ROW
+        BEGIN
+            IF OLD.cus_id >= 'CUS-1001' AND OLD.cus_id <= 'CUS-1010' THEN
+                SIGNAL SQLSTATE '45000'
+                    SET MESSAGE_TEXT = 'Locked baseline customer records cannot be deleted. Archive instead.';
+            END IF;
+        END
+    ");
+    echo "  trg_protect_baseline_customers... DONE\n";
+
+    $rootPdo->exec("DROP TRIGGER IF EXISTS trg_protect_baseline_projects");
+    $rootPdo->exec("
+        CREATE TRIGGER trg_protect_baseline_projects
+        BEFORE DELETE ON projects
+        FOR EACH ROW
+        BEGIN
+            IF OLD.prj_id >= 'PRJ-2026-001' AND OLD.prj_id <= 'PRJ-2026-015' THEN
+                SIGNAL SQLSTATE '45000'
+                    SET MESSAGE_TEXT = 'Locked baseline project records cannot be deleted.';
+            END IF;
+        END
+    ");
+    echo "  trg_protect_baseline_projects... DONE\n";
+
+    $rootPdo->exec("DROP TRIGGER IF EXISTS trg_protect_baseline_invoices");
+    $rootPdo->exec("
+        CREATE TRIGGER trg_protect_baseline_invoices
+        BEFORE DELETE ON invoices
+        FOR EACH ROW
+        BEGIN
+            IF OLD.inv_id >= 'INV-2026-001' AND OLD.inv_id <= 'INV-2026-010' THEN
+                SIGNAL SQLSTATE '45000'
+                    SET MESSAGE_TEXT = 'Locked baseline invoice records cannot be deleted. Void instead.';
+            END IF;
+        END
+    ");
+    echo "  trg_protect_baseline_invoices... DONE\n";
+
+    $rootPdo->exec("DROP TRIGGER IF EXISTS trg_protect_baseline_tickets");
+    $rootPdo->exec("
+        CREATE TRIGGER trg_protect_baseline_tickets
+        BEFORE DELETE ON tickets
+        FOR EACH ROW
+        BEGIN
+            IF OLD.tkt_id >= 'TKT-2026-001' AND OLD.tkt_id <= 'TKT-2026-015' THEN
+                SIGNAL SQLSTATE '45000'
+                    SET MESSAGE_TEXT = 'Locked baseline ticket records cannot be deleted. Close instead.';
+            END IF;
+        END
+    ");
+    echo "  trg_protect_baseline_tickets... DONE\n";
+
+    $rootPdo->exec("DROP TRIGGER IF EXISTS trg_protect_baseline_documents");
+    $rootPdo->exec("
+        CREATE TRIGGER trg_protect_baseline_documents
+        BEFORE DELETE ON documents
+        FOR EACH ROW
+        BEGIN
+            IF OLD.doc_id >= 'DOC-2026-001' AND OLD.doc_id <= 'DOC-2026-015' THEN
+                SIGNAL SQLSTATE '45000'
+                    SET MESSAGE_TEXT = 'Locked baseline document records cannot be deleted.';
+            END IF;
+        END
+    ");
+    echo "  trg_protect_baseline_documents... DONE\n";
+
+    $rootPdo->exec("DROP TRIGGER IF EXISTS trg_protect_baseline_products");
+    $rootPdo->exec("
+        CREATE TRIGGER trg_protect_baseline_products
+        BEFORE DELETE ON products
+        FOR EACH ROW
+        BEGIN
+            IF OLD.prod_id >= 'PROD-1001' AND OLD.prod_id <= 'PROD-1010' THEN
+                SIGNAL SQLSTATE '45000'
+                    SET MESSAGE_TEXT = 'Locked baseline product records cannot be deleted.';
+            END IF;
+        END
+    ");
+    echo "  trg_protect_baseline_products... DONE\n";
 
     $rootPdo->exec("DROP TRIGGER IF EXISTS trg_protect_last_superadmin");
     $rootPdo->exec("
@@ -346,6 +430,61 @@ $seedScript = __DIR__ . '/../scripts/generate_seed_documents.php';
 if (file_exists($seedScript)) {
     require_once $seedScript;
 }
+
+// 8c. Generate unique initial passwords for seeded accounts (Item 2.9)
+echo "\n[5c] Generating unique initial passwords for seeded accounts (Item 2.9)...\n";
+$credsDir = dirname(__DIR__) . '/storage/credentials';
+if (!is_dir($credsDir)) {
+    mkdir($credsDir, 0700, true);
+}
+$credsFile = $credsDir . '/initial_passwords.json';
+$creds = ['generated_at' => date('Y-m-d H:i:s'), 'customer' => [], 'employee' => []];
+
+$cusAccounts = $rootPdo->query("SELECT account_id, cus_id, username FROM customer_accounts ORDER BY account_id")->fetchAll(PDO::FETCH_ASSOC);
+$updCus = $rootPdo->prepare("UPDATE customer_accounts SET password_hash = :hash, must_change_password = 1 WHERE account_id = :aid");
+foreach ($cusAccounts as $ca) {
+    $randPass = 'Vp-Cus!' . bin2hex(random_bytes(6));
+    $hash = password_hash($randPass, PASSWORD_BCRYPT, ['cost' => 12]);
+    $updCus->execute([':hash' => $hash, ':aid' => $ca['account_id']]);
+    $creds['customer'][$ca['username']] = [
+        'account_id' => $ca['account_id'],
+        'cus_id'     => $ca['cus_id'],
+        'username'   => $ca['username'],
+        'password'   => $randPass,
+    ];
+}
+
+$empAccounts = $rootPdo->query("SELECT account_id, emp_id, username FROM employee_accounts ORDER BY account_id")->fetchAll(PDO::FETCH_ASSOC);
+$updEmp = $rootPdo->prepare("UPDATE employee_accounts SET password_hash = :hash, must_change_password = :mcp WHERE account_id = :aid");
+foreach ($empAccounts as $ea) {
+    if ($ea['emp_id'] === 'EMP-0001') {
+        $pass = !empty($testAdminPass) ? $testAdminPass : 'AdminPass2026!';
+        $hash = password_hash($pass, PASSWORD_BCRYPT, ['cost' => 12]);
+        $updEmp->execute([':hash' => $hash, ':mcp' => 0, ':aid' => $ea['account_id']]);
+        $creds['employee'][$ea['username']] = [
+            'account_id' => $ea['account_id'],
+            'emp_id'     => $ea['emp_id'],
+            'username'   => $ea['username'],
+            'password'   => $pass,
+        ];
+        continue;
+    }
+    $randPass = 'Vp-Emp!' . bin2hex(random_bytes(6));
+    $hash = password_hash($randPass, PASSWORD_BCRYPT, ['cost' => 12]);
+    $updEmp->execute([':hash' => $hash, ':mcp' => 1, ':aid' => $ea['account_id']]);
+    $creds['employee'][$ea['username']] = [
+        'account_id' => $ea['account_id'],
+        'emp_id'     => $ea['emp_id'],
+        'username'   => $ea['username'],
+        'password'   => $randPass,
+    ];
+}
+
+file_put_contents($credsFile, json_encode($creds, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+if (function_exists('chmod')) {
+    @chmod($credsFile, 0600);
+}
+echo "  Seeded " . count($creds['customer']) . " customer + " . count($creds['employee']) . " employee accounts with unique passwords.\n";
 
 // 9. Verify exact baseline counts & PDF specification alignments
 echo "\n[6/6] Verifying baseline counts against locked enterprise targets...\n";
