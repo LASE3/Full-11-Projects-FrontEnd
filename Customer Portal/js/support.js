@@ -406,10 +406,13 @@
     const userName = (window.CURRENT_USER && window.CURRENT_USER.full_name) || "Authorized User";
     const userRole = (window.CURRENT_USER && window.CURRENT_USER.role_name) || "Client Representative";
 
+    const initials = userName.split(" ").map(n => n[0]).join("").substring(0, 2).toUpperCase() || "VP";
+    const avatarSvg = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Ccircle cx='20' cy='20' r='20' fill='%230f2438'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='central' text-anchor='middle' fill='%23ffddb5' font-family='sans-serif' font-weight='bold' font-size='14'%3E" + encodeURIComponent(initials) + "%3C/text%3E%3C/svg%3E";
+
     currentTicket.messages.push({
       sender: userName,
       role: "Client - " + userRole,
-      avatar: "https://ui-avatars.com/api/?name=" + encodeURIComponent(userName) + "&background=0f2438&color=ffddb5",
+      avatar: avatarSvg,
       time: timeStr,
       text: text,
     });

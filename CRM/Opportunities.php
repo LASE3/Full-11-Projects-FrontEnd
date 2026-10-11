@@ -95,7 +95,7 @@ function renderKanbanCardPhp($opp) {
           <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></span>
           <span>' . $close . '</span>
         </span>
-        <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=60&auto=format&fit=crop&q=80" alt="' . $rep . '" class="card-rep-avatar" title="Rep: ' . $rep . '" />
+        <img src="data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'40\' height=\'40\' viewBox=\'0 0 40 40\'%3E%3Ccircle cx=\'20\' cy=\'20\' r=\'20\' fill=\'%231B3A5C\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' dominant-baseline=\'central\' text-anchor=\'middle\' fill=\'%2300E5FF\' font-family=\'sans-serif\' font-weight=\'bold\' font-size=\'14\'%3E' . rawurlencode(strtoupper(substr($rep, 0, 2))) . '%3C/text%3E%3C/svg%3E" alt="' . $rep . '" class="card-rep-avatar" title="Rep: ' . $rep . '" />
       </div>
     </div>';
 }

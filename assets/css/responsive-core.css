@@ -4,6 +4,8 @@
  * Breakpoints: Mobile (<=480px), Tablet-Portrait (481-768px), Tablet-Landscape (769-1023px), Desktop (1024-1439px), Ultra-Wide (>=1440px)
  */
 
+@import url("fonts.css");
+
 /* 1. Viewport & Root Overflow Protection */
 html {
   box-sizing: border-box;

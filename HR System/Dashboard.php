@@ -24,8 +24,7 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
   <meta name="csrf-token" content="<?= htmlspecialchars(getCsrfToken()) ?>">
   <title>VOSTOKPRIBOR HR System · Human Capital Operations</title>
   <link rel="stylesheet" href="css/style.css">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
-</head>
+  </head>
 
 <body>
 

@@ -575,7 +575,7 @@
                 stage: matched,
                 probability: parseInt(o.probability_percent || (matched === "negotiation" ? 80 : matched === "proposal" ? 60 : 35)),
                 closeDate: o.expected_close_date || "Q4 2026",
-                rep: { name: o.sales_representative || "Pavel Orlov", avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=60&auto=format&fit=crop&q=80" },
+                rep: { name: o.sales_representative || "Pavel Orlov", avatar: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Ccircle cx='20' cy='20' r='20' fill='%231B3A5C'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='central' text-anchor='middle' fill='%2300E5FF' font-family='sans-serif' font-weight='bold' font-size='14'%3EPO%3C/text%3E%3C/svg%3E" },
                 confidential: !!parseInt(o.is_confidential || 0),
                 priority: o.priority || "high"
               };

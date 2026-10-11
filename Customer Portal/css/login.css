@@ -5,7 +5,6 @@
  */
 
 @import url("../../assets/css/responsive-core.css");
-@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap");
 
 :root {
   --auth-accent: #10b981;

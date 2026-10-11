@@ -130,16 +130,7 @@ $firstDoc = $documents[0] ?? null;
     <meta charset="utf-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <title>VOSTOKPRIBOR Portal</title>
-    <link
-        href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap"
-        rel="stylesheet">
-    <link
-        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
-        rel="stylesheet">
-    <link
-        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
-        rel="stylesheet">
-    <link rel="stylesheet" href="css/common.css" />
+                <link rel="stylesheet" href="css/common.css" />
     <link rel="stylesheet" href="css/documents.css" />
     <link rel="stylesheet" href="css/tailwind-compiled.css" />
     <script src="js/portal.js"></script>
