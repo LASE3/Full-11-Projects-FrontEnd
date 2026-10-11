@@ -69,9 +69,9 @@ function runPhpCapture(
     ];
     file_put_contents($tmpInput, json_encode($inputData));
 
-    $escapedScript = addslashes($scriptPath);
-    $escapedInput = addslashes($tmpInput);
-    $rootEscaped = addslashes(dirname(__DIR__));
+    $escapedScript = str_replace('\\', '/', $scriptPath);
+    $escapedInput = str_replace('\\', '/', $tmpInput);
+    $rootEscaped = str_replace('\\', '/', dirname(__DIR__));
 
     $runnerContent = "<?php
 require_once '{$rootEscaped}/config/db.php';

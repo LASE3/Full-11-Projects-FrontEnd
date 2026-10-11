@@ -256,6 +256,11 @@ foreach ($iterator as $file) {
 
         // Variable detection
         if (is_array($token) && $token[0] === T_VARIABLE) {
+            // Skip static class properties: self::$prop, Class::$prop
+            $prevCheck = $i - 1;
+            while ($prevCheck >= 0 && is_array($tokens[$prevCheck]) && ($tokens[$prevCheck][0] === T_WHITESPACE || $tokens[$prevCheck][0] === T_COMMENT)) $prevCheck--;
+            if ($prevCheck >= 0 && is_array($tokens[$prevCheck]) && $tokens[$prevCheck][0] === T_DOUBLE_COLON) continue;
+
             $varName = substr($token[1], 1);
             $line = $token[2];
 

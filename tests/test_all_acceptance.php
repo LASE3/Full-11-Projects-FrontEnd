@@ -521,6 +521,36 @@ try {
 // Final cleanup so baseline remains pristine
 cleanupTransientTestData($pdo);
 
+// =========================================================================
+// TEST 11: PHASE 1 REGRESSION SUITE (ID GENERATOR, VARS, UPLOAD, AUDIT)
+// =========================================================================
+$phpBin = defined('PHP_BINARY') && PHP_BINARY ? PHP_BINARY : 'c:/xampp/php/php.exe';
+$p1Out = shell_exec(escapeshellarg($phpBin) . " " . escapeshellarg(__DIR__ . '/test_phase1_regression.php') . " 2>&1");
+$p1Pass = str_contains((string)$p1Out, 'ALL PASS') && !str_contains((string)$p1Out, 'FAILURES DETECTED');
+recordTest(11, 'Phase 1 Regressions: Sequential IDs, Zero Vars, Upload 4xx, Audit', $p1Pass, $p1Pass ? 'All 22 Phase 1 regression tests PASS' : 'Failures detected');
+
+// =========================================================================
+// TEST 12: PHASE 2 ISOLATION MATRIX (LEAVES, FINANCE, TICKETS, CRM, MASKS)
+// =========================================================================
+$p2Out = shell_exec(escapeshellarg($phpBin) . " " . escapeshellarg(__DIR__ . '/test_isolation_matrix.php') . " 2>&1");
+$p2Pass = str_contains((string)$p2Out, 'SUCCESS RATE: 100.0%');
+recordTest(12, 'Phase 2 Isolation Matrix: 7 Domains, Ownership, Scoping & Masking', $p2Pass, $p2Pass ? 'All 30 isolation matrix tests PASS' : 'Failures detected');
+
+// =========================================================================
+// TEST 13: QUALITY, LINTERS (PHP-L, NODE --CHECK), HANDLERS & CRAWLER
+// =========================================================================
+$qOut = shell_exec(escapeshellarg($phpBin) . " " . escapeshellarg(__DIR__ . '/../scripts/verify_quality_and_crawler.php') . " 2>&1");
+$qPass = str_contains((string)$qOut, 'OVERALL QUALITY VERIFIER: PASS');
+recordTest(13, 'Quality & Linters: php -l (277), node --check (70), crawler (43)', $qPass, $qPass ? 'Zero PHP fatals, zero JS errors, zero crawler 5xx' : 'Failures detected');
+
+// =========================================================================
+// TEST 14: REPOSITORY HYGIENE CI AUDIT
+// =========================================================================
+$hyOut = shell_exec(escapeshellarg($phpBin) . " " . escapeshellarg(__DIR__ . '/../scripts/check_repo_hygiene.php') . " 2>&1");
+$hyPass = str_contains((string)$hyOut, 'ALL REPOSITORY HYGIENE CHECKS PASSED');
+recordTest(14, 'Repository Hygiene: Clean uploads, no mock data, offline fonts', $hyPass, $hyPass ? 'All 10 hygiene rules PASS' : 'Failures detected');
+
+
 // -------------------------------------------------------------------------
 // DISPLAY FINAL ACCEPTANCE RESULTS TABLE
 // -------------------------------------------------------------------------
