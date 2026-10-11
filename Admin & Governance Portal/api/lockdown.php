@@ -137,13 +137,7 @@ try {
                 $authPassed = verifyTotpCode($acc['totp_secret'], $totp);
             }
             if (!$authPassed && !empty($authKey)) {
-                $authPassed = password_verify($authKey, (string)($acc['password_hash'] ?? ''))
-                    || ($authKey === 'AdminPass2026!' || $authKey === 'VostokPribor2026!' || $authKey === 'SEC-PIN-2026');
-            }
-        } else {
-            // Fallback for special system account EMP-0001
-            if ($authKey === 'AdminPass2026!' || $authKey === 'VostokPribor2026!' || $authKey === 'SEC-PIN-2026') {
-                $authPassed = true;
+                $authPassed = password_verify($authKey, (string)($acc['password_hash'] ?? ''));
             }
         }
 

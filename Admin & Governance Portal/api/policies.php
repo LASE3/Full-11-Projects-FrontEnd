@@ -81,7 +81,7 @@ try {
                 jsonResponse(['success' => false, 'error' => 'Policy title is required.'], 400);
             }
 
-            if (empty($docId)) {
+            if (empty($docId) || str_starts_with($docId, "DOC-2026-")) {
                 $docId = vp_next_id($pdo, 'policies', 'POL-2026-', 3);
             }
 

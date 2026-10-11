@@ -107,6 +107,11 @@ define('VP_DB_PORT', optionalEnv('DB_PORT', '3306'));
 define('VP_DB_NAME', optionalEnv('DB_NAME', 'vostokpribor'));
 $dbUserVal = requireEnv('DB_USER');
 $appEnvVal = optionalEnv('APP_ENV', 'local');
+if (strtolower(trim($appEnvVal)) === 'production') {
+    ini_set('display_errors', '0');
+    ini_set('display_startup_errors', '0');
+    error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED);
+}
 if (strtolower(trim($dbUserVal)) === 'root' && strtolower(trim($appEnvVal)) !== 'local') {
     throw new RuntimeException("Security violation: DB_USER=root is prohibited unless APP_ENV=local. Configure least-privilege vostok_app.");
 }
