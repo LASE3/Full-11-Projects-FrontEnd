@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/../includes/auth_guard.php';
+require_once __DIR__ . '/../includes/document_storage.php';
 requireAuth('DOC');
 
 $pdo = getDbConnection();
@@ -206,7 +207,7 @@ $pendingApprovals = (int)$pdo->query("SELECT COUNT(*) FROM documents WHERE statu
                     Drag and drop file here, or browse local disk
                 </div>
                 <div class="fc-font-size-12px-color-f108" >
-                    Supported formats: PDF, XLSX, DOCX, DWG &bull; Maximum file size: 100 MB &bull; AES-256 encrypted at rest
+                    Supported formats: PDF, XLSX, DOCX, PNG, JPG, TXT, CSV &bull; Maximum file size: <?= VP_MAX_UPLOAD_MB ?> MB &bull; AES-256 encrypted at rest
                 </div>
                 <div class="fc-display-none-margin-top-6ce4" id="selected-file-name" ></div>
             </div>

@@ -41,6 +41,6 @@ try {
     http_response_code(500);
     echo json_encode([
         'success' => false,
-        'error'   => 'Catalog service temporarily unavailable: ' . $e->getMessage()
+        'error' => 'Catalog service temporarily unavailable. Please contact system support.'
     ], JSON_UNESCAPED_UNICODE);
 }

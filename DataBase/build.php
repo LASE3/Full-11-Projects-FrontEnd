@@ -27,6 +27,37 @@ echo "       VOSTOKPRIBOR DATABASE REPRODUCIBLE BUILD ENGINE              \n";
 echo "       Target Database: {$targetDb}                                 \n";
 echo "====================================================================\n\n";
 
+// Preflight check for required PHP extensions (Bug 1.6)
+$requiredExtensions = [
+    'pdo'        => 'PHP Data Objects core',
+    'pdo_mysql'  => 'MariaDB/MySQL driver for PDO',
+    'zip'        => 'ZIP archive handling (OpenXML docx/xlsx)',
+    'mbstring'   => 'Multibyte string support (UTF-8)',
+    'fileinfo'   => 'File MIME detection engine',
+    'openssl'    => 'Cryptographic signature and encryption engine',
+];
+
+$missingExtensions = [];
+foreach ($requiredExtensions as $ext => $desc) {
+    if (!extension_loaded($ext)) {
+        $missingExtensions[$ext] = $desc;
+    }
+}
+
+if (!empty($missingExtensions)) {
+    fwrite(STDERR, "[-] PREFLIGHT CHECK FAILED: Missing required PHP extension(s):\n");
+    fwrite(STDERR, "+-------------------+----------------------------------------------------+\n");
+    fwrite(STDERR, "| Extension         | Purpose                                            |\n");
+    fwrite(STDERR, "+-------------------+----------------------------------------------------+\n");
+    foreach ($missingExtensions as $ext => $desc) {
+        fwrite(STDERR, sprintf("| %-17s | %-50s |\n", $ext, $desc));
+    }
+    fwrite(STDERR, "+-------------------+----------------------------------------------------+\n");
+    fwrite(STDERR, "Please enable the missing extension(s) in php.ini before running build.php.\n");
+    exit(1);
+}
+echo "[0/6] Preflight check: all required PHP extensions loaded (pdo, pdo_mysql, zip, mbstring, fileinfo, openssl).\n";
+
 $host = optionalEnv('DB_HOST', '127.0.0.1');
 $port = optionalEnv('DB_PORT', '3306');
 $user = requireEnv('DB_USER');

@@ -182,5 +182,6 @@ try {
     apiError('Unsupported HTTP method.', 405);
 } catch (Throwable $e) {
     error_log("API Error in retention.php: " . $e->getMessage());
-    apiError("Retention operation failed: " . $e->getMessage(), 500);
+    error_log("Retention operation failed: " . $e->getMessage());
+    apiError("Retention operation failed. Please try again later.", 500);
 }

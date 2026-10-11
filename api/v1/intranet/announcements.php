@@ -50,7 +50,8 @@ if ($method === 'GET') {
 
         Response::success($announcements, "Intranet announcements loaded");
     } catch (Exception $e) {
-        Response::error("Failed to load announcements: " . $e->getMessage(), 500);
+        error_log("Failed to load announcements: " . $e->getMessage());
+        Response::error("Failed to load announcements. Please try again later.", 500);
     }
 }
 
@@ -92,6 +93,7 @@ if ($method === 'POST') {
 
         Response::success(['announcement_id' => (int)$newId], "Announcement published successfully", 201);
     } catch (Exception $e) {
-        Response::error("Failed to post announcement: " . $e->getMessage(), 500);
+        error_log("Failed to post announcement: " . $e->getMessage());
+        Response::error("Failed to post announcement. Please try again later.", 500);
     }
 }

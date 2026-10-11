@@ -90,7 +90,8 @@ if ($method === 'GET') {
             Response::success($tickets, "Customer tickets list loaded");
         }
     } catch (Exception $e) {
-        Response::error("Failed to load tickets: " . $e->getMessage(), 500);
+        error_log("Failed to load tickets: " . $e->getMessage());
+        Response::error("Failed to load tickets. Please try again later.", 500);
     }
 }
 

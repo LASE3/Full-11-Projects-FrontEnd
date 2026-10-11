@@ -92,7 +92,8 @@ if ($method === 'GET') {
             Response::success($orders, "Orders retrieved successfully");
         }
     } catch (Exception $e) {
-        Response::error("Failed to load orders: " . $e->getMessage(), 500);
+        error_log("Failed to load orders: " . $e->getMessage());
+        Response::error("Failed to load orders. Please try again later.", 500);
     }
 }
 
@@ -207,6 +208,7 @@ if ($method === 'POST') {
         ], "Order successfully created and inventory committed.", 201);
     } catch (Exception $e) {
         $pdo->rollBack();
-        Response::error("Failed to commit order: " . $e->getMessage(), 400);
+        error_log("Failed to commit order: " . $e->getMessage());
+        Response::error("Failed to commit order. Please try again later.", 400);
     }
 }

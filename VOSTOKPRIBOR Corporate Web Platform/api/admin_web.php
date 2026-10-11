@@ -251,5 +251,6 @@ try {
 
     jsonRes(['success' => false, 'error' => "Unknown section '{$section}' or action '{$action}'."], 400);
 } catch (Throwable $e) {
-    jsonRes(['success' => false, 'error' => 'Operation failed: ' . $e->getMessage()], 500);
+    error_log("Operation failed: " . $e->getMessage());
+    jsonRes(['success' => false, 'error' => 'Operation failed. Please try again later.'], 500);
 }

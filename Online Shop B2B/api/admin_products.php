@@ -388,5 +388,6 @@ try {
     }
 
 } catch (Throwable $e) {
-    Response::error('Server error: ' . $e->getMessage(), 500);
+    error_log("Server error: " . $e->getMessage());
+        Response::error("Server error. Please try again later.", 500);
 }

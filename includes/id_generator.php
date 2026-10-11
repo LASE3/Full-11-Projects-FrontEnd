@@ -27,6 +27,20 @@ if (!function_exists('vp_next_id')) {
         }
 
         try {
+            // Normalize counter name to canonical table map entry
+            $counter = match (strtolower(trim($counter))) {
+                'doc', 'document', 'docs' => 'documents',
+                'inv', 'invoice' => 'invoices',
+                'tkt', 'ticket' => 'tickets',
+                'cus', 'customer' => 'customers',
+                'emp', 'employee' => 'employees',
+                'prj', 'project' => 'projects',
+                'prod', 'product' => 'products',
+                'pol', 'policy' => 'policies',
+                'srv', 'service_request' => 'service_requests',
+                default => strtolower(trim($counter)),
+            };
+
             // 1. Ensure counter row exists
             $ins = $pdo->prepare("INSERT INTO id_counters (`name`, `next_val`) VALUES (:name, 1) ON DUPLICATE KEY UPDATE `name` = `name`");
             $ins->execute([':name' => $counter]);

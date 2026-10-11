@@ -6,7 +6,7 @@
  * Methods: GET, POST
  */
 require_once __DIR__ . '/../../includes/api_bootstrap.php';
-$_vp_user = vp_api_guard('CUS', ['customer' => true]);
+$user = vp_api_guard('CUS', ['customer' => true]);
 
 require_once __DIR__ . '/../../config/db.php';
 require_once __DIR__ . '/helpers/Response.php';
@@ -34,7 +34,7 @@ if ($method === 'GET') {
             if ($owner === false) {
                 Response::error("Ticket not found.", 404);
             }
-            if (($currentUser['account_type'] ?? '') === 'Customer' && $owner !== $cusId) {
+            if (($user['account_type'] ?? '') === 'Customer' && $owner !== $cusId) {
                 Response::error("Forbidden: You do not have permission to view this ticket.", 403);
             }
 
@@ -94,21 +94,22 @@ if ($method === 'GET') {
 
             Response::success($tickets, "Customer tickets list loaded");
         }
-    } catch (Exception $e) {
-        Response::error("Failed to load tickets: " . $e->getMessage(), 500);
+    } catch (Throwable $e) {
+        error_log("Customer Portal tickets error: " . $e->getMessage());
+        Response::error("Unable to load support tickets. Please try again later.", 500);
     }
 }
 
 if ($method === 'POST') {
     $rawInput = file_get_contents('php://input');
-    $data = json_decode($rawInput, true);
+    $data = json_decode($rawInput, true) ?: $_POST;
 
-    $action = $_GET['action'] ?? 'create';
+    $action = $_GET['action'] ?? ($data['action'] ?? 'create');
 
-    if ($action === 'comment') {
+    if ($action === 'comment' || $action === 'add_comment') {
         // Add comment to existing ticket
-        $tktId = trim($data['tkt_id'] ?? '');
-        $comment = trim($data['comment_text'] ?? '');
+        $tktId = trim((string)($data['tkt_id'] ?? ($data['ticket_id'] ?? '')));
+        $comment = trim((string)($data['comment_text'] ?? ($data['comment'] ?? '')));
 
         if (empty($tktId) || empty($comment)) {
             Response::error("Ticket ID and comment text required.", 422);
@@ -121,8 +122,12 @@ if ($method === 'POST') {
             Response::error("Ticket access denied.", 403);
         }
 
-        $ins = $pdo->prepare("INSERT INTO ticket_comments (tkt_id, author_emp_id, comment_text, created_at) VALUES (:tid, NULL, :txt, NOW())");
-        $ins->execute([':tid' => $tktId, ':txt' => $comment]);
+        $ins = $pdo->prepare("INSERT INTO ticket_comments (tkt_id, author_emp_id, author_name, author_type, comment_text, created_at) VALUES (:tid, NULL, :name, 'requester', :txt, NOW())");
+        $ins->execute([
+            ':tid'  => $tktId,
+            ':name' => $user['full_name'] ?? 'Customer Representative',
+            ':txt'  => $comment
+        ]);
 
         Response::success(['comment_id' => $pdo->lastInsertId()], "Comment posted successfully", 201);
     } else {
@@ -146,8 +151,12 @@ if ($method === 'POST') {
         ], $cusId);
 
         // Insert first comment thread entry
-        $cmtStmt = $pdo->prepare("INSERT INTO ticket_comments (tkt_id, author_emp_id, comment_text, created_at) VALUES (:tid, NULL, :txt, NOW())");
-        $cmtStmt->execute([':tid' => $tktId, ':txt' => $message]);
+        $cmtStmt = $pdo->prepare("INSERT INTO ticket_comments (tkt_id, author_emp_id, author_name, author_type, comment_text, created_at) VALUES (:tid, NULL, :name, 'requester', :txt, NOW())");
+        $cmtStmt->execute([
+            ':tid'  => $tktId,
+            ':name' => $user['full_name'] ?? 'Customer Representative',
+            ':txt'  => $message
+        ]);
 
         Response::success([
             'tkt_id'   => $tktId,

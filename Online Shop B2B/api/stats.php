@@ -81,5 +81,6 @@ try {
 
     Response::success($payload, "Dashboard statistics and badge counters loaded");
 } catch (Exception $e) {
-    Response::error("Failed to load statistics: " . $e->getMessage(), 500);
+    error_log("Failed to load statistics: " . $e->getMessage());
+        Response::error("Failed to load statistics. Please try again later.", 500);
 }

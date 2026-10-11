@@ -44,7 +44,8 @@ if ($method === 'GET') {
         $stmt->execute([':cid' => $cusId]);
         Response::success($stmt->fetchAll(PDO::FETCH_ASSOC), "Customer quotes loaded");
     } catch (Exception $e) {
-        Response::error("Failed to retrieve quotes: " . $e->getMessage(), 500);
+        error_log("Failed to retrieve quotes: " . $e->getMessage());
+        Response::error("Failed to retrieve quotes. Please try again later.", 500);
     }
 }
 
@@ -102,6 +103,7 @@ if ($method === 'POST') {
             'total_quote_value' => $qty * $unitPrice
         ], "Quote successfully issued", 201);
     } catch (Exception $e) {
-        Response::error("Failed to generate quote: " . $e->getMessage(), 500);
+        error_log("Failed to generate quote: " . $e->getMessage());
+        Response::error("Failed to generate quote. Please try again later.", 500);
     }
 }

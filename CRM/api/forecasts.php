@@ -36,7 +36,8 @@ if ($method === 'GET') {
 
         Response::success($forecasts, "Sales forecasts loaded");
     } catch (Exception $e) {
-        Response::error("Failed to load forecasts: " . $e->getMessage(), 500);
+        error_log("Failed to load forecasts: " . $e->getMessage());
+        Response::error("Failed to load forecasts. Please try again later.", 500);
     }
 }
 
@@ -69,6 +70,7 @@ if ($method === 'POST') {
 
         Response::success(['forecast_id' => (int)$pdo->lastInsertId()], "Sales forecast created", 201);
     } catch (Exception $e) {
-        Response::error("Failed to save forecast: " . $e->getMessage(), 500);
+        error_log("Failed to save forecast: " . $e->getMessage());
+        Response::error("Failed to save forecast. Please try again later.", 500);
     }
 }

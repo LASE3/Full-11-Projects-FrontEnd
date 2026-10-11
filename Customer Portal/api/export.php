@@ -171,5 +171,6 @@ try {
     exit;
 
 } catch (Exception $e) {
-    Response::error("Export Failed: " . $e->getMessage(), 500);
+    error_log("Export Failed: " . $e->getMessage());
+        Response::error("Export Failed. Please try again later.", 500);
 }

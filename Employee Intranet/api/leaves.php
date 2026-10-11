@@ -74,7 +74,8 @@ if ($method === 'GET') {
 
         Response::success($leaves, "Leave ledger loaded");
     } catch (Exception $e) {
-        Response::error("Failed to load leaves: " . $e->getMessage(), 500);
+        error_log("Failed to load leaves: " . $e->getMessage());
+        Response::error("Failed to load leaves. Please try again later.", 500);
     }
 }
 
@@ -124,7 +125,8 @@ if ($method === 'POST') {
             'status_display' => I18n::translate('Pending', $lang)
         ], "Leave request filed successfully", 201);
     } catch (Exception $e) {
-        Response::error("Failed to submit leave: " . $e->getMessage(), 500);
+        error_log("Failed to submit leave: " . $e->getMessage());
+        Response::error("Failed to submit leave. Please try again later.", 500);
     }
 }
 
@@ -165,6 +167,7 @@ if ($method === 'PATCH') {
 
         Response::success(['leave_id' => $leaveId, 'status' => $decision], "Leave request status updated");
     } catch (Exception $e) {
-        Response::error("Failed to process leave decision: " . $e->getMessage(), 500);
+        error_log("Failed to process leave decision: " . $e->getMessage());
+        Response::error("Failed to process leave decision. Please try again later.", 500);
     }
 }

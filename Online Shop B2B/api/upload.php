@@ -110,5 +110,6 @@ try {
         'order_id'  => $orderId
     ], "Document uploaded and registered in database successfully.", 201);
 } catch (Exception $e) {
-    Response::error("Failed to register document in database: " . $e->getMessage(), 500);
+    error_log("Failed to register document in database: " . $e->getMessage());
+        Response::error("Failed to register document in database. Please try again later.", 500);
 }

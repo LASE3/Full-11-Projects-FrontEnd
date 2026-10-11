@@ -148,7 +148,8 @@ if ($method === 'GET') {
         exit;
     } catch (Exception $e) {
         http_response_code(500);
-        echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+        error_log("Router error: " . $e->getMessage());
+        echo json_encode(['success' => false, 'error' => 'The operation could not be completed.']);
         exit;
     }
 }
@@ -254,7 +255,8 @@ if ($method === 'POST') {
         exit;
     } catch (Exception $e) {
         http_response_code(500);
-        echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+        error_log("Router error: " . $e->getMessage());
+        echo json_encode(['success' => false, 'error' => 'The operation could not be completed.']);
         exit;
     }
 }

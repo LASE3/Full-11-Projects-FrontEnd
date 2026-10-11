@@ -1060,6 +1060,7 @@ if ($action !== null && (isset($_SERVER['HTTP_X_REQUESTED_WITH']) || isset($_GET
                 break;
         }
     } catch (Throwable $e) {
-        crm_jsonReply(['success' => false, 'error' => $e->getMessage()], 400);
+        error_log("API error: " . $e->getMessage());
+        crm_jsonReply(['success' => false, 'error' => 'An error occurred while processing the request.'], 400);
     }
 }

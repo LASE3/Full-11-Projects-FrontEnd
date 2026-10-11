@@ -78,5 +78,6 @@ try {
         Response::success($invoices, "Customer invoices loaded");
     }
 } catch (Exception $e) {
-    Response::error("Failed to load invoices: " . $e->getMessage(), 500);
+    error_log("Failed to load invoices: " . $e->getMessage());
+        Response::error("Failed to load invoices. Please try again later.", 500);
 }

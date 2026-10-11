@@ -81,7 +81,8 @@ if ($method === 'GET') {
             Response::success($leads, "Leads loaded");
         }
     } catch (Throwable $e) {
-        Response::error("Failed to load leads: " . $e->getMessage(), 500);
+        error_log("Failed to load leads: " . $e->getMessage());
+        Response::error("Failed to load leads. Please try again later.", 500);
     }
 }
 
@@ -167,7 +168,8 @@ if ($method === 'POST') {
             ], "Lead converted to Opportunity successfully", 201);
         } catch (Exception $e) {
             $pdo->rollBack();
-            Response::error("Conversion failed: " . $e->getMessage(), 400);
+            error_log("Conversion failed: " . $e->getMessage());
+        Response::error("Conversion failed. Please try again later.", 400);
         }
     } else {
         // Create new raw lead
@@ -200,7 +202,8 @@ if ($method === 'POST') {
 
             Response::success(['lead_id' => (int)$newLeadId], "Commercial Lead logged", 201);
         } catch (Exception $e) {
-            Response::error("Failed to create lead: " . $e->getMessage(), 500);
+            error_log("Failed to create lead: " . $e->getMessage());
+        Response::error("Failed to create lead. Please try again later.", 500);
         }
     }
 }

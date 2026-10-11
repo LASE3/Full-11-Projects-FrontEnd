@@ -115,5 +115,6 @@ try {
     ], "File uploaded and registered as {$docId} successfully", 201);
 } catch (Exception $e) {
     @unlink($targetPath);
-    Response::error("Failed to register uploaded file in database: " . $e->getMessage(), 500);
+    error_log("Failed to register uploaded file in database: " . $e->getMessage());
+        Response::error("Failed to register uploaded file in database. Please try again later.", 500);
 }

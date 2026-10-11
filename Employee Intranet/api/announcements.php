@@ -57,20 +57,32 @@ if ($method === 'GET') {
         }
 
         Response::success($announcements, "Intranet announcements loaded");
-    } catch (Exception $e) {
-        Response::error("Failed to load announcements: " . $e->getMessage(), 500);
+    } catch (Throwable $e) {
+        error_log("Failed to load announcements: " . $e->getMessage());
+        Response::error("Unable to load announcements at this time.", 500);
     }
 }
 
 if ($method === 'POST') {
-    $data = json_decode(file_get_contents('php://input'), true);
-    $title = trim($data['title'] ?? '');
-    $body  = trim($data['body'] ?? '');
-    $targetDept = !empty($data['audience_dept']) ? trim($data['audience_dept']) : null;
+    $data = json_decode(file_get_contents('php://input'), true) ?: $_POST;
+    $title = trim((string)($data['title'] ?? ''));
+    $body  = trim((string)($data['body'] ?? ($data['content'] ?? '')));
+    $rawDept = trim((string)($data['audience_dept'] ?? ''));
     $authorEmp = $empId;
 
     if (empty($title) || empty($body)) {
         Response::error("Title and announcement body are required.", 422);
+    }
+
+    // ALL is the enterprise broadcast value (stored as NULL in DB)
+    $targetDept = null;
+    if ($rawDept !== '' && strtoupper($rawDept) !== 'ALL') {
+        $dChk = $pdo->prepare("SELECT dept_code FROM departments WHERE dept_code = ?");
+        $dChk->execute([$rawDept]);
+        if (!$dChk->fetchColumn()) {
+            Response::error("Invalid department code '{$rawDept}'. Broadcast to all departments using 'ALL' or select a valid department.", 422);
+        }
+        $targetDept = $rawDept;
     }
 
     try {
@@ -94,12 +106,13 @@ if ($method === 'POST') {
             'PUBLISH_CORPORATE_ANNOUNCEMENT',
             'announcements',
             (string)$newId,
-            ['title' => $title, 'audience_dept' => $targetDept],
+            ['title' => $title, 'audience_dept' => $targetDept ?: 'ALL'],
             'SUCCESS'
         );
 
         Response::success(['announcement_id' => (int)$newId], "Announcement published successfully", 201);
-    } catch (Exception $e) {
-        Response::error("Failed to post announcement: " . $e->getMessage(), 500);
+    } catch (Throwable $e) {
+        error_log("Failed to post announcement: " . $e->getMessage());
+        Response::error("Failed to post announcement. Please verify your submission.", 500);
     }
 }

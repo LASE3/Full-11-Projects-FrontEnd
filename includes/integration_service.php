@@ -370,7 +370,7 @@ HTML;
         error_log("vostok_generateInvoiceAndFileForOrder error: " . $e->getMessage());
         return [
             'success' => false,
-            'error'   => $e->getMessage(),
+            'error'   => 'Integration service failure occurred.',
             'inv_id'  => '',
             'doc_id'  => '',
             'file_name' => '',
@@ -435,7 +435,8 @@ function vostok_createCustomerServiceRequest(PDO $pdo, array $data): array
         ];
     } catch (Throwable $e) {
         error_log("vostok_createCustomerServiceRequest error: " . $e->getMessage());
-        return ['success' => false, 'message' => $e->getMessage()];
+        error_log("Operation failure: " . $e->getMessage());
+    return ['success' => false, 'message' => 'The operation could not be completed.'];
     }
 }
 
@@ -490,7 +491,8 @@ function vostok_assignServiceRequestPersonnel(PDO $pdo, string $requestId, strin
         ];
     } catch (Throwable $e) {
         error_log("vostok_assignServiceRequestPersonnel error: " . $e->getMessage());
-        return ['success' => false, 'message' => $e->getMessage()];
+        error_log("Operation failure: " . $e->getMessage());
+    return ['success' => false, 'message' => 'The operation could not be completed.'];
     }
 }
 
@@ -525,6 +527,7 @@ function vostok_appointEqualManager(PDO $pdo, string $actingUserId, string $targ
         $acting = queryUserByCredentials($actingUserId);
         $actingClearance = $acting['clearance_level'] ?? '';
         $actingEmpId = $acting['emp_id'] ?? '';
+        $actingEmail = $acting['email'] ?? 'superadmin@vostokpribor.ru';
 
         // STRICT SECURITY ENFORCEMENT:
         // Only the SuperAdmin role has authority to appoint managers with equal privileges!
@@ -612,6 +615,7 @@ function vostok_appointEqualManager(PDO $pdo, string $actingUserId, string $targ
             $pdo->rollBack();
         }
         error_log("vostok_appointEqualManager error: " . $e->getMessage());
-        return ['success' => false, 'error' => $e->getMessage()];
+        error_log("Operation error: " . $e->getMessage());
+    return ['success' => false, 'error' => 'The requested operation could not be completed.'];
     }
 }

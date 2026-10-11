@@ -60,7 +60,8 @@ if ($method === 'GET') {
             'total_budget'   => $totalBudget
         ]);
     } catch (Throwable $e) {
-        Response::error("Failed to load projects: " . $e->getMessage(), 500);
+        error_log("Failed to load projects: " . $e->getMessage());
+        Response::error("Failed to load projects. Please try again later.", 500);
     }
 }
 
@@ -106,7 +107,8 @@ if ($method === 'POST') {
 
         Response::success(['prj_id' => $newPrjId], 'Project created in DB', 201);
     } catch (Throwable $e) {
-        Response::error("Failed to create project: " . $e->getMessage(), 500);
+        error_log("Failed to create project: " . $e->getMessage());
+        Response::error("Failed to create project. Please try again later.", 500);
     }
 }
 
@@ -148,7 +150,8 @@ if ($method === 'PUT' || $method === 'PATCH' || ($method === 'POST' && in_array(
         AuditLogger::logAction($empId, null, 'CRM Platform', 'CRM', 'UPDATE_PROJECT', 'projects', $prjId, $params, 'SUCCESS');
         Response::success(['prj_id' => $prjId], 'Project updated in DB');
     } catch (Throwable $e) {
-        Response::error("Failed to update project: " . $e->getMessage(), 500);
+        error_log("Failed to update project: " . $e->getMessage());
+        Response::error("Failed to update project. Please try again later.", 500);
     }
 }
 
@@ -165,7 +168,8 @@ if ($method === 'DELETE' || ($method === 'POST' && in_array(strtolower(trim((str
         AuditLogger::logAction($empId, null, 'CRM Platform', 'CRM', 'DELETE_PROJECT', 'projects', $prjId, [], 'SUCCESS');
         Response::success(['prj_id' => $prjId], 'Project deleted from DB');
     } catch (Throwable $e) {
-        Response::error("Failed to delete project: " . $e->getMessage(), 500);
+        error_log("Failed to delete project: " . $e->getMessage());
+        Response::error("Failed to delete project. Please try again later.", 500);
     }
 }
 

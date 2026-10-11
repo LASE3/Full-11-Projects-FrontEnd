@@ -148,5 +148,6 @@ try {
 
     Response::success($data, "CRM dashboard metrics loaded");
 } catch (Throwable $e) {
-    Response::error("Failed to load CRM dashboard: " . $e->getMessage(), 500);
+    error_log("Failed to load CRM dashboard: " . $e->getMessage());
+        Response::error("Failed to load CRM dashboard. Please try again later.", 500);
 }

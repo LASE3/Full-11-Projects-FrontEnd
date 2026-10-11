@@ -48,7 +48,8 @@ if ($method === 'GET') {
         $activities = $stmt->fetchAll(PDO::FETCH_ASSOC);
         Response::success($activities, 'Activities stream loaded from DB');
     } catch (Throwable $e) {
-        Response::error("Failed to load activities: " . $e->getMessage(), 500);
+        error_log("Failed to load activities: " . $e->getMessage());
+        Response::error("Failed to load activities. Please try again later.", 500);
     }
 }
 
@@ -82,6 +83,7 @@ if ($method === 'POST') {
 
         Response::success(['activity_id' => $actId], 'Commercial event logged to DB', 201);
     } catch (Throwable $e) {
-        Response::error("Failed to log activity: " . $e->getMessage(), 500);
+        error_log("Failed to log activity: " . $e->getMessage());
+        Response::error("Failed to log activity. Please try again later.", 500);
     }
 }

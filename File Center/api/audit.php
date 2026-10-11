@@ -157,5 +157,6 @@ try {
     apiError('Unsupported HTTP method.', 405);
 } catch (Throwable $e) {
     error_log("API Error in audit.php: " . $e->getMessage());
-    apiError("Audit operation failed: " . $e->getMessage(), 500);
+    error_log("Audit operation failed: " . $e->getMessage());
+    apiError("Audit operation failed. Please try again later.", 500);
 }

@@ -10,6 +10,60 @@ declare(strict_types=1);
 require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/AuditLogger.php';
 
+if (!class_exists('VpUploadException')) {
+    class VpUploadException extends Exception
+    {
+        private int $statusCode;
+        public function __construct(string $message, int $statusCode = 400, ?Throwable $previous = null)
+        {
+            parent::__construct($message, $statusCode, $previous);
+            $this->statusCode = $statusCode;
+        }
+        public function getStatusCode(): int
+        {
+            return $this->statusCode;
+        }
+    }
+}
+
+if (!defined('VP_MAX_UPLOAD_MB')) {
+    define('VP_MAX_UPLOAD_MB', 50);
+}
+if (!defined('VP_MAX_UPLOAD_BYTES')) {
+    define('VP_MAX_UPLOAD_BYTES', VP_MAX_UPLOAD_MB * 1024 * 1024);
+}
+
+function vp_parse_size_bytes(string $val): int
+{
+    $val = trim($val);
+    if ($val === '') {
+        return 0;
+    }
+    $last = strtolower($val[strlen($val) - 1]);
+    $num = (int)$val;
+    return match ($last) {
+        'g' => $num * 1024 * 1024 * 1024,
+        'm' => $num * 1024 * 1024,
+        'k' => $num * 1024,
+        default => (int)$val,
+    };
+}
+
+function vp_check_post_max_size_overflow(): bool
+{
+    $contentLength = (int)($_SERVER['CONTENT_LENGTH'] ?? 0);
+    if ($contentLength <= 0) {
+        return false;
+    }
+    $postMaxSize = ini_get('post_max_size');
+    if (!$postMaxSize) {
+        return false;
+    }
+    $bytes = vp_parse_size_bytes($postMaxSize);
+    return ($contentLength > $bytes) && empty($_POST) && empty($_FILES);
+}
+
+
 function vp_get_storage_dir(): string
 {
     $dir = dirname(__DIR__) . '/storage/documents';
@@ -37,14 +91,25 @@ function vp_format_bytes(int $bytes): string
  */
 function vp_validate_and_save_upload(array $fileInfo, string $docId): array
 {
-    if (!isset($fileInfo['error']) || $fileInfo['error'] !== UPLOAD_ERR_OK) {
-        $errorCode = $fileInfo['error'] ?? UPLOAD_ERR_NO_FILE;
-        throw new InvalidArgumentException("File upload failed with PHP error code: {$errorCode}");
+    // Empty upload check
+    if (!isset($fileInfo['error']) || $fileInfo['error'] === UPLOAD_ERR_NO_FILE) {
+        throw new VpUploadException("No file was uploaded or payload is empty.", 422);
     }
 
-    $maxBytes = 50 * 1024 * 1024; // 50MB
-    if ($fileInfo['size'] > $maxBytes) {
-        throw new InvalidArgumentException("File exceeds maximum allowed size of 50MB");
+    if ($fileInfo['error'] === UPLOAD_ERR_INI_SIZE || $fileInfo['error'] === UPLOAD_ERR_FORM_SIZE) {
+        throw new VpUploadException("File exceeds maximum allowed size of " . VP_MAX_UPLOAD_MB . "MB.", 413);
+    }
+
+    if ($fileInfo['error'] !== UPLOAD_ERR_OK) {
+        throw new VpUploadException("File upload failed with PHP error code: {$fileInfo['error']}", 422);
+    }
+
+    if (!isset($fileInfo['size']) || (int)$fileInfo['size'] === 0) {
+        throw new VpUploadException("Uploaded file is empty (0 bytes).", 422);
+    }
+
+    if ($fileInfo['size'] > VP_MAX_UPLOAD_BYTES) {
+        throw new VpUploadException("File exceeds maximum allowed size of " . VP_MAX_UPLOAD_MB . "MB.", 413);
     }
 
     $origName = basename($fileInfo['name'] ?? 'document.pdf');
@@ -52,13 +117,13 @@ function vp_validate_and_save_upload(array $fileInfo, string $docId): array
     // Check for dangerous or double extensions
     if (preg_match('/\.(php|phtml|phar|exe|bat|cmd|sh|pl|cgi|asp|aspx|js|vbs|msi)\./i', $origName) ||
         preg_match('/\.(php|phtml|phar|exe|bat|cmd|sh|pl|cgi|asp|aspx|js|vbs|msi)$/i', $origName)) {
-        throw new InvalidArgumentException("Execution-capable file extensions are strictly prohibited");
+        throw new VpUploadException("Execution-capable file extensions are strictly prohibited.", 415);
     }
 
     $ext = strtolower(pathinfo($origName, PATHINFO_EXTENSION));
     $allowedExts = ['pdf', 'docx', 'xlsx', 'png', 'jpg', 'jpeg', 'txt', 'csv'];
     if (!in_array($ext, $allowedExts, true)) {
-        throw new InvalidArgumentException("Invalid file extension '.{$ext}'. Allowed: " . implode(', ', $allowedExts));
+        throw new VpUploadException("Invalid file extension '.{$ext}'. Allowed formats: " . implode(', ', $allowedExts), 415);
     }
 
     // Inspect real MIME with finfo
@@ -77,13 +142,12 @@ function vp_validate_and_save_upload(array $fileInfo, string $docId): array
     ];
 
     if (!isset($allowedMimes[$ext]) || !in_array($mime, $allowedMimes[$ext], true)) {
-        // Fallback check for text/plain matching or zip-based office docs
         if ($ext === 'csv' && str_starts_with($mime, 'text/')) {
             // Allow
         } elseif (($ext === 'docx' || $ext === 'xlsx') && $mime === 'application/zip') {
             // Allow OpenXML containers
         } else {
-            throw new InvalidArgumentException("MIME type '{$mime}' does not match expected format for .{$ext}");
+            throw new VpUploadException("MIME type '{$mime}' does not match expected format for .{$ext}.", 415);
         }
     }
 
@@ -170,6 +234,76 @@ function vp_generate_default_document_file(string $docId, string $title, string 
 }
 
 /**
+ * Records an access attempt (success or denial) in document_access_log.
+ * Validates foreign keys to prevent constraint violations.
+ */
+function vp_log_document_access(
+    PDO $pdo,
+    string $docId,
+    string $accessType,
+    int $success = 1,
+    string $notes = '',
+    ?string $empId = null,
+    ?string $cusId = null,
+    string $systemId = 'DOC',
+    ?int $deviceId = null
+): void {
+    try {
+        $ip = $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
+
+        // Check if doc_id exists before inserting into document_access_log (FK constraint)
+        $docExists = $pdo->prepare("SELECT COUNT(*) FROM documents WHERE doc_id = :d");
+        $docExists->execute([':d' => $docId]);
+        if ((int)$docExists->fetchColumn() === 0) {
+            return;
+        }
+
+        // Validate emp_id if present
+        $validEmp = null;
+        if (!empty($empId)) {
+            $stmt = $pdo->prepare("SELECT emp_id FROM employees WHERE emp_id = :e LIMIT 1");
+            $stmt->execute([':e' => $empId]);
+            $validEmp = $stmt->fetchColumn() ?: null;
+        }
+
+        // Validate cus_id if present
+        $validCus = null;
+        if (!empty($cusId)) {
+            $stmt = $pdo->prepare("SELECT cus_id FROM customers WHERE cus_id = :c LIMIT 1");
+            $stmt->execute([':c' => $cusId]);
+            $validCus = $stmt->fetchColumn() ?: null;
+        }
+
+        // Validate system_id if present
+        $validSys = 'DOC';
+        if (!empty($systemId)) {
+            $stmt = $pdo->prepare("SELECT system_id FROM systems_catalog WHERE system_id = :s LIMIT 1");
+            $stmt->execute([':s' => $systemId]);
+            $validSys = $stmt->fetchColumn() ?: 'DOC';
+        }
+
+        $stmt = $pdo->prepare("
+            INSERT INTO document_access_log 
+            (doc_id, accessed_by_emp_id, accessed_by_cus_id, system_id, device_id, source_ip, access_type, notes, success, accessed_at)
+            VALUES (:doc_id, :emp_id, :cus_id, :system_id, :device_id, :ip, :access_type, :notes, :success, NOW())
+        ");
+        $stmt->execute([
+            ':doc_id'      => $docId,
+            ':emp_id'      => $validEmp,
+            ':cus_id'      => $validCus,
+            ':system_id'   => $validSys,
+            ':device_id'   => $deviceId,
+            ':ip'          => $ip,
+            ':access_type' => $accessType,
+            ':notes'       => mb_substr($notes, 0, 500),
+            ':success'     => $success ? 1 : 0,
+        ]);
+    } catch (Throwable $e) {
+        error_log('vp_log_document_access failed: ' . $e->getMessage());
+    }
+}
+
+/**
  * Downloads or displays a document with full security, clearance, tenant isolation,
  * cryptographic integrity checking, and audit logging.
  */
@@ -206,6 +340,16 @@ function vp_serve_document(PDO $pdo, string $docId, array $currentUser, bool $in
         }
 
         if (!$isPublic && !$isOwnCustomer && !$isOwnProject) {
+            vp_log_document_access(
+                $pdo,
+                $docId,
+                $inline ? 'View' : 'Download',
+                0,
+                "Tenant isolation violation: Customer '{$cusId}' denied access to document {$docId}",
+                null,
+                $cusId ?: null,
+                'DOC'
+            );
             AuditLogger::logAction(
                 $userEmpId,
                 $currentUser['full_name'] ?? 'Customer User',
@@ -242,6 +386,16 @@ function vp_serve_document(PDO $pdo, string $docId, array $currentUser, bool $in
         $requiredNum = $classReqs[$docClassLower] ?? 2;
 
         if ($userLevelNum < $requiredNum) {
+            vp_log_document_access(
+                $pdo,
+                $docId,
+                $inline ? 'View' : 'Download',
+                0,
+                "Clearance violation: Employee '{$userEmpId}' holding {$userLevelStr} denied access to {$docId} requiring L{$requiredNum}",
+                $userEmpId,
+                null,
+                'DOC'
+            );
             AuditLogger::logAction(
                 $userEmpId,
                 $currentUser['full_name'] ?? 'Employee',
@@ -304,22 +458,19 @@ function vp_serve_document(PDO $pdo, string $docId, array $currentUser, bool $in
         $pdo->prepare("UPDATE documents SET file_hash = :h WHERE doc_id = :id")->execute([':h' => $calcHash, ':id' => $docId]);
     }
 
-    // 5. Document Access Log
-    try {
-        $logStmt = $pdo->prepare("
-            INSERT INTO document_access_log (doc_id, user_emp_id, access_type, ip_address, access_time, notes)
-            VALUES (:doc_id, :user, :type, :ip, NOW(), :notes)
-        ");
-        $logStmt->execute([
-            ':doc_id' => $docId,
-            ':user'   => $userEmpId,
-            ':type'   => $inline ? 'View' : 'Download',
-            ':ip'     => $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1',
-            ':notes'  => ($inline ? 'Previewed' : 'Downloaded') . " file '{$doc['file_name']}' via secure enclave stream",
-        ]);
-    } catch (Throwable $le) {
-        error_log('Notice: document_access_log write failed: ' . $le->getMessage());
-    }
+    // 5. Document Access Log (Successful Stream)
+    $accessEmpId = !$isCustomer ? $userEmpId : null;
+    $accessCusId = $isCustomer ? ($currentUser['cus_id'] ?? null) : null;
+    vp_log_document_access(
+        $pdo,
+        $docId,
+        $inline ? 'View' : 'Download',
+        1,
+        ($inline ? 'Previewed' : 'Downloaded') . " file '{$doc['file_name']}' via secure enclave stream",
+        $accessEmpId,
+        $accessCusId,
+        $isCustomer ? 'CUS' : 'DOC'
+    );
 
     // 6. Stream file with secure headers
     $mime = $doc['mime'] ?? 'application/pdf';

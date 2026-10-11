@@ -163,7 +163,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             saReply(true, "Record created successfully in {$table}.", ['record_id' => $newId], 201, $isAjax);
         } catch (Throwable $e) {
-            saReply(false, "Insert failed in {$table}: " . $e->getMessage(), [], 400, $isAjax);
+            error_log("Insert failed in {$table}: " . $e->getMessage());
+    saReply(false, "Insert failed in {$table}. Operation rejected by security policy.", [], 400, $isAjax);
         }
     }
 
@@ -220,7 +221,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             saReply(true, "Record {$pkVal} in {$table} updated successfully.", ['record_id' => $pkVal], 200, $isAjax);
         } catch (Throwable $e) {
-            saReply(false, "Update failed in {$table}: " . $e->getMessage(), [], 400, $isAjax);
+            error_log("Update failed in {$table}: " . $e->getMessage());
+    saReply(false, "Update failed in {$table}. Operation rejected by security policy.", [], 400, $isAjax);
         }
     }
 
@@ -284,7 +286,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             saReply(true, "Record {$pkVal} in {$table} successfully deleted.", ['record_id' => $pkVal], 200, $isAjax);
         } catch (Throwable $e) {
-            saReply(false, "Deletion failed in {$table}: " . $e->getMessage(), [], 400, $isAjax);
+            error_log("Deletion failed in {$table}: " . $e->getMessage());
+    saReply(false, "Deletion failed in {$table}. Operation rejected by security policy.", [], 400, $isAjax);
         }
     }
 
@@ -380,7 +383,8 @@ if ($selectedTable && in_array($selectedTable, BROWSABLE_TABLES, true)) {
         $tableRows    = $stmt->fetchAll(PDO::FETCH_ASSOC);
         $tableColumns = $tableRows ? array_keys($tableRows[0]) : [];
     } catch (Throwable $e) {
-        $tableError = $e->getMessage();
+        error_log('SuperAdmin table query failure: ' . $e->getMessage());
+        $tableError = 'Unable to query table data. Please verify database connectivity.';
     }
 } elseif ($selectedTable) {
     $tableError = "Table '{$selectedTable}' is not in the browsable whitelist.";

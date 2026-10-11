@@ -49,5 +49,6 @@ try {
 
     Response::success($projects, "Customer projects loaded successfully", 200, ['total' => count($projects)]);
 } catch (Exception $e) {
-    Response::error("Failed to load projects: " . $e->getMessage(), 500);
+    error_log("Failed to load projects: " . $e->getMessage());
+        Response::error("Failed to load projects. Please try again later.", 500);
 }

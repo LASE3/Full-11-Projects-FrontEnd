@@ -73,7 +73,8 @@ if ($method === 'GET') {
             'pipeline_value' => $pipelineValue
         ]);
     } catch (Throwable $e) {
-        Response::error("Failed to load opportunities: " . $e->getMessage(), 500);
+        error_log("Failed to load opportunities: " . $e->getMessage());
+        Response::error("Failed to load opportunities. Please try again later.", 500);
     }
 }
 
@@ -118,7 +119,8 @@ if ($method === 'PATCH' || $method === 'POST') {
                 'stage_display' => I18n::translate($newStage, $lang)
             ], "Opportunity stage updated");
         } catch (Throwable $e) {
-            Response::error("Failed to update opportunity: " . $e->getMessage(), 500);
+            error_log("Failed to update opportunity: " . $e->getMessage());
+        Response::error("Failed to update opportunity. Please try again later.", 500);
         }
     } else {
         // Create new opportunity
@@ -157,7 +159,8 @@ if ($method === 'PATCH' || $method === 'POST') {
                 'stage_display' => I18n::translate($stage, $lang)
             ], "Opportunity created successfully", 201);
         } catch (Throwable $e) {
-            Response::error("Failed to create opportunity: " . $e->getMessage(), 500);
+            error_log("Failed to create opportunity: " . $e->getMessage());
+        Response::error("Failed to create opportunity. Please try again later.", 500);
         }
     }
 }
@@ -189,6 +192,7 @@ if ($method === 'DELETE') {
 
         Response::success(['opp_id' => $oppId], "Opportunity removed");
     } catch (Throwable $e) {
-        Response::error("Failed to delete opportunity: " . $e->getMessage(), 500);
+        error_log("Failed to delete opportunity: " . $e->getMessage());
+        Response::error("Failed to delete opportunity. Please try again later.", 500);
     }
 }

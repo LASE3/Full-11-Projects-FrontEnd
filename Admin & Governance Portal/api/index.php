@@ -45,9 +45,10 @@ try {
             'recert' => 'api/recert.php'
         ]
     ]);
-} catch (Exception $e) {
+} catch (Throwable $e) {
+    error_log("Admin API index error: " . $e->getMessage());
     jsonResponse([
         'status' => 'ERROR',
-        'message' => $e->getMessage()
+        'message' => 'An internal server error occurred.'
     ], 500);
 }

@@ -402,7 +402,8 @@ function hr_createEmployee($data)
     } catch (Exception $e) {
         $pdo->rollBack();
         error_log("hr_createEmployee failed: " . $e->getMessage());
-        return ['success' => false, 'message' => "Database error: " . $e->getMessage()];
+        error_log("Database error: " . $e->getMessage());
+    return ['success' => false, 'message' => 'A database error occurred.'];
     }
 }
 
@@ -442,7 +443,8 @@ function hr_updateEmployee($empId, $data)
 
         return ['success' => true, 'message' => "Employee {$empId} updated."];
     } catch (Exception $e) {
-        return ['success' => false, 'message' => $e->getMessage()];
+        error_log("Operation failure: " . $e->getMessage());
+    return ['success' => false, 'message' => 'The operation could not be completed.'];
     }
 }
 
@@ -508,7 +510,8 @@ function hr_advanceOnboardingStep($empId, $step, $newStatus)
         $stmt->execute([$newStatus, $empId, $step]);
         return ['success' => true, 'message' => "Step {$step} updated to {$newStatus}."];
     } catch (Exception $e) {
-        return ['success' => false, 'message' => $e->getMessage()];
+        error_log("Operation failure: " . $e->getMessage());
+    return ['success' => false, 'message' => 'The operation could not be completed.'];
     }
 }
 
@@ -656,7 +659,8 @@ function hr_initiateOffboarding($empId, $reason = 'Resignation')
         return ['success' => true, 'message' => "Offboarding initiated for employee {$empId}. Access suspended and revoked."];
     } catch (Exception $e) {
         $pdo->rollBack();
-        return ['success' => false, 'message' => $e->getMessage()];
+        error_log("Operation failure: " . $e->getMessage());
+    return ['success' => false, 'message' => 'The operation could not be completed.'];
     }
 }
 
@@ -675,7 +679,8 @@ function hr_advanceOffboardingStep($empId, $step, $newStatus)
         $stmt->execute([$newStatus, $empId, $step]);
         return ['success' => true, 'message' => "Offboarding step {$step} updated to {$newStatus}."];
     } catch (Exception $e) {
-        return ['success' => false, 'message' => $e->getMessage()];
+        error_log("Operation failure: " . $e->getMessage());
+    return ['success' => false, 'message' => 'The operation could not be completed.'];
     }
 }
 
@@ -739,7 +744,8 @@ function hr_processLeaveRequest($leaveId, $decision, $approverEmpId = null)
         $stmt->execute([$decision, $approverEmpId, $leaveId]);
         return ['success' => true, 'message' => "Leave request #{$leaveId} marked as {$decision}."];
     } catch (Exception $e) {
-        return ['success' => false, 'message' => $e->getMessage()];
+        error_log("Operation failure: " . $e->getMessage());
+    return ['success' => false, 'message' => 'The operation could not be completed.'];
     }
 }
 
@@ -757,7 +763,8 @@ function hr_createLeaveRequest($empId, $leaveType, $startDate, $endDate)
         $stmt->execute([$empId, $leaveType, $startDate, $endDate]);
         return ['success' => true, 'message' => "Leave request submitted."];
     } catch (Exception $e) {
-        return ['success' => false, 'message' => $e->getMessage()];
+        error_log("Operation failure: " . $e->getMessage());
+    return ['success' => false, 'message' => 'The operation could not be completed.'];
     }
 }
 
@@ -799,7 +806,8 @@ function hr_createTrainingRecord($empId, $trainingName, $completedAt)
         $stmt->execute([$empId, $trainingName, $completedAt]);
         return ['success' => true, 'message' => "Training certification logged."];
     } catch (Exception $e) {
-        return ['success' => false, 'message' => $e->getMessage()];
+        error_log("Operation failure: " . $e->getMessage());
+    return ['success' => false, 'message' => 'The operation could not be completed.'];
     }
 }
 
@@ -924,7 +932,8 @@ function hr_completeOffboarding($empId)
         return ['success' => true, 'message' => "Offboarding completed. Employee {$empId} status set to Terminated and credentials locked."];
     } catch (Exception $e) {
         $pdo->rollBack();
-        return ['success' => false, 'message' => $e->getMessage()];
+        error_log("Operation failure: " . $e->getMessage());
+    return ['success' => false, 'message' => 'The operation could not be completed.'];
     }
 }
 
@@ -972,12 +981,14 @@ function hr_deleteEmployee($empId)
                 'message' => "Employee {$empId} has historical operational references (audit logs, documents, tickets) and cannot be hard-deleted. Employee has been permanently Terminated and all accounts suspended in MySQL."
             ];
         }
-        return ['success' => false, 'message' => "Database error: " . $e->getMessage()];
+        error_log("Database error: " . $e->getMessage());
+    return ['success' => false, 'message' => 'A database error occurred.'];
     } catch (Exception $e) {
         if ($pdo->inTransaction()) {
             $pdo->rollBack();
         }
-        return ['success' => false, 'message' => $e->getMessage()];
+        error_log("Operation failure: " . $e->getMessage());
+    return ['success' => false, 'message' => 'The operation could not be completed.'];
     }
 }
 
@@ -1008,7 +1019,8 @@ function hr_enrollOnboarding($empId)
         }
         return ['success' => true, 'message' => "Employee {$empId} enrolled into onboarding pipeline."];
     } catch (Exception $e) {
-        return ['success' => false, 'message' => $e->getMessage()];
+        error_log("Operation failure: " . $e->getMessage());
+    return ['success' => false, 'message' => 'The operation could not be completed.'];
     }
 }
 

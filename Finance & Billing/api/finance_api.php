@@ -316,7 +316,8 @@ try {
                     'payment_status' => $recResult['payment_status']
                 ]);
             } catch (Throwable $e) {
-                jsonReply(['success' => false, 'error' => $e->getMessage()], 400);
+                error_log("API error: " . $e->getMessage());
+        jsonReply(['success' => false, 'error' => 'An error occurred while processing the request.'], 400);
             }
             break;
 
@@ -761,6 +762,6 @@ try {
     }
     jsonReply([
         'success' => false,
-        'error' => 'Database operation failed: ' . $e->getMessage()
+        'error' => 'Database operation failed. Please contact system support.'
     ], 500);
 }

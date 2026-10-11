@@ -48,5 +48,6 @@ try {
 
     Response::success($products, "B2B Product catalog retrieved successfully", 200, ['total' => count($products)]);
 } catch (Exception $e) {
-    Response::error("Failed to load catalog: " . $e->getMessage(), 500);
+    error_log("Failed to load catalog: " . $e->getMessage());
+        Response::error("Failed to load catalog. Please try again later.", 500);
 }

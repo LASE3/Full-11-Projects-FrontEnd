@@ -22,6 +22,14 @@ if (session_status() === PHP_SESSION_NONE) {
 $pdo = getDbConnection();
 $lang = $_GET['lang'] ?? 'en';
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
+$action = $_GET['action'] ?? ($_POST['action'] ?? '');
+if ($method === 'POST') {
+    if ($action === 'delete') {
+        $method = 'DELETE';
+    } elseif ($action === 'update' || $action === 'edit') {
+        $method = 'PUT';
+    }
+}
 $empId = $_SESSION['emp_id'] ?? ($_SESSION['vostok_user']['emp_id'] ?? ($_SESSION['vostok_user']['user_id'] ?? null));
 
 if ($method === 'GET') {
@@ -152,7 +160,8 @@ if ($method === 'GET') {
             Response::success($customers, "CRM customer accounts directory loaded", 200, ['total' => count($customers)]);
         }
     } catch (Throwable $e) {
-        Response::error("Failed to load customer records: " . $e->getMessage(), 500);
+        error_log("Failed to load customer records: " . $e->getMessage());
+        Response::error("Unable to load customer directory at this time.", 500);
     }
 }
 
@@ -203,7 +212,8 @@ if ($method === 'POST') {
 
         Response::success(['cus_id' => $newCusId, 'company_name' => $companyName], "Customer account created", 201);
     } catch (Throwable $e) {
-        Response::error("Failed to create customer: " . $e->getMessage(), 500);
+        error_log("Failed to create customer: " . $e->getMessage());
+        Response::error("Failed to create customer account. Please verify input data.", 500);
     }
 }
 
@@ -250,14 +260,34 @@ if ($method === 'PUT' || $method === 'PATCH') {
 
         Response::success(['cus_id' => $cusId], "Customer account updated");
     } catch (Throwable $e) {
-        Response::error("Failed to update customer: " . $e->getMessage(), 500);
+        error_log("Failed to update customer: " . $e->getMessage());
+        Response::error("Failed to update customer account.", 500);
     }
 }
 
 if ($method === 'DELETE') {
-    $cusId = trim($_GET['id'] ?? $_GET['cus_id'] ?? '');
+    $cusId = trim((string)($_GET['id'] ?? ($_GET['cus_id'] ?? ($_POST['cus_id'] ?? ($_POST['id'] ?? '')))));
     if (empty($cusId)) {
         Response::error("Customer ID required for deletion.", 422);
+    }
+
+    // Locked baseline protection
+    if (preg_match('/^CUS-10(0[1-9]|10)$/', $cusId)) {
+        Response::error("Baseline customer records cannot be deleted. Archive instead.", 403);
+    }
+
+    // Check for linked records in projects, invoices, tickets, orders, contracts
+    $linkedCount = 0;
+    foreach (['projects', 'invoices', 'tickets', 'orders', 'contracts'] as $tbl) {
+        try {
+            $col = ($tbl === 'tickets') ? 'requester_cus_id' : 'cus_id';
+            $chk = $pdo->prepare("SELECT COUNT(*) FROM `{$tbl}` WHERE `{$col}` = ?");
+            $chk->execute([$cusId]);
+            $linkedCount += (int)$chk->fetchColumn();
+        } catch (Throwable) {}
+    }
+    if ($linkedCount > 0) {
+        Response::error("Customer has linked records; archive instead.", 409);
     }
 
     try {
@@ -278,6 +308,10 @@ if ($method === 'DELETE') {
 
         Response::success(['cus_id' => $cusId], "Customer account removed");
     } catch (Throwable $e) {
-        Response::error("Failed to delete customer: " . $e->getMessage(), 500);
+        error_log("Failed to delete customer: " . $e->getMessage());
+        if ($e instanceof PDOException && ($e->getCode() === '23000' || str_contains($e->getMessage(), '1451'))) {
+            Response::error("Customer has linked records; archive instead.", 409);
+        }
+        Response::error("Failed to delete customer account.", 500);
     }
 }

@@ -131,5 +131,6 @@ try {
         Response::success($projects, "Customer projects retrieved");
     }
 } catch (Exception $e) {
-    Response::error("Failed to load projects: " . $e->getMessage(), 500);
+    error_log("Failed to load projects: " . $e->getMessage());
+        Response::error("Failed to load projects. Please try again later.", 500);
 }

@@ -61,7 +61,8 @@ if ($method === 'GET') {
             'total_value'  => $totalQuotesVal
         ]);
     } catch (Throwable $e) {
-        Response::error("Failed to load quotes: " . $e->getMessage(), 500);
+        error_log("Failed to load quotes: " . $e->getMessage());
+        Response::error("Failed to load quotes. Please try again later.", 500);
     }
 }
 
@@ -112,7 +113,8 @@ if ($method === 'POST') {
 
         Response::success(['quote_id' => $quoteId, 'quote_ref' => $ref], 'Quote logged to DB', 201);
     } catch (Throwable $e) {
-        Response::error("Failed to create quote: " . $e->getMessage(), 500);
+        error_log("Failed to create quote: " . $e->getMessage());
+        Response::error("Failed to create quote. Please try again later.", 500);
     }
 }
 
@@ -149,7 +151,8 @@ if ($method === 'PUT' || $method === 'PATCH' || ($method === 'POST' && in_array(
         AuditLogger::logAction($empId, null, 'CRM Platform', 'CRM', 'UPDATE_QUOTE', 'quotes', (string)$quoteId, $params, 'SUCCESS');
         Response::success(['quote_id' => $quoteId], 'Quote updated in DB');
     } catch (Throwable $e) {
-        Response::error("Failed to update quote: " . $e->getMessage(), 500);
+        error_log("Failed to update quote: " . $e->getMessage());
+        Response::error("Failed to update quote. Please try again later.", 500);
     }
 }
 
@@ -165,6 +168,7 @@ if ($method === 'DELETE') {
         AuditLogger::logAction($empId, null, 'CRM Platform', 'CRM', 'DELETE_QUOTE', 'quotes', (string)$quoteId, [], 'SUCCESS');
         Response::success(['quote_id' => $quoteId], 'Quote removed');
     } catch (Throwable $e) {
-        Response::error("Failed to delete quote: " . $e->getMessage(), 500);
+        error_log("Failed to delete quote: " . $e->getMessage());
+        Response::error("Failed to delete quote. Please try again later.", 500);
     }
 }

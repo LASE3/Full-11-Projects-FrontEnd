@@ -247,5 +247,6 @@ try {
         Response::success(['doc_id' => $docId], "Document #{$docId} deleted successfully");
     }
 } catch (Exception $e) {
-    Response::error("Documents API Error: " . $e->getMessage(), 500);
+    error_log("Documents API Error: " . $e->getMessage());
+        Response::error("Documents API Error. Please try again later.", 500);
 }

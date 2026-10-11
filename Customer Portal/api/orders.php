@@ -9,6 +9,8 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../../includes/api_bootstrap.php';
 $_vp_user = vp_api_guard('CUS', ['customer' => true]);
+$user = $_vp_user;
+$isSA = isSuperAdmin($user);
 
 require_once __DIR__ . '/../../config/db.php';
 require_once __DIR__ . '/helpers/Response.php';
@@ -279,5 +281,6 @@ try {
     if ($pdo->inTransaction()) {
         $pdo->rollBack();
     }
-    Response::error("Orders API Error: " . $e->getMessage(), 500);
+    error_log("Orders API Error: " . $e->getMessage());
+        Response::error("Orders API Error. Please try again later.", 500);
 }

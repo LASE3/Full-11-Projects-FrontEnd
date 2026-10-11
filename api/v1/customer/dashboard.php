@@ -93,5 +93,6 @@ try {
 
     Response::success($dashboard, "Customer dashboard metrics loaded");
 } catch (Exception $e) {
-    Response::error("Failed to load dashboard: " . $e->getMessage(), 500);
+    error_log("Failed to load dashboard: " . $e->getMessage());
+        Response::error("Failed to load dashboard. Please try again later.", 500);
 }

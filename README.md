@@ -38,6 +38,13 @@ The entire platform is unified under a singular architectural vision, ensuring a
 ### Technology Stack
 
 - **Backend**: PHP 8.2 with PDO, MariaDB 10.4, Strict Typed Database Layer.
+  - **Required PHP Extensions**:
+    - `pdo` - Core PHP Data Objects database abstraction
+    - `pdo_mysql` - MariaDB / MySQL PDO database driver
+    - `zip` - ZipArchive support for OpenXML (.docx, .xlsx) generation and inspection
+    - `mbstring` - Multibyte string support for UTF-8 character encoding
+    - `fileinfo` - Server-side MIME type inspection (`finfo`) for secure upload validation
+    - `openssl` - Cryptographic signature, HMAC-SHA256, and AES-256 vault encryption
 - **Frontend**: HTML5, Vanilla CSS3 (Custom Properties & Design Tokens), and Vanilla JavaScript.
 - **Icons**: Google Material Symbols.
 - **Interconnectivity**: Unified `includes/integration_bus.php` and `includes/auth_guard.php`.

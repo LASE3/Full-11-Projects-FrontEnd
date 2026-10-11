@@ -182,7 +182,8 @@ if ($action === 'create') {
 
         sendJsonSuccess(['tkt_id' => $tktId], "Ticket [{$tktId}] created successfully.");
     } catch (Throwable $e) {
-        sendJsonError("Failed to create ticket: " . $e->getMessage(), 500);
+        error_log("Failed to create ticket: " . $e->getMessage());
+    sendJsonError("Failed to create ticket. An internal error occurred.", 500);
     }
 }
 

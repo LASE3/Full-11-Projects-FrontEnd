@@ -134,5 +134,6 @@ try {
     if ($pdo->inTransaction()) {
         $pdo->rollBack();
     }
-    Response::error("Account API Error: " . $e->getMessage(), 500);
+    error_log("Account API Error: " . $e->getMessage());
+        Response::error("Account API Error. Please try again later.", 500);
 }

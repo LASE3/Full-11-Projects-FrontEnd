@@ -61,5 +61,6 @@ try {
 
     Response::success($directory, "Staff directory loaded", 200, ['total' => count($directory)]);
 } catch (Exception $e) {
-    Response::error("Failed to load directory: " . $e->getMessage(), 500);
+    error_log("Failed to load directory: " . $e->getMessage());
+        Response::error("Failed to load directory. Please try again later.", 500);
 }

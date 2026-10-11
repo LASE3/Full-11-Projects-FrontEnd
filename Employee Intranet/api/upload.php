@@ -145,5 +145,6 @@ try {
         'hash'      => $hash
     ], "Document uploaded and registered successfully in database", 201);
 } catch (Exception $e) {
-    Response::error("Database registration failed: " . $e->getMessage(), 500);
+    error_log("Database registration failed: " . $e->getMessage());
+        Response::error("Database registration failed. Please try again later.", 500);
 }

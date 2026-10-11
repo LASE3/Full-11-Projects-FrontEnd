@@ -139,7 +139,8 @@ if ($method === 'GET') {
 
         Response::success($docs, "Policies and documents loaded", 200, ['total' => count($docs)]);
     } catch (Exception $e) {
-        Response::error("Failed to load documents: " . $e->getMessage(), 500);
+        error_log("Failed to load documents: " . $e->getMessage());
+        Response::error("Failed to load documents. Please try again later.", 500);
     }
 }
 
@@ -161,7 +162,7 @@ if ($method === 'POST') {
 
     if (empty($docId)) {
         $year = date('Y');
-        $docId = vp_next_id($pdo, 'documents', "DOC-{$year}-", 3);
+        $docId = vp_next_id($pdo, 'policies', "POL-{$year}-", 3);
     }
 
     // Normalize classification
@@ -212,7 +213,8 @@ if ($method === 'POST') {
 
         Response::success(['doc_id' => $docId], "Policy document registered successfully", 201);
     } catch (Exception $e) {
-        Response::error("Failed to register document: " . $e->getMessage(), 500);
+        error_log("Failed to register document: " . $e->getMessage());
+        Response::error("Failed to register document. Please try again later.", 500);
     }
 }
 
@@ -277,7 +279,8 @@ if ($method === 'PUT' || $method === 'PATCH') {
 
         Response::success(['doc_id' => $docId], "Document updated successfully");
     } catch (Exception $e) {
-        Response::error("Failed to update document: " . $e->getMessage(), 500);
+        error_log("Failed to update document: " . $e->getMessage());
+        Response::error("Failed to update document. Please try again later.", 500);
     }
 }
 
@@ -309,6 +312,7 @@ if ($method === 'DELETE') {
 
         Response::success(['doc_id' => $docId], "Document deleted successfully");
     } catch (Exception $e) {
-        Response::error("Failed to delete document: " . $e->getMessage(), 500);
+        error_log("Failed to delete document: " . $e->getMessage());
+        Response::error("Failed to delete document. Please try again later.", 500);
     }
 }

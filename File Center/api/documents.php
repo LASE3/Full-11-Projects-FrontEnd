@@ -19,6 +19,10 @@ $pdo = getApiPdo();
 $method = $_SERVER['REQUEST_METHOD'];
 
 // Handle JSON payload for POST/PUT
+if (vp_check_post_max_size_overflow()) {
+    apiError("Uploaded payload exceeds server post_max_size limit.", 413);
+}
+
 $rawInput = file_get_contents('php://input');
 $inputData = [];
 if (!empty($rawInput)) {
@@ -112,7 +116,7 @@ try {
 
         // Return next available DOC ID
         if ($action === 'next_id') {
-            $nextId = vp_next_id($pdo, 'DOC', 'DOC-2026-', 3);
+            $nextId = vp_next_id($pdo, 'documents', 'DOC-2026-', 3);
             apiSuccess(['next_doc_id' => $nextId]);
         }
 
@@ -283,7 +287,7 @@ try {
             logDocumentAction(
                 $pdo,
                 $docId,
-                'LEGAL_HOLD',
+                'Legal Hold Toggle',
                 ($newHold ? 'Applied' : 'Released') . " Statutory Preservation Hold on '{$row['file_name']}'"
             );
 
@@ -348,7 +352,7 @@ try {
         // Auto-generate doc_id if not provided
         $docId = trim((string)($req['doc_id'] ?? ''));
         if (empty($docId)) {
-            $docId = vp_next_id($pdo, 'DOC', 'DOC-2026-', 3);
+            $docId = vp_next_id($pdo, 'documents', 'DOC-2026-', 3);
         }
 
         // Ensure unique doc_id
@@ -420,9 +424,9 @@ try {
 
         // Handle physical file storage
         $storedData = null;
-        if (!empty($_FILES['file']) && $_FILES['file']['error'] === UPLOAD_ERR_OK) {
+        if (!empty($_FILES['file']) && (!empty($_FILES['file']['name']) || $_FILES['file']['error'] !== UPLOAD_ERR_NO_FILE)) {
             $storedData = vp_validate_and_save_upload($_FILES['file'], $docId);
-        } elseif (!empty($_FILES['document']) && $_FILES['document']['error'] === UPLOAD_ERR_OK) {
+        } elseif (!empty($_FILES['document']) && (!empty($_FILES['document']['name']) || $_FILES['document']['error'] !== UPLOAD_ERR_NO_FILE)) {
             $storedData = vp_validate_and_save_upload($_FILES['document'], $docId);
         } else {
             $storedData = vp_generate_default_document_file($docId, $title, $classification);
@@ -506,9 +510,11 @@ try {
         logDocumentAction(
             $pdo,
             $docId,
-            'INGEST_DRAFT',
+            'Upload',
             "Uploaded and ingested new document '{$fileName}' into vault partition '{$folder}'",
-            $ownerEmpId
+            $ownerEmpId,
+            'DOC',
+            1
         );
 
         apiSuccess([
@@ -605,7 +611,7 @@ try {
     }
 
     // -------------------------------------------------------------
-    // DELETE: Delete document from Database
+    // DELETE: Delete / Archive document in Database
     // -------------------------------------------------------------
     if ($method === 'DELETE') {
         $docId = trim((string)($req['doc_id'] ?? $req['id'] ?? ''));
@@ -621,43 +627,46 @@ try {
             apiError("Document {$docId} not found.", 404);
         }
 
+        // 1. Locked Baseline records (DOC-2026-001..015) must NEVER be deleted
+        if (preg_match('/^DOC-2026-0(0[1-9]|1[0-5])$/i', $docId)) {
+            logDocumentAction($pdo, $docId, 'Delete', "Attempted deletion of locked baseline document {$docId} denied", null, 'DOC', 0);
+            apiError("Locked baseline document {$docId} cannot be deleted. It can only be archived.", 403);
+        }
+
+        // 2. Active statutory legal preservation hold check
         if (!empty($existing['is_legal_hold'])) {
+            logDocumentAction($pdo, $docId, 'Delete', "Attempted deletion of document {$docId} under legal preservation hold denied", null, 'DOC', 0);
             apiError("Cannot delete {$docId}: Document is protected under an active Statutory Legal Preservation Hold. Release hold first.", 403);
         }
 
-        // Clean up linked tables or cascade
-        $pdo->beginTransaction();
-        try {
-            $delApp = $pdo->prepare("DELETE FROM document_approvals WHERE doc_id = :id");
-            $delApp->execute([':id' => $docId]);
+        // 3. Soft-delete non-baseline documents to preserve audit trail integrity and prevent FK violations
+        $stmtArch = $pdo->prepare("UPDATE documents SET status = 'Archived', updated_at = NOW() WHERE doc_id = :id");
+        $stmtArch->execute([':id' => $docId]);
 
-            $delVer = $pdo->prepare("DELETE FROM document_versions WHERE doc_id = :id");
-            $delVer->execute([':id' => $docId]);
-
-            $delLog = $pdo->prepare("DELETE FROM document_access_log WHERE doc_id = :id");
-            $delLog->execute([':id' => $docId]);
-
-            $delDoc = $pdo->prepare("DELETE FROM documents WHERE doc_id = :id");
-            $delDoc->execute([':id' => $docId]);
-
-            $pdo->commit();
-
-            // Unlink physical file from storage if present
-            if (!empty($existing['storage_path'])) {
-                $targetFile = dirname(__DIR__, 2) . '/' . ltrim($existing['storage_path'], '/\\');
-                if (file_exists($targetFile)) {
-                    @unlink($targetFile);
-                }
+        // Unlink physical file from storage if present
+        if (!empty($existing['storage_path'])) {
+            $targetFile = dirname(__DIR__, 2) . '/' . ltrim($existing['storage_path'], '/\\');
+            if (file_exists($targetFile)) {
+                @unlink($targetFile);
             }
-        } catch (Throwable $de) {
-            $pdo->rollBack();
-            throw $de;
         }
 
-        apiSuccess(null, "Document {$docId} ('{$existing['file_name']}') successfully deleted from database.");
+        logDocumentAction(
+            $pdo,
+            $docId,
+            'Delete',
+            "Document {$docId} ('{$existing['file_name']}') successfully deleted / archived.",
+            null,
+            'DOC',
+            1
+        );
+
+        apiSuccess(null, "Document {$docId} ('{$existing['file_name']}') successfully deleted / archived.");
     }
 
     apiError('Unsupported HTTP method: ' . $method, 405);
+} catch (VpUploadException $vue) {
+    apiError($vue->getMessage(), $vue->getStatusCode());
 } catch (Throwable $e) {
     error_log("API Error in documents.php: " . $e->getMessage());
     apiError("Operation failed. An internal error occurred.", 500);

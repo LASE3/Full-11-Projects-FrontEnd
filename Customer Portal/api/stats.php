@@ -61,5 +61,6 @@ try {
         'timestamp'  => date('Y-m-d H:i:s')
     ], 'Customer portal statistics loaded');
 } catch (Exception $e) {
-    Response::error("Failed to load statistics: " . $e->getMessage(), 500);
+    error_log("Failed to load statistics: " . $e->getMessage());
+        Response::error("Failed to load statistics. Please try again later.", 500);
 }

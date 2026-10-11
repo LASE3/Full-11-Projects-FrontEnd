@@ -215,5 +215,6 @@ try {
     apiError('Unsupported HTTP method.', 405);
 } catch (Throwable $e) {
     error_log("API Error in approvals.php: " . $e->getMessage());
-    apiError("Approval operation failed: " . $e->getMessage(), 500);
+    error_log("Approval operation failed: " . $e->getMessage());
+    apiError("Approval operation failed. Please try again later.", 500);
 }

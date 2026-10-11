@@ -103,5 +103,6 @@ try {
         Response::success($customers, "CRM customer accounts directory loaded", 200, ['total' => count($customers)]);
     }
 } catch (Exception $e) {
-    Response::error("Failed to load customer records: " . $e->getMessage(), 500);
+    error_log("Failed to load customer records: " . $e->getMessage());
+        Response::error("Failed to load customer records. Please try again later.", 500);
 }

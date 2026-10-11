@@ -80,5 +80,6 @@ try {
 
     Response::success($results, "Found " . count($results) . " matching records in database");
 } catch (Throwable $e) {
-    Response::error("Search error: " . $e->getMessage(), 500);
+    error_log("Search error: " . $e->getMessage());
+        Response::error("Search error. Please try again later.", 500);
 }

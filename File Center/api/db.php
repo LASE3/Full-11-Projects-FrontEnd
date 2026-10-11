@@ -77,6 +77,8 @@ function getCurrentCustodian(): array
     ];
 }
 
+require_once __DIR__ . '/../../includes/document_storage.php';
+
 /**
  * Log action into document_access_log
  */
@@ -86,27 +88,14 @@ function logDocumentAction(
     string $accessType,
     string $notes = '',
     ?string $empId = null,
-    string $systemId = 'DOC'
+    string $systemId = 'DOC',
+    int $success = 1,
+    ?string $cusId = null
 ): void {
-    try {
+    if (!$empId && !$cusId) {
         $custodian = getCurrentCustodian();
-        $actorEmpId = $empId ?: $custodian['emp_id'];
-        $ip = $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
-
-        $stmt = $pdo->prepare("
-            INSERT INTO document_access_log 
-            (doc_id, accessed_by_emp_id, system_id, source_ip, access_type, notes, success, accessed_at)
-            VALUES (:doc_id, :emp_id, :system_id, :ip, :access_type, :notes, 1, NOW())
-        ");
-        $stmt->execute([
-            ':doc_id'      => $docId,
-            ':emp_id'      => $actorEmpId,
-            ':system_id'   => $systemId,
-            ':ip'          => $ip,
-            ':access_type' => $accessType,
-            ':notes'       => $notes,
-        ]);
-    } catch (Throwable $e) {
-        error_log('Failed to log document access: ' . $e->getMessage());
+        $empId = $custodian['emp_id'] ?? 'EMP-1019';
     }
+    vp_log_document_access($pdo, $docId, $accessType, $success, $notes, $empId, $cusId, $systemId);
 }
+

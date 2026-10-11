@@ -18,5 +18,6 @@ try {
         'timestamp' => date('Y-m-d H:i:s')
     ]);
 } catch (Exception $e) {
-    jsonResponse(['success' => false, 'error' => $e->getMessage()], 500);
+    error_log("API error: " . $e->getMessage());
+        jsonResponse(['success' => false, 'error' => 'An internal server error occurred.'], 500);
 }

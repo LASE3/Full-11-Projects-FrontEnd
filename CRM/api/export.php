@@ -253,5 +253,6 @@ try {
     exit;
 
 } catch (Throwable $e) {
-    Response::error("Export failed: " . $e->getMessage(), 500);
+    error_log("Export failed: " . $e->getMessage());
+        Response::error("Export failed. Please try again later.", 500);
 }

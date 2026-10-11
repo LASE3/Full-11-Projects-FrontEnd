@@ -136,5 +136,6 @@ try {
             break;
     }
 } catch (Throwable $e) {
-    sendJsonError('Database error: ' . $e->getMessage(), 500);
+    error_log("Database error: " . $e->getMessage());
+    sendJsonError("Database error. An internal error occurred.", 500);
 }

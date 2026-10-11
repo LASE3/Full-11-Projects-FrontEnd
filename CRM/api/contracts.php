@@ -60,7 +60,8 @@ if ($method === 'GET') {
             'total_active_arr' => $totalActiveArr
         ]);
     } catch (Throwable $e) {
-        Response::error("Failed to load contracts: " . $e->getMessage(), 500);
+        error_log("Failed to load contracts: " . $e->getMessage());
+        Response::error("Failed to load contracts. Please try again later.", 500);
     }
 }
 
@@ -112,7 +113,8 @@ if ($method === 'POST') {
 
         Response::success(['contract_id' => $conId, 'contract_ref' => $ref], 'Contract saved to DB', 201);
     } catch (Throwable $e) {
-        Response::error("Failed to create contract: " . $e->getMessage(), 500);
+        error_log("Failed to create contract: " . $e->getMessage());
+        Response::error("Failed to create contract. Please try again later.", 500);
     }
 }
 
@@ -154,7 +156,8 @@ if ($method === 'PUT' || $method === 'PATCH' || ($method === 'POST' && in_array(
         AuditLogger::logAction($empId, null, 'CRM Platform', 'CRM', 'UPDATE_CONTRACT', 'contracts', (string)$conId, $params, 'SUCCESS');
         Response::success(['contract_id' => $conId], 'Contract updated in DB');
     } catch (Throwable $e) {
-        Response::error("Failed to update contract: " . $e->getMessage(), 500);
+        error_log("Failed to update contract: " . $e->getMessage());
+        Response::error("Failed to update contract. Please try again later.", 500);
     }
 }
 
@@ -173,7 +176,8 @@ if ($method === 'DELETE') {
 
         Response::success(['contract_id' => $conId], 'Contract deleted successfully');
     } catch (Throwable $e) {
-        Response::error("Failed to delete contract: " . $e->getMessage(), 500);
+        error_log("Failed to delete contract: " . $e->getMessage());
+        Response::error("Failed to delete contract. Please try again later.", 500);
     }
 }
 
