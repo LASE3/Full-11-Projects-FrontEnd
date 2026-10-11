@@ -36,6 +36,7 @@ package-lock.json
 # Test artifacts
 tests/output/
 tests/*.html
+test-results/
 
 # Backup SQL dumps (keep migrations, exclude generated dumps)
 DataBase/dump_*.sql

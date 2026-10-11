@@ -45,38 +45,102 @@ The entire platform is unified under a singular architectural vision, ensuring a
     - `mbstring` - Multibyte string support for UTF-8 character encoding
     - `fileinfo` - Server-side MIME type inspection (`finfo`) for secure upload validation
     - `openssl` - Cryptographic signature, HMAC-SHA256, and AES-256 vault encryption
-- **Frontend**: HTML5, Vanilla CSS3 (Custom Properties & Design Tokens), and Vanilla JavaScript.
-- **Icons**: Google Material Symbols.
-- **Interconnectivity**: Unified `includes/integration_bus.php` and `includes/auth_guard.php`.
+  - **Required PHP Configuration Settings (`php.ini`)**:
+    - `upload_max_filesize = 50M` (matches File Center document intake threshold)
+    - `post_max_size = 55M` (must exceed `upload_max_filesize` to avoid empty `$_POST`/`$_FILES` truncation)
+    - `memory_limit = 256M` (safe execution headroom for binary stream parsing)
+    - `display_errors = Off` (mandatory in production to eliminate server information leakage)
+    - `session.cookie_httponly = 1` (blocks JavaScript access to session tokens)
+    - `session.cookie_samesite = Lax` (CSRF cross-site mitigation)
+    - `session.use_strict_mode = 1` (prevents uninitialized session ID fixation)
+- **Frontend**: HTML5, Vanilla CSS3 (Custom Properties & Design Tokens), Vanilla JavaScript (No frameworks, no jQuery).
+- **Icons & Typography**: Self-hosted local IBM Plex Sans, JetBrains Mono, and Material Symbols Outlined (`assets/fonts/` + `assets/css/fonts.css`).
+- **AJAX & Security**: Centralized `assets/js/vp-ajax.js` with CSRF injection, timeout aborts, in-place DOM updates, and ARIA toasts.
+- **Interconnectivity**: Unified `includes/integration_bus.php`, `includes/auth_guard.php`, and `includes/authorize.php`.
 
 ---
 
-## 🏗️ Project Structure
+## 🏗️ What is in this Repo (Repository Map)
 
-The root directory contains the **Ecosystem Launchpad** (`index.php`), which acts as the main entry point. All 11 individual projects are organized into their own dedicated subfolders.
+The root directory contains the **Ecosystem Launchpad** (`index.php`), which acts as the main entry point. All 11 individual projects are organized into dedicated subfolders with shared core libraries:
 
 ```text
 Full-11-Projects-FrontEnd/
 ├── VOSTOKPRIBOR Corporate Web Platform/  # 01 WEB (www.vostokpribor.local)
+│   ├── index.php                         # Public showcase, equipment catalog, RFQ
+│   ├── admin.php                         # Corporate platform management console
+│   └── css/tailwind-compiled.css         # Compiled static Tailwind CSS
 ├── Online Shop B2B/                     # 02 SHP (shop.vostokpribor.local)
+│   ├── index.php                         # Industrial optics storefront & product catalog
+│   ├── Dashboard.php                     # B2B buyer account & order management
+│   └── api/                              # Orders, quotes, cart endpoints
 ├── Customer Portal/                     # 03 CUS (portal.vostokpribor.local)
+│   ├── Dashboard.php                     # Telemetry overview & project milestones
+│   ├── Invoices.php                      # Client invoices & payment verification
+│   ├── Documents.php                     # Certified documents & technical specs
+│   └── css/tailwind-compiled.css         # Compiled static Tailwind CSS
 ├── Employee Intranet/                   # 04 EMP (intranet.vostokpribor.local)
+│   ├── Dashboard.php                     # Department boards, leave management
+│   ├── EmployeeDirectory.php             # Staff directory (role-masked)
+│   └── PoliciesAndForms.php              # SOP policies & forms
 ├── CRM/                                 # 05 CRM (crm.vostokpribor.local)
+│   ├── Dashboard.php                     # Sales funnel, rep quotas, pipeline KPIs
+│   ├── Opportunities.php                 # Interactive kanban board (AJAX drag & drop)
+│   └── Customers.php                     # Enterprise account directory
 ├── HR System/                           # 06 HR  (hr.vostokpribor.local)
+│   ├── Dashboard.php                     # Headcount metrics, turnover telemetry
+│   ├── EmployeeRecords.php               # Full HR master records (HRA/EXE only)
+│   ├── OnboardingTracker.php             # Stage-by-stage onboarding workflows
+│   └── Offboarding.php                   # Separation & security clearance revoking
 ├── Finance & Billing/                   # 07 FIN (finance.vostokpribor.local)
+│   ├── Dashboard.php                     # Cash-flow KPIs, aging ledger
+│   ├── Invoices.php                      # Maker-checker dual-control invoicing
+│   └── PaymentsReconciliation.php        # SPFS & banking feed reconciliation
 ├── IT Helpdesk/                         # 08 IT  (helpdesk.vostokpribor.local)
+│   ├── Dashboard.php                     # Incident queues, MTTR SLA countdown
+│   ├── TicketQueue.php                   # Real-time ticket dispatch & triaging
+│   └── AssetManagement.php               # Hardware/software asset register
 ├── File Center/                         # 09 DOC (files.vostokpribor.local)
+│   ├── Dashboard.php                     # Vault ledger, classification index
+│   ├── upload.php                        # Drag-and-drop secure file intake
+│   └── retention.php                     # Legal holds & lifecycle policies
 ├── Developer/                           # 10 DEV (developer.vostokpribor.local)
+│   ├── Dashboard.php                     # API documentation & gateway specs
+│   ├── credentials.php                   # API key vault & hashed client secrets
+│   ├── sandbox.php                       # Interactive REST sandbox runner
+│   └── partner-registration.php          # External developer clearance intake
 ├── Admin & Governance Portal/           # 11 ADM (admin.vostokpribor.local)
-├── config/                      # Database & SSO Configuration
-├── includes/                    # Integration Bus, Auth Guard, Enterprise Flows, Audit Logger
-├── DataBase/                    # Migrations & Baseline Production Seed
-│   ├── migrations/              # 001..006 Idempotent Database Migrations
-│   ├── seed_baseline.sql        # Canonical Locked Baseline Seed
-│   └── test_fixtures.sql        # Isolated Test Fixtures & Legacy Data
-├── tests/                       # Complete Acceptance Test Suite (Phases 1-5)
-├── index.php                    # Ecosystem Launchpad
-└── login.php                    # Central SSO Login Handler
+│   ├── mainDashboard.php                 # Ecosystem telemetry & system health
+│   ├── accessMatrix.php                  # RBAC permission matrix manager
+│   ├── AuditLogs.php                     # Immutable forensic audit trail
+│   ├── EmergencyLockdown.php             # Fail-safe security isolation kill-switch
+│   └── css/tailwind-compiled.css         # Compiled static Tailwind CSS
+├── assets/                              # Shared Ecosystem Assets
+│   ├── css/fonts.css                    # Offline-safe self-hosted typography
+│   ├── css/responsive-core.css          # Universal 360-1920px responsive rules
+│   ├── fonts/                           # Self-hosted WOFF2 fonts (IBM Plex, JetBrains, Material)
+│   ├── js/vp-ajax.js                    # Unified fetch helper, CSRF, debounce, ARIA toasts
+│   └── logo.svg                         # Canonical enterprise brand mark
+├── config/                              # Configuration & Database Connection
+│   └── db.php                           # PDO connection, SSO JWT signer, session guards
+├── includes/                            # Core Framework Logic & Security
+│   ├── authorize.php                    # Deny-by-default granular authorization engine
+│   ├── auth_guard.php                   # System-level authentication barriers
+│   ├── integration_bus.php              # Real-time telemetry event bus (`vp_emit()`)
+│   ├── audit_logger.php                 # Forensic immutable audit ledger
+│   └── id_generator.php                 # Single-source-of-truth ID sequencing
+├── DataBase/                            # Database Migrations & Seeds
+│   ├── build.php                        # Reproducible zero-step automated database builder
+│   ├── migrations/                      # Numbered idempotent SQL migrations (001..015)
+│   ├── seed_baseline.sql                # Locked production baseline (95 staff, 8 dept, etc.)
+│   └── test_fixtures.sql                # Isolated test fixtures
+├── tests/                               # Comprehensive Automated Test Suites
+│   ├── test_all_acceptance.php          # 10/10 Master Acceptance Suite
+│   ├── test_isolation_matrix.php        # 30/30 Granular User Data Isolation Matrix
+│   └── e2e/responsive.spec.js           # 279/279 Playwright offline responsive layout tests
+├── .env.example                         # Production environment template (no secrets)
+├── index.php                            # Ecosystem Launchpad (all 11 subsystems)
+└── login.php                            # Unified Enterprise SSO Gateway
 ```
 
 ---
