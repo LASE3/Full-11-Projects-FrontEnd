@@ -28,8 +28,7 @@ $jobs = $stmtJobs->fetchAll(PDO::FETCH_ASSOC);
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
     <link rel="stylesheet" href="css/common.css" />
     <link rel="stylesheet" href="css/dashboard.css" />
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="js/tailwind-config.js"></script>
+    <link rel="stylesheet" href="css/tailwind-compiled.css" />
     <script src="js/portal.js"></script>
 </head>
 <body class="bg-background font-body-md text-body-md text-on-background">

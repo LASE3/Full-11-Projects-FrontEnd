@@ -29,8 +29,7 @@ $activeCount = count($projects);
         rel="stylesheet">
     <link rel="stylesheet" href="css/common.css" />
     <link rel="stylesheet" href="css/projects.css" />
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="js/tailwind-config.js"></script>
+    <link rel="stylesheet" href="css/tailwind-compiled.css" />
     <script src="js/portal.js"></script>
     <link rel="stylesheet" href="../assets/css/api-ui.css">
     <script src="../assets/js/api-core.js"></script>

@@ -22,9 +22,8 @@
     <link rel="stylesheet" href="css/theme.css" />
     <link rel="stylesheet" href="css/corporate.css" />
 
-    <!-- Tailwind CSS with Enterprise Design Tokens -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="js/corporate-tailwind.js"></script>
+    <!-- Tailwind CSS with Enterprise Design Tokens (Compiled) -->
+    <link rel="stylesheet" href="css/tailwind-compiled.css" />
 </head>
 
 <body class="bg-neutral-50 font-sans text-neutral-900 antialiased selection:bg-brand-secondary selection:text-white">

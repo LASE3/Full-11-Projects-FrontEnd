@@ -3,6 +3,7 @@
  * Shared Foundation & Design Tokens across all 11 Web Systems
  * Est. 1968 • Almaty, Kazakhstan
  */
+@import url("../../assets/css/responsive-core.css");
 
 :root {
   /* ==========================================================================

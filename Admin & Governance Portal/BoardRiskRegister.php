@@ -24,8 +24,7 @@ $topRisk = $riskRegister[0] ?? null;
     <title>VOSTOKPRIBOR Administration &amp; Governance Portal - System 11</title>
     <link rel="stylesheet" href="css/common.css" />
     <link rel="stylesheet" href="css/boardRiskRegister.css" />
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <script src="js/tailwind-config.js"></script>
+    <link rel="stylesheet" href="css/tailwind-compiled.css" />
 </head>
 
 <body class="bg-surface font-body-default text-on-surface antialiased">

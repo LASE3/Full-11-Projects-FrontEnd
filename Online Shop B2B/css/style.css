@@ -1,8 +1,8 @@
 /* ==========================================================================
    VOSTOKPRIBOR ENTERPRISE DESIGN SYSTEM - SYSTEM 02 (B2B E-COMMERCE)
    FQDN: shop.vostokpribor.local
-   Unified Design Tokens & Consolidated Stylesheet
    ========================================================================== */
+@import url("../../assets/css/responsive-core.css");
 
 :root {
   /* Brand & System Palette */
@@ -2273,7 +2273,6 @@ input[type="checkbox"]:checked + .custom-checkbox::after {
   opacity: 1;
 }
 
-/* Slide-in Drawer */
 .drawer-container {
   position: fixed;
   top: 0;
@@ -2290,8 +2289,15 @@ input[type="checkbox"]:checked + .custom-checkbox::after {
   flex-direction: column;
 }
 
+.drawer-container:not(.open) {
+  display: none !important;
+}
+
 .drawer-container.open {
+  display: flex !important;
   transform: translateX(0);
+  visibility: visible !important;
+  pointer-events: auto !important;
 }
 
 .drawer-header {
@@ -2488,6 +2494,7 @@ input[type="checkbox"]:checked + .custom-checkbox::after {
   display: flex;
   align-items: center;
   gap: 16px;
+  flex-wrap: wrap;
 }
 
 .footer-links a:hover {
@@ -2941,6 +2948,27 @@ input[type="checkbox"]:checked + .custom-checkbox::after {
     margin-left: 0 !important;
     width: 100% !important;
     max-width: 100% !important;
+  }
+
+  .enterprise-quick-status {
+    display: none !important;
+  }
+
+  .sub-header-bar,
+  .sub-header-content {
+    height: auto !important;
+    min-height: 0 !important;
+    padding: 6px 12px !important;
+    flex-wrap: wrap !important;
+  }
+
+  .rfq-quick-btn span:not(.material-symbols-outlined) {
+    display: none !important;
+  }
+
+  .header-actions {
+    flex-wrap: wrap !important;
+    gap: 6px !important;
   }
 }
 

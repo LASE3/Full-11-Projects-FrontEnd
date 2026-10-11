@@ -27,9 +27,11 @@ php_errorlog
 .DS_Store
 Thumbs.db
 
-# Composer (if used)
+# Composer & Node (if used)
 vendor/
 composer.lock
+node_modules/
+package-lock.json
 
 # Test artifacts
 tests/output/

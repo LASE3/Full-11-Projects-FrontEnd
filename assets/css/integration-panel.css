@@ -1,3 +1,4 @@
+@import url("responsive-core.css");
 @import url("https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200");
 
 .material-symbols-outlined {
@@ -539,4 +540,46 @@ body.vostok-integrations-page {
 .m-0 { margin: 0; }
 .overflow-x-auto { overflow-x: auto; }
 
+/* Responsive Header & Integrations Panel Collapse (Item 3.2) */
+@media (max-width: 640px) {
+    .vostok-top-bar {
+        padding: 0.75rem 1rem !important;
+        flex-wrap: wrap !important;
+        gap: 0.75rem !important;
+    }
+    .vostok-nav-actions {
+        flex-wrap: wrap !important;
+        gap: 0.5rem !important;
+        width: 100% !important;
+        justify-content: flex-end !important;
+    }
+    .vostok-btn-back span:not(.material-symbols-outlined) {
+        display: none !important;
+    }
+    .vostok-btn-back {
+        padding: 0.4rem 0.6rem !important;
+    }
+    .vostok-user-badge-header .vostok-user-name {
+        display: none !important;
+    }
+    .vostok-int-grid {
+        grid-template-columns: 1fr !important;
+    }
+    .vostok-card {
+        max-width: 100% !important;
+        min-width: 0 !important;
+        box-sizing: border-box !important;
+    }
+    .vostok-panel-body,
+    .vostok-container,
+    .vostok-integration-container {
+        padding: 0.75rem 0.5rem !important;
+    }
+}
+
+.vostok-logs-table-wrap,
+.overflow-x-auto {
+    overflow-x: auto !important;
+    max-width: 100% !important;
+}
 
