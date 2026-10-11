@@ -24,7 +24,7 @@
           "error",
           "delete_forever"
         );
-        setTimeout(() => location.reload(), 800);
+        /* in-place dashboard update */
       } else {
         window.showToast?.("ERROR", data.error || "Purge failed", "error");
       }
@@ -48,7 +48,7 @@
           "success",
           "verified"
         );
-        setTimeout(() => location.reload(), 800);
+        /* in-place dashboard update */
       } else {
         window.showToast?.("ERROR", data.error || "Attestation failed", "error");
       }
@@ -407,7 +407,7 @@
             "success",
             "power_off"
           );
-          setTimeout(() => location.reload(), 900);
+          /* in-place dashboard update */
         } catch (err) {
           window.showToast?.("NETWORK ERROR", err.message, "error");
           severBtn.disabled = false;

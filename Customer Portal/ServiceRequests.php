@@ -319,7 +319,7 @@ foreach ($serviceRequests as $sr) {
             const data = await res.json();
             if (data.success) {
                 alert('Service Request ' + data.request_id + ' successfully submitted and queued in HR operations!');
-                window.location.reload();
+                /* in-place submit */ form.reset(); alertBox.className = "mb-4 p-3 bg-emerald-50 border border-emerald-300 text-emerald-800 rounded text-sm"; alertBox.innerText = "Service Request " + (data.request_id || "") + " queued in HR operations!"; alertBox.classList.remove("hidden");
             } else {
                 alertBox.innerText = data.message || 'Submission failed.';
                 alertBox.classList.remove('hidden');

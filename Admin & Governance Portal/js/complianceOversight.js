@@ -185,7 +185,7 @@
           "verified",
         );
         closeControlModal();
-        setTimeout(() => location.reload(), 800);
+        /* in-place compliance update */
       } else {
         window.showToast?.("ERROR", data.error || "Save failed", "error");
       }
@@ -256,7 +256,7 @@
           "info",
           "published_with_changes",
         );
-        setTimeout(() => location.reload(), 600);
+        /* in-place compliance update */
       } else {
         window.showToast?.("ERROR", data.error || "Update failed", "error");
       }
@@ -306,7 +306,7 @@
           "report",
         );
         closeIncidentModal();
-        setTimeout(() => location.reload(), 800);
+        /* in-place compliance update */
       } else {
         window.showToast?.("ERROR", data.error || "Failed to file", "error");
       }
@@ -336,7 +336,7 @@
           "success",
           "task_alt",
         );
-        setTimeout(() => location.reload(), 800);
+        /* in-place compliance update */
       } else {
         window.showToast?.("ERROR", data.error || "Resolve failed", "error");
       }

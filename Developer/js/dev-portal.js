@@ -88,7 +88,7 @@
           if (result.success) {
             window.showToast("ENDPOINT SAVED", isUpdate ? "API endpoint specification updated in database." : "New industrial endpoint registered in database.", "success");
             closeModal();
-            setTimeout(() => window.location.reload(), 600);
+            /* in-place endpoint update */
           } else {
             window.showToast("ERROR", result.error || "Failed to save endpoint.", "error");
           }

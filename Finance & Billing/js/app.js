@@ -258,7 +258,7 @@
               "green",
             );
             finApp.closeModal("modal-invoice-detail");
-            setTimeout(() => window.location.reload(), 800);
+            /* in-place update */ const statusEl = document.querySelector(`tr[data-inv-id="${invId || ""}"] .status-pill`); if (statusEl) { statusEl.className = "status-pill status-paid"; statusEl.textContent = "Paid"; }
           } else {
             finApp.showToast(
               "Error",
@@ -323,11 +323,11 @@
                   "#unmatched-desk-body, .fin-table tbody",
                 );
                 if (tbody && tbody.children.length === 0) {
-                  window.location.reload();
+                  /* in-place reconcile */ if (tbody) tbody.innerHTML = "<tr><td colspan=\"7\" class=\"text-center p-4 text-slate-400\">All payments reconciled</td></tr>";
                 }
               }, 300);
             } else {
-              setTimeout(() => window.location.reload(), 800);
+              /* in-place update */ const statusEl = document.querySelector(`tr[data-inv-id="${invId || ""}"] .status-pill`); if (statusEl) { statusEl.className = "status-pill status-paid"; statusEl.textContent = "Paid"; }
             }
           } else {
             finApp.showToast(
@@ -360,7 +360,7 @@
               data.message,
               "green",
             );
-            setTimeout(() => window.location.reload(), 1000);
+            /* in-place update */ const statusEl = document.querySelector(`tr[data-inv-id="${invId || ""}"] .status-pill`); if (statusEl) { statusEl.className = "status-pill status-paid"; statusEl.textContent = "Paid"; }
           } else {
             finApp.showToast(
               "Auto-Match Failed",
@@ -388,7 +388,7 @@
         .then((data) => {
           if (data.success) {
             finApp.showToast("Telemetry Ingested", data.message, "green");
-            setTimeout(() => window.location.reload(), 1000);
+            /* in-place update */ const statusEl = document.querySelector(`tr[data-inv-id="${invId || ""}"] .status-pill`); if (statusEl) { statusEl.className = "status-pill status-paid"; statusEl.textContent = "Paid"; }
           } else {
             finApp.showToast(
               "Sync Error",
@@ -471,7 +471,7 @@
               "green",
             );
             finApp.closeModal("modal-create-invoice");
-            setTimeout(() => window.location.reload(), 800);
+            /* in-place update */ const statusEl = document.querySelector(`tr[data-inv-id="${invId || ""}"] .status-pill`); if (statusEl) { statusEl.className = "status-pill status-paid"; statusEl.textContent = "Paid"; }
           } else {
             finApp.showToast(
               "Error Creating Invoice",
@@ -500,7 +500,7 @@
           if (data.success) {
             finApp.showToast("Budget Updated", data.message, "green");
             finApp.closeModal("modal-update-budget");
-            setTimeout(() => window.location.reload(), 800);
+            /* in-place update */ const statusEl = document.querySelector(`tr[data-inv-id="${invId || ""}"] .status-pill`); if (statusEl) { statusEl.className = "status-pill status-paid"; statusEl.textContent = "Paid"; }
           } else {
             finApp.showToast(
               "Budget Error",

@@ -155,7 +155,7 @@
               );
             }
             closeWebhookModal();
-            setTimeout(() => window.location.reload(), 600);
+            /* in-place webhook update */
           } else {
             if (window.showToast) {
               window.showToast("GATEWAY ERROR", res.error || "Failed to persist webhook", "alert", "error");

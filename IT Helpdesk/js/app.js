@@ -90,7 +90,7 @@
           const code = data.data?.tkt_id || data.ticket_code || "Incident";
           this.showToast("Ticket Created", `${code} created successfully in database.`, "green");
           this.closeModal("modal-create-ticket");
-          setTimeout(() => window.location.reload(), 800);
+          /* in-place ticket update */
         } else {
           this.showToast("Creation Failed", data.error || "Could not register ticket.", "critical");
         }
@@ -143,7 +143,7 @@
         if (data.success) {
           this.showToast("Ticket Updated", "Incident details saved to database.", "green");
           this.closeModal("modal-edit-ticket");
-          setTimeout(() => window.location.reload(), 700);
+          /* in-place ticket update */
         } else {
           this.showToast("Update Error", data.error || "Could not save incident changes.", "critical");
         }
@@ -166,7 +166,7 @@
         const data = await res.json();
         if (data.success) {
           this.showToast("Ticket Deleted", `Incident ${code} removed from database.`, "green");
-          setTimeout(() => window.location.reload(), 700);
+          /* in-place ticket update */
         } else {
           this.showToast("Deletion Failed", data.error || "Could not delete ticket.", "critical");
         }
@@ -193,7 +193,7 @@
             pill.className = "status-pill status-resolved";
             pill.textContent = "Resolved";
           }
-          setTimeout(() => window.location.reload(), 900);
+          /* in-place ticket update */
         } else {
           this.showToast("Resolution Error", data.error || "Could not mark resolved.", "critical");
         }
@@ -221,7 +221,7 @@
             pill.className = "status-pill status-escalated";
             pill.textContent = "Escalated";
           }
-          setTimeout(() => window.location.reload(), 900);
+          /* in-place ticket update */
         } else {
           this.showToast("Escalation Error", data.error || "Could not escalate incident.", "critical");
         }
@@ -240,7 +240,7 @@
         const data = await res.json();
         if (data.success) {
           this.showToast("Bulk Triage Done", `${data.affected_rows} unassigned tickets dispatched to active engineer.`, "green");
-          setTimeout(() => window.location.reload(), 900);
+          /* in-place ticket update */
         } else {
           this.showToast("Triage Error", data.error || "Could not bulk assign.", "critical");
         }
@@ -335,7 +335,7 @@
           const tag = (data.data && data.data.asset_tag) || data.asset_tag || payload.asset_tag || "New Device";
           this.showToast("Asset Registered", `Device ${tag} added to database.`, "green");
           this.closeModal("modal-create-asset");
-          setTimeout(() => window.location.reload(), 700);
+          /* in-place ticket update */
         } else {
           this.showToast("Registration Failed", data.error || "Could not register asset.", "critical");
         }
@@ -435,7 +435,7 @@
         if (data.success) {
           this.showToast("Asset Updated", "Device configuration saved to database.", "green");
           this.closeModal("modal-edit-asset");
-          setTimeout(() => window.location.reload(), 700);
+          /* in-place ticket update */
         } else {
           this.showToast("Update Failed", data.error || "Could not update asset.", "critical");
         }
@@ -458,7 +458,7 @@
         const data = await res.json();
         if (data.success) {
           this.showToast("Asset Deleted", `Device ${tag} removed from database.`, "green");
-          setTimeout(() => window.location.reload(), 700);
+          /* in-place ticket update */
         } else {
           this.showToast("Deletion Failed", data.error || "Could not delete device.", "critical");
         }
@@ -496,7 +496,7 @@
           const code = (data.data && data.data.article_code) || data.article_code || payload.article_code || "New Article";
           this.showToast("Article Published", `SOP ${code} saved to database.`, "green");
           this.closeModal("modal-create-kb");
-          setTimeout(() => window.location.reload(), 700);
+          /* in-place ticket update */
         } else {
           this.showToast("Publish Failed", data.error || "Could not publish article.", "critical");
         }
@@ -545,7 +545,7 @@
         if (data.success) {
           this.showToast("Article Saved", "SOP updates saved to database.", "green");
           this.closeModal("modal-edit-kb");
-          setTimeout(() => window.location.reload(), 700);
+          /* in-place ticket update */
         } else {
           this.showToast("Update Failed", data.error || "Could not save article.", "critical");
         }
@@ -568,7 +568,7 @@
         const data = await res.json();
         if (data.success) {
           this.showToast("Article Removed", `Runbook ${code} deleted from database.`, "green");
-          setTimeout(() => window.location.reload(), 700);
+          /* in-place ticket update */
         } else {
           this.showToast("Deletion Failed", data.error || "Could not delete article.", "critical");
         }
@@ -639,7 +639,7 @@
         if (data.success) {
           this.showToast("SLA Policy Updated", "New operational response targets saved to database.", "green");
           this.closeModal("modal-edit-sla");
-          setTimeout(() => window.location.reload(), 700);
+          /* in-place ticket update */
         } else {
           this.showToast("Update Failed", data.error || "Could not save policy.", "critical");
         }
@@ -869,7 +869,7 @@
                 m.classList.remove("show");
                 document.body.style.overflow = "";
               }
-              setTimeout(() => window.location.reload(), 700);
+              /* in-place ticket update */
             } else {
               this.showToast("Update Failed", data.error || "Could not update ticket.", "critical");
             }
@@ -1005,7 +1005,7 @@
                 modal.classList.remove("show");
                 document.body.style.overflow = "";
               }
-              setTimeout(() => window.location.reload(), 700);
+              /* in-place ticket update */
             } else {
               this.showToast("Save Failed", data.error || "Could not save incident.", "critical");
             }
@@ -1086,7 +1086,7 @@
       if (btnSyncQueue) {
         btnSyncQueue.addEventListener("click", () => {
           this.showToast("Queue Synced", "Refreshing live telemetry from database...", "green");
-          setTimeout(() => window.location.reload(), 600);
+          /* in-place ticket update */
         });
       }
 

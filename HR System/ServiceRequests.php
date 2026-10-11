@@ -296,7 +296,7 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
       const data = await res.json();
       if (data.success) {
         alert(data.message || 'Engineer assigned successfully!');
-        window.location.reload();
+        /* in-place assignment */ document.getElementById("assign-modal").style.display = "none"; const row = document.querySelector(`tr[data-req-id="${payload.request_id}"] td:nth-child(5)`); if (row) row.innerHTML = `<span class="badge badge-assigned">Assigned: ${payload.emp_id}</span>`;
       } else {
         alert('Error: ' + (data.message || 'Assignment failed.'));
       }

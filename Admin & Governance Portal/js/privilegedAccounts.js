@@ -120,7 +120,7 @@
             clickedBtn.outerHTML = `<button class="px-space-xs py-[3px] bg-secondary hover:bg-secondary/90 text-on-secondary rounded font-telemetry-micro text-telemetry-micro font-bold cursor-pointer" onclick="restoreAccountCredentials('${empId}')">Restore</button>`;
           }
         } else {
-          setTimeout(() => location.reload(), 800);
+          /* in-place privilege update */
         }
       } else {
         window.showToast?.("ERROR", data.error || "Sever operation rejected by policy engine.", "error");
@@ -148,7 +148,7 @@
           "success",
           "verified"
         );
-        setTimeout(() => location.reload(), 700);
+        /* in-place privilege update */
       } else {
         window.showToast?.("ERROR", data.error || "Restore failed", "error");
       }
@@ -205,7 +205,7 @@
           "error",
           "power_off"
         );
-        setTimeout(() => location.reload(), 1000);
+        /* in-place privilege update */
       } else {
         window.showToast?.("ERROR", data.error || "Global sever failed", "error");
       }

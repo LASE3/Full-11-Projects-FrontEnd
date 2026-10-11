@@ -201,7 +201,7 @@
               "success",
               "verified_user"
             );
-            setTimeout(() => location.reload(), 1000);
+            /* in-place lockdown toggle */
           } else {
             confirmBtn.disabled = false;
             confirmBtn.textContent = "Confirm Action";

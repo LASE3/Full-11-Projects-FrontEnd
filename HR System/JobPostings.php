@@ -268,7 +268,7 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
       const data = await res.json();
       if (data.success) {
         alert(data.message || 'Job opening created and published live on Customer Portal!');
-        window.location.reload();
+        /* in-place job posting */ document.getElementById("modal-create-job").style.display = "none";
       } else {
         alert('Error: ' + (data.message || 'Creation failed.'));
       }
@@ -289,7 +289,7 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
       });
       const data = await res.json();
       if (data.success) {
-        window.location.reload();
+        /* in-place job posting */ document.getElementById("modal-create-job").style.display = "none";
       } else {
         alert(data.message || 'Action failed');
       }

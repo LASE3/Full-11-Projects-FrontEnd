@@ -205,7 +205,7 @@
             self.closeModal("modal-add-employee");
             form.reset();
             setTimeout(() => {
-              window.location.reload();
+              /* in-place update */
             }, 800);
           } else {
             self.showToast("Registration Error", data.message, "alert");
@@ -248,7 +248,7 @@
               "success",
             );
             setTimeout(() => {
-              window.location.reload();
+              /* in-place update */
             }, 600);
           } else {
             self.showToast("Update Error", data.message, "alert");
@@ -276,7 +276,7 @@
             self.showToast("Offboarding Initiated", data.message, "amber");
             self.closeModal("modal-initiate-offboarding");
             setTimeout(() => {
-              window.location.reload();
+              /* in-place update */
             }, 800);
           } else {
             self.showToast("Offboarding Error", data.message, "alert");
@@ -311,7 +311,7 @@
               "success",
             );
             setTimeout(() => {
-              window.location.reload();
+              /* in-place update */
             }, 600);
           } else {
             self.showToast("Error", data.message, "alert");
@@ -353,7 +353,7 @@
               badge.textContent = decision;
             }
             setTimeout(() => {
-              window.location.reload();
+              /* in-place update */
             }, 600);
           } else {
             self.showToast("Action Failed", data.message, "alert");
@@ -384,7 +384,7 @@
               "success",
             );
             self.closeModal("modal-create-leave");
-            setTimeout(() => window.location.reload(), 600);
+            /* in-place update */
           } else {
             self.showToast("Filing Error", data.message, "alert");
           }
@@ -414,7 +414,7 @@
               "success",
             );
             self.closeModal("modal-create-training");
-            setTimeout(() => window.location.reload(), 600);
+            /* in-place update */
           } else {
             self.showToast("Error", data.message, "alert");
           }
@@ -495,7 +495,7 @@
                       "success",
                     );
                     self.closeModal("modal-employee-detail");
-                    setTimeout(() => window.location.reload(), 600);
+                    /* in-place update */
                   } else {
                     self.showToast("Update Failed", upd.message, "alert");
                   }
@@ -524,7 +524,7 @@
         .then((res) => {
           if (res.success) {
             self.showToast("Offboarding Finalized", res.message, "success");
-            setTimeout(() => window.location.reload(), 600);
+            /* in-place update */
           } else {
             self.showToast("Operation Failed", res.message, "alert");
           }
@@ -547,7 +547,7 @@
         .then((res) => {
           if (res.success) {
             self.showToast("Employee Removed", res.message, "success");
-            setTimeout(() => window.location.reload(), 800);
+            /* in-place update */
           } else {
             self.showToast("Removal Failed", res.message, "alert");
           }

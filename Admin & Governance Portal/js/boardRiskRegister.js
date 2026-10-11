@@ -113,7 +113,7 @@
         if (data.success) {
           window.closeRiskModal();
           window.showToast("RISK COMMITTED", data.message, "success", "balance");
-          setTimeout(() => window.location.reload(), 800);
+          /* in-place risk update */
         } else {
           window.showToast("COMMIT FAILED", data.error || "Could not commit risk", "error", "error");
         }

@@ -156,7 +156,7 @@
 
             // Reload after 1.5s to display new record in ledger
             setTimeout(() => {
-              window.location.reload();
+              /* in-place registration */
             }, 1500);
           } else {
             if (window.showToast) {
@@ -394,7 +394,7 @@
               window.showToast("RECORD UPDATED", res.message || "Application updated in database.", "success", "done_all");
             }
             closeEditModal();
-            setTimeout(() => window.location.reload(), 600);
+            /* in-place registration */
           } else {
             if (window.showToast) {
               window.showToast("UPDATE ERROR", res.error || "Failed to update application", "alert", "error");

@@ -631,7 +631,7 @@
             row.style.opacity = "0";
             setTimeout(() => row.remove(), 300);
           } else {
-            setTimeout(() => window.location.reload(), 600);
+            /* in-place deletion */ document.querySelectorAll("tr").forEach(r => { if (r.textContent.includes(cusId)) r.remove(); });
           }
         } else {
           alert(data.message || "Failed to delete customer.");

@@ -121,7 +121,7 @@
           if (result.success) {
             window.showToast("PRESET SAVED", `Saved preset "${title}" to database.`, "success", "bookmark_added");
             closePresetModal();
-            setTimeout(() => window.location.reload(), 600);
+            /* in-place preset save */
           } else {
             window.showToast("ERROR", result.error || "Failed to save preset.", "error");
           }

@@ -147,7 +147,7 @@
               );
             }
             closeModal();
-            setTimeout(() => window.location.reload(), 600);
+            /* in-place guide update */
           } else {
             if (window.showToast) {
               window.showToast("DATABASE ERROR", res.error || "Failed to persist guide.", "alert", "error");

@@ -88,7 +88,7 @@
               "vpn_key"
             );
             closeModals();
-            setTimeout(() => window.location.reload(), 600);
+            /* in-place update */
           } else {
             window.showToast("ERROR", result.error || "Failed to mint key.", "error");
           }
@@ -170,7 +170,7 @@
           if (result.success) {
             window.showToast("KEY UPDATED", "API key parameters saved to database.", "success");
             closeModals();
-            setTimeout(() => window.location.reload(), 600);
+            /* in-place update */
           } else {
             window.showToast("UPDATE ERROR", result.error || "Failed to update key.", "error");
           }

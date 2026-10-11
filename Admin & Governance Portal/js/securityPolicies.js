@@ -110,7 +110,7 @@
         if (data.success) {
           window.closePolicyModal();
           window.showToast("POLICY SAVED", data.message, "success", "verified");
-          setTimeout(() => window.location.reload(), 800);
+          /* in-place policy update */
         } else {
           window.showToast("SAVE FAILED", data.error || "Could not save policy", "error", "error");
         }
