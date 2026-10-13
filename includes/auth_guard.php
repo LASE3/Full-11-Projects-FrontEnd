@@ -104,11 +104,14 @@ function requireAuth(string $systemId = '', string $loginPath = 'login.php'): vo
         exit;
     }
 
-    // Enforce password change if must_change_password is set (SuperAdmin exempt)
-    if (!empty($currentUser['must_change_password']) && !isSuperAdmin($currentUser)) {
+    // Enforce password change if must_change_password is set (Phase 5: SuperAdmin also subject)
+    if (!empty($currentUser['must_change_password'])) {
         $curScript = basename($_SERVER['SCRIPT_NAME'] ?? '');
-        if ($curScript !== 'ChangePassword.php' && $curScript !== 'login.php' && $curScript !== 'logout.php') {
-            header("Location: ../Admin & Governance Portal/ChangePassword.php");
+        if ($curScript !== 'change-password.php' && $curScript !== 'ChangePassword.php' && $curScript !== 'login.php' && $curScript !== 'logout.php') {
+            $cpTarget = (str_contains($_SERVER['SCRIPT_NAME'] ?? '', '/') && substr_count($_SERVER['SCRIPT_NAME'] ?? '', '/') > 2)
+                ? '../account/change-password.php'
+                : 'account/change-password.php';
+            header("Location: " . $cpTarget);
             exit;
         }
     }
@@ -147,10 +150,10 @@ function requireApiAuth(?string $requiredSystem = null): array
         exit;
     }
 
-    // Enforce password change if must_change_password is set (SuperAdmin exempt)
-    if (!empty($currentUser['must_change_password']) && !isSuperAdmin($currentUser)) {
+    // Enforce password change if must_change_password is set (Phase 5: SuperAdmin also subject)
+    if (!empty($currentUser['must_change_password'])) {
         $curScript = basename($_SERVER['SCRIPT_NAME'] ?? '');
-        if ($curScript !== 'ChangePassword.php' && $curScript !== 'auth.php' && $curScript !== 'logout.php' && $curScript !== 'check_auth.php') {
+        if ($curScript !== 'change-password.php' && $curScript !== 'ChangePassword.php' && $curScript !== 'auth.php' && $curScript !== 'logout.php' && $curScript !== 'check_auth.php') {
             http_response_code(403);
             header('Content-Type: application/json; charset=utf-8');
             echo json_encode([
@@ -158,7 +161,7 @@ function requireApiAuth(?string $requiredSystem = null): array
                 'error'   => 'Password change required',
                 'must_change_password' => true,
                 'message' => 'You must change your initial password before accessing system resources.',
-                'redirect'=> 'Admin & Governance Portal/ChangePassword.php'
+                'redirect'=> 'account/change-password.php'
             ], JSON_UNESCAPED_UNICODE);
             exit;
         }

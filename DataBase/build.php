@@ -432,13 +432,10 @@ if (file_exists($seedScript)) {
     require_once $seedScript;
 }
 
-// 8c. Generate unique initial passwords for seeded accounts (Item 2.9)
-echo "\n[5c] Generating unique initial passwords for seeded accounts (Item 2.9)...\n";
-$credsDir = dirname(__DIR__) . '/storage/credentials';
-if (!is_dir($credsDir)) {
-    mkdir($credsDir, 0700, true);
-}
-$credsFile = $credsDir . '/initial_passwords.json';
+// 8c. Generate unique initial passwords for seeded accounts (Item 2.9, Phase 5.1/5.2)
+echo "\n[5c] Generating unique initial passwords for seeded accounts...\n";
+// Save credentials outside repository tree into secure system temp directory
+$credsFile = sys_get_temp_dir() . '/vostokpribor_initial_credentials_' . date('Ymd_His') . '.json';
 $creds = ['generated_at' => date('Y-m-d H:i:s'), 'customer' => [], 'employee' => []];
 
 $cusAccounts = $rootPdo->query("SELECT account_id, cus_id, username FROM customer_accounts ORDER BY account_id")->fetchAll(PDO::FETCH_ASSOC);
@@ -456,12 +453,12 @@ foreach ($cusAccounts as $ca) {
 }
 
 $empAccounts = $rootPdo->query("SELECT account_id, emp_id, username FROM employee_accounts ORDER BY account_id")->fetchAll(PDO::FETCH_ASSOC);
-$updEmp = $rootPdo->prepare("UPDATE employee_accounts SET password_hash = :hash, must_change_password = :mcp WHERE account_id = :aid");
+$updEmp = $rootPdo->prepare("UPDATE employee_accounts SET password_hash = :hash, must_change_password = 1 WHERE account_id = :aid");
 foreach ($empAccounts as $ea) {
     if ($ea['emp_id'] === 'EMP-0001') {
         $pass = !empty($testAdminPass) ? $testAdminPass : 'AdminPass2026!';
         $hash = password_hash($pass, PASSWORD_BCRYPT, ['cost' => 12]);
-        $updEmp->execute([':hash' => $hash, ':mcp' => 0, ':aid' => $ea['account_id']]);
+        $updEmp->execute([':hash' => $hash, ':aid' => $ea['account_id']]);
         $creds['employee'][$ea['username']] = [
             'account_id' => $ea['account_id'],
             'emp_id'     => $ea['emp_id'],
@@ -472,7 +469,7 @@ foreach ($empAccounts as $ea) {
     }
     $randPass = 'Vp-Emp!' . bin2hex(random_bytes(6));
     $hash = password_hash($randPass, PASSWORD_BCRYPT, ['cost' => 12]);
-    $updEmp->execute([':hash' => $hash, ':mcp' => 1, ':aid' => $ea['account_id']]);
+    $updEmp->execute([':hash' => $hash, ':aid' => $ea['account_id']]);
     $creds['employee'][$ea['username']] = [
         'account_id' => $ea['account_id'],
         'emp_id'     => $ea['emp_id'],
@@ -485,7 +482,8 @@ file_put_contents($credsFile, json_encode($creds, JSON_PRETTY_PRINT | JSON_UNESC
 if (function_exists('chmod')) {
     @chmod($credsFile, 0600);
 }
-echo "  Seeded " . count($creds['customer']) . " customer + " . count($creds['employee']) . " employee accounts with unique passwords.\n";
+echo "  [Security] Seeded " . count($creds['customer']) . " customer + " . count($creds['employee']) . " employee accounts.\n";
+echo "  [Security] Initial credentials stored outside project tree at: {$credsFile}\n";
 
 // 9. Verify exact baseline counts & PDF specification alignments
 echo "\n[6/6] Verifying baseline counts against locked enterprise targets...\n";

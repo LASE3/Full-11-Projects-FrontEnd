@@ -557,6 +557,14 @@ $authScanOut = shell_exec(escapeshellarg($phpBin) . " " . escapeshellarg(__DIR__
 $authScanPass = str_contains((string)$authScanOut, 'AUDIT RESULT: PASS (0 UNWIRED)');
 recordTest(15, 'Authorization Coverage: 100% of mutation / by-id APIs wired', $authScanPass, $authScanPass ? '137/137 endpoints wired (0 unwired)' : 'Unwired endpoints detected');
 
+// =========================================================================
+// TEST 16: PASSWORD POLICY & ACCOUNT FLOWS (PHASE 5)
+// =========================================================================
+$pwOut = shell_exec(escapeshellarg($phpBin) . " " . escapeshellarg(__DIR__ . '/test_password_policy.php') . " 2>&1");
+$pwPass = str_contains((string)$pwOut, '12 / 12 PASSED');
+recordTest(16, 'Password Policy: Min 14 chars, deny-list, history 5, neutral route', $pwPass, $pwPass ? 'All 12 password policy checks PASS' : 'Failures detected');
+
+
 
 
 // -------------------------------------------------------------------------

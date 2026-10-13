@@ -441,4 +441,15 @@ INSERT INTO id_counters (name, next_val) VALUES
 ('employees', 1096)
 ON DUPLICATE KEY UPDATE next_val = VALUES(next_val);
 
+-- 10. PASSWORD HISTORY TABLE
+CREATE TABLE IF NOT EXISTS `password_history` (
+    `history_id` INT AUTO_INCREMENT PRIMARY KEY,
+    `account_type` ENUM('Employee', 'Customer') NOT NULL,
+    `account_id` INT NOT NULL,
+    `password_hash` VARCHAR(255) NOT NULL,
+    `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    INDEX `idx_acc_hist` (`account_type`, `account_id`, `created_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 SET FOREIGN_KEY_CHECKS = 1;
+

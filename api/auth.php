@@ -132,8 +132,8 @@ $userSessionData = [
     'login_time'      => date('Y-m-d H:i:s')
 ];
 
-if (!isSuperAdmin($user) && !empty($user['must_change_password'])) {
-    $redirect = '../Admin & Governance Portal/ChangePassword.php';
+if (!empty($user['must_change_password'])) {
+    $redirect = 'account/change-password.php';
 }
 
 // Set PHP session strictly for the authenticated system
