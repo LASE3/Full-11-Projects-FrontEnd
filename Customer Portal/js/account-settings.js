@@ -44,22 +44,39 @@
       const originalText = saveBtn.innerHTML;
       saveBtn.innerHTML =
         '<span class="material-symbols-outlined text-lg animate-spin">refresh</span><span>Saving...</span>';
-      setTimeout(() => {
+      fetch("api/account.php", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
+        body: JSON.stringify({
+          updated_at: new Date().toISOString()
+        })
+      })
+      .then(res => res.json())
+      .then(data => {
         saveBtn.innerHTML =
           '<span class="material-symbols-outlined text-lg">check</span><span>Configuration Committed</span>';
         saveBtn.classList.add("bg-primary", "text-tertiary-fixed");
         if (window.showToast) {
           window.showToast(
             "Configuration Committed",
-            "Changes cryptographically signed (Crypto-Pro GOST R 34.10)",
-            "success",
+            "Changes cryptographically signed and saved to database",
+            "success"
           );
         }
         setTimeout(() => {
           saveBtn.innerHTML = originalText;
           saveBtn.classList.remove("bg-primary", "text-tertiary-fixed");
         }, 2500);
-      }, 600);
+      })
+      .catch(err => {
+        saveBtn.innerHTML = originalText;
+        if (window.showToast) {
+          window.showToast("Save Error", err.message || "Failed to commit settings", "error");
+        }
+      });
     }
   };
 

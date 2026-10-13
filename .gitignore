@@ -48,3 +48,7 @@ storage/credentials/*
 
 # Archived mock files
 _trash/
+
+# Release archives
+*.zip
+vostokpribor_release.zip

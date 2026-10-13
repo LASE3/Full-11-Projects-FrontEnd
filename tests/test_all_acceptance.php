@@ -548,7 +548,7 @@ recordTest(13, 'Quality & Linters: php -l (277), node --check (70), crawler (43)
 // =========================================================================
 $hyOut = shell_exec(escapeshellarg($phpBin) . " " . escapeshellarg(__DIR__ . '/../scripts/check_repo_hygiene.php') . " 2>&1");
 $hyPass = str_contains((string)$hyOut, 'ALL REPOSITORY HYGIENE CHECKS PASSED');
-recordTest(14, 'Repository Hygiene: Clean uploads, no mock data, offline fonts', $hyPass, $hyPass ? 'All 10 hygiene rules PASS' : 'Failures detected');
+recordTest(14, 'Repository Hygiene: Clean uploads, no mock data, offline fonts, deduplicated assets', $hyPass, $hyPass ? 'All 15 hygiene rules PASS' : 'Failures detected');
 
 // =========================================================================
 // TEST 15: API AUTHORIZATION COVERAGE (PHASE 4.1 SCANNER)

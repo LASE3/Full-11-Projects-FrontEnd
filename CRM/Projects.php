@@ -25,7 +25,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
         <div class="brand-section">
           <button class="mobile-nav-toggle" id="crm-sidebar-toggle" onclick="document.body.classList.toggle('sidebar-open')" title="Toggle Menu"><span class="material-symbols-outlined">menu</span></button>
           <a href="Dashboard.php" class="brand-logo-container">
-            <img alt="VOSTOKPRIBOR Official Mark" class="brand-logo-img" src="assets/logo.svg" />
+            <img alt="VOSTOKPRIBOR Official Mark" class="brand-logo-img" src="../assets/logo.svg" />
             <div class="brand-divider"></div>
             <div class="brand-title-group">
               <div class="brand-title-row">

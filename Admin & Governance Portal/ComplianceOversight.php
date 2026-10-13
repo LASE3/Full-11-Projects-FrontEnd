@@ -47,7 +47,7 @@ $remediationReviews = max(0, $totalReviews - $compliantReviews - $deviationRevie
                 <button class="mobile-nav-toggle" id="gov-sidebar-toggle" onclick="document.body.classList.toggle('sidebar-open')" title="Toggle Menu"><span class="material-symbols-outlined text-[20px]">menu</span></button>
                 <img alt="VOSTOKPRIBOR System 11 Logo"
                     class="h-8 w-auto object-contain"
-                    src="assets/logo.svg" />
+                    src="../assets/logo.svg" />
                 <div class="h-6 w-[1px] bg-outline-variant/40"></div>
                 <div class="flex flex-col">
                     <div class="flex items-center gap-space-xs"><span

@@ -145,6 +145,21 @@
       });
     },
 
+    /* ── Contracts & Quotes ── */
+    contracts(params = {}) {
+      return call("/crm/contracts.php", { params });
+    },
+
+    createContract(payload) {
+      return call("/crm/contracts.php", {
+        method: "POST",
+        body: payload,
+      }).then((res) => {
+        bus.emit("crm:contractCreated", res.data);
+        return res;
+      });
+    },
+
     /* ────────────────────────────────────────────────────────────────────────
      * Inter-Module Data Sharing (Cross-System Communication)
      * ──────────────────────────────────────────────────────────────────────── */

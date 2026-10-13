@@ -32,7 +32,7 @@ $endpoints = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <button class="mobile-nav-toggle" id="dev-sidebar-toggle" onclick="document.body.classList.toggle('sidebar-open')" title="Toggle Menu"><span class="material-symbols-outlined">menu</span></button>
             <a class="vk-brand-section" href="Dashboard.php">
                 <img alt="VOSTOKPRIBOR Official Mark" class="brand-logo-img dev-logo-img"
-                    src="assets/logo.svg" />
+                    src="../assets/logo.svg" />
                 <div class="dev-flex-col" >
                     <div class="dev-flex-center-gap-8" >
                         <span class="dev-font-family-var-font-980b"

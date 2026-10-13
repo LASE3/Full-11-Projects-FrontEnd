@@ -85,7 +85,7 @@ if ($cusId) {
         </button>
         <div class="brand-logo-container" onclick="window.shopApp.navigateTo('catalog')">
           <img alt="VOSTOKPRIBOR Official Mark" class="brand-logo-img"
-            src="assets/logo.svg" />
+            src="../assets/logo.svg" />
           <div class="brand-divider"></div>
           <div class="brand-title-group">
             <div class="brand-title-row">

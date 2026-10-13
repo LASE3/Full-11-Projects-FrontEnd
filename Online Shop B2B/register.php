@@ -26,7 +26,7 @@
   <header class="auth-top-bar">
     <a href="index.php" class="auth-brand-link" title="Return to B2B Shop">
       <img
-        src="assets/logo.svg"
+        src="../assets/logo.svg"
         alt="VOSTOKPRIBOR Logo" class="auth-brand-logo">
       <div>
         <div class="auth-brand-name">VOSTOKPRIBOR</div>
@@ -249,7 +249,7 @@
     <p>&copy; 2026 VOSTOKPRIBOR Industrial Group · B2B Commerce Engine · shop.vostokpribor.local</p>
   </footer>
 
-  <script src="js/dynamic-login-theme.js?v=1790609011"></script>
+  <script src="../assets/js/dynamic-login-theme.js?v=1790609011"></script>
   <script src="js/register.js"></script>
 <script>
   (function(){

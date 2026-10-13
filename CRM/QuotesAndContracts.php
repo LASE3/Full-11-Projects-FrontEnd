@@ -25,7 +25,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
         <div class="brand-section">
           <button class="mobile-nav-toggle" id="crm-sidebar-toggle" onclick="document.body.classList.toggle('sidebar-open')" title="Toggle Menu"><span class="material-symbols-outlined">menu</span></button>
           <a href="Dashboard.php" class="brand-logo-container">
-            <img alt="VOSTOKPRIBOR Official Mark" class="brand-logo-img" src="assets/logo.svg" />
+            <img alt="VOSTOKPRIBOR Official Mark" class="brand-logo-img" src="../assets/logo.svg" />
             <div class="brand-divider"></div>
             <div class="brand-title-group">
               <div class="brand-title-row">
@@ -368,7 +368,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
                   <th>Action</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody id="contracts-tbody">
                 <tr>
                   <td>
                     <strong class="crm-mono-confidential" >MSA-2026-ARAL-001</strong>
@@ -500,31 +500,31 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
       <div class="modal-body">
         <div class="form-group">
           <label class="form-label">Client Enterprise Account</label>
-          <select class="form-select">
-            <option>Aral Geomatics Group</option>
-            <option>NLMK Group Lipetsk</option>
-            <option>Steppe Mining Technologies</option>
-            <option>EVRAZ Consolidated</option>
+          <select class="form-select" id="quote-client">
+            <option value="CUS-1001">Aral Geomatics Group</option>
+            <option value="CUS-1002">NLMK Group Lipetsk</option>
+            <option value="CUS-1003">Steppe Mining Technologies</option>
+            <option value="CUS-1004">EVRAZ Consolidated</option>
           </select>
         </div>
         <div class="form-group">
           <label class="form-label">Equipment Specification Item</label>
-          <input type="text" class="form-input" placeholder="e.g. Optical Thickness Sensor Gauges Batch" required />
+          <input type="text" class="form-input" id="quote-title" placeholder="e.g. Optical Thickness Sensor Gauges Batch" required />
         </div>
         <div class="crm-grid-2col" >
           <div class="form-group">
             <label class="form-label">Total Quotation Value (USD)</label>
-            <input type="number" class="form-input" placeholder="450000" required />
+            <input type="number" class="form-input" id="quote-value" placeholder="450000" required />
           </div>
           <div class="form-group">
             <label class="form-label">Quote Expiry Date</label>
-            <input type="text" class="form-input" value="Jan 30, 2025" />
+            <input type="text" class="form-input" id="quote-date" value="Jan 30, 2025" />
           </div>
         </div>
       </div>
       <div class="modal-footer">
-        <button class="btn btn-outline" onclick="window.crmApp.closeModal('modal-new-quote')">Cancel</button>
-        <button class="btn btn-primary-amber" onclick="window.crmApp.showToast('Quote Generated', 'Formal quotation generated with generated ID #QUO-2024-9925.'); window.crmApp.closeModal('modal-new-quote');">Generate Quote</button>
+        <button type="button" class="btn btn-outline" onclick="window.crmApp.closeModal('modal-new-quote')">Cancel</button>
+        <button type="button" class="btn btn-primary-amber" onclick="window.submitNewQuote()">Generate Quote</button>
       </div>
     </div>
   </div>
@@ -535,6 +535,75 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
   <script src="../assets/js/api-core.js"></script>
   <script src="../assets/js/api-crm.js"></script>
   <script src="../assets/js/notifications-hub.js" defer></script>
+  <script>
+    window.loadContracts = async function() {
+      try {
+        const res = await fetch("api/contracts.php");
+        const json = await res.json();
+        if (json && json.success && Array.isArray(json.data) && json.data.length > 0) {
+          const tbody = document.getElementById("contracts-tbody");
+          if (tbody) {
+            tbody.innerHTML = json.data.map(c => `
+              <tr>
+                <td>
+                  <strong class="crm-mono-confidential">${c.contract_ref || ('CTR-' + c.contract_id)}</strong>
+                  <div class="crm-text-navy-11">${c.title || 'Master Commercial Agreement'}</div>
+                </td>
+                <td>
+                  <strong>${c.company_name || 'Enterprise Client'}</strong>
+                  <div class="crm-text-muted-sm">${c.sector || 'Industrial Sector'}</div>
+                </td>
+                <td>${c.start_date || '2024-01-01'} – ${c.end_date || '2026-12-31'}</td>
+                <td><strong class="crm-mono-navy-lg">$${Number(c.contract_value || 0).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</strong></td>
+                <td><span class="tier-badge crm-badge-success">✓ ${c.eds_status || 'Counter-Signed'}</span></td>
+                <td>
+                  <button class="btn btn-outline btn-sm" onclick="window.crmApp.showToast('Secure Download', 'Decrypted document ${(c.contract_ref || c.contract_id)}.pdf downloaded.')">Download <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></button>
+                </td>
+              </tr>
+            `).join('');
+          }
+        }
+      } catch (e) {
+        console.warn("Contracts load warning:", e);
+      }
+    };
+
+    window.submitNewQuote = async function() {
+      const clientSelect = document.getElementById("quote-client");
+      const cusId = clientSelect ? clientSelect.value : "CUS-1001";
+      const titleInput = document.getElementById("quote-title");
+      const title = titleInput ? titleInput.value.trim() : "Quotation Spec";
+      const valueInput = document.getElementById("quote-value");
+      const val = valueInput ? parseFloat(valueInput.value) || 100000 : 100000;
+
+      try {
+        const res = await fetch("api/contracts.php", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "Accept": "application/json" },
+          body: JSON.stringify({
+            cus_id: cusId,
+            title: title,
+            contract_value: val,
+            contract_type: "Quotation"
+          })
+        });
+        const json = await res.json();
+        if (json && json.success) {
+          window.crmApp.showToast("Quote Generated", `Formal contract generated with reference ${json.data.contract_ref || '#QUO-2024'}.`);
+          window.crmApp.closeModal("modal-new-quote");
+          window.loadContracts();
+        } else {
+          window.crmApp.showToast("Error", (json && (json.message || json.error)) || "Failed to generate quote", "error");
+        }
+      } catch (err) {
+        window.crmApp.showToast("Error", err.message, "error");
+      }
+    };
+
+    document.addEventListener("DOMContentLoaded", function() {
+      window.loadContracts();
+    });
+  </script>
 </body>
 
 </html>

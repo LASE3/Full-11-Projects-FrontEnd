@@ -49,7 +49,7 @@ $totalFeedEvents = count($finEvents) + count($prjEvents) + count($tktEvents);
                 <span class="material-symbols-outlined text-2xl" id="sidebar-toggle-icon">menu</span>
             </button>
             <img alt="VOSTOKPRIBOR Logo" class="h-8 w-auto object-contain cursor-pointer" onclick="location.href='Dashboard.php'"
-                src="assets/logo.svg" />
+                src="../assets/logo.svg" />
             <div class="h-6 w-px bg-outline/30"></div>
             <div class="flex flex-col">
                 <div class="flex items-center gap-unit-xs"><span

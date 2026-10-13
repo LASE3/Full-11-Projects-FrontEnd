@@ -35,7 +35,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Elena Morozova', 'role_
                 </button>
 
                 <a class="intra-display-flex-align-items-a3ac" href="Dashboard.php" >
-                    <img class="intra-height-32px-width-auto-7934" alt="VOSTOKPRIBOR Official Mark"  src="assets/logo.svg" />
+                    <img class="intra-height-32px-width-auto-7934" alt="VOSTOKPRIBOR Official Mark"  src="../assets/logo.svg" />
                     <div class="intra-height-24px-width-1px-c7a3" ></div>
                     <div class="intra-flex-col" >
                         <div class="intra-flex-center-gap-sm" >

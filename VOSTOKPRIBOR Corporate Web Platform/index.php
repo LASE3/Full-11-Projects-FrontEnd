@@ -31,7 +31,7 @@
                 <a href="#hero" class="flex items-center gap-3 group">
                     <img alt="VOSTOKPRIBOR Official Mark"
                         class="h-8 w-auto object-contain transition-transform group-hover:scale-105"
-                        src="assets/logo.svg" />
+                        src="../assets/logo.svg" />
                     <div class="h-6 w-px bg-white/20 hidden sm:block"></div>
                     <div class="flex flex-col">
                         <div class="flex items-center gap-2">
@@ -1128,7 +1128,7 @@
                 <div class="lg:col-span-2">
                     <div class="flex items-center gap-2 mb-3">
                         <img alt="VOSTOKPRIBOR Logo" class="h-7 w-auto object-contain"
-                            src="assets/logo.svg" />
+                            src="../assets/logo.svg" />
                         <span class="font-bold text-white text-base tracking-tight">VOSTOKPRIBOR</span>
                     </div>
                     <p class="text-xs text-slate-400 leading-relaxed mb-4 max-w-sm">

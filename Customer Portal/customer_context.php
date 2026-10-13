@@ -172,7 +172,7 @@ function renderCustomerHeader(string $activeSearchPlaceholder = 'Search projects
             <button id="sidebar-toggle-btn" class="p-1.5 -ml-1 mr-1 rounded text-on-primary-container hover:text-on-primary hover:bg-surface-container-high/10 transition-colors flex items-center justify-center cursor-pointer focus:outline-none" title="Toggle Navigation Menu (Ctrl+B)">
                 <span class="material-symbols-outlined text-2xl" id="sidebar-toggle-icon">menu</span>
             </button>
-            <img alt="VOSTOKPRIBOR Logo" class="h-8 w-auto object-contain cursor-pointer" onclick="location.href='Dashboard.php'" src="assets/logo.svg">
+            <img alt="VOSTOKPRIBOR Logo" class="h-8 w-auto object-contain cursor-pointer" onclick="location.href='Dashboard.php'" src="../assets/logo.svg">
             <div class="h-6 w-px bg-outline/30"></div>
             <div class="flex flex-col">
                 <div class="flex items-center gap-unit-xs">

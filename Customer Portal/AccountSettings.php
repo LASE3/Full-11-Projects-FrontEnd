@@ -27,7 +27,7 @@ require_once __DIR__ . '/customer_context.php';
                 <span class="material-symbols-outlined text-2xl" id="sidebar-toggle-icon">menu</span>
             </button>
             <img alt="VOSTOKPRIBOR Logo" class="h-8 w-auto object-contain cursor-pointer" onclick="location.href='Dashboard.php'"
-                src="assets/logo.svg">
+                src="../assets/logo.svg">
             <div class="h-6 w-px bg-on-primary-container/30"></div>
             <div class="flex flex-col">
                 <div class="flex items-center gap-unit-xs"><span
@@ -763,6 +763,11 @@ require_once __DIR__ . '/customer_context.php';
                                         2025 • Cert #VP-EDS-9844-01</span>
                                 </div>
                             </div>
+                            <a href="../account/change-password.php"
+                                class="w-full mt-unit-xs py-2 rounded bg-surface-container hover:bg-surface-container-high text-primary font-headline-sm text-body-sm font-semibold transition-colors flex items-center justify-center gap-1.5 text-center">
+                                <span class="material-symbols-outlined text-base">password</span>
+                                <span class="">Change Account Password</span>
+                            </a>
                             <button onclick="requestClearanceElevation()"
                                 class="w-full mt-unit-xs py-2 rounded bg-surface-container hover:bg-surface-container-high text-primary font-headline-sm text-body-sm font-semibold transition-colors flex items-center justify-center gap-1.5"
                                 type="button">

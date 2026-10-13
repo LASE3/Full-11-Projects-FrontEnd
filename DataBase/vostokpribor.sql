@@ -1504,7 +1504,7 @@ CREATE TABLE `leads` (
 
 INSERT INTO `leads` (`lead_id`, `full_name`, `email`, `phone`, `company_name`, `message`, `source_page`, `status`, `assigned_sales_emp_id`, `converted_cus_id`, `created_at`) VALUES
 (1, 'Nursultan Kadyrov', 'n.kadyrov@kaztransgas.kz', '+7 (717) 255-8801', 'KazTransGas Distribution', 'Requesting commercial quote for 40 units of Metrotec-500 Flow Analyzers.', 'Corporate Web', 'Qualified', 'EMP-1007', NULL, '2026-09-21 18:13:25'),
-(2, 'Olga Demidova', 'o.demidova@severstal.ru', '+7 (820) 256-4422', 'Severstal Metallurgy PJSC', 'Follow-up regarding proposal for furnace pressure differential gauges.', 'Direct Referral', 'Qualified', 'EMP-1006', NULL, '2026-09-21 18:13:25'),
+(2, 'Olga Demidova', 'o.demidova@stalprom-metal.ru', '+7 (820) 256-4422', 'Stalprom Metallurgy PJSC', 'Follow-up regarding proposal for furnace pressure differential gauges.', 'Direct Referral', 'Qualified', 'EMP-1006', NULL, '2026-09-21 18:13:25'),
 (3, 'Yerbol Sadykov', 'yerbol@bogatyr.kz', '+7 (718) 722-1144', 'Bogatyr Coal Mining', 'Seeking vibration analysis telemetry sensors for open-pit excavators.', 'B2B Shop', 'New', 'EMP-1008', NULL, '2026-09-21 18:13:25'),
 (4, 'Alexander Weber', 'a.weber@basf-caspian.de', '+49 621 60-0', 'BASF Caspian Petrochemical', 'Inquiry on corrosive chemical immersion probes with ATEX Zone 0 proofing.', 'API Portal', 'Qualified', 'EMP-1010', NULL, '2026-09-21 18:13:25'),
 (5, 'Marat Tazhin', 'm.tazhin@almatypower.kz', '+7 (727) 299-3300', 'Almaty Energy Consortium', 'Grid monitoring instrumentation replacement for Substation 220kV East.', 'Corporate Web', 'New', 'EMP-1009', NULL, '2026-09-21 18:13:25');

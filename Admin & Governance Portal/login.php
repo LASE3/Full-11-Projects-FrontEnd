@@ -37,7 +37,7 @@ $initError = $_GET['error'] ?? '';
   <header class="auth-top-bar">
     <a href="index.php" class="auth-brand-link" title="Return to Portal">
       <img
-        src="assets/logo.svg"
+        src="../assets/logo.svg"
         alt="VOSTOKPRIBOR Logo" class="auth-brand-logo">
       <div>
         <div class="auth-brand-name">VOSTOKPRIBOR</div>
@@ -158,7 +158,7 @@ $initError = $_GET['error'] ?? '';
   </footer>
 
   <!-- Interactive Logic -->
-  <script src="js/dynamic-login-theme.js?v=1790609011"></script>
+  <script src="../assets/js/dynamic-login-theme.js?v=1790609011"></script>
   <script src="../assets/js/auth-form.js"></script>
 <script>
   (function(){

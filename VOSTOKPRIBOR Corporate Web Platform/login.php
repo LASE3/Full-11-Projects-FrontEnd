@@ -36,7 +36,7 @@ $initError = $_GET['error'] ?? '';
   <!-- Top System Header Bar -->
   <header class="auth-top-bar">
     <a href="index.php" class="auth-brand-link" title="Return to Website">
-      <img src="assets/logo.svg" alt="VOSTOKPRIBOR Logo" class="auth-brand-logo" onerror="this.style.display='none'">
+      <img src="../assets/logo.svg" alt="VOSTOKPRIBOR Logo" class="auth-brand-logo" onerror="this.style.display='none'">
       <div>
         <div class="auth-brand-name">VOSTOKPRIBOR</div>
       </div>

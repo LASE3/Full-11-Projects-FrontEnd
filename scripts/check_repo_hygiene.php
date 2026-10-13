@@ -107,6 +107,55 @@ $personaOutput = shell_exec($personaCmd);
 $personaPass = str_contains((string)$personaOutput, '0 foreign mock persona occurrences remain') || !str_contains((string)$personaOutput, 'FAIL');
 check("Mock persona strings eliminated", $personaPass, "Found hardcoded foreign personas in UI files");
 
+// 9. Check prohibited build/tailwind config files removed
+$prohibitedConfigs = [
+    $root . '/Admin & Governance Portal/js/tailwind-config.js',
+    $root . '/Customer Portal/js/tailwind-config.js',
+    $root . '/Admin & Governance Portal/tailwind.config.js',
+    $root . '/Customer Portal/tailwind.config.js',
+    $root . '/VOSTOKPRIBOR Corporate Web Platform/tailwind.config.js',
+    $root . '/VOSTOKPRIBOR Corporate Web Platform/js/corporate-tailwind.js',
+    $root . '/assets/js/launchpad-tailwind.js',
+    $root . '/Admin & Governance Portal/css/tailwind-input.css',
+    $root . '/Customer Portal/css/tailwind-input.css',
+    $root . '/VOSTOKPRIBOR Corporate Web Platform/css/tailwind-input.css',
+    $root . '/scripts/download_fonts.js',
+];
+$foundConfigs = [];
+foreach ($prohibitedConfigs as $cfg) {
+    if (file_exists($cfg)) $foundConfigs[] = basename($cfg);
+}
+check("Unused build and tailwind configs eliminated", count($foundConfigs) === 0, "Found prohibited files: " . implode(', ', $foundConfigs));
+
+// 10. Check duplicate logo.svg removed (only canonical assets/logo.svg kept)
+$subsystems = [
+    'Admin & Governance Portal', 'CRM', 'Customer Portal', 'Developer',
+    'Employee Intranet', 'File Center', 'Finance & Billing', 'HR System',
+    'IT Helpdesk', 'Online Shop B2B', 'VOSTOKPRIBOR Corporate Web Platform'
+];
+$foundDuplicateLogos = [];
+foreach ($subsystems as $sub) {
+    if (file_exists($root . '/' . $sub . '/assets/logo.svg')) {
+        $foundDuplicateLogos[] = $sub . '/assets/logo.svg';
+    }
+}
+check("Duplicate logo.svg assets eliminated", count($foundDuplicateLogos) === 0 && file_exists($root . '/assets/logo.svg'), "Found duplicates: " . implode(', ', $foundDuplicateLogos));
+
+// 11. Check duplicate dynamic-login-theme.js removed (only canonical assets/js/dynamic-login-theme.js kept)
+$foundDuplicateThemes = [];
+foreach ($subsystems as $sub) {
+    if (file_exists($root . '/' . $sub . '/js/dynamic-login-theme.js')) {
+        $foundDuplicateThemes[] = $sub . '/js/dynamic-login-theme.js';
+    }
+}
+check("Duplicate dynamic-login-theme.js eliminated", count($foundDuplicateThemes) === 0 && file_exists($root . '/assets/js/dynamic-login-theme.js'), "Found duplicates: " . implode(', ', $foundDuplicateThemes));
+
+// 12. Check initial_passwords.json not present in repository
+check("Storage credentials uncommitted & clean", !file_exists($root . '/storage/credentials/initial_passwords.json'), "Found initial_passwords.json in repository tree");
+
+// 13. Check release builder make_release.php exists
+check("Release archive generator present", file_exists($root . '/scripts/make_release.php'), "scripts/make_release.php missing");
+
 echo "\n========================================================================\n";
 echo "                      HYGIENE SUMMARY RESULTS                           \n";
 echo "========================================================================\n";
@@ -125,3 +174,4 @@ if (count($failures) > 0) {
 
 echo "\nALL REPOSITORY HYGIENE CHECKS PASSED PERFECTLY!\n";
 exit(0);
+

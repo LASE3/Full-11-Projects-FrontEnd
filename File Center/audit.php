@@ -55,7 +55,7 @@ $pendingApprovals = (int)$pdo->query("SELECT COUNT(*) FROM documents WHERE statu
         <div class="fc-flex-center-gap-24">
             <button class="mobile-nav-toggle" id="fc-sidebar-toggle" onclick="document.body.classList.toggle('sidebar-open')" title="Toggle Menu"><span class="material-symbols-outlined">menu</span></button>
             <a class="vk-brand-section" href="Dashboard.php">
-                <img alt="VOSTOKPRIBOR Official Mark" class="brand-logo-img fc-logo-img" src="assets/logo.svg" />
+                <img alt="VOSTOKPRIBOR Official Mark" class="brand-logo-img fc-logo-img" src="../assets/logo.svg" />
                 <div class="fc-flex-col">
                     <div class="fc-flex-center-gap-8">
                         <span class="fc-font-family-var-font-980b">VOSTOKPRIBOR</span>
