@@ -25,7 +25,8 @@ $linkHealth = gov_getLinkHealth($pdo);
 <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <meta name="csrf-token" content="<?= htmlspecialchars(getCsrfToken()) ?>" />
+    <?php require_once __DIR__ . '/../includes/head_security.php'; ?>
+" />
     <title>VOSTOKPRIBOR Administration &amp; Governance Portal - System 11</title>
     <link rel="stylesheet" href="css/common.css" />
     <link rel="stylesheet" href="css/dashboard.css" />

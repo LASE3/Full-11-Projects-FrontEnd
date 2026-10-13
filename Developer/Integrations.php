@@ -27,6 +27,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
 <html lang="en">
 
 <head>
+  <?php require_once __DIR__ . '/../includes/head_security.php'; ?>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VOSTOKPRIBOR Developer Portal · Inter-System Integrations (SYS04)</title>

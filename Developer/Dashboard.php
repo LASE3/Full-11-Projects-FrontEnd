@@ -17,7 +17,8 @@ $endpoints = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <meta name="csrf-token" content="<?= htmlspecialchars(getCsrfToken()) ?>" />
+    <?php require_once __DIR__ . '/../includes/head_security.php'; ?>
+" />
     <title>VOSTOKPRIBOR Developer &amp; API Portal - System 10</title>
     <link rel="stylesheet" href="css/dev-tokens.css" />
     <link rel="stylesheet" href="css/dev-common.css?v=<?= time() ?>" />

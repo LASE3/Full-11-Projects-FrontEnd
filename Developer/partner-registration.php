@@ -20,6 +20,7 @@ try {
 <html lang="en">
 
 <head>
+  <?php require_once __DIR__ . '/../includes/head_security.php'; ?>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>Enterprise Partner Registration - VOSTOKPRIBOR Developer Portal</title>

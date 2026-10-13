@@ -23,7 +23,8 @@ $csrfToken = getCsrfToken();
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="csrf-token" content="<?= htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8') ?>" />
+    <?php require_once __DIR__ . '/../includes/head_security.php'; ?>
+" />
     <title>WEB Admin Editor • VOSTOKPRIBOR Corporate Platform</title>
 
                     <link rel="stylesheet" href="css/theme.css" />

@@ -34,6 +34,7 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
 <html lang="en">
 
 <head>
+  <?php require_once __DIR__ . '/../includes/head_security.php'; ?>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>VOSTOKPRIBOR HR System · Onboarding Pipeline</title>

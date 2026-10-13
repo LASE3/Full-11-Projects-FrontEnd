@@ -44,6 +44,7 @@ $coldTb = round(1.2 + ($totalDocs * 0.005), 2);
 <html lang="en">
 
 <head>
+  <?php require_once __DIR__ . '/../includes/head_security.php'; ?>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>Retention &amp; Legal Holds - VOSTOKPRIBOR File Center</title>

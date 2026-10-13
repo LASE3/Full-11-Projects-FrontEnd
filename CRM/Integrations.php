@@ -31,6 +31,7 @@ $currUser = $_SESSION['vostok_user'] ?? [
 <html lang="en">
 
 <head>
+  <?php require_once __DIR__ . '/../includes/head_security.php'; ?>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="VOSTOKPRIBOR CRM System (SYS02) — Inter-System Integrations &amp; Real-time Data Bus">

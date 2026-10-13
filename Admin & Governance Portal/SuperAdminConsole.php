@@ -423,7 +423,8 @@ $totalAuditSystems = (int)$pdo->query(
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <meta name="csrf-token" content="<?= htmlspecialchars(getCsrfToken()) ?>"/>
+    <?php require_once __DIR__ . '/../includes/head_security.php'; ?>
+"/>
     <title>SuperAdmin Console — VOSTOKPRIBOR</title>
     <meta name="description" content="SuperAdmin read-only console: table browser, audit logs, view-as, integration link health"/>
     <style>
