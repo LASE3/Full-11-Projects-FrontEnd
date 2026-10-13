@@ -38,6 +38,10 @@ The entire platform is unified under a singular architectural vision, ensuring a
 ### Technology Stack
 
 - **Backend**: PHP 8.2 with PDO, MariaDB 10.4, Strict Typed Database Layer.
+  - **MariaDB Strict SQL Mode Requirement**:
+    - MariaDB must run with `sql_mode='STRICT_ALL_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION'` across development, testing, CI, and production.
+    - Default non-strict modes silently truncate strings and mask bugs.
+    - The database connection (`config/db.php` and `DataBase/build.php`) executes `SET SESSION sql_mode='STRICT_ALL_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION'` on every connection.
   - **Required PHP Extensions**:
     - `pdo` - Core PHP Data Objects database abstraction
     - `pdo_mysql` - MariaDB / MySQL PDO database driver

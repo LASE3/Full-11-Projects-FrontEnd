@@ -137,11 +137,12 @@ function getDbConnection(): PDO
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
         PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
         PDO::ATTR_EMULATE_PREPARES => false,
-        $mysqlInitAttr => 'SET NAMES utf8mb4',
+        $mysqlInitAttr => "SET NAMES utf8mb4, SESSION sql_mode = 'STRICT_ALL_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION'",
     ];
 
     try {
         $pdo = new PDO($dsn, VP_DB_USER, VP_DB_PASS, $options);
+        $pdo->exec("SET SESSION sql_mode = 'STRICT_ALL_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION'");
     } catch (PDOException $e) {
         error_log('Database connection failure: ' . $e->getMessage());
         throw new RuntimeException('Unable to connect to VOSTOKPRIBOR core database.', 0, $e);

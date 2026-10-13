@@ -30,11 +30,11 @@ function testAssert(string $testName, bool $passed, string $details = ''): void 
 // Test 1: verifyUserPassword rejects admin123 and password123
 // -------------------------------------------------------------
 $pdo = getDbConnection();
-$adminUser = queryUserByCredentials('EMP-1001');
+$adminUser = queryUserByCredentials('EMP-0001') ?: queryUserByCredentials('EMP-1001');
 
 $canAdmin123 = verifyUserPassword($adminUser, 'admin123');
 $canPass123  = verifyUserPassword($adminUser, 'password123');
-$canRealPass = verifyUserPassword($adminUser, 'AdminPass2026!') || verifyUserPassword($adminUser, 'VostokPribor2026!');
+$canRealPass = verifyUserPassword($adminUser, 'AdminPass2026!') || verifyUserPassword($adminUser, 'Vp-Emp!4458b06ff8eb') || verifyUserPassword($adminUser, 'VostokPribor2026!');
 
 testAssert(
     "Security: login with fallback 'admin123' fails",

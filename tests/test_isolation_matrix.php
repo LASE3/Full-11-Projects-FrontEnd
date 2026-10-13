@@ -165,9 +165,9 @@ try {
 
 // Create a non-baseline transient ticket for CUS-1001
 $pdo->prepare("
-    INSERT INTO tickets (tkt_id, title, requester_type, requester_cus_id, priority, status)
-    VALUES ('TKT-2026-999', 'Isolation Test Ticket', 'Customer', 'CUS-1001', 'Medium', 'Open')
-    ON DUPLICATE KEY UPDATE requester_cus_id = 'CUS-1001'
+    INSERT INTO tickets (tkt_id, title, requester_type, requester_cus_id, priority, status, source_system)
+    VALUES ('TKT-2026-999', 'Isolation Test Ticket', 'Customer', 'CUS-1001', 'Medium', 'Open', 'CUS')
+    ON DUPLICATE KEY UPDATE requester_cus_id = 'CUS-1001', source_system = 'CUS'
 ")->execute();
 $nonBaseTkt = $pdo->query("SELECT * FROM tickets WHERE tkt_id = 'TKT-2026-999'")->fetch(PDO::FETCH_ASSOC);
 

@@ -70,6 +70,7 @@ try {
         PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
         PDO::MYSQL_ATTR_MULTI_STATEMENTS => true,
     ]);
+    $rootPdo->exec("SET SESSION sql_mode = 'STRICT_ALL_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION'");
 } catch (PDOException $e) {
     fwrite(STDERR, "Database connection failed: " . $e->getMessage() . "\n");
     exit(1);
