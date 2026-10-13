@@ -156,7 +156,17 @@
 
             // Reload after 1.5s to display new record in ledger
             setTimeout(() => {
-              /* in-place registration */
+                            const tbody = document.querySelector("#applicationsTableBody, table tbody");
+              if (tbody && res.data) {
+                const tr = document.createElement("tr");
+                tr.innerHTML = `
+                  <td class="p-3 font-mono font-bold">${res.data.app_ref || "REG-NEW"}</td>
+                  <td class="p-3">${res.data.org_name || orgName}</td>
+                  <td class="p-3">${res.data.contact_email || contactEmail}</td>
+                  <td class="p-3"><span class="badge-classification badge-internal">PENDING</span></td>
+                `;
+                tbody.prepend(tr);
+              }
             }, 1500);
           } else {
             if (window.showToast) {
@@ -394,7 +404,11 @@
               window.showToast("RECORD UPDATED", res.message || "Application updated in database.", "success", "done_all");
             }
             closeEditModal();
-            /* in-place registration */
+                        const tr = document.getElementById(`app-row-${editAppId.value}`) || document.querySelector(`tr:has(button[data-id="${editAppId.value}"])`);
+            if (tr) {
+              const statusBadge = tr.querySelector(".badge-classification, .vk-status-badge");
+              if (statusBadge) statusBadge.textContent = editAppStatus.value;
+            }
           } else {
             if (window.showToast) {
               window.showToast("UPDATE ERROR", res.error || "Failed to update application", "alert", "error");

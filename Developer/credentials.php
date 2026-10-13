@@ -456,6 +456,36 @@ foreach ($keys as $k) {
     <script src="js/dev-common.js"></script>
     <script src="js/dev-credentials.js"></script>
   <script src="../assets/js/notifications-hub.js" defer></script>
+    <!-- SECRET KEY DISPLAY MODAL DIALOG (SHOWN ONCE) -->
+    <div class="vk-modal-overlay" id="secretKeyModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:9999; align-items:center; justify-content:center;">
+        <div class="vk-modal-dialog" style="max-width:550px; background:#0f2438; border:1px solid rgba(255,255,255,0.15); border-radius:8px; padding:24px; color:#fff;">
+            <div class="vk-modal-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                <div class="dev-flex-center-gap-8" style="display:flex; align-items:center; gap:8px;">
+                    <span class="material-symbols-outlined text-[22px]" style="color:#f59e0b;">key</span>
+                    <h3 class="dev-font-size-15px-font-29ad" style="font-size:16px; font-weight:bold; color:#fff;">New API Key Secret Token</h3>
+                </div>
+                <button id="btnCloseSecretKey" style="background:transparent; border:none; color:#94a3b8; cursor:pointer;">
+                    <span class="material-symbols-outlined text-[18px]">close</span>
+                </button>
+            </div>
+            <div class="vk-modal-body" style="margin-bottom:20px;">
+                <div style="background:rgba(245,158,11,0.1); border:1px solid #f59e0b; padding:12px; border-radius:6px; margin-bottom:16px; font-size:13px; color:#fbbf24;">
+                    <strong style="display:block; margin-bottom:4px;">IMPORTANT: Secret key is shown only once!</strong>
+                    Store this key securely. You will not be able to view it again after closing this dialog.
+                </div>
+                <label style="display:block; font-size:12px; color:#94a3b8; margin-bottom:6px;">API Key Secret Token</label>
+                <div style="display:flex; gap:8px;">
+                    <input id="secretKeyTokenInput" type="text" readonly style="flex:1; background:#0a1926; border:1px solid #334155; color:#38bdf8; font-family:monospace; font-size:13px; padding:8px 12px; border-radius:4px;" />
+                    <button class="vk-btn vk-btn-outline" id="btnCopySecretKey" style="white-space:nowrap;">
+                        <span class="material-symbols-outlined text-[16px]">content_copy</span> Copy
+                    </button>
+                </div>
+            </div>
+            <div class="vk-modal-footer" style="display:flex; justify-content:flex-end;">
+                <button class="vk-btn vk-btn-accent" id="btnAcknowledgeSecretKey">I Have Saved This Key</button>
+            </div>
+        </div>
+    </div>
 </body>
 
 </html>

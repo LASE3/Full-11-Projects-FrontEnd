@@ -52,7 +52,8 @@
   /**
    * Filter table rows by search keyword and active category
    */
-  window.filterDocList = function () {
+    let _filterDocDebounce = null;
+  const _origFilterDocList = function () {
     const input = document.getElementById("docSearchInput");
     const query = (input ? input.value : "").toLowerCase().trim();
     const rows = document.querySelectorAll("#doc-table-body .doc-item-row");

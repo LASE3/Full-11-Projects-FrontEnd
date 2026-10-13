@@ -7,6 +7,85 @@
   "use strict";
 
   const hdApp = {
+    filterTickets: async function (page = 1) {
+      await this.refreshTicketsTable(page);
+    },
+
+    refreshTicketsTable: async function (page = 1) {
+      const tbody = document.getElementById("tickets-table-body") || document.querySelector("tbody.ticket-table-body");
+      if (!tbody) return;
+
+      const ticketSearch = document.getElementById("ticket-search") || document.getElementById("global-omni-search");
+      const filterPrio = document.getElementById("filter-priority");
+      const filterSys = document.getElementById("filter-system");
+      const filterStat = document.getElementById("filter-status");
+      const filterTech = document.getElementById("filter-tech");
+
+      const q = ticketSearch ? ticketSearch.value.trim() : "";
+      const priority = filterPrio ? filterPrio.value : "all";
+      const system = filterSys ? filterSys.value : "all";
+      const status = filterStat ? filterStat.value : "all";
+      const tech = filterTech ? filterTech.value : "all";
+
+      const params = new URLSearchParams();
+      if (q) params.append("q", q);
+      if (priority && priority !== "all") params.append("priority", priority);
+      if (system && system !== "all") params.append("system", system);
+      if (status && status !== "all") params.append("status", status);
+      if (tech && tech !== "all") params.append("tech", tech);
+      params.append("page", page);
+      params.append("per_page", 25);
+
+      try {
+        const res = await (window.vpFetch || fetch)(`api/tickets.php?${params.toString()}`);
+        const data = await res.json();
+        const rows = data.rows || data.data || [];
+
+        if (rows.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="7" class="text-center p-6 text-slate-400">No support incidents found matching filter criteria.</td></tr>`;
+          return;
+        }
+
+        tbody.innerHTML = rows.map((t) => {
+          const tid = t.tkt_id || "";
+          const prio = t.priority || "Medium";
+          const prioClass = prio === 'Critical' ? 'priority-critical' : (prio === 'High' ? 'priority-high' : (prio === 'Medium' ? 'priority-medium' : 'priority-low'));
+          const stat = t.status || "Open";
+          const statClass = stat === 'Open' ? 'status-open' : (stat === 'InProgress' ? 'status-in-progress' : (stat === 'Escalated' ? 'priority-critical' : 'badge-green'));
+          const techName = t.assigned_tech_name || "Unassigned";
+          const tJson = JSON.stringify(t).replace(/"/g, '&quot;');
+
+          return `
+            <tr class="hd-table-row" id="tkt-row-${window.vpEscape ? window.vpEscape(tid) : tid}" onclick="window.hdApp.inspectTicket('${window.vpEscape ? window.vpEscape(tid) : tid}')">
+              <td><span class="hd-mono-bold-blue">${window.vpEscape ? window.vpEscape(tid) : tid}</span></td>
+              <td>
+                <div class="hd-font-bold-navy">${window.vpEscape ? window.vpEscape(t.requester_name || "Authorized Personnel") : (t.requester_name || "Authorized Personnel")}</div>
+                <div class="hd-text-muted-11">${window.vpEscape ? window.vpEscape(t.requester_dept || t.source_system || "SYS") : (t.requester_dept || t.source_system)}</div>
+              </td>
+              <td>
+                <div class="hd-text-dark-125">${window.vpEscape ? window.vpEscape(t.title || t.source_system || "Support Incident") : (t.title || t.source_system)}</div>
+                <div class="hd-text-muted-11">${window.vpEscape ? window.vpEscape(t.description || "") : t.description}</div>
+              </td>
+              <td><span class="priority-badge ${prioClass}">${window.vpEscape ? window.vpEscape(prio) : prio}</span></td>
+              <td>
+                <div class="hd-text-dark-125">${window.vpEscape ? window.vpEscape(techName) : techName}</div>
+                <div class="hd-text-muted-11">${window.vpEscape ? window.vpEscape(t.assigned_tech_role || "Support Specialist") : (t.assigned_tech_role || "Support Specialist")}</div>
+              </td>
+              <td><span class="status-pill ${statClass}">${window.vpEscape ? window.vpEscape(stat) : stat}</span></td>
+              <td style="text-align: right;" onclick="event.stopPropagation()">
+                <div class="hd-flex-gap-xs" style="justify-content: flex-end;">
+                  <button class="btn btn-outline btn-xs btn-edit-ticket" data-ticket="${tJson}" title="Edit Incident">Edit</button>
+                  <button class="btn btn-outline btn-xs btn-delete-ticket" data-id="${window.vpEscape ? window.vpEscape(tid) : tid}" title="Delete Incident">Delete</button>
+                </div>
+              </td>
+            </tr>
+          `;
+        }).join("");
+      } catch (err) {
+        console.warn("Failed to refresh ticket queue:", err);
+      }
+    },
+
     // Show Toast Notification
     showToast: function (title, message, type = "orange") {
       const container = document.getElementById("toast-container");
@@ -90,7 +169,7 @@
           const code = data.data?.tkt_id || data.ticket_code || "Incident";
           this.showToast("Ticket Created", `${code} created successfully in database.`, "green");
           this.closeModal("modal-create-ticket");
-          /* in-place ticket update */
+          await this.refreshTicketsTable();
         } else {
           this.showToast("Creation Failed", data.error || "Could not register ticket.", "critical");
         }
@@ -143,7 +222,7 @@
         if (data.success) {
           this.showToast("Ticket Updated", "Incident details saved to database.", "green");
           this.closeModal("modal-edit-ticket");
-          /* in-place ticket update */
+          await this.refreshTicketsTable();
         } else {
           this.showToast("Update Error", data.error || "Could not save incident changes.", "critical");
         }
@@ -166,7 +245,7 @@
         const data = await res.json();
         if (data.success) {
           this.showToast("Ticket Deleted", `Incident ${code} removed from database.`, "green");
-          /* in-place ticket update */
+          await this.refreshTicketsTable();
         } else {
           this.showToast("Deletion Failed", data.error || "Could not delete ticket.", "critical");
         }
@@ -193,7 +272,7 @@
             pill.className = "status-pill status-resolved";
             pill.textContent = "Resolved";
           }
-          /* in-place ticket update */
+          await this.refreshTicketsTable();
         } else {
           this.showToast("Resolution Error", data.error || "Could not mark resolved.", "critical");
         }
@@ -221,7 +300,7 @@
             pill.className = "status-pill status-escalated";
             pill.textContent = "Escalated";
           }
-          /* in-place ticket update */
+          await this.refreshTicketsTable();
         } else {
           this.showToast("Escalation Error", data.error || "Could not escalate incident.", "critical");
         }
@@ -240,7 +319,7 @@
         const data = await res.json();
         if (data.success) {
           this.showToast("Bulk Triage Done", `${data.affected_rows} unassigned tickets dispatched to active engineer.`, "green");
-          /* in-place ticket update */
+          await this.refreshTicketsTable();
         } else {
           this.showToast("Triage Error", data.error || "Could not bulk assign.", "critical");
         }
@@ -335,7 +414,7 @@
           const tag = (data.data && data.data.asset_tag) || data.asset_tag || payload.asset_tag || "New Device";
           this.showToast("Asset Registered", `Device ${tag} added to database.`, "green");
           this.closeModal("modal-create-asset");
-          /* in-place ticket update */
+          await this.refreshTicketsTable();
         } else {
           this.showToast("Registration Failed", data.error || "Could not register asset.", "critical");
         }
@@ -435,7 +514,7 @@
         if (data.success) {
           this.showToast("Asset Updated", "Device configuration saved to database.", "green");
           this.closeModal("modal-edit-asset");
-          /* in-place ticket update */
+          await this.refreshTicketsTable();
         } else {
           this.showToast("Update Failed", data.error || "Could not update asset.", "critical");
         }
@@ -458,7 +537,7 @@
         const data = await res.json();
         if (data.success) {
           this.showToast("Asset Deleted", `Device ${tag} removed from database.`, "green");
-          /* in-place ticket update */
+          await this.refreshTicketsTable();
         } else {
           this.showToast("Deletion Failed", data.error || "Could not delete device.", "critical");
         }
@@ -496,7 +575,7 @@
           const code = (data.data && data.data.article_code) || data.article_code || payload.article_code || "New Article";
           this.showToast("Article Published", `SOP ${code} saved to database.`, "green");
           this.closeModal("modal-create-kb");
-          /* in-place ticket update */
+          await this.refreshTicketsTable();
         } else {
           this.showToast("Publish Failed", data.error || "Could not publish article.", "critical");
         }
@@ -545,7 +624,7 @@
         if (data.success) {
           this.showToast("Article Saved", "SOP updates saved to database.", "green");
           this.closeModal("modal-edit-kb");
-          /* in-place ticket update */
+          await this.refreshTicketsTable();
         } else {
           this.showToast("Update Failed", data.error || "Could not save article.", "critical");
         }
@@ -568,7 +647,7 @@
         const data = await res.json();
         if (data.success) {
           this.showToast("Article Removed", `Runbook ${code} deleted from database.`, "green");
-          /* in-place ticket update */
+          await this.refreshTicketsTable();
         } else {
           this.showToast("Deletion Failed", data.error || "Could not delete article.", "critical");
         }
@@ -639,7 +718,7 @@
         if (data.success) {
           this.showToast("SLA Policy Updated", "New operational response targets saved to database.", "green");
           this.closeModal("modal-edit-sla");
-          /* in-place ticket update */
+          await this.refreshTicketsTable();
         } else {
           this.showToast("Update Failed", data.error || "Could not save policy.", "critical");
         }
@@ -869,7 +948,7 @@
                 m.classList.remove("show");
                 document.body.style.overflow = "";
               }
-              /* in-place ticket update */
+              await this.refreshTicketsTable();
             } else {
               this.showToast("Update Failed", data.error || "Could not update ticket.", "critical");
             }
@@ -1005,7 +1084,7 @@
                 modal.classList.remove("show");
                 document.body.style.overflow = "";
               }
-              /* in-place ticket update */
+              await this.refreshTicketsTable();
             } else {
               this.showToast("Save Failed", data.error || "Could not save incident.", "critical");
             }
@@ -1075,7 +1154,13 @@
       // Queue search and filters
       const ticketSearch = document.getElementById("ticket-search");
       if (ticketSearch) {
-        ticketSearch.addEventListener("input", () => this.filterTickets());
+        const debouncedSearch = (window.vpDebounce || ((fn) => fn))(() => this.filterTickets(), 300);
+        ticketSearch.addEventListener("input", debouncedSearch);
+      }
+      if (document.getElementById("tickets-table-body")) {
+        if (window.vpPoll) {
+          window.vpPoll(() => hdApp.refreshTicketsTable(), 30000, { pauseWhenHidden: true });
+        }
       }
       ["filter-priority", "filter-system", "filter-status", "filter-tech"].forEach((id) => {
         const sel = document.getElementById(id);
@@ -1084,9 +1169,9 @@
 
       const btnSyncQueue = document.getElementById("btn-sync-queue");
       if (btnSyncQueue) {
-        btnSyncQueue.addEventListener("click", () => {
+        btnSyncQueue.addEventListener("click", async () => {
           this.showToast("Queue Synced", "Refreshing live telemetry from database...", "green");
-          /* in-place ticket update */
+          await this.refreshTicketsTable();
         });
       }
 

@@ -58,6 +58,81 @@ try {
     switch ($action) {
 
         // ====================================================================
+        // 0. LIST INVOICES (SERVER-SIDE LIST CONTRACT)
+        // ====================================================================
+        case 'list_invoices':
+        case 'list':
+            $q = trim((string)($_GET['q'] ?? ($_GET['search'] ?? '')));
+            $status = trim((string)($_GET['status'] ?? ''));
+            $sortKey = trim((string)($_GET['sort'] ?? 'issued_at'));
+            $dir = strtolower(trim((string)($_GET['dir'] ?? 'desc'))) === 'asc' ? 'ASC' : 'DESC';
+            $page = max(1, (int)($_GET['page'] ?? 1));
+            $perPage = min(100, max(1, (int)($_GET['per_page'] ?? 20)));
+            $offset = ($page - 1) * $perPage;
+
+            $allowedSort = [
+                'inv_id'         => 'i.inv_id',
+                'total_value'    => 'i.total_value',
+                'issued_at'      => 'i.issued_at',
+                'due_date'       => 'i.due_date',
+                'payment_status' => 'i.payment_status',
+                'company_name'   => 'c.company_name'
+            ];
+            $sortCol = $allowedSort[$sortKey] ?? 'i.issued_at';
+
+            $where = ["1=1"];
+            $params = [];
+            if ($q !== '') {
+                $where[] = "(i.inv_id LIKE :q1 OR c.company_name LIKE :q2 OR i.notes LIKE :q3 OR p.project_name LIKE :q4)";
+                $wildcard = "%{$q}%";
+                $params[':q1'] = $wildcard;
+                $params[':q2'] = $wildcard;
+                $params[':q3'] = $wildcard;
+                $params[':q4'] = $wildcard;
+            }
+            if ($status !== '' && strtolower($status) !== 'all') {
+                $where[] = "i.payment_status = :status";
+                $params[':status'] = $status;
+            }
+            $whereSql = implode(' AND ', $where);
+
+            $cStmt = $pdo->prepare("SELECT COUNT(*) FROM invoices i JOIN customers c ON i.cus_id = c.cus_id LEFT JOIN projects p ON i.prj_id = p.prj_id WHERE {$whereSql}");
+            $cStmt->execute($params);
+            $total = (int)$cStmt->fetchColumn();
+
+            $sql = "
+                SELECT 
+                    i.*,
+                    c.company_name,
+                    c.primary_contact_name,
+                    p.project_name
+                FROM invoices i
+                JOIN customers c ON i.cus_id = c.cus_id
+                LEFT JOIN projects p ON i.prj_id = p.prj_id
+                WHERE {$whereSql}
+                ORDER BY {$sortCol} {$dir}
+                LIMIT :limit OFFSET :offset
+            ";
+            $stmt = $pdo->prepare($sql);
+            foreach ($params as $k => $v) {
+                $stmt->bindValue($k, $v);
+            }
+            $stmt->bindValue(':limit', $perPage, PDO::PARAM_INT);
+            $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+            $stmt->execute();
+            $invoices = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            jsonReply([
+                'success'  => true,
+                'rows'     => $invoices,
+                'total'    => $total,
+                'page'     => $page,
+                'per_page' => $perPage,
+                'data'     => $invoices
+            ]);
+            break;
+
+        // ====================================================================
         // 1. GET INVOICE DETAIL & LINE ITEMS
         // ====================================================================
         case 'get_invoice_detail':

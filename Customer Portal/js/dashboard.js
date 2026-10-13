@@ -13,7 +13,7 @@
     if (window.showToast) {
       window.showToast(
         "Telemetry Archive Exported",
-        "Severstal_BF5_Telemetry_Report_2024.pdf compiled & cryptographically stamped.",
+        "Customer_Telemetry_Report.pdf compiled & cryptographically stamped.",
         "success",
       );
     }

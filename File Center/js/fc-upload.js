@@ -158,50 +158,69 @@
       submitBtn.innerHTML =
         '<span class="material-symbols-outlined text-[16px] animate-spin">sync</span> Ingesting into MySQL Database...';
 
+      const progressContainer = document.getElementById("upload-progress-container");
+      const progressBar = document.getElementById("upload-progress-bar");
+      const progressText = document.getElementById("upload-progress-text");
+      const progressPct = document.getElementById("upload-progress-pct");
+
+      if (progressContainer) {
+        progressContainer.style.display = "block";
+        if (progressBar) progressBar.style.width = "0%";
+        if (progressText) progressText.textContent = "Streaming document to encrypted vault: 0%";
+        if (progressPct) progressPct.textContent = "0%";
+      }
+
       try {
-        let response;
+        const fd = new FormData();
         if (currentSelectedFile) {
-          const fd = new FormData();
           fd.append("file", currentSelectedFile);
-          fd.append("action", "create");
-          fd.append("title", title);
-          fd.append("department", dept);
-          fd.append("project_ref", projectRef);
-          fd.append("customer_ref", customerRef);
-          fd.append("classification", classification);
-          fd.append("retention_period", retention);
-          fd.append("custodian", custodian);
-          fd.append("description", description);
-          fd.append("file_size", fileSize);
-          fd.append("status", classification === "highly-confidential" ? "In Review" : "Approved");
-
-          response = await fetch("api/documents.php", {
-            method: "POST",
-            body: fd,
-          });
-        } else {
-          response = await fetch("api/documents.php", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              action: "create",
-              title: title,
-              department: dept,
-              project_ref: projectRef,
-              customer_ref: customerRef,
-              classification: classification,
-              retention_period: retention,
-              custodian: custodian,
-              description: description,
-              file_size: fileSize,
-              status: classification === "highly-confidential" ? "In Review" : "Approved",
-            }),
-          });
         }
+        fd.append("action", "create");
+        fd.append("title", title);
+        fd.append("department", dept);
+        fd.append("project_ref", projectRef);
+        fd.append("customer_ref", customerRef);
+        fd.append("classification", classification);
+        fd.append("retention_period", retention);
+        fd.append("custodian", custodian);
+        fd.append("description", description);
+        fd.append("file_size", fileSize);
+        fd.append("status", classification === "highly-confidential" ? "In Review" : "Approved");
 
-        const res = await response.json();
+        const res = await new Promise((resolve, reject) => {
+          const xhr = new XMLHttpRequest();
+          xhr.open("POST", "api/documents.php", true);
+          const metaCsrf = document.querySelector('meta[name="csrf-token"]');
+          if (metaCsrf) {
+            xhr.setRequestHeader("X-CSRF-Token", metaCsrf.getAttribute("content"));
+          }
+
+          if (xhr.upload) {
+            xhr.upload.onprogress = (evt) => {
+              if (evt.lengthComputable) {
+                const pct = Math.min(100, Math.round((evt.loaded / evt.total) * 100));
+                if (progressBar) progressBar.style.width = pct + "%";
+                if (progressPct) progressPct.textContent = pct + "%";
+                if (progressText) progressText.textContent = `Streaming document to encrypted vault: ${pct}%`;
+              }
+            };
+          }
+
+          xhr.onload = () => {
+            if (progressBar) progressBar.style.width = "100%";
+            if (progressPct) progressPct.textContent = "100%";
+            if (progressText) progressText.textContent = "Ingestion sealed. Processing vault integrity hash...";
+            try {
+              const data = JSON.parse(xhr.responseText);
+              resolve(data);
+            } catch (e) {
+              reject(new Error("Invalid JSON server response: " + xhr.responseText));
+            }
+          };
+
+          xhr.onerror = () => reject(new Error("Network error during file upload"));
+          xhr.send(fd);
+        });
 
         if (res.success && res.data) {
           const doc = res.data;

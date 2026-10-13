@@ -117,12 +117,12 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
                   <th style="text-align: right;">Action</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody id="job-postings-tbody">
                 <?php if (empty($postings)): ?>
-                  <tr><td colspan="8" style="text-align:center; padding: 40px; color:#94a3b8;">No job postings found. Click "+ Create Job Posting" to add one.</td></tr>
+                  <tr id="job-empty-row"><td colspan="8" style="text-align:center; padding: 40px; color:#94a3b8;">No job postings found. Click "+ Create Job Posting" to add one.</td></tr>
                 <?php else: ?>
                   <?php foreach ($postings as $job): ?>
-                    <tr>
+                    <tr id="job-row-<?= (int)$job['posting_id'] ?>">
                       <td style="font-family: monospace; font-weight:700; color:#38bdf8;">
                         #VP-HR-<?= str_pad((string)$job['posting_id'], 4, '0', STR_PAD_LEFT) ?>
                       </td>
@@ -244,34 +244,86 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
   </div>
 
   <script>
+  function esc(s) {
+    if (s == null) return '';
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
   document.getElementById('create-job-form').addEventListener('submit', async function(e) {
     e.preventDefault();
     const btn = document.getElementById('btn-create-job');
     btn.disabled = true;
     btn.innerText = 'Publishing...';
 
+    const title = document.getElementById('job-title').value.trim();
+    const deptCode = document.getElementById('job-dept').value;
+    const empType = document.getElementById('job-type').value;
+    const loc = document.getElementById('job-loc').value.trim();
+    const exp = document.getElementById('job-exp').value;
+    const desc = document.getElementById('job-desc').value.trim();
+
     const payload = {
       action: 'create_job_posting',
-      title: document.getElementById('job-title').value,
-      department_code: document.getElementById('job-dept').value,
-      employment_type: document.getElementById('job-type').value,
-      location: document.getElementById('job-loc').value,
-      experience_level: document.getElementById('job-exp').value,
-      description: document.getElementById('job-desc').value
+      title: title,
+      department_code: deptCode,
+      employment_type: empType,
+      location: loc,
+      experience_level: exp,
+      description: desc
     };
 
     try {
-      const res = await fetch('./api/hr_actions.php', {
+      const fetchFn = window.vpFetch || (async (u, opt) => {
+        const r = await fetch(u, opt);
+        return await r.json();
+      });
+      const data = await fetchFn('./api/hr_actions.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       });
-      const data = await res.json();
-      if (data.success) {
-        alert(data.message || 'Job opening created and published live on Customer Portal!');
-        /* in-place job posting */ document.getElementById("modal-create-job").style.display = "none";
+      if (data && data.success) {
+        document.getElementById("modal-create-job").style.display = "none";
+        document.getElementById('create-job-form').reset();
+        const tbody = document.getElementById('job-postings-tbody');
+        const emptyRow = document.getElementById('job-empty-row');
+        if (emptyRow) emptyRow.remove();
+
+        const postingId = data.posting_id || (data.data && data.data.posting_id) || Math.floor(Math.random() * 9000 + 1000);
+        const deptName = (data.data && data.data.dept_name) || deptCode;
+        const padId = String(postingId).padStart(4, '0');
+        const today = new Date().toISOString().slice(0, 10);
+
+        const tr = document.createElement('tr');
+        tr.id = `job-row-${postingId}`;
+        tr.innerHTML = `
+          <td style="font-family: monospace; font-weight:700; color:#38bdf8;">#VP-HR-${padId}</td>
+          <td>
+            <strong style="color:#f8fafc; font-size:13px;">${esc(title)}</strong>
+            <div style="color:#94a3b8; font-size:11px; margin-top:2px; max-width:320px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+              ${esc(desc || 'High-precision engineering and industrial automation.')}
+            </div>
+          </td>
+          <td><span style="font-weight:600; color:#cbd5e1;">${esc(deptName)}</span></td>
+          <td style="color:#94a3b8; font-size:12px;">${esc(loc || 'Almaty HQ')}</td>
+          <td style="font-size:12px; color:#cbd5e1;">${esc(empType)} · <span style="color:#64748b;">${esc(exp)}</span></td>
+          <td style="font-family: monospace; font-size:12px; color:#94a3b8;">${today}</td>
+          <td>
+            <span style="padding:3px 8px; border-radius:9999px; font-size:10px; font-weight:700; background:rgba(34,197,94,0.15); color:#4ade80; border:1px solid rgba(34,197,94,0.3);">
+              ● LIVE ON PORTAL
+            </span>
+          </td>
+          <td style="text-align: right;">
+            <button onclick="toggleJob(${postingId}, 0)" style="background:#1e293b; color:#38bdf8; border:1px solid #334155; padding:5px 10px; border-radius:6px; font-size:11px; cursor:pointer;">
+              Unpublish
+            </button>
+          </td>
+        `;
+        if (tbody) tbody.prepend(tr);
+        if (window.vpToast) window.vpToast('Job Opening Created', 'Published live on Customer Portal', 'success');
+        else alert(data.message || 'Job opening created and published live on Customer Portal!');
       } else {
-        alert('Error: ' + (data.message || 'Creation failed.'));
+        alert('Error: ' + ((data && data.message) || 'Creation failed.'));
       }
     } catch (err) {
       alert('Network error: ' + err.message);
@@ -283,16 +335,31 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
 
   async function toggleJob(id, pub) {
     try {
-      const res = await fetch('./api/hr_actions.php', {
+      const fetchFn = window.vpFetch || (async (u, opt) => {
+        const r = await fetch(u, opt);
+        return await r.json();
+      });
+      const data = await fetchFn('./api/hr_actions.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action: 'toggle_job_posting', posting_id: id, is_published: pub })
       });
-      const data = await res.json();
-      if (data.success) {
-        /* in-place job posting */ document.getElementById("modal-create-job").style.display = "none";
+      if (data && data.success) {
+        const row = document.getElementById(`job-row-${id}`);
+        if (row) {
+          const statusTd = row.children[6];
+          const actionTd = row.children[7];
+          if (pub === 1) {
+            statusTd.innerHTML = `<span style="padding:3px 8px; border-radius:9999px; font-size:10px; font-weight:700; background:rgba(34,197,94,0.15); color:#4ade80; border:1px solid rgba(34,197,94,0.3);">● LIVE ON PORTAL</span>`;
+            actionTd.innerHTML = `<button onclick="toggleJob(${id}, 0)" style="background:#1e293b; color:#38bdf8; border:1px solid #334155; padding:5px 10px; border-radius:6px; font-size:11px; cursor:pointer;">Unpublish</button>`;
+          } else {
+            statusTd.innerHTML = `<span style="padding:3px 8px; border-radius:9999px; font-size:10px; font-weight:700; background:rgba(148,163,184,0.15); color:#94a3b8; border:1px solid rgba(148,163,184,0.3);">○ DRAFT</span>`;
+            actionTd.innerHTML = `<button onclick="toggleJob(${id}, 1)" style="background:#1e293b; color:#38bdf8; border:1px solid #334155; padding:5px 10px; border-radius:6px; font-size:11px; cursor:pointer;">Publish Live</button>`;
+          }
+        }
+        if (window.vpToast) window.vpToast('Status Updated', 'Job posting updated in database', 'info');
       } else {
-        alert(data.message || 'Action failed');
+        alert((data && data.message) || 'Action failed');
       }
     } catch (e) {
       alert(e.message);

@@ -182,29 +182,25 @@ try {
             apiSuccess($doc);
         }
 
-        // List all documents with filters
+        // List all documents with filters and pagination contract
         $q = trim((string)($req['q'] ?? ''));
         $classification = trim((string)($req['classification'] ?? 'all'));
         $folder = trim((string)($req['folder'] ?? 'all'));
         $status = trim((string)($req['status'] ?? 'all'));
 
-        $sql = "
-            SELECT 
-                d.*,
-                e.full_name AS custodian_name,
-                e.job_title AS custodian_job,
-                c.company_name AS customer_name,
-                p.project_name AS project_name
-            FROM documents d
-            LEFT JOIN employees e ON d.owner_emp_id = e.emp_id
-            LEFT JOIN customers c ON d.related_cus_id = c.cus_id
-            LEFT JOIN projects p ON d.related_prj_id = p.prj_id
-            WHERE 1=1
-        ";
+        $sortField = in_array(strtolower((string)($req['sort'] ?? '')), ['doc_id', 'file_name', 'created_at', 'file_size', 'classification', 'status', 'department']) 
+            ? strtolower((string)$req['sort']) 
+            : 'doc_id';
+        $sortDir = strtoupper((string)($req['dir'] ?? 'ASC')) === 'DESC' ? 'DESC' : 'ASC';
+        $page = max(1, (int)($req['page'] ?? 1));
+        $perPage = min(100, max(1, (int)($req['per_page'] ?? 50)));
+        $offset = ($page - 1) * $perPage;
+
+        $whereSql = "WHERE 1=1";
         $params = [];
 
         if ($q !== '') {
-            $sql .= " AND (d.doc_id LIKE :q1 OR d.file_name LIKE :q2 OR d.description LIKE :q3 OR d.project_ref LIKE :q4 OR e.full_name LIKE :q5)";
+            $whereSql .= " AND (d.doc_id LIKE :q1 OR d.file_name LIKE :q2 OR d.description LIKE :q3 OR d.project_ref LIKE :q4 OR e.full_name LIKE :q5)";
             $wildcard = "%{$q}%";
             $params[':q1'] = $wildcard;
             $params[':q2'] = $wildcard;
@@ -221,21 +217,45 @@ try {
                 'public'              => 'Public',
                 default               => ucfirst($classification),
             };
-            $sql .= " AND d.classification = :classification";
+            $whereSql .= " AND d.classification = :classification";
             $params[':classification'] = $mappedClass;
         }
 
         if ($folder !== 'all' && $folder !== '') {
-            $sql .= " AND d.folder = :folder";
+            $whereSql .= " AND d.folder = :folder";
             $params[':folder'] = $folder;
         }
 
         if ($status !== 'all' && $status !== '') {
-            $sql .= " AND d.status = :status";
+            $whereSql .= " AND d.status = :status";
             $params[':status'] = $status;
         }
 
-        $sql .= " ORDER BY CAST(SUBSTRING(d.doc_id, 10) AS UNSIGNED) ASC, d.doc_id ASC";
+        // Count total
+        $countStmt = $pdo->prepare("SELECT COUNT(*) FROM documents d LEFT JOIN employees e ON d.owner_emp_id = e.emp_id {$whereSql}");
+        $countStmt->execute($params);
+        $total = (int)$countStmt->fetchColumn();
+
+        $orderSql = match ($sortField) {
+            'doc_id' => "ORDER BY CAST(SUBSTRING(d.doc_id, 10) AS UNSIGNED) {$sortDir}, d.doc_id {$sortDir}",
+            default => "ORDER BY d.{$sortField} {$sortDir}",
+        };
+
+        $sql = "
+            SELECT 
+                d.*,
+                e.full_name AS custodian_name,
+                e.job_title AS custodian_job,
+                c.company_name AS customer_name,
+                p.project_name AS project_name
+            FROM documents d
+            LEFT JOIN employees e ON d.owner_emp_id = e.emp_id
+            LEFT JOIN customers c ON d.related_cus_id = c.cus_id
+            LEFT JOIN projects p ON d.related_prj_id = p.prj_id
+            {$whereSql}
+            {$orderSql}
+            LIMIT {$perPage} OFFSET {$offset}
+        ";
 
         $stmt = $pdo->prepare($sql);
         $stmt->execute($params);
@@ -263,7 +283,12 @@ try {
                 : ($doc['owner_emp_id'] ?? 'Farida Iskakova (EMP-1019)');
         }
 
-        apiSuccess($docs);
+        apiSuccess($docs, 'Success', 200, [
+            'rows'     => $docs,
+            'total'    => $total,
+            'page'     => $page,
+            'per_page' => $perPage,
+        ]);
     }
 
     // -------------------------------------------------------------

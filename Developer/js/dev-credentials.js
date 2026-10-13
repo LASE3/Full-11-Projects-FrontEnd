@@ -88,7 +88,33 @@
               "vpn_key"
             );
             closeModals();
-            /* in-place update */
+                        if (result.data) {
+              const secret = result.data.token_full || result.data.token_prefix;
+              const secretModal = document.getElementById("secretKeyModal");
+              const secretInput = document.getElementById("secretKeyTokenInput");
+              if (secretModal && secretInput) {
+                secretInput.value = secret;
+                secretModal.style.display = "flex";
+              }
+              const tbody = document.querySelector("#keysTableBody, table tbody");
+              if (tbody) {
+                const tr = document.createElement("tr");
+                tr.id = "key-row-" + result.data.id;
+                tr.className = "dev-table-row";
+                tr.innerHTML = `
+                  <td class="dev-p-12"><strong style="color:#fff;">${result.data.label}</strong><br><span style="font-family:monospace; font-size:11px; color:#94a3b8;">${result.data.key_identifier}</span></td>
+                  <td class="dev-p-12"><span style="font-family:monospace; font-size:12px; color:#38bdf8;">${result.data.token_prefix}••••••••</span></td>
+                  <td class="dev-p-12"><span class="vk-status-badge status-active">Active</span></td>
+                  <td class="dev-p-12"><span class="badge-classification badge-internal">${result.data.environment}</span></td>
+                  <td class="dev-p-12" style="font-size:12px; color:#94a3b8;">${result.data.rate_limit}</td>
+                  <td class="dev-p-12" style="text-align:right;">
+                    <button class="btn-crud-action btn-edit-key" data-key='${JSON.stringify(result.data)}' title="Edit Key"><span class="material-symbols-outlined text-[14px]">edit</span></button>
+                    <button class="btn-crud-action btn-revoke-key" data-id="${result.data.id}" title="Revoke Key"><span class="material-symbols-outlined text-[14px]">block</span></button>
+                  </td>
+                `;
+                tbody.prepend(tr);
+              }
+            }
           } else {
             window.showToast("ERROR", result.error || "Failed to mint key.", "error");
           }
@@ -170,7 +196,18 @@
           if (result.success) {
             window.showToast("KEY UPDATED", "API key parameters saved to database.", "success");
             closeModals();
-            /* in-place update */
+                        const tr = document.getElementById(`key-row-${id}`) || document.querySelector(`tr:has(button[data-id="${id}"])`);
+            if (tr) {
+              const labelEl = tr.querySelector("strong");
+              if (labelEl) labelEl.textContent = label;
+              const envBadge = tr.querySelector(".badge-classification");
+              if (envBadge) envBadge.textContent = env;
+              const statusBadge = tr.querySelector(".vk-status-badge");
+              if (statusBadge) {
+                statusBadge.textContent = status;
+                statusBadge.className = status === "Active" ? "vk-status-badge status-active" : "vk-status-badge status-revoked";
+              }
+            }
           } else {
             window.showToast("UPDATE ERROR", result.error || "Failed to update key.", "error");
           }
@@ -265,4 +302,26 @@
       }
     });
   });
+
+    // Secret Key Modal controls
+    const secretModal = document.getElementById("secretKeyModal");
+    const btnCloseSecret = document.getElementById("btnCloseSecretKey");
+    const btnAckSecret = document.getElementById("btnAcknowledgeSecretKey");
+    const btnCopySecret = document.getElementById("btnCopySecretKey");
+    const secretInput = document.getElementById("secretKeyTokenInput");
+
+    if (btnCloseSecret && secretModal) {
+      btnCloseSecret.addEventListener("click", () => secretModal.style.display = "none");
+    }
+    if (btnAckSecret && secretModal) {
+      btnAckSecret.addEventListener("click", () => secretModal.style.display = "none");
+    }
+    if (btnCopySecret && secretInput) {
+      btnCopySecret.addEventListener("click", () => {
+        secretInput.select();
+        navigator.clipboard.writeText(secretInput.value).then(() => {
+          if (window.showToast) window.showToast("COPIED TO CLIPBOARD", "API key secret token copied.", "success", "content_copy");
+        });
+      });
+    }
 })();

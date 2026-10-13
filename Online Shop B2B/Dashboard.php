@@ -1010,7 +1010,6 @@ if ($cusId) {
   <link rel="stylesheet" href="../assets/css/api-ui.css">
   <script src="../assets/js/api-core.js"></script>
   <script src="../assets/js/api-shop.js"></script>
-  <script src="js/shop-data.js?v=<?= time() ?>"></script>
   <script src="../assets/js/notifications-hub.js" defer></script>
   <script>
     // Ensure cart starts strictly empty on login

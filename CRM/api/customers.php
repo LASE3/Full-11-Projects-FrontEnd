@@ -106,58 +106,79 @@ if ($method === 'GET') {
 
             Response::success($customer, "Customer 360 dossier loaded");
         } else {
-            // Directory of CRM Enterprise Clients
+            // Directory of CRM Enterprise Clients (Server-side list contract)
+            $q = trim($_GET['q'] ?? '');
             $sectorParam = trim($_GET['sector'] ?? '');
+            $page = max(1, (int)($_GET['page'] ?? 1));
+            $perPage = min(100, max(1, (int)($_GET['per_page'] ?? 50)));
+            $offset = ($page - 1) * $perPage;
+
+            $sortField = trim($_GET['sort'] ?? 'total_contract_arr');
+            $dir = strtoupper(trim($_GET['dir'] ?? 'DESC')) === 'ASC' ? 'ASC' : 'DESC';
+
+            $allowedSorts = [
+                'total_contract_arr' => 'total_contract_arr',
+                'company_name'       => 'c.company_name',
+                'cus_id'             => 'c.cus_id',
+                'health_score'       => 'c.health_score',
+                'onboarded_at'       => 'c.onboarded_at'
+            ];
+            $orderBy = $allowedSorts[$sortField] ?? 'total_contract_arr';
+
+            $whereClauses = [];
+            $params = [];
+
             if (!empty($sectorParam) && strtolower($sectorParam) !== 'all') {
-                $stmt = $pdo->prepare("
-                    SELECT 
-                        c.cus_id,
-                        c.company_name,
-                        c.sector,
-                        c.headquarters,
-                        c.health_score,
-                        c.account_tier,
-                        c.primary_contact_name,
-                        c.primary_contact_email,
-                        c.onboarded_at,
-                        e.full_name AS account_manager_name,
-                        (SELECT COUNT(*) FROM projects WHERE cus_id = c.cus_id) AS total_projects,
-                        (SELECT COALESCE(SUM(contract_value), 0) FROM contracts WHERE cus_id = c.cus_id AND status = 'Active') AS total_contract_arr,
-                        (SELECT contract_ref FROM contracts WHERE cus_id = c.cus_id AND status = 'Active' ORDER BY contract_value DESC LIMIT 1) AS active_contract_ref,
-                        (SELECT end_date FROM contracts WHERE cus_id = c.cus_id AND status = 'Active' ORDER BY contract_value DESC LIMIT 1) AS contract_end,
-                        (SELECT COUNT(*) FROM opportunities WHERE cus_id = c.cus_id AND stage != 'Lost') AS active_opportunities
-                    FROM customers c
-                    LEFT JOIN employees e ON c.account_manager_emp_id = e.emp_id
-                    WHERE LOWER(c.sector) LIKE LOWER(:sector)
-                    ORDER BY total_contract_arr DESC, c.company_name ASC
-                ");
-                $stmt->execute([':sector' => '%' . $sectorParam . '%']);
-            } else {
-                $stmt = $pdo->query("
-                    SELECT 
-                        c.cus_id,
-                        c.company_name,
-                        c.sector,
-                        c.headquarters,
-                        c.health_score,
-                        c.account_tier,
-                        c.primary_contact_name,
-                        c.primary_contact_email,
-                        c.onboarded_at,
-                        e.full_name AS account_manager_name,
-                        (SELECT COUNT(*) FROM projects WHERE cus_id = c.cus_id) AS total_projects,
-                        (SELECT COALESCE(SUM(contract_value), 0) FROM contracts WHERE cus_id = c.cus_id AND status = 'Active') AS total_contract_arr,
-                        (SELECT contract_ref FROM contracts WHERE cus_id = c.cus_id AND status = 'Active' ORDER BY contract_value DESC LIMIT 1) AS active_contract_ref,
-                        (SELECT end_date FROM contracts WHERE cus_id = c.cus_id AND status = 'Active' ORDER BY contract_value DESC LIMIT 1) AS contract_end,
-                        (SELECT COUNT(*) FROM opportunities WHERE cus_id = c.cus_id AND stage != 'Lost') AS active_opportunities
-                    FROM customers c
-                    LEFT JOIN employees e ON c.account_manager_emp_id = e.emp_id
-                    ORDER BY total_contract_arr DESC, c.company_name ASC
-                ");
+                $whereClauses[] = "LOWER(c.sector) LIKE LOWER(:sector)";
+                $params[':sector'] = '%' . $sectorParam . '%';
             }
+
+            if (!empty($q)) {
+                $whereClauses[] = "(c.company_name LIKE :q1 OR c.cus_id LIKE :q2 OR c.sector LIKE :q3 OR c.primary_contact_name LIKE :q4 OR e.full_name LIKE :q5)";
+                $wildcard = '%' . $q . '%';
+                $params[':q1'] = $wildcard;
+                $params[':q2'] = $wildcard;
+                $params[':q3'] = $wildcard;
+                $params[':q4'] = $wildcard;
+                $params[':q5'] = $wildcard;
+            }
+
+            $whereSql = !empty($whereClauses) ? ' WHERE ' . implode(' AND ', $whereClauses) : '';
+
+            $countSql = "SELECT COUNT(*) FROM customers c LEFT JOIN employees e ON c.account_manager_emp_id = e.emp_id {$whereSql}";
+            $countStmt = $pdo->prepare($countSql);
+            $countStmt->execute($params);
+            $total = (int)$countStmt->fetchColumn();
+
+            $sql = "
+                SELECT 
+                    c.cus_id,
+                    c.company_name,
+                    c.sector,
+                    c.headquarters,
+                    c.health_score,
+                    c.account_tier,
+                    c.primary_contact_name,
+                    c.primary_contact_email,
+                    c.onboarded_at,
+                    e.full_name AS account_manager_name,
+                    (SELECT COUNT(*) FROM projects WHERE cus_id = c.cus_id) AS total_projects,
+                    (SELECT COALESCE(SUM(contract_value), 0) FROM contracts WHERE cus_id = c.cus_id AND status = 'Active') AS total_contract_arr,
+                    (SELECT contract_ref FROM contracts WHERE cus_id = c.cus_id AND status = 'Active' ORDER BY contract_value DESC LIMIT 1) AS active_contract_ref,
+                    (SELECT end_date FROM contracts WHERE cus_id = c.cus_id AND status = 'Active' ORDER BY contract_value DESC LIMIT 1) AS contract_end,
+                    (SELECT COUNT(*) FROM opportunities WHERE cus_id = c.cus_id AND stage != 'Lost') AS active_opportunities
+                FROM customers c
+                LEFT JOIN employees e ON c.account_manager_emp_id = e.emp_id
+                {$whereSql}
+                ORDER BY {$orderBy} {$dir}, c.company_name ASC
+                LIMIT {$perPage} OFFSET {$offset}
+            ";
+
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute($params);
             $customers = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-            Response::success($customers, "CRM customer accounts directory loaded", 200, ['total' => count($customers)]);
+            Response::paginated($customers, $total, $page, $perPage);
         }
     } catch (Throwable $e) {
         error_log("Failed to load customer records: " . $e->getMessage());

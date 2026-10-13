@@ -319,61 +319,61 @@
     });
 
     // ==========================================
-    // 5. LIVE SIMULATED INGESTION (EVERY 4 SECONDS)
+    // 5. LIVE AUDIT LOG TAIL STREAM (REAL API POLLING)
     // ==========================================
-    const sampleLiveEvents = [
-      { sys: "SYS-06", lvl: "AUDIT", msg: "SOP-06 Offboarding check executed: former staff credential purge verified.", hash: "0x8f2a...c104" },
-      { sys: "SYS-08", lvl: "WARN", msg: "TKT-2026-005 escalated to Governance by EMP-1018 (Leonid Volkov).", hash: "0x3c11...9a41" },
-      { sys: "SYS-09", lvl: "INFO", msg: "DOC-2026-001 access requested by CGO enclave terminal (EMP-1005).", hash: "0x7e44...5f82" },
-      { sys: "SYS-07", lvl: "AUDIT", msg: "INV-2026-002 reconciliation pulse: €80,000 pending attestation match.", hash: "0x1b28...43da" },
-      { sys: "SYS-11", lvl: "INFO", msg: "Jurisdiction Merkle root verified against Astana Escrow key slot #04.", hash: "0x99cb...0112" },
-      { sys: "SYS-02", lvl: "CRITICAL", msg: "Hydraulic pressure safety interlock tripped above 320 bar limit on Valve #3.", hash: "0x44fa...77b1" },
-    ];
+    let seenAuditIds = new Set();
+    document.querySelectorAll(".log-entry-row").forEach(r => {
+      const id = r.getAttribute("data-id");
+      if (id) seenAuditIds.add(id);
+    });
 
-    let eventIdx = 0;
-    setInterval(() => {
+    const pollLiveAuditLogs = async () => {
       if (streamPaused || !terminalBox) return;
+      try {
+        const res = await fetch("api/audit.php?limit=10");
+        const json = await res.json();
+        if (json.success && Array.isArray(json.logs)) {
+          const newLogs = json.logs.filter(l => !seenAuditIds.has(String(l.audit_id))).reverse();
+          newLogs.forEach(l => {
+            seenAuditIds.add(String(l.audit_id));
+            const isCrit = (l.result || "").toUpperCase().includes("FAIL") || (l.action || "").includes("ALERT");
+            const isWarn = (l.result || "").toUpperCase().includes("WARN");
+            const lvl = isCrit ? "CRITICAL" : (isWarn ? "WARN" : "AUDIT");
+            const sys = l.system_id || "SYS-11";
+            const row = document.createElement("div");
+            row.className = `log-entry-row flex items-start gap-space-xs font-telemetry-data text-telemetry-data py-space-2xs px-space-xs ${isCrit ? "bg-error-container/20 rounded hover:bg-error-container/30" : "hover:bg-surface-container-highest/10"} transition-colors`;
+            row.setAttribute("data-id", String(l.audit_id));
+            row.setAttribute("data-severity", lvl);
+            row.setAttribute("data-node", sys);
 
-      const ev = sampleLiveEvents[eventIdx % sampleLiveEvents.length];
-      eventIdx++;
+            row.innerHTML = `
+              <span class="text-on-primary-container select-none font-telemetry-micro w-8 text-right shrink-0">LIVE</span>
+              <span class="text-secondary-fixed shrink-0 font-telemetry-micro">${l.occurred_at || new Date().toISOString().slice(0,19)}</span>
+              <span class="${isCrit ? "bg-error text-on-error" : isWarn ? "bg-tertiary-container text-tertiary-fixed" : "bg-primary-container text-on-primary-container"} px-space-2xs py-0 rounded font-security-stamp text-security-stamp shrink-0">${lvl}</span>
+              <span class="text-secondary-fixed-dim font-bold shrink-0">[${sys}]</span>
+              <span class="text-tertiary-fixed-dim shrink-0">[${l.target_entity_type || "LOG"}]</span>
+              <span class="text-on-primary">
+                <strong class="text-secondary-fixed underline">${l.actor_emp_id || "SYS-DAEMON"}</strong> (${l.actor_name || "Telemetry Relay"}) ${l.action || "Event recorded"}
+                <span class="text-on-primary-container font-mono text-[10px] ml-1">[#${l.audit_id}]</span>
+              </span>
+            `;
 
-      const now = new Date();
-      const timeStr = now.toISOString().replace("T", " ").slice(0, 19);
+            if (currentSeverity !== "ALL" && currentSeverity !== lvl) row.style.display = "none";
+            if (currentNode !== "ALL" && currentNode !== sys) row.style.display = "none";
 
-      const row = document.createElement("div");
-      const isCrit = ev.lvl === "CRITICAL";
-      const isWarn = ev.lvl === "WARN";
-
-      row.className = `log-entry-row flex items-start gap-space-xs font-telemetry-data text-telemetry-data py-space-2xs px-space-xs ${isCrit ? "bg-error-container/20 rounded hover:bg-error-container/30" : "hover:bg-surface-container-highest/10"} transition-colors`;
-      row.setAttribute("data-severity", ev.lvl);
-      row.setAttribute("data-node", ev.sys);
-
-      row.innerHTML = `
-        <span class="text-on-primary-container select-none font-telemetry-micro w-8 text-right shrink-0">LIVE</span>
-        <span class="text-secondary-fixed shrink-0 font-telemetry-micro">${timeStr}</span>
-        <span class="${isCrit ? "bg-error text-on-error" : isWarn ? "bg-tertiary-container text-tertiary-fixed" : "bg-primary-container text-on-primary-container"} px-space-2xs py-0 rounded font-security-stamp text-security-stamp shrink-0">${ev.lvl}</span>
-        <span class="text-secondary-fixed-dim font-bold shrink-0">[${ev.sys}]</span>
-        <span class="text-tertiary-fixed-dim shrink-0">[TELEMETRY]</span>
-        <span class="text-on-primary">
-          <strong class="text-secondary-fixed underline">SYS-AUTO</strong> (Live Daemon Relay) ${ev.msg}
-          <span class="text-on-primary-container font-mono text-[10px] ml-1">[Hash: ${ev.hash}]</span>
-        </span>
-      `;
-
-      // Check current filters before displaying
-      if (currentSeverity !== "ALL" && currentSeverity !== ev.lvl) {
-        row.style.display = "none";
+            terminalBox.insertBefore(row, terminalBox.firstChild);
+            if (terminalBox.children.length > 150) terminalBox.removeChild(terminalBox.lastChild);
+          });
+        }
+      } catch (e) {
+        // quiet network poll
       }
-      if (currentNode !== "ALL" && currentNode !== ev.sys) {
-        row.style.display = "none";
-      }
+    };
 
-      terminalBox.insertBefore(row, terminalBox.firstChild);
-
-      // Keep buffer bounded
-      if (terminalBox.children.length > 150) {
-        terminalBox.removeChild(terminalBox.lastChild);
-      }
-    }, 4000);
+    if (typeof window.vpPoll === "function") {
+      window.vpPoll(pollLiveAuditLogs, 4000, { pauseWhenHidden: true });
+    } else {
+      setInterval(pollLiveAuditLogs, 4000);
+    }
   });
 })();

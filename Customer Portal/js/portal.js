@@ -1381,4 +1381,30 @@
     setupProfileMenu();
     handleDeepLinking();
   }
+
+  // Poll tickets for live status and notification bell update
+  const pollCustomerTicketsAndAlerts = async () => {
+    try {
+      const res = await fetch("api/tickets.php");
+      const json = await res.json();
+      if (json.success && Array.isArray(json.data)) {
+        const openTickets = json.data.filter(t => (t.status || "").toLowerCase() !== "resolved" && (t.status || "").toLowerCase() !== "closed");
+        const bellDot = document.getElementById("bell-unread-dot");
+        const countBadge = document.getElementById("notif-badge-count");
+        if (openTickets.length > 0) {
+          if (bellDot) bellDot.classList.remove("hidden");
+          if (countBadge) countBadge.textContent = `${openTickets.length} ACTIVE`;
+        } else {
+          if (bellDot) bellDot.classList.add("hidden");
+          if (countBadge) countBadge.textContent = "0 NEW";
+        }
+      }
+    } catch (e) {}
+  };
+
+  if (typeof window.vpPoll === "function") {
+    window.vpPoll(pollCustomerTicketsAndAlerts, 30000, { pauseWhenHidden: true });
+  } else {
+    setInterval(pollCustomerTicketsAndAlerts, 30000);
+  }
 })();

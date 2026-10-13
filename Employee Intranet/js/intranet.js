@@ -1024,95 +1024,131 @@
     const clearanceSelect = document.getElementById("dir-clearance-filter");
     const countBadge = document.getElementById("dir-results-count");
 
-    function filterAndRender() {
-      const query = searchInput ? searchInput.value.toLowerCase().trim() : "";
+    async function filterAndRender(page = 1) {
+      const query = searchInput ? searchInput.value.trim() : "";
       const dept = deptSelect ? deptSelect.value : "ALL";
       const clearance = clearanceSelect ? clearanceSelect.value : "ALL";
 
-      const filtered = EMPLOYEES_DATA.filter((emp) => {
-        const matchesQuery =
-          !query ||
-          emp.name.toLowerCase().includes(query) ||
-          emp.title.toLowerCase().includes(query) ||
-          emp.email.toLowerCase().includes(query) ||
-          emp.office.toLowerCase().includes(query) ||
-          emp.id.toLowerCase().includes(query);
+      const params = new URLSearchParams();
+      if (query) params.append("q", query);
+      if (dept && dept !== "ALL") params.append("dept", dept);
+      params.append("page", page);
+      params.append("per_page", 30);
 
-        const matchesDept = dept === "ALL" || emp.dept === dept;
-        const matchesClearance =
-          clearance === "ALL" || emp.clearanceClass === clearance;
+      try {
+        const res = await (window.vpFetch || fetch)(`api/directory.php?${params.toString()}`);
+        const data = await res.json();
+        let rows = data.rows || data.data || [];
+        let total = data.total ?? rows.length;
 
-        return matchesQuery && matchesDept && matchesClearance;
-      });
+        if (clearance !== "ALL") {
+          rows = rows.filter((emp) => {
+            const cLvl = (emp.clearance_level || "L1").toLowerCase();
+            return (
+              (clearance === "public" && cLvl.includes("l1")) ||
+              (clearance === "internal" && cLvl.includes("l2")) ||
+              (clearance === "confidential" && cLvl.includes("l3")) ||
+              (clearance === "restricted" && cLvl.includes("l4"))
+            );
+          });
+        }
 
-      if (countBadge) {
-        countBadge.textContent = `${filtered.length} of ${EMPLOYEES_DATA.length} Personnel`;
-      }
+        if (countBadge) {
+          countBadge.textContent = `${rows.length} of ${total} Personnel`;
+        }
 
-      if (filtered.length === 0) {
-        grid.innerHTML = `
-                    <div style="grid-column: 1 / -1; padding: 3rem; text-align: center; background: #FFFFFF; border: 1px dashed var(--neutral-300); border-radius: var(--radius-md);">
-                        <span class="material-symbols-outlined" style="font-size: 2.5rem; color: var(--neutral-400); margin-bottom: 0.75rem;">person_search</span>
-                        <h4 style="margin: 0 0 0.5rem; font-size: 1rem; color: var(--neutral-800);">No Personnel Found</h4>
-                        <p style="margin: 0; color: var(--neutral-600); font-size: 0.8125rem;">Try adjusting your department filter, security clearance, or search term.</p>
-                        <button type="button" class="btn btn-secondary" style="margin-top: 1rem;" onclick="window.resetDirectoryFilters()">Reset Filters</button>
+        if (rows.length === 0) {
+          grid.innerHTML = `
+            <div style="grid-column: 1 / -1; padding: 3rem; text-align: center; background: #FFFFFF; border: 1px dashed var(--neutral-300); border-radius: var(--radius-md);">
+              <span class="material-symbols-outlined" style="font-size: 2.5rem; color: var(--neutral-400); margin-bottom: 0.75rem;">person_search</span>
+              <h4 style="margin: 0 0 0.5rem; font-size: 1rem; color: var(--neutral-800);">No Personnel Found</h4>
+              <p style="margin: 0; color: var(--neutral-600); font-size: 0.8125rem;">Try adjusting your department filter, security clearance, or search term.</p>
+              <button type="button" class="btn btn-secondary" style="margin-top: 1rem;" onclick="window.resetDirectoryFilters()">Reset Filters</button>
+            </div>
+          `;
+          return;
+        }
+
+        const deptColors = {
+          ENG: "#1B3A5C",
+          OPS: "#00796B",
+          ITD: "#1A73E8",
+          SAL: "#3949AB",
+          FIN: "#2E6E4E",
+          HRA: "#6E4C7C",
+          GOV: "#C05621",
+          EXE: "#742A2A"
+        };
+
+        grid.innerHTML = rows
+          .map((emp) => {
+            const empId = emp.emp_id || emp.id || "";
+            const name = emp.full_name || emp.name || "";
+            const title = emp.job_title || emp.title || "";
+            const dCode = emp.department_code || emp.dept || "OPS";
+            const email = emp.email || "";
+            const office = emp.office || `${dCode} Wing`;
+            const clr = emp.clearance_level || "L1";
+            const initials = name.split(" ").map(p => p[0]).join("").slice(0, 2).toUpperCase() || "VP";
+            const avatarBg = deptColors[dCode] || "#1B3A5C";
+
+            const clrClass = clr.toLowerCase().includes("l4") ? "restricted" :
+                             clr.toLowerCase().includes("l3") ? "confidential" :
+                             clr.toLowerCase().includes("l2") ? "internal" : "public";
+
+            return `
+              <div class="employee-card" data-emp-id="${escapeHtml(empId)}">
+                <div>
+                  <div style="display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 1rem;">
+                    <div class="avatar-circle" style="background-color: ${avatarBg}; color: #fff; font-weight: 700; display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 50%;">
+                      ${escapeHtml(initials)}
+                      <span class="avatar-status-dot online" title="Status: Active"></span>
                     </div>
-                `;
-        return;
-      }
+                    <span class="dept-badge ${dCode.toLowerCase()}">${escapeHtml(dCode)}</span>
+                  </div>
 
-      grid.innerHTML = filtered
-        .map(
-          (emp) => `
-                <div class="employee-card" data-emp-id="${emp.id}">
-                    <div>
-                        <div style="display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 1rem;">
-                            <div class="avatar-circle" style="background-color: ${emp.avatarBg};">
-                                ${emp.avatar}
-                                <span class="avatar-status-dot ${emp.status}" title="Status: ${emp.status}"></span>
-                            </div>
-                            <span class="dept-badge ${emp.dept.toLowerCase()}">${emp.dept}</span>
-                        </div>
+                  <h3 style="margin: 0 0 0.25rem; font-size: 0.9375rem; font-weight: 600; color: var(--neutral-900); line-height: 1.3;">
+                    ${escapeHtml(name)}
+                  </h3>
+                  <p style="margin: 0 0 0.75rem; font-size: 0.75rem; color: var(--neutral-600); line-height: 1.35; min-height: 2rem;">
+                    ${escapeHtml(title)}
+                  </p>
 
-                        <h3 style="margin: 0 0 0.25rem; font-size: 0.9375rem; font-weight: 600; color: var(--neutral-900); line-height: 1.3;">
-                            ${escapeHtml(emp.name)}
-                        </h3>
-                        <p style="margin: 0 0 0.75rem; font-size: 0.75rem; color: var(--neutral-600); line-height: 1.35; min-height: 2rem;">
-                            ${escapeHtml(emp.title)}
-                        </p>
-
-                        <div style="display: flex; flex-direction: column; gap: 0.375rem; padding-top: 0.75rem; border-top: 1px solid var(--neutral-200); font-size: 0.75rem; color: var(--neutral-700);">
-                            <div style="display: flex; align-items: center; gap: 0.5rem;">
-                                <span class="material-symbols-outlined" style="font-size: 0.95rem; color: var(--neutral-500);">badge</span>
-                                <span style="font-family: var(--font-mono); font-weight: 500;">${emp.id}</span>
-                            </div>
-                            <div style="display: flex; align-items: center; gap: 0.5rem;">
-                                <span class="material-symbols-outlined" style="font-size: 0.95rem; color: var(--neutral-500);">mail</span>
-                                <a href="mailto:${emp.email}" style="color: var(--brand-primary); text-decoration: none; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${emp.email}</a>
-                            </div>
-                            <div style="display: flex; align-items: center; gap: 0.5rem;">
-                                <span class="material-symbols-outlined" style="font-size: 0.95rem; color: var(--neutral-500);">location_on</span>
-                                <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${escapeHtml(emp.office)}</span>
-                            </div>
-                        </div>
+                  <div style="display: flex; flex-direction: column; gap: 0.375rem; padding-top: 0.75rem; border-top: 1px solid var(--neutral-200); font-size: 0.75rem; color: var(--neutral-700);">
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                      <span class="material-symbols-outlined" style="font-size: 0.95rem; color: var(--neutral-500);">badge</span>
+                      <span style="font-family: var(--font-mono); font-weight: 500;">${escapeHtml(empId)}</span>
                     </div>
-
-                    <div style="margin-top: 1rem; padding-top: 0.75rem; border-top: 1px solid var(--neutral-200); display: flex; align-items: center; justify-content: space-between;">
-                        <span class="badge-classification ${emp.clearanceClass}">${emp.clearance}</span>
-                        <button type="button" class="btn btn-secondary btn-sm" onclick="window.viewEmployeeCard('${emp.id}')" style="font-size: 0.75rem; padding: 0.25rem 0.6rem;">
-                            Profile
-                        </button>
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                      <span class="material-symbols-outlined" style="font-size: 0.95rem; color: var(--neutral-500);">mail</span>
+                      <a href="mailto:${escapeHtml(email)}" style="color: var(--brand-primary); text-decoration: none; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${escapeHtml(email)}</a>
                     </div>
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                      <span class="material-symbols-outlined" style="font-size: 0.95rem; color: var(--neutral-500);">location_on</span>
+                      <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${escapeHtml(office)}</span>
+                    </div>
+                  </div>
                 </div>
-            `,
-        )
-        .join("");
+
+                <div style="margin-top: 1rem; padding-top: 0.75rem; border-top: 1px solid var(--neutral-200); display: flex; align-items: center; justify-content: space-between;">
+                  <span class="badge-classification ${clrClass}">${escapeHtml(clr)}</span>
+                  <button type="button" class="btn btn-secondary btn-sm" onclick="window.viewEmployeeCard('${escapeHtml(empId)}')" style="font-size: 0.75rem; padding: 0.25rem 0.6rem;">
+                    Profile
+                  </button>
+                </div>
+              </div>
+            `;
+          })
+          .join("");
+      } catch (err) {
+        console.warn("Directory load failed:", err);
+      }
     }
 
-    if (searchInput) searchInput.addEventListener("input", filterAndRender);
-    if (deptSelect) deptSelect.addEventListener("change", filterAndRender);
-    if (clearanceSelect)
-      clearanceSelect.addEventListener("change", filterAndRender);
+    const debouncedFilter = (window.vpDebounce || ((fn) => fn))(filterAndRender, 300);
+    if (searchInput) searchInput.addEventListener("input", debouncedFilter);
+    if (deptSelect) deptSelect.addEventListener("change", () => filterAndRender());
+    if (clearanceSelect) clearanceSelect.addEventListener("change", () => filterAndRender());
 
     window.resetDirectoryFilters = function () {
       if (searchInput) searchInput.value = "";

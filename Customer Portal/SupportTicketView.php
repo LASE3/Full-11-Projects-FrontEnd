@@ -79,7 +79,6 @@ $firstTicketId = $firstTicket ? $firstTicket['id'] : 'TCK-9482';
     <link rel="stylesheet" href="../assets/css/api-ui.css">
     <script src="../assets/js/api-core.js"></script>
     <script src="../assets/js/api-customer.js"></script>
-    <script src="js/portal-data.js"></script>
     <script src="js/support.js"></script>
 <script>
 window.SERVER_TICKETS = <?= json_encode($ticketsMap, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) ?>;

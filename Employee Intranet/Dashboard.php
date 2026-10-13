@@ -787,7 +787,6 @@ $opsTasks = intra_getOpsTasks();
     <link rel="stylesheet" href="../assets/css/api-ui.css">
     <script src="../assets/js/api-core.js"></script>
     <script src="../assets/js/api-intranet.js"></script>
-    <script src="js/intranet-data.js"></script>
 </body>
 
 </html>

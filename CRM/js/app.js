@@ -353,19 +353,45 @@
           col.style.backgroundColor = "";
         });
 
-        col.addEventListener("drop", (e) => {
+        col.addEventListener("drop", async (e) => {
           e.preventDefault();
           col.style.backgroundColor = "";
           const oppId = e.dataTransfer.getData("text/plain");
           const opp = crmApp.opportunities.find((o) => o.id === oppId);
           if (opp && opp.stage !== stage) {
+            const oldStage = opp.stage;
             opp.stage = stage;
             crmApp.renderKanban();
-            crmApp.showToast(
-              "Stage Gating Updated",
-              `${opp.client} moved to stage: ${stage.toUpperCase()}`,
-              "amber",
-            );
+            try {
+              const fetchFn = window.vpFetch || (async (u, opt) => {
+                const r = await fetch(u, opt);
+                return await r.json();
+              });
+              const res = await fetchFn("api/opportunities.php", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  action: "update_stage",
+                  opp_id: oppId,
+                  stage: stage
+                })
+              });
+              if (!res || !res.success) {
+                opp.stage = oldStage;
+                crmApp.renderKanban();
+                crmApp.showToast("Update Failed", (res && res.message) || "Stage update failed; rolled back.", "alert");
+              } else {
+                crmApp.showToast(
+                  "Stage Gating Updated",
+                  `${opp.client} moved to stage: ${stage.toUpperCase()}`,
+                  "amber",
+                );
+              }
+            } catch (err) {
+              opp.stage = oldStage;
+              crmApp.renderKanban();
+              crmApp.showToast("Connection Error", err.message + "; rolled back.", "alert");
+            }
           }
         });
       });
@@ -714,6 +740,91 @@
           rows.forEach(r => tbody.appendChild(r));
         });
       }
+
+      const searchInput = document.getElementById("global-omni-search");
+      if (searchInput && tbody) {
+        let searchTimer = null;
+        searchInput.addEventListener("input", () => {
+          clearTimeout(searchTimer);
+          searchTimer = setTimeout(async () => {
+            const q = searchInput.value.trim();
+            const fetchFn = window.vpFetch || (async (u) => {
+              const r = await fetch(u);
+              return await r.json();
+            });
+            try {
+              const res = await fetchFn(`api/customers.php?q=${encodeURIComponent(q)}&per_page=100`);
+              const rows = (res && res.rows) ? res.rows : ((res && res.data) ? res.data : []);
+              crmApp.renderCustomerRows(rows);
+            } catch (err) {
+              console.error("Failed to query customers:", err);
+            }
+          }, 300);
+        });
+      }
+    },
+
+    renderCustomerRows: function (customers) {
+      const tbody = document.getElementById("customers-tbody");
+      if (!tbody) return;
+
+      const esc = (s) => {
+        if (s == null) return "";
+        return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+      };
+
+      if (!customers || customers.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:32px;color:var(--crm-text-muted);">No accounts found matching query.</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = customers.map((c) => {
+        const hs = parseInt(c.health_score || 90);
+        const hsClass = hs >= 92 ? "crm-mono-bold-success" : (hs >= 80 ? "crm-mono-bold-amber" : "crm-mono-bold-danger");
+        const tierClass = String(c.account_tier || "").toLowerCase().includes("strategic") ? "tier-badge strategic" : "tier-badge tier-1";
+        const arr = parseFloat(c.total_contract_arr || c.total_contract_value || 0);
+        const arrStr = (arr / 1000000).toFixed(2);
+        const contractRef = c.active_contract_ref || "None";
+        const contractEnd = c.contract_end || "Ongoing";
+
+        return `
+          <tr class="account-row account-row-tagged" data-cus-id="${esc(c.cus_id)}" data-sector="${esc(c.sector)}" onclick="window.location.href='CustomerDetail.php?id=${encodeURIComponent(c.cus_id)}'">
+            <td>
+              <div class="account-name-cell">
+                <div class="account-avatar-pill">${esc(c.company_name ? c.company_name.substring(0, 2).toUpperCase() : "CU")}</div>
+                <div>
+                  <div class="account-company-title">${esc(c.company_name)}</div>
+                  <div class="crm-text-xs-mono">${esc(c.cus_id)} · ${esc(c.headquarters || "HQ")}</div>
+                </div>
+              </div>
+            </td>
+            <td>
+              <span class="sector-pill">${esc(c.sector || "Industrial")}</span>
+            </td>
+            <td>
+              <div class="account-director-name">${esc(c.account_manager_name || "Unassigned")}</div>
+              <div class="crm-text-xs-secondary">${esc(c.primary_contact_name || "")}</div>
+            </td>
+            <td>
+              <span class="crm-mono-navy-lg">$${arrStr}M</span>
+              <div class="crm-text-xs-secondary">ARR (Active Contracts)</div>
+            </td>
+            <td>
+              <span class="crm-mono-11-navy">${esc(contractRef)}</span>
+              <div class="crm-text-xs-secondary">Exp: ${esc(contractEnd)}</div>
+            </td>
+            <td>
+              <span class="${hsClass}">${hs}%</span>
+              <span class="${tierClass}">${esc(c.account_tier || "Tier-1")}</span>
+            </td>
+            <td onclick="event.stopPropagation()">
+              <button class="btn btn-outline btn-sm" onclick="window.location.href='CustomerDetail.php?id=${encodeURIComponent(c.cus_id)}'">
+                Inspect
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join("");
     },
 
     initResponsiveLayout: function () {

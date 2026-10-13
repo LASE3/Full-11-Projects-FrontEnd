@@ -120,7 +120,19 @@
             clickedBtn.outerHTML = `<button class="px-space-xs py-[3px] bg-secondary hover:bg-secondary/90 text-on-secondary rounded font-telemetry-micro text-telemetry-micro font-bold cursor-pointer" onclick="restoreAccountCredentials('${empId}')">Restore</button>`;
           }
         } else {
-          /* in-place privilege update */
+          document.querySelectorAll(`tr[data-emp-id="${empId}"], tr`).forEach(r => {
+            if (r.textContent.includes(empId)) {
+              const ttlSpan = r.querySelector(".font-telemetry-micro, td:nth-child(4)");
+              if (ttlSpan) {
+                ttlSpan.textContent = "SEVERED";
+                ttlSpan.className = "font-telemetry-micro text-telemetry-micro font-bold text-error";
+              }
+              const btn = r.querySelector("button[onclick*='severAccountCredentials']");
+              if (btn) {
+                btn.outerHTML = `<button class="px-space-xs py-[3px] bg-secondary hover:bg-secondary/90 text-on-secondary rounded font-telemetry-micro text-telemetry-micro font-bold cursor-pointer" onclick="restoreAccountCredentials('${empId}')">Restore</button>`;
+              }
+            }
+          });
         }
       } else {
         window.showToast?.("ERROR", data.error || "Sever operation rejected by policy engine.", "error");
@@ -148,7 +160,19 @@
           "success",
           "verified"
         );
-        /* in-place privilege update */
+        document.querySelectorAll(`tr[data-emp-id="${empId}"], tr`).forEach(r => {
+            if (r.textContent.includes(empId)) {
+              const ttlSpan = r.querySelector(".font-telemetry-micro, td:nth-child(4)");
+              if (ttlSpan) {
+                ttlSpan.textContent = "ACTIVE";
+                ttlSpan.className = "font-telemetry-micro text-telemetry-micro font-bold text-secondary";
+              }
+              const btn = r.querySelector("button[onclick*='restoreAccountCredentials']");
+              if (btn) {
+                btn.outerHTML = `<button class="px-space-xs py-[3px] bg-error hover:bg-error/90 text-on-error rounded font-telemetry-micro text-telemetry-micro font-bold cursor-pointer" onclick="severAccountCredentials('${empId}')">Sever</button>`;
+              }
+            }
+          });
       } else {
         window.showToast?.("ERROR", data.error || "Restore failed", "error");
       }
@@ -205,7 +229,13 @@
           "error",
           "power_off"
         );
-        /* in-place privilege update */
+        document.querySelectorAll(".btn-sever-session, button[onclick*='severAccountCredentials']").forEach(btn => {
+            btn.disabled = true;
+            btn.textContent = "Severed";
+            btn.className = "px-space-xs py-[3px] bg-surface-container text-on-surface-variant rounded font-telemetry-micro text-telemetry-micro font-bold";
+          });
+          const bastionEl = document.querySelector("#bastionStateIndicator");
+          if (bastionEl) bastionEl.textContent = "ALL BASTIONS SEVERED (DEFCON-1)";
       } else {
         window.showToast?.("ERROR", data.error || "Global sever failed", "error");
       }

@@ -88,7 +88,27 @@
           if (result.success) {
             window.showToast("ENDPOINT SAVED", isUpdate ? "API endpoint specification updated in database." : "New industrial endpoint registered in database.", "success");
             closeModal();
-            /* in-place endpoint update */
+                        if (isUpdate && payload.id) {
+              const row = document.querySelector(`.endpoint-row[data-id="${payload.id}"]`);
+              if (row) {
+                const pathEl = row.querySelector(".endpoint-path");
+                if (pathEl) pathEl.textContent = payload.endpoint_path || "";
+              }
+            } else {
+              const list = document.querySelector("#endpointsList, #endpointsContainer");
+              if (list) {
+                const el = document.createElement("div");
+                el.className = "endpoint-card vk-card mb-4";
+                el.innerHTML = `
+                  <div class="vk-card-header flex justify-between items-center">
+                    <span class="font-bold text-accent">${payload.http_method || "GET"} ${payload.endpoint_path || ""}</span>
+                    <span class="badge-classification badge-internal">${payload.auth_level || "API Key"}</span>
+                  </div>
+                  <div class="vk-card-body"><p class="text-xs text-muted">${payload.description || ""}</p></div>
+                `;
+                list.prepend(el);
+              }
+            }
           } else {
             window.showToast("ERROR", result.error || "Failed to save endpoint.", "error");
           }

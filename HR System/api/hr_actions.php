@@ -178,6 +178,49 @@ switch ($action) {
         echo json_encode($res);
         break;
 
+    case 'create_job_posting':
+        $title = trim($payload['title'] ?? '');
+        $deptCode = trim($payload['department_code'] ?? '');
+        $isPublished = isset($payload['is_published']) ? (int)$payload['is_published'] : 1;
+        if (empty($title)) {
+            echo json_encode(['success' => false, 'message' => 'Job title is required.']);
+            exit;
+        }
+        $pdo = getDbConnection();
+        $stmt = $pdo->prepare("INSERT INTO job_postings (title, department_code, is_published, posted_at) VALUES (?, ?, ?, NOW())");
+        $stmt->execute([$title, $deptCode ?: null, $isPublished]);
+        $newId = (int)$pdo->lastInsertId();
+        
+        $stmt = $pdo->prepare("SELECT jp.*, d.dept_name FROM job_postings jp LEFT JOIN departments d ON jp.department_code = d.dept_code WHERE jp.posting_id = ?");
+        $stmt->execute([$newId]);
+        $posting = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        echo json_encode([
+            'success' => true,
+            'message' => 'Job opening created and published successfully.',
+            'posting_id' => $newId,
+            'data' => $posting
+        ]);
+        break;
+
+    case 'toggle_job_posting':
+        $postingId = (int)($payload['posting_id'] ?? 0);
+        $isPublished = (int)($payload['is_published'] ?? 0);
+        if ($postingId <= 0) {
+            echo json_encode(['success' => false, 'message' => 'Valid posting ID is required.']);
+            exit;
+        }
+        $pdo = getDbConnection();
+        $stmt = $pdo->prepare("UPDATE job_postings SET is_published = ? WHERE posting_id = ?");
+        $stmt->execute([$isPublished, $postingId]);
+        echo json_encode([
+            'success' => true,
+            'message' => 'Job posting publication status updated.',
+            'posting_id' => $postingId,
+            'is_published' => $isPublished
+        ]);
+        break;
+
     default:
         echo json_encode(['success' => false, 'message' => "Unrecognized action '{$action}'."]);
         break;

@@ -303,7 +303,7 @@
     ];
 
     let logIdx = 0;
-    setInterval(() => {
+    const pollLockdownStatus = async () => {
       if (syslogConsole) {
         const el = document.createElement("div");
         el.className = "text-on-primary-container font-mono text-[11px] py-0.5";
@@ -312,7 +312,28 @@
         syslogConsole.scrollTop = syslogConsole.scrollHeight;
         logIdx++;
       }
-    }, 4000);
+      try {
+        const res = await fetch("api/lockdown.php");
+        const json = await res.json();
+        if (json.success && json.data) {
+          const defcon = json.data.defcon_status || json.data.defcon || 4;
+          const defconPill = document.querySelector(".bg-primary-container.rounded.border");
+          if (defconPill) {
+            if (defcon === 1) {
+              defconPill.innerHTML = '<div class="w-2 h-2 rounded-full bg-error animate-ping"></div><span class="font-security-stamp text-security-stamp text-error">CYBER-RANGE-PROD</span><span class="text-outline-variant font-telemetry-micro text-telemetry-micro">|</span><span class="font-telemetry-micro text-telemetry-micro text-error font-bold">DEFCON-1 / TOTAL AIR-GAP</span>';
+            } else {
+              defconPill.innerHTML = '<div class="w-2 h-2 rounded-full bg-secondary-fixed animate-pulse"></div><span class="font-security-stamp text-security-stamp text-secondary-fixed">CYBER-RANGE-PROD</span><span class="text-outline-variant font-telemetry-micro text-telemetry-micro">|</span><span class="font-telemetry-micro text-telemetry-micro text-on-primary-container font-medium">DEFCON-4 / NORMAL OPS</span>';
+            }
+          }
+        }
+      } catch (e) {}
+    };
+
+    if (typeof window.vpPoll === "function") {
+      window.vpPoll(pollLockdownStatus, 5000, { pauseWhenHidden: true });
+    } else {
+      setInterval(pollLockdownStatus, 5000);
+    }
 
     const btnExport = document.getElementById("btnExportDossier");
     if (btnExport) {

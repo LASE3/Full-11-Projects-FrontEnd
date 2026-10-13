@@ -93,12 +93,24 @@ function ensureItTablesExist(PDO $pdo): void
 function sendJsonSuccess(mixed $data = [], string $message = ''): void
 {
     header('Content-Type: application/json; charset=utf-8');
-    echo json_encode([
+    $payload = [
         'success'   => true,
         'message'   => $message,
         'data'      => $data,
         'timestamp' => date('Y-m-d H:i:s'),
-    ], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+    ];
+    if (is_array($data) && isset($data['rows'])) {
+        $payload['rows'] = $data['rows'];
+        $payload['total'] = (int)($data['total'] ?? count($data['rows']));
+        $payload['page'] = (int)($data['page'] ?? 1);
+        $payload['per_page'] = (int)($data['per_page'] ?? count($data['rows']));
+    } elseif (is_array($data)) {
+        $payload['rows'] = $data;
+        $payload['total'] = count($data);
+        $payload['page'] = 1;
+        $payload['per_page'] = count($data);
+    }
+    echo json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
     exit;
 }
 

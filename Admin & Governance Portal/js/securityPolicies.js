@@ -110,7 +110,39 @@
         if (data.success) {
           window.closePolicyModal();
           window.showToast("POLICY SAVED", data.message, "success", "verified");
-          /* in-place policy update */
+          if (payload.action === "update" && payload.policy_id) {
+            const row = document.querySelector(`.policy-row[data-id="${payload.policy_id}"]`);
+            if (row) {
+              row.setAttribute("data-title", payload.title || "");
+              row.setAttribute("data-desc", payload.description || "");
+              row.setAttribute("data-system", payload.system_target || "");
+              row.setAttribute("data-mode", payload.enforcement_mode || "Strict");
+              const titleEl = row.querySelector("td div.font-bold");
+              if (titleEl) titleEl.textContent = payload.title || "";
+            }
+          } else if (payload.action === "create" && data.policy_id) {
+            const tbody = document.querySelector("table tbody");
+            if (tbody) {
+              const tr = document.createElement("tr");
+              tr.className = "policy-row bg-surface-container-low hover:bg-surface-container transition-colors border-b border-outline-variant/30";
+              tr.setAttribute("data-id", data.policy_id);
+              tr.setAttribute("data-doc", payload.doc_reference || `POL-2026-${data.policy_id}`);
+              tr.setAttribute("data-title", payload.title || "");
+              tr.setAttribute("data-desc", payload.description || "");
+              tr.setAttribute("data-system", payload.system_target || "SYS-01");
+              tr.setAttribute("data-mode", payload.enforcement_mode || "Strict");
+              tr.innerHTML = `
+                <td class="py-space-xs px-space-sm border-l-4 border-primary">
+                  <div class="flex items-center gap-space-xs"><span class="font-bold text-primary">${payload.doc_reference || `POL-2026-${data.policy_id}`}</span><span class="px-1 bg-primary text-on-primary text-[10px] font-bold">${payload.enforcement_mode || "Strict"}</span></div>
+                  <div class="text-on-surface font-semibold truncate max-w-xs">${payload.title || ""}</div>
+                </td>
+                <td class="py-space-xs px-space-sm text-center font-bold text-primary">${payload.system_target || "SYS-01"}</td>
+                <td class="py-space-xs px-space-sm text-center font-bold text-secondary">ACTIVE</td>
+                <td class="py-space-xs px-space-sm text-right"><button class="px-space-xs py-space-2xs bg-primary text-on-primary font-label-uppercase text-[10px]" onclick="inspectPolicy(${data.policy_id})">INSPECT</button></td>
+              `;
+              tbody.prepend(tr);
+            }
+          }
         } else {
           window.showToast("SAVE FAILED", data.error || "Could not save policy", "error", "error");
         }

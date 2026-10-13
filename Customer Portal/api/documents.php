@@ -64,7 +64,13 @@ try {
             Response::success($doc, "Document details loaded");
         } else {
             $folder = trim($_GET['folder'] ?? '');
-            $search = trim($_GET['search'] ?? '');
+            $search = trim((string)($_GET['q'] ?? $_GET['search'] ?? ''));
+            $allowedSorts = ['doc_id', 'file_name', 'created_at', 'file_size', 'classification', 'folder'];
+            $sortField = in_array(strtolower((string)($_GET['sort'] ?? '')), $allowedSorts, true) ? strtolower((string)$_GET['sort']) : 'created_at';
+            $sortDir = strtoupper((string)($_GET['dir'] ?? 'DESC')) === 'ASC' ? 'ASC' : 'DESC';
+            $page = max(1, (int)($_GET['page'] ?? 1));
+            $perPage = min(100, max(1, (int)($_GET['per_page'] ?? 50)));
+            $offset = ($page - 1) * $perPage;
 
             $sql = "
                 SELECT d.*, p.project_name
@@ -85,12 +91,16 @@ try {
                 $params[':search3'] = "%{$search}%";
             }
 
-            $sql .= " ORDER BY d.created_at DESC";
+            $countStmt = $pdo->prepare("SELECT COUNT(*) FROM documents d LEFT JOIN projects p ON d.related_prj_id = p.prj_id " . substr($sql, strpos($sql, "WHERE")));
+            $countStmt->execute($params);
+            $total = (int)$countStmt->fetchColumn();
+
+            $sql .= " ORDER BY d.{$sortField} {$sortDir} LIMIT {$perPage} OFFSET {$offset}";
             $stmt = $pdo->prepare($sql);
             $stmt->execute($params);
             $docs = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-            Response::success($docs, "Customer documents loaded");
+            Response::paginated($docs, $total, $page, $perPage, "Customer documents loaded");
         }
     }
 

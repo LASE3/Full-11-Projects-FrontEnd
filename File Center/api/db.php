@@ -28,24 +28,25 @@ function getApiPdo(): PDO
 /**
  * Send JSON response and exit
  */
-function sendJsonResponse(bool $success, mixed $data = null, string $message = '', int $statusCode = 200): void
+function sendJsonResponse(bool $success, mixed $data = null, string $message = '', int $statusCode = 200, array $extra = []): void
 {
     http_response_code($statusCode);
-    echo json_encode([
+    $payload = array_merge([
         'success'   => $success,
         'message'   => $message,
         'data'      => $data,
         'timestamp' => date('Y-m-d H:i:s'),
-    ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+    ], $extra);
+    echo json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
     exit;
 }
 
 /**
  * Send success JSON response
  */
-function apiSuccess(mixed $data = null, string $message = 'Success', int $statusCode = 200): void
+function apiSuccess(mixed $data = null, string $message = 'Success', int $statusCode = 200, array $extra = []): void
 {
-    sendJsonResponse(true, $data, $message, $statusCode);
+    sendJsonResponse(true, $data, $message, $statusCode, $extra);
 }
 
 /**

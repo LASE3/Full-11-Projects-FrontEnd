@@ -145,36 +145,123 @@
         });
     },
 
-    // Search and Filter Employees table
+    _filterTimeout: null,
     filterEmployees: function () {
+      if (this._filterTimeout) clearTimeout(this._filterTimeout);
+      this._filterTimeout = setTimeout(() => {
+        this.fetchEmployees();
+      }, 300);
+    },
+
+    fetchEmployees: async function () {
+      const tbody = document.querySelector(".employee-table-body");
+      if (!tbody) return;
       const searchInput = document.getElementById("employee-table-search");
       const deptFilter = document.getElementById("employee-dept-filter");
-      const clearanceFilter = document.getElementById(
-        "employee-clearance-filter",
-      );
+      const clearanceFilter = document.getElementById("employee-clearance-filter");
 
-      const query = (searchInput ? searchInput.value : "").toLowerCase();
+      const query = (searchInput ? searchInput.value : "").trim();
       const selectedDept = deptFilter ? deptFilter.value : "all";
       const selectedClearance = clearanceFilter ? clearanceFilter.value : "all";
 
-      const rows = document.querySelectorAll(".employee-table-body tr");
-      rows.forEach((row) => {
-        const name = (row.getAttribute("data-name") || "").toLowerCase();
-        const id = (row.getAttribute("data-id") || "").toLowerCase();
-        const dept = row.getAttribute("data-dept") || "";
-        const clearance = row.getAttribute("data-clearance") || "";
+      const url = `api/employees.php?q=${encodeURIComponent(query)}&page=1&per_page=100`;
+      try {
+        const fetchFn = window.vpFetch || (async (u) => {
+          const r = await fetch(u);
+          return await r.json();
+        });
+        const data = await fetchFn(url);
+        const rows = (data && data.rows) ? data.rows : ((data && data.data) ? data.data : []);
+        this.renderEmployeesTable(rows, selectedDept, selectedClearance);
+      } catch (err) {
+        console.error("Failed to fetch employees:", err);
+      }
+    },
 
-        const matchQuery = !query || name.includes(query) || id.includes(query);
-        const matchDept = selectedDept === "all" || dept === selectedDept;
-        const matchClearance =
-          selectedClearance === "all" || clearance === selectedClearance;
+    renderEmployeesTable: function (employees, selectedDept, selectedClearance) {
+      const tbody = document.querySelector(".employee-table-body");
+      if (!tbody) return;
 
-        if (matchQuery && matchDept && matchClearance) {
-          row.style.display = "";
-        } else {
-          row.style.display = "none";
-        }
+      const esc = (s) => {
+        if (s == null) return "";
+        return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+      };
+
+      const filtered = (employees || []).filter((emp) => {
+        const cNum = String(emp.clearance_level || "").replace(/^L/i, "");
+        const matchDept = selectedDept === "all" || emp.department_code === selectedDept;
+        const matchClearance = selectedClearance === "all" || cNum === selectedClearance;
+        return matchDept && matchClearance;
       });
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:30px; color:#94a3b8;">No matching employee records found</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = filtered.map((emp) => {
+        const cNum = String(emp.clearance_level || "1").replace(/^L/i, "");
+        const nameParts = (emp.full_name || "").trim().split(/\s+/);
+        const rowInitials = (nameParts[0] ? nameParts[0][0] : "") + (nameParts[1] ? nameParts[1][0] : "");
+        const initials = (rowInitials || "VP").toUpperCase();
+
+        let statusPillClass = "status-active";
+        if (emp.employment_status === "Suspended") statusPillClass = "status-offboarding";
+        if (emp.employment_status === "OnLeave") statusPillClass = "status-leave";
+        if (emp.employment_status === "Terminated") statusPillClass = "status-offboarding";
+
+        const clrLabels = { "4": "Top Secret", "3": "Secret SCADA", "2": "Confidential", "1": "General" };
+        const clrLabel = clrLabels[cNum] || "General";
+
+        return `
+          <tr class="employee-row"
+            data-id="${esc(emp.emp_id)}"
+            data-name="${esc(emp.full_name)}"
+            data-dept="${esc(emp.department_code)}"
+            data-clearance="${esc(cNum)}"
+            onclick="window.hrApp.inspectEmployee('${esc(emp.emp_id)}')">
+            <td>
+              <span class="hr-mono-bold-plum">${esc(emp.emp_id)}</span>
+            </td>
+            <td>
+              <div class="hr-flex-gap-65">
+                <div class="hr-avatar-32">${esc(initials)}</div>
+                <div>
+                  <div class="hr-font-semibold-navy-13">${esc(emp.full_name)}</div>
+                  <div class="hr-text-muted-11">${esc(emp.email || "")}</div>
+                </div>
+              </div>
+            </td>
+            <td>
+              <span class="hr-font-medium-125">${esc(emp.dept_name || emp.department_code)}</span>
+            </td>
+            <td>
+              <span class="hr-text-secondary-125">${esc(emp.job_title)}</span>
+            </td>
+            <td>
+              <span class="clearance-badge clearance-l${esc(cNum)}">
+                <span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>
+                <span>Level ${esc(cNum)} · ${esc(clrLabel)}</span>
+              </span>
+            </td>
+            <td>
+              <span class="status-pill ${statusPillClass}">${esc(emp.employment_status || "Active")}</span>
+            </td>
+            <td class="hr-text-right" onclick="event.stopPropagation()">
+              <div class="hr-inline-gap-xs">
+                <button class="btn btn-outline btn-sm" onclick="window.hrApp.inspectEmployee('${esc(emp.emp_id)}')">
+                  Dossier
+                </button>
+                <button class="btn btn-outline btn-sm hr-btn-border-red-40"
+                  title="Remove or terminate employee record"
+                  onclick="window.hrApp.deleteEmployee('${esc(emp.emp_id)}', '${esc(emp.full_name)}')">
+                  🗑
+                </button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join("");
     },
 
     // Handle Add New Employee Form Submit
@@ -190,13 +277,17 @@
       const formData = new FormData(form);
       formData.append("action", "add_employee");
 
-      fetch("api/hr_actions.php", {
+      const fetchFn = window.vpFetch || (async (u, opt) => {
+        const r = await fetch(u, opt);
+        return await r.json();
+      });
+
+      fetchFn("api/hr_actions.php", {
         method: "POST",
         body: formData,
       })
-        .then((res) => res.json())
         .then((data) => {
-          if (data.success) {
+          if (data && data.success) {
             self.showToast(
               "Employee Registered",
               data.message || "Record created successfully in MySQL.",
@@ -204,11 +295,9 @@
             );
             self.closeModal("modal-add-employee");
             form.reset();
-            setTimeout(() => {
-              /* in-place update */
-            }, 800);
+            self.fetchEmployees();
           } else {
-            self.showToast("Registration Error", data.message, "alert");
+            self.showToast("Registration Error", (data && data.message) || "Failed", "alert");
             if (btn) {
               btn.disabled = false;
               btn.textContent = "Register & Initialize Onboarding →";
@@ -225,6 +314,7 @@
 
       return false;
     },
+
 
     // Advance Onboarding Step
     advanceOnboarding: function (empId, step, status) {
@@ -247,9 +337,19 @@
               `${step} marked as ${status} in MySQL.`,
               "success",
             );
-            setTimeout(() => {
-              /* in-place update */
-            }, 600);
+            document.querySelectorAll(".step-item").forEach((el) => {
+              if (el.textContent.includes(step)) {
+                const isDone = status === "Completed";
+                el.className = "step-item " + (isDone ? "completed" : "pending");
+                const badge = el.querySelector(".step-badge-status");
+                if (badge) {
+                  badge.className = "step-badge-status " + (isDone ? "status-completed" : "status-pending");
+                  badge.textContent = status.toUpperCase();
+                }
+                const btn = el.querySelector("button");
+                if (btn) btn.textContent = isDone ? "Reopen Step" : "Mark Completed ✓";
+              }
+            });
           } else {
             self.showToast("Update Error", data.message, "alert");
           }
@@ -275,9 +375,7 @@
           if (data.success) {
             self.showToast("Offboarding Initiated", data.message, "amber");
             self.closeModal("modal-initiate-offboarding");
-            setTimeout(() => {
-              /* in-place update */
-            }, 800);
+            self.fetchEmployees();
           } else {
             self.showToast("Offboarding Error", data.message, "alert");
           }
@@ -310,9 +408,19 @@
               `${step} status updated to ${status}.`,
               "success",
             );
-            setTimeout(() => {
-              /* in-place update */
-            }, 600);
+            document.querySelectorAll(".offboarding-case-card").forEach((card) => {
+              if (card.textContent.includes(empId)) {
+                card.querySelectorAll("button").forEach((btn) => {
+                  if (btn.getAttribute("onclick") && btn.getAttribute("onclick").includes(step)) {
+                    const isDone = status === "Completed";
+                    btn.textContent = isDone ? "✓ Done" : "Complete";
+                    const parent = btn.parentElement;
+                    const meta = parent ? parent.querySelector(".hr-meta-muted-10") : null;
+                    if (meta) meta.textContent = status;
+                  }
+                });
+              }
+            });
           } else {
             self.showToast("Error", data.message, "alert");
           }
@@ -352,9 +460,6 @@
                   : "status-pill status-offboarding";
               badge.textContent = decision;
             }
-            setTimeout(() => {
-              /* in-place update */
-            }, 600);
           } else {
             self.showToast("Action Failed", data.message, "alert");
           }
@@ -384,7 +489,7 @@
               "success",
             );
             self.closeModal("modal-create-leave");
-            /* in-place update */
+            form.reset();
           } else {
             self.showToast("Filing Error", data.message, "alert");
           }
@@ -414,7 +519,7 @@
               "success",
             );
             self.closeModal("modal-create-training");
-            /* in-place update */
+            form.reset();
           } else {
             self.showToast("Error", data.message, "alert");
           }
@@ -495,7 +600,7 @@
                       "success",
                     );
                     self.closeModal("modal-employee-detail");
-                    /* in-place update */
+                    self.fetchEmployees();
                   } else {
                     self.showToast("Update Failed", upd.message, "alert");
                   }
@@ -524,7 +629,7 @@
         .then((res) => {
           if (res.success) {
             self.showToast("Offboarding Finalized", res.message, "success");
-            /* in-place update */
+            self.fetchEmployees();
           } else {
             self.showToast("Operation Failed", res.message, "alert");
           }
@@ -547,7 +652,9 @@
         .then((res) => {
           if (res.success) {
             self.showToast("Employee Removed", res.message, "success");
-            /* in-place update */
+            const tr = document.querySelector(`tr[data-id="${empId}"]`);
+            if (tr) tr.remove();
+            self.fetchEmployees();
           } else {
             self.showToast("Removal Failed", res.message, "alert");
           }

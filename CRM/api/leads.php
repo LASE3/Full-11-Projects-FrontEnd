@@ -52,6 +52,48 @@ if ($method === 'GET') {
             $lead['status_display'] = I18n::translate($lead['status'], $lang);
             Response::success($lead, "Lead detail loaded");
         } else {
+            $q = trim($_GET['q'] ?? '');
+            $page = max(1, (int)($_GET['page'] ?? 1));
+            $perPage = min(100, max(1, (int)($_GET['per_page'] ?? 50)));
+            $offset = ($page - 1) * $perPage;
+
+            $sortField = trim($_GET['sort'] ?? 'lead_id');
+            $dir = strtoupper(trim($_GET['dir'] ?? 'DESC')) === 'ASC' ? 'ASC' : 'DESC';
+
+            $allowedSorts = [
+                'lead_id'      => 'l.lead_id',
+                'full_name'    => 'l.full_name',
+                'company_name' => 'l.company_name',
+                'status'       => 'l.status',
+                'created_at'   => 'l.created_at'
+            ];
+            $orderBy = $allowedSorts[$sortField] ?? 'l.lead_id';
+
+            $whereClauses = [];
+            $params = [];
+
+            if ($status) {
+                $whereClauses[] = "l.status = :st";
+                $params[':st'] = $status;
+            }
+
+            if (!empty($q)) {
+                $whereClauses[] = "(l.full_name LIKE :q1 OR l.company_name LIKE :q2 OR l.email LIKE :q3 OR l.phone LIKE :q4 OR e.full_name LIKE :q5)";
+                $wildcard = '%' . $q . '%';
+                $params[':q1'] = $wildcard;
+                $params[':q2'] = $wildcard;
+                $params[':q3'] = $wildcard;
+                $params[':q4'] = $wildcard;
+                $params[':q5'] = $wildcard;
+            }
+
+            $whereSql = !empty($whereClauses) ? ' WHERE ' . implode(' AND ', $whereClauses) : '';
+
+            $countSql = "SELECT COUNT(*) FROM leads l LEFT JOIN employees e ON l.assigned_sales_emp_id = e.emp_id {$whereSql}";
+            $countStmt = $pdo->prepare($countSql);
+            $countStmt->execute($params);
+            $total = (int)$countStmt->fetchColumn();
+
             $sql = "
                 SELECT 
                     l.lead_id, l.full_name, l.email, l.phone, l.company_name,
@@ -61,24 +103,21 @@ if ($method === 'GET') {
                 FROM leads l
                 LEFT JOIN employees e ON l.assigned_sales_emp_id = e.emp_id
                 LEFT JOIN customers c ON l.converted_cus_id = c.cus_id
+                {$whereSql}
+                ORDER BY {$orderBy} {$dir}
+                LIMIT {$perPage} OFFSET {$offset}
             ";
 
-            if ($status) {
-                $sql .= " WHERE l.status = :st ORDER BY l.lead_id DESC";
-                $stmt = $pdo->prepare($sql);
-                $stmt->execute([':st' => $status]);
-            } else {
-                $sql .= " ORDER BY l.lead_id DESC";
-                $stmt = $pdo->query($sql);
-            }
-
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute($params);
             $leads = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
             foreach ($leads as &$ld) {
                 $ld['status_display'] = I18n::translate($ld['status'], $lang);
             }
             unset($ld);
 
-            Response::success($leads, "Leads loaded");
+            Response::paginated($leads, $total, $page, $perPage);
         }
     } catch (Throwable $e) {
         error_log("Failed to load leads: " . $e->getMessage());

@@ -121,7 +121,17 @@
           if (result.success) {
             window.showToast("PRESET SAVED", `Saved preset "${title}" to database.`, "success", "bookmark_added");
             closePresetModal();
-            /* in-place preset save */
+                        const btnSave = document.getElementById("btnOpenSavePreset");
+            if (btnSave && btnSave.parentElement) {
+              const div = document.createElement("div");
+              div.style.cssText = "display:inline-flex; align-items:center; border:1px solid #cbd5e1; border-radius:4px; overflow:hidden;";
+              div.innerHTML = `
+                <button class="vk-btn vk-btn-outline btn-preset" style="border:none; border-radius:0; padding:5px 10px;" data-method="${method}" data-url="${url}" data-body="${encodeURIComponent(body)}">
+                  <span class="vk-status-badge status-active" style="padding:1px 4px; font-size:10px;">${method}</span> ${title}
+                </button>
+              `;
+              btnSave.parentElement.insertBefore(div, btnSave);
+            }
           } else {
             window.showToast("ERROR", result.error || "Failed to save preset.", "error");
           }

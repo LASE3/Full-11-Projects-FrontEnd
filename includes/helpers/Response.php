@@ -29,6 +29,10 @@ class Response
             'status_code' => $statusCode,
             'message'     => $message,
             'data'        => $data,
+            'rows'        => $meta['rows'] ?? (is_array($data) ? $data : []),
+            'total'       => isset($meta['total']) ? (int)$meta['total'] : (is_array($data) ? count($data) : 0),
+            'page'        => isset($meta['page']) ? (int)$meta['page'] : 1,
+            'per_page'    => isset($meta['per_page']) ? (int)$meta['per_page'] : (is_array($data) ? max(1, count($data)) : 20),
             'meta'        => array_merge([
                 'timestamp'  => gmdate('Y-m-d\TH:i:s\Z'),
                 'lang'       => $lang,
@@ -43,6 +47,17 @@ class Response
     public static function success($data = null, $message = 'Success', $statusCode = 200, $meta = [])
     {
         self::send(true, $data, $message, $statusCode, $meta);
+    }
+
+    public static function paginated(array $rows, int $total, int $page = 1, int $perPage = 20, string $message = 'Success', int $statusCode = 200, array $extraMeta = [])
+    {
+        $meta = array_merge([
+            'total'    => $total,
+            'page'     => $page,
+            'per_page' => $perPage,
+            'rows'     => $rows,
+        ], $extraMeta);
+        self::send(true, $rows, $message, $statusCode, $meta);
     }
 
     public static function error($message = 'Error', $statusCode = 400, $data = null)

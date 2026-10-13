@@ -24,7 +24,9 @@
           "error",
           "delete_forever"
         );
-        /* in-place dashboard update */
+        document.querySelectorAll(".orphan-account-card, tr").forEach(el => {
+          if (el.textContent.includes(empId)) el.remove();
+        });
       } else {
         window.showToast?.("ERROR", data.error || "Purge failed", "error");
       }
@@ -48,7 +50,16 @@
           "success",
           "verified"
         );
-        /* in-place dashboard update */
+        document.querySelectorAll(".privileged-role-card, tr").forEach(el => {
+          if (el.textContent.includes(empId)) {
+            const btn = el.querySelector("button[onclick*='attestRole']");
+            if (btn) {
+              btn.disabled = true;
+              btn.textContent = "Attested";
+              btn.className = "px-2 py-1 bg-surface-container text-on-surface-variant rounded text-xs";
+            }
+          }
+        });
       } else {
         window.showToast?.("ERROR", data.error || "Attestation failed", "error");
       }
@@ -407,7 +418,12 @@
             "success",
             "power_off"
           );
-          /* in-place dashboard update */
+          document.querySelectorAll(".operator-row, tr").forEach(el => {
+            if (el.textContent.includes(targetEmp)) {
+              const badge = el.querySelector(".status-badge, td:nth-child(3)");
+              if (badge) badge.innerHTML = '<span class="px-2 py-0.5 bg-error text-on-error rounded text-[10px] font-bold">SEVERED</span>';
+            }
+          });
         } catch (err) {
           window.showToast?.("NETWORK ERROR", err.message, "error");
           severBtn.disabled = false;

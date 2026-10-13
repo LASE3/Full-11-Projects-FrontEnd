@@ -514,50 +514,56 @@
         );
     },
 
-    // Filter Invoices Table dynamically
+    // Filter Invoices Table dynamically (300ms debounce + server-side list contract)
+    _filterTimeout: null,
     filterInvoices: function () {
+      if (this._filterTimeout) clearTimeout(this._filterTimeout);
+      this._filterTimeout = setTimeout(() => {
+        this.fetchInvoices();
+      }, 300);
+    },
+
+    fetchInvoices: async function () {
+      const tbody = document.querySelector(".invoice-table-body");
+      if (!tbody) return;
       const searchInput = document.getElementById("invoice-search");
       const statusFilter = document.getElementById("invoice-status-filter");
 
-      const query = (searchInput ? searchInput.value : "").toLowerCase().trim();
+      const query = (searchInput ? searchInput.value : "").trim();
       const selectedStatus = statusFilter ? statusFilter.value : "all";
 
-      const rows = document.querySelectorAll(
-        ".invoice-table-body tr.fin-table-row",
-      );
-      let visibleCount = 0;
+      const url = `api/finance_api.php?action=list_invoices&q=${encodeURIComponent(query)}&page=1&per_page=100`;
+      try {
+        const fetchFn = window.vpFetch || (async (u) => {
+          const r = await fetch(u);
+          return await r.json();
+        });
+        const data = await fetchFn(url);
+        const rows = (data && data.rows) ? data.rows : ((data && data.data) ? data.data : []);
+        this.renderInvoicesTable(rows, selectedStatus, query);
+      } catch (err) {
+        console.error("Failed to fetch invoices:", err);
+      }
+    },
 
-      rows.forEach((row) => {
-        const id = (row.getAttribute("data-id") || "").toLowerCase();
-        const customer = (
-          row.getAttribute("data-customer") || ""
-        ).toLowerCase();
-        const project = (row.getAttribute("data-project") || "").toLowerCase();
-        const prjid = (row.getAttribute("data-prjid") || "").toLowerCase();
-        const status = row.getAttribute("data-status") || "";
+    renderInvoicesTable: function (invoices, selectedStatus, query) {
+      const tbody = document.querySelector(".invoice-table-body");
+      if (!tbody) return;
 
-        const matchQuery =
-          !query ||
-          id.includes(query) ||
-          customer.includes(query) ||
-          project.includes(query) ||
-          prjid.includes(query);
-        const matchStatus =
-          selectedStatus === "all" ||
-          status.toLowerCase() === selectedStatus.toLowerCase();
+      const esc = (s) => {
+        if (s == null) return "";
+        return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+      };
 
-        if (matchQuery && matchStatus) {
-          row.style.display = "";
-          visibleCount++;
-        } else {
-          row.style.display = "none";
-        }
+      const filtered = (invoices || []).filter((inv) => {
+        const status = inv.status || inv.payment_status || "";
+        return selectedStatus === "all" || status.toLowerCase() === selectedStatus.toLowerCase();
       });
 
       const noMatchRow = document.getElementById("invoice-no-match-row");
       const noMatchMsg = document.getElementById("invoice-no-match-msg");
 
-      if (visibleCount === 0) {
+      if (filtered.length === 0) {
         if (noMatchRow) {
           noMatchRow.style.display = "";
           if (noMatchMsg) {
@@ -566,16 +572,79 @@
               : "No invoices match the selected filter criteria.";
           }
         }
-      } else {
-        if (noMatchRow) {
-          noMatchRow.style.display = "none";
-        }
+        const rows = tbody.querySelectorAll("tr.fin-table-row");
+        rows.forEach((r) => r.remove());
+        return;
       }
 
-      const countEl = document.getElementById("invoice-visible-count");
-      if (countEl) {
-        countEl.textContent = visibleCount;
+      if (noMatchRow) {
+        noMatchRow.style.display = "none";
       }
+
+      const rowsHtml = filtered.map((inv) => {
+        const invId = inv.inv_id;
+        const comp = inv.company_name || "";
+        const prjName = inv.project_name || "";
+        const prjId = inv.prj_id || "";
+        const status = inv.status || inv.payment_status || "Pending";
+        const total = parseFloat(inv.total_amount || inv.total_value || 0).toFixed(2);
+        const issued = inv.issued_date || inv.issued_at || "N/A";
+        const due = inv.due_date || "Net-30";
+
+        let badgeHtml = `<span class="status-badge-pending">⚡ Pending</span>`;
+        if (status === "Paid") {
+          badgeHtml = `<span class="status-badge-paid">✓ Paid</span>`;
+        } else if (status === "Overdue") {
+          badgeHtml = `<span class="status-badge-overdue">⚠️ Overdue</span>`;
+        }
+
+        return `
+          <tr class="fin-table-row"
+            data-id="${esc(invId)}"
+            data-customer="${esc(comp + ' ' + (inv.cus_id || ''))}"
+            data-prjid="${esc(prjId)}"
+            data-project="${esc(prjId + ' ' + prjName)}"
+            data-status="${esc(status)}"
+            onclick="window.finApp.inspectInvoice('${esc(invId)}')">
+            <td>
+              <span class="fin-mono-green-12">${esc(invId)}</span>
+            </td>
+            <td>
+              <div class="fin-bold-navy">${esc(comp)}</div>
+              <div class="fin-text-muted-11">Account #${esc(inv.cus_id || '')} · ${esc(inv.sector || 'Commercial')}</div>
+            </td>
+            <td>
+              <span class="fin-font-medium">${esc(prjName)}</span>
+            </td>
+            <td style="text-align: right; font-family: var(--fin-font-mono); font-weight: 700; font-size: 13px; color: ${status === 'Overdue' ? 'var(--fin-confidential)' : 'var(--fin-navy)'};">
+              €${total}
+            </td>
+            <td class="fin-text-center">
+              ${badgeHtml}
+            </td>
+            <td>
+              <span class="fin-mono-115">${esc(issued)}</span>
+            </td>
+            <td>
+              <span style="font-family: var(--fin-font-mono); font-size: 11.5px; font-weight: ${status === 'Overdue' ? '700; color: var(--fin-confidential)' : 'normal'};">
+                ${esc(due)}
+              </span>
+            </td>
+            <td class="fin-text-right" onclick="event.stopPropagation()">
+              <div class="fin-inline-flex-gap-xs">
+                <button class="btn btn-outline btn-sm" onclick="window.finApp.inspectInvoice('${esc(invId)}')">
+                  Inspect
+                </button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join("");
+
+      tbody.innerHTML = (noMatchRow ? noMatchRow.outerHTML : "") + rowsHtml;
+
+      const countEl = document.getElementById("invoice-visible-count");
+      if (countEl) countEl.textContent = filtered.length;
     },
 
     // Initialize App & Keyboard Shortcuts

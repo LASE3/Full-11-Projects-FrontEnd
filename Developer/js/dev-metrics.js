@@ -155,7 +155,27 @@
               );
             }
             closeWebhookModal();
-            /* in-place webhook update */
+                        if (isEdit && payload.id) {
+              const row = document.getElementById(`webhook-row-${payload.id}`);
+              if (row) {
+                const ep = row.querySelector("td:nth-child(2)");
+                if (ep) ep.textContent = payload.endpoint_url || "";
+              }
+            } else {
+              const tbody = document.querySelector("#webhooksTableBody, table tbody");
+              if (tbody) {
+                const tr = document.createElement("tr");
+                tr.className = "dev-table-row";
+                tr.innerHTML = `
+                  <td class="dev-p-12 font-mono text-xs">${payload.delivery_id || "WH-NEW"}</td>
+                  <td class="dev-p-12 font-mono text-xs text-primary">${payload.endpoint_url || ""}</td>
+                  <td class="dev-p-12"><span class="badge-classification badge-internal">${payload.event_type || "telemetry"}</span></td>
+                  <td class="dev-p-12"><span class="vk-status-badge status-active">200 OK</span></td>
+                  <td class="dev-p-12 text-xs text-muted">Just now</td>
+                `;
+                tbody.prepend(tr);
+              }
+            }
           } else {
             if (window.showToast) {
               window.showToast("GATEWAY ERROR", res.error || "Failed to persist webhook", "alert", "error");

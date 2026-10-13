@@ -599,7 +599,6 @@ function renderKanbanCardPhp($opp) {
   <link rel="stylesheet" href="../assets/css/api-ui.css">
   <script src="../assets/js/api-core.js"></script>
   <script src="../assets/js/api-crm.js"></script>
-  <script src="js/crm-data.js?v=<?= time() ?>"></script>
   <script src="../assets/js/notifications-hub.js" defer></script>
 </body>
 

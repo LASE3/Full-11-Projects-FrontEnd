@@ -147,7 +147,30 @@
               );
             }
             closeModal();
-            /* in-place guide update */
+                        if (isEdit && payload.id) {
+              const card = document.querySelector(`.guide-card[data-id="${payload.id}"], #doc010`);
+              if (card) {
+                const titleEl = card.querySelector(".dev-font-weight-700-font-d74c, .guide-title");
+                if (titleEl) titleEl.textContent = payload.title;
+              }
+            } else {
+              const container = document.getElementById("guidesContainer");
+              if (container) {
+                const card = document.createElement("div");
+                card.className = "vk-card tag-internal dev-margin-bottom-24px-dc2c guide-card";
+                card.innerHTML = `
+                  <div class="vk-card-header" style="display:flex; justify-content:space-between; align-items:center;">
+                    <div style="display:flex; align-items:center; gap:8px;">
+                      <span class="material-symbols-outlined text-[20px]">${payload.icon || "description"}</span>
+                      <div><strong>${payload.title}</strong><div style="font-size:11px; color:#94a3b8;">${payload.guide_code || "GUIDE"} • ${payload.category || "General"}</div></div>
+                    </div>
+                    <span class="badge-classification badge-internal">${payload.classification || "Internal"}</span>
+                  </div>
+                  <div class="vk-card-body"><p style="color:#94a3b8; font-size:13px;">${payload.summary || ""}</p></div>
+                `;
+                container.prepend(card);
+              }
+            }
           } else {
             if (window.showToast) {
               window.showToast("DATABASE ERROR", res.error || "Failed to persist guide.", "alert", "error");

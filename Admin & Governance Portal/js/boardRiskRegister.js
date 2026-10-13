@@ -113,7 +113,47 @@
         if (data.success) {
           window.closeRiskModal();
           window.showToast("RISK COMMITTED", data.message, "success", "balance");
-          /* in-place risk update */
+                    if (payload.action === "update" && payload.risk_id) {
+            const row = document.querySelector(`.risk-row[data-id="${payload.risk_id}"]`);
+            if (row) {
+              row.setAttribute("data-desc", payload.description || "");
+              row.setAttribute("data-impact", payload.impact || "");
+              row.setAttribute("data-likelihood", payload.likelihood || "");
+              row.setAttribute("data-status", payload.status || "");
+              row.setAttribute("data-target", payload.system_target || "");
+              const descEl = row.querySelector("td div.truncate");
+              if (descEl) descEl.textContent = payload.description || "";
+            }
+          } else if (payload.action === "create" && data.risk_id) {
+            const tbody = document.querySelector("table tbody");
+            if (tbody) {
+              const tr = document.createElement("tr");
+              tr.className = "risk-row bg-surface-container-low hover:bg-surface-container transition-colors border-b border-outline-variant/30";
+              tr.setAttribute("data-id", data.risk_id);
+              tr.setAttribute("data-code", data.risk_code || `RR-2026-${data.risk_id}`);
+              tr.setAttribute("data-desc", payload.description || "");
+              tr.setAttribute("data-impact", payload.impact || "High");
+              tr.setAttribute("data-likelihood", payload.likelihood || "Moderate");
+              tr.setAttribute("data-status", payload.status || "UnderReview");
+              tr.setAttribute("data-target", payload.system_target || "SYS-01 Production Enclave");
+              tr.innerHTML = `
+                <td class="py-space-xs px-space-sm border-l-4 border-error">
+                  <div class="flex items-center gap-space-xs">
+                    <span class="font-bold text-error">${data.risk_code || `RR-2026-${data.risk_id}`}</span>
+                    <span class="px-1 bg-error-container text-on-error-container text-error text-[10px] font-bold">${(payload.impact || "High").toUpperCase()}</span>
+                  </div>
+                  <div class="text-on-surface font-semibold truncate max-w-xs">${payload.description || ""}</div>
+                </td>
+                <td class="py-space-xs px-space-sm text-center font-telemetry-data font-bold text-error">4.5</td>
+                <td class="py-space-xs px-space-sm font-bold text-primary">${payload.system_target || "SYS-01 Production Enclave"}</td>
+                <td class="py-space-xs px-space-sm font-bold text-primary">${payload.owner_emp_id || "EMP-1005"}</td>
+                <td class="py-space-xs px-space-sm font-bold text-error">${payload.review_date || "2026-10-31"}</td>
+                <td class="py-space-xs px-space-sm text-center"><span class="px-space-xs py-[2px] bg-error text-on-error font-label-uppercase text-[9px] font-bold">REVIEW REQUIRED</span></td>
+                <td class="py-space-xs px-space-sm text-right"><button class="px-space-xs py-space-2xs bg-primary text-on-primary font-label-uppercase text-[10px]" onclick="inspectRisk(${data.risk_id})">INSPECT</button></td>
+              `;
+              tbody.prepend(tr);
+            }
+          }
         } else {
           window.showToast("COMMIT FAILED", data.error || "Could not commit risk", "error", "error");
         }

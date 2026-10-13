@@ -185,7 +185,20 @@
           "verified",
         );
         closeControlModal();
-        /* in-place compliance update */
+        const row = document.querySelector(`tr.control-row[data-control-id="${payload.control_id}"]`);
+        if (row) {
+          const descEl = row.querySelector(".control-title");
+          if (descEl) descEl.textContent = payload.title || payload.control_id;
+        } else {
+          const tbody = document.querySelector("#controlsTableBody, table tbody");
+          if (tbody) {
+            const tr = document.createElement("tr");
+            tr.className = "control-row border-b border-outline-variant/30 hover:bg-surface-container transition-colors";
+            tr.setAttribute("data-control-id", payload.control_id);
+            tr.innerHTML = `<td class="p-2 font-bold text-primary">${payload.control_id}</td><td class="p-2 control-title">${payload.title || ""}</td><td class="p-2">${payload.standard || "ISO/IEC 27001"}</td><td class="p-2"><span class="px-2 py-0.5 rounded text-[10px] font-bold bg-secondary-container text-secondary">${payload.status || "COMPLIANT"}</span></td>`;
+            tbody.prepend(tr);
+          }
+        }
       } else {
         window.showToast?.("ERROR", data.error || "Save failed", "error");
       }
@@ -256,7 +269,15 @@
           "info",
           "published_with_changes",
         );
-        /* in-place compliance update */
+        const row = document.querySelector(`tr.control-row[data-control-id="${controlId}"]`);
+        if (row) {
+          row.setAttribute("data-control-status", nextStatus);
+          const badge = row.querySelector(".status-badge, td:nth-child(4) span");
+          if (badge) {
+            badge.textContent = nextStatus;
+            badge.className = nextStatus === "COMPLIANT" ? "px-2 py-0.5 rounded text-[10px] font-bold bg-secondary-container text-secondary" : "px-2 py-0.5 rounded text-[10px] font-bold bg-error-container text-error";
+          }
+        }
       } else {
         window.showToast?.("ERROR", data.error || "Update failed", "error");
       }
@@ -306,7 +327,13 @@
           "report",
         );
         closeIncidentModal();
-        /* in-place compliance update */
+        const tbody = document.querySelector("#incidentsTableBody, #incidentList, table tbody");
+        if (tbody) {
+          const tr = document.createElement("tr");
+          tr.className = "incident-row border-b border-outline-variant/30 hover:bg-surface-container transition-colors";
+          tr.innerHTML = `<td class="p-2 font-bold text-error">${payload.incident_code}</td><td class="p-2 font-semibold text-primary">${payload.title}</td><td class="p-2 text-xs font-mono">${payload.assigned_to_emp_id}</td><td class="p-2"><span class="px-2 py-0.5 rounded text-[10px] font-bold bg-error text-on-error">OPEN</span></td>`;
+          tbody.prepend(tr);
+        }
       } else {
         window.showToast?.("ERROR", data.error || "Failed to file", "error");
       }
@@ -336,7 +363,11 @@
           "success",
           "task_alt",
         );
-        /* in-place compliance update */
+        const incRow = document.querySelector(`tr[data-incident-id="${incidentId}"], tr:has(button[onclick*="${incidentId}"])`);
+        if (incRow) {
+          const badge = incRow.querySelector(".status-badge, td:last-child");
+          if (badge) badge.innerHTML = '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-secondary-container text-secondary">RESOLVED</span>';
+        }
       } else {
         window.showToast?.("ERROR", data.error || "Resolve failed", "error");
       }

@@ -22,10 +22,40 @@ try {
     // 1. GET: Query Audit Logs
     // -------------------------------------------------------------------------
     if ($method === 'GET') {
-        $limit = isset($_GET['limit']) ? min(200, max(10, (int)$_GET['limit'])) : 50;
-        $search = trim($_GET['search'] ?? '');
-        $systemId = trim($_GET['system_id'] ?? '');
-        $result = trim($_GET['result'] ?? '');
+        $search = trim((string)($_GET['q'] ?? $_GET['search'] ?? ''));
+        $systemId = trim((string)($_GET['system_id'] ?? ''));
+        $result = trim((string)($_GET['result'] ?? ''));
+
+        $allowedSorts = ['audit_id', 'occurred_at', 'action', 'actor_emp_id', 'system_id', 'result'];
+        $sortField = in_array(strtolower((string)($_GET['sort'] ?? '')), $allowedSorts, true) ? strtolower((string)$_GET['sort']) : 'occurred_at';
+        $sortDir = strtoupper((string)($_GET['dir'] ?? 'DESC')) === 'ASC' ? 'ASC' : 'DESC';
+
+        $page = max(1, (int)($_GET['page'] ?? 1));
+        $perPage = min(100, max(1, (int)($_GET['per_page'] ?? $_GET['limit'] ?? 50)));
+        $offset = ($page - 1) * $perPage;
+
+        $whereSql = "WHERE 1=1";
+        $params = [];
+
+        if (!empty($search)) {
+            $whereSql .= " AND (al.action LIKE ? OR al.actor_emp_id LIKE ? OR al.target_entity_id LIKE ? OR e.full_name LIKE ?)";
+            $wildcard = "%$search%";
+            $params = array_merge($params, [$wildcard, $wildcard, $wildcard, $wildcard]);
+        }
+        if (!empty($systemId) && $systemId !== 'ALL') {
+            $whereSql .= " AND al.system_id = ?";
+            $params[] = $systemId;
+        }
+        if (!empty($result) && $result !== 'ALL') {
+            $whereSql .= " AND al.result = ?";
+            $params[] = $result;
+        }
+
+        // Count total
+        $countSql = "SELECT COUNT(*) FROM audit_logs al LEFT JOIN employees e ON al.actor_emp_id = e.emp_id {$whereSql}";
+        $countStmt = $pdo->prepare($countSql);
+        $countStmt->execute($params);
+        $total = (int)$countStmt->fetchColumn();
 
         $sql = "
             SELECT 
@@ -43,33 +73,23 @@ try {
                 e.full_name AS actor_name
             FROM audit_logs al
             LEFT JOIN employees e ON al.actor_emp_id = e.emp_id
-            WHERE 1=1
+            {$whereSql}
+            ORDER BY al.{$sortField} {$sortDir}
+            LIMIT {$perPage} OFFSET {$offset}
         ";
-        $params = [];
 
-        if (!empty($search)) {
-            $sql .= " AND (al.action LIKE ? OR al.actor_emp_id LIKE ? OR al.target_entity_id LIKE ? OR e.full_name LIKE ?)";
-            $wildcard = "%$search%";
-            $params = array_merge($params, [$wildcard, $wildcard, $wildcard, $wildcard]);
-        }
-        if (!empty($systemId) && $systemId !== 'ALL') {
-            $sql .= " AND al.system_id = ?";
-            $params[] = $systemId;
-        }
-        if (!empty($result) && $result !== 'ALL') {
-            $sql .= " AND al.result = ?";
-            $params[] = $result;
-        }
-
-        $sql .= " ORDER BY al.occurred_at DESC LIMIT " . (int)$limit;
         $stmt = $pdo->prepare($sql);
         $stmt->execute($params);
         $logs = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         jsonResponse([
-            'success' => true,
-            'count' => count($logs),
-            'logs' => $logs
+            'success'  => true,
+            'count'    => count($logs),
+            'logs'     => $logs,
+            'rows'     => $logs,
+            'total'    => $total,
+            'page'     => $page,
+            'per_page' => $perPage,
         ]);
     }
 

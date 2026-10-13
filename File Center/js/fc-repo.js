@@ -64,8 +64,12 @@
       }
     }
 
+    let searchDebounceTimer = null;
     if (searchInput) {
-      searchInput.addEventListener("input", filterRows);
+      searchInput.addEventListener("input", () => {
+        clearTimeout(searchDebounceTimer);
+        searchDebounceTimer = setTimeout(filterRows, 300);
+      });
     }
 
     filterPills.forEach((pill) => {

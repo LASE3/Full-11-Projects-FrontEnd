@@ -332,6 +332,17 @@ $pendingApprovals = (int)$pdo->query("SELECT COUNT(*) FROM documents WHERE statu
                         <textarea class="form-textarea" id="meta-description" rows="3" placeholder="Brief summary of document purpose and engineering context..."></textarea>
                     </div>
 
+                    <!-- UPLOAD PROGRESS -->
+                    <div id="upload-progress-container" class="fc-mb-16" style="display: none;">
+                        <div class="fc-display-flex-justify-content-ef47" style="margin-bottom: 6px;">
+                            <span class="fc-mono-muted-11" id="upload-progress-text">Streaming document to encrypted vault: 0%</span>
+                            <span class="fc-mono-muted-11 font-bold" id="upload-progress-pct">0%</span>
+                        </div>
+                        <div style="width: 100%; height: 8px; background: rgba(0,0,0,0.08); border-radius: 4px; overflow: hidden;">
+                            <div id="upload-progress-bar" style="width: 0%; height: 100%; background: #0284c7; transition: width 0.15s ease;"></div>
+                        </div>
+                    </div>
+
                     <!-- SUBMIT BUTTON -->
                     <div class="fc-display-flex-justify-content-ef47" >
                         <button class="vk-btn vk-btn-outline" type="reset">Reset</button>

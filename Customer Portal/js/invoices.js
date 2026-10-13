@@ -40,7 +40,7 @@
     if (window.showToast) {
       window.showToast(
         "Corporate Ledger Exported",
-        "Severstal_Settlement_Ledger_2024.xlsx generated.",
+        "Corporate_Settlement_Ledger.xlsx generated.",
         "info",
       );
     }
@@ -65,7 +65,8 @@
   /**
    * Filter invoices table rows based on status tab and search input
    */
-  window.filterInvoiceTable = function () {
+    let _filterInvoiceDebounce = null;
+  const _origFilterInvoiceTable = function () {
     const input = document.getElementById("invoiceSearchInput");
     const query = (input ? input.value : "").toLowerCase().trim();
     const rows = document.querySelectorAll(".invoice-row");
@@ -83,9 +84,11 @@
     });
   };
 
-  /**
-   * Reset invoice search & filters
-   */
+  window.filterInvoiceTable = function () {
+    clearTimeout(_filterInvoiceDebounce);
+    _filterInvoiceDebounce = setTimeout(_origFilterInvoiceTable, 300);
+  };
+
   window.resetInvoiceFilters = function () {
     const input = document.getElementById("invoiceSearchInput");
     if (input) input.value = "";

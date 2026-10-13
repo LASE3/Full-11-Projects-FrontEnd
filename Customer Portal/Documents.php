@@ -138,7 +138,6 @@ $firstDoc = $documents[0] ?? null;
     <link rel="stylesheet" href="../assets/css/api-ui.css">
     <script src="../assets/js/api-core.js"></script>
     <script src="../assets/js/api-customer.js"></script>
-    <script src="js/portal-data.js"></script>
     <script src="js/documents.js"></script>
 </head>
 

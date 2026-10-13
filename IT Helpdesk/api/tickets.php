@@ -98,8 +98,9 @@ if ($method === 'GET') {
 
     $system = trim((string)($payload['system'] ?? ''));
     if ($system !== '' && $system !== 'all') {
-        $where[] = "(t.source_system LIKE :system OR t.title LIKE :system)";
-        $params[':system'] = "%{$system}%";
+        $where[] = "(t.source_system LIKE :sys1 OR t.title LIKE :sys2)";
+        $params[':sys1'] = "%{$system}%";
+        $params[':sys2'] = "%{$system}%";
     }
 
     $tech = trim((string)($payload['tech'] ?? ''));
@@ -107,18 +108,47 @@ if ($method === 'GET') {
         if ($tech === 'Unassigned') {
             $where[] = "(t.assigned_emp_id IS NULL OR t.assigned_emp_id = '')";
         } else {
-            $where[] = "(e.full_name LIKE :tech OR t.assigned_emp_id LIKE :tech)";
-            $params[':tech'] = "%{$tech}%";
+            $where[] = "(e.full_name LIKE :tech1 OR t.assigned_emp_id LIKE :tech2)";
+            $params[':tech1'] = "%{$tech}%";
+            $params[':tech2'] = "%{$tech}%";
         }
     }
 
-    $search = trim((string)($payload['search'] ?? ''));
+    $search = trim((string)($payload['q'] ?? ($payload['search'] ?? '')));
     if ($search !== '') {
-        $where[] = "(t.tkt_id LIKE :s OR t.title LIKE :s OR t.description LIKE :s OR t.requester_name LIKE :s OR t.source_system LIKE :s)";
-        $params[':s'] = "%{$search}%";
+        $where[] = "(t.tkt_id LIKE :s1 OR t.title LIKE :s2 OR t.description LIKE :s3 OR t.requester_name LIKE :s4 OR t.source_system LIKE :s5)";
+        $sWild = "%{$search}%";
+        $params[':s1'] = $sWild;
+        $params[':s2'] = $sWild;
+        $params[':s3'] = $sWild;
+        $params[':s4'] = $sWild;
+        $params[':s5'] = $sWild;
     }
 
     $whereSql = !empty($where) ? "WHERE " . implode(" AND ", $where) : "";
+
+    $sortKey = trim((string)($payload['sort'] ?? 'priority'));
+    $dir = strtolower(trim((string)($payload['dir'] ?? 'asc'))) === 'desc' ? 'DESC' : 'ASC';
+    $page = max(1, (int)($payload['page'] ?? 1));
+    $perPage = min(100, max(1, (int)($payload['per_page'] ?? 20)));
+    $offset = ($page - 1) * $perPage;
+
+    $allowedSort = [
+        'tkt_id'        => 't.tkt_id',
+        'title'         => 't.title',
+        'status'        => 't.status',
+        'priority'      => 'CASE t.priority WHEN "Critical" THEN 1 WHEN "High" THEN 2 WHEN "Medium" THEN 3 WHEN "Low" THEN 4 ELSE 5 END',
+        'source_system' => 't.source_system',
+        'created_at'    => 't.created_at',
+        'sla_deadline'  => 't.sla_deadline'
+    ];
+    $orderClause = isset($allowedSort[$sortKey]) 
+        ? "{$allowedSort[$sortKey]} {$dir}, t.created_at DESC" 
+        : "CASE t.priority WHEN 'Critical' THEN 1 WHEN 'High' THEN 2 WHEN 'Medium' THEN 3 WHEN 'Low' THEN 4 ELSE 5 END ASC, t.created_at DESC";
+
+    $cStmt = $pdo->prepare("SELECT COUNT(*) FROM tickets t LEFT JOIN employees e ON t.assigned_emp_id = e.emp_id {$whereSql}");
+    $cStmt->execute($params);
+    $total = (int)$cStmt->fetchColumn();
 
     $sql = "
         SELECT 
@@ -128,22 +158,25 @@ if ($method === 'GET') {
         FROM tickets t
         LEFT JOIN employees e ON t.assigned_emp_id = e.emp_id
         {$whereSql}
-        ORDER BY 
-            CASE t.priority 
-                WHEN 'Critical' THEN 1 
-                WHEN 'High' THEN 2 
-                WHEN 'Medium' THEN 3 
-                WHEN 'Low' THEN 4 
-                ELSE 5 
-            END ASC,
-            t.created_at DESC
+        ORDER BY {$orderClause}
+        LIMIT :limit OFFSET :offset
     ";
 
     $stmt = $pdo->prepare($sql);
-    $stmt->execute($params);
+    foreach ($params as $k => $v) {
+        $stmt->bindValue($k, $v);
+    }
+    $stmt->bindValue(':limit', $perPage, PDO::PARAM_INT);
+    $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+    $stmt->execute();
     $tickets = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    sendJsonSuccess($tickets, "Loaded " . count($tickets) . " tickets from database.");
+    sendJsonSuccess([
+        'rows'     => $tickets,
+        'total'    => $total,
+        'page'     => $page,
+        'per_page' => $perPage,
+    ], "Loaded {$total} tickets from database.");
 }
 
 // ---------------------------------------------------------------------
