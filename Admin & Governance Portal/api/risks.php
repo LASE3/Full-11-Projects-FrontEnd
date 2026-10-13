@@ -35,6 +35,7 @@ try {
             if (!$risk) {
                 jsonResponse(['success' => false, 'error' => 'Risk filing not found'], 404);
             }
+            vp_authorize($_vp_user, 'admin:read', $risk, $pdo);
             jsonResponse(['success' => true, 'risk' => $risk]);
         }
 
@@ -80,6 +81,7 @@ try {
     // 2. POST: Create, Update, Delete, Update Status
     // -------------------------------------------------------------------------
     if ($method === 'POST') {
+        vp_authorize($_vp_user, 'admin:risk_update', $input, $pdo);
         $action = trim($input['action'] ?? 'create');
 
         // CREATE

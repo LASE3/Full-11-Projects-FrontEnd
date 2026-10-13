@@ -18,6 +18,7 @@ $payload = getRequestPayload();
 
 // 1. GET: Fetch KB Articles
 if ($method === 'GET') {
+    vp_authorize($user, 'ticket:read', ['dept' => 'IT'], $pdo);
     $kbId = (int)($payload['kb_id'] ?? 0);
 
     if ($kbId > 0) {
@@ -62,6 +63,7 @@ if ($method === 'GET') {
 // 2. POST: Create, Update, Delete
 $action = trim((string)($_GET['action'] ?? ($payload['action'] ?? 'create')));
 
+vp_authorize($user, 'ticket:update', $payload, $pdo);
 if ($action === 'create') {
     $title = trim((string)($payload['title'] ?? ''));
     $category = trim((string)($payload['category'] ?? 'General Support'));

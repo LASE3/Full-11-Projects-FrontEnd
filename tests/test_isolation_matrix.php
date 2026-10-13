@@ -252,12 +252,12 @@ echo "\n--- DOMAIN 4: CRM OWNERSHIP & SCOPING ---\n";
 $cusRepA = ['cus_id' => 'CUS-TEST-A', 'company_name' => 'Rep A Account', 'account_manager_emp_id' => 'EMP-1022'];
 $cusRepB = ['cus_id' => 'CUS-TEST-B', 'company_name' => 'Rep B Account', 'account_manager_emp_id' => 'EMP-1023'];
 
-// Test 4.1: Rep A editing Rep B's customer account is blocked (403)
+// Test 4.1: Rep A editing Rep B's customer account is blocked (404/403)
 try {
     vp_authorize($u1022, 'crm:update', $cusRepB);
     assertIsolation("4.1 Rep A editing Rep B's customer account is blocked", false, "Allowed cross-rep customer edit");
 } catch (VpAuthorizationException $e) {
-    assertIsolation("4.1 Rep A editing Rep B's customer account blocked (403)", $e->getCode() === 403);
+    assertIsolation("4.1 Rep A editing Rep B's customer account blocked (404/403)", $e->getCode() === 404 || $e->getCode() === 403);
 }
 
 // Test 4.2: Rep A reading Rep B's private opportunity returns 404
@@ -396,6 +396,272 @@ try {
 
 // Clean up any test records
 $pdo->exec("DELETE FROM leave_requests WHERE reason LIKE '%IsolationTest%'");
+
+// -----------------------------------------------------------------------------
+// SECTION 8: CRM REP SCOPING & OWNERSHIP MATRIX (PHASE 4.2)
+// -----------------------------------------------------------------------------
+echo "\n--- DOMAIN 8: CRM REP SCOPING & OWNERSHIP MATRIX ---\n";
+
+$u1007 = makeUser($pdo->query("SELECT * FROM employees WHERE emp_id = 'EMP-1007'")->fetch(PDO::FETCH_ASSOC));
+$cus1003 = $pdo->query("SELECT * FROM customers WHERE cus_id = 'CUS-1003'")->fetch(PDO::FETCH_ASSOC);
+
+// Test 8.1: Rep EMP-1007 reading CUS-1003 (owned by EMP-1008) returns 404
+try {
+    vp_authorize($u1007, 'crm:read', $cus1003, $pdo);
+    assertIsolation("8.1 Rep EMP-1007 reading CUS-1003 returns 404", false, "Allowed cross-rep customer read");
+} catch (VpAuthorizationException $e) {
+    assertIsolation("8.1 Rep EMP-1007 reading CUS-1003 returns 404 (deny by default)", $e->getCode() === 404, "Code: " . $e->getCode());
+}
+
+// Test 8.2: Rep EMP-1007 updating CUS-1003 returns 404
+try {
+    vp_authorize($u1007, 'crm:update', $cus1003, $pdo);
+    assertIsolation("8.2 Rep EMP-1007 updating CUS-1003 returns 404", false, "Allowed cross-rep customer update");
+} catch (VpAuthorizationException $e) {
+    assertIsolation("8.2 Rep EMP-1007 updating CUS-1003 returns 404", $e->getCode() === 404, "Code: " . $e->getCode());
+}
+
+// Test 8.3: Rep EMP-1007 deleting CUS-1003 returns 404 (does not leak baseline status via 403)
+try {
+    vp_authorize($u1007, 'crm:delete', $cus1003, $pdo);
+    assertIsolation("8.3 Rep EMP-1007 deleting CUS-1003 returns 404", false, "Allowed cross-rep customer delete");
+} catch (VpAuthorizationException $e) {
+    assertIsolation("8.3 Rep EMP-1007 deleting CUS-1003 returns 404", $e->getCode() === 404, "Code: " . $e->getCode());
+}
+
+// Test 8.4: Rep scoping hides unowned customers in lists/search
+$scopedReps = vp_crm_get_scoped_reps($u1007, $pdo);
+assertIsolation("8.4 Rep EMP-1007 scoped reps excludes other reps (EMP-1008)", !in_array('EMP-1008', $scopedReps ?: []), "EMP-1008 present in scoped reps");
+
+// -----------------------------------------------------------------------------
+// SECTION 9: FILE CENTER OWNERSHIP & CLASSIFICATION MATRIX (PHASE 4.3)
+// -----------------------------------------------------------------------------
+echo "\n--- DOMAIN 9: FILE CENTER CLASSIFICATION & HOLD ---\n";
+
+$doc1019 = [
+    'doc_id' => 'DOC-TEST-999',
+    'file_name' => 'Proprietary_Schematic.pdf',
+    'classification' => 'Confidential',
+    'department' => 'DOC',
+    'owner_emp_id' => 'EMP-1019',
+    'is_legal_hold' => 0,
+];
+
+// Test 9.1: Non-owner EMP-1017 cannot update DOC-1019
+try {
+    vp_authorize($u1017, 'document:update', $doc1019, $pdo);
+    assertIsolation("9.1 Non-owner cannot update document (403)", false, "Allowed document update");
+} catch (VpAuthorizationException $e) {
+    assertIsolation("9.1 Non-owner cannot update document (403)", $e->getCode() === 403, "Code: " . $e->getCode());
+}
+
+// Test 9.2: Non-owner cannot downgrade classification to Public
+try {
+    vp_authorize($u1017, 'document:change_classification', array_merge($doc1019, ['new_classification' => 'Public']), $pdo);
+    assertIsolation("9.2 Non-owner cannot lower classification", false, "Allowed classification downgrade");
+} catch (VpAuthorizationException $e) {
+    assertIsolation("9.2 Non-owner cannot lower classification (403)", $e->getCode() === 403, "Code: " . $e->getCode());
+}
+
+// Test 9.3: Non-owner cannot archive document
+try {
+    vp_authorize($u1017, 'document:archive', $doc1019, $pdo);
+    assertIsolation("9.3 Non-owner cannot archive document", false, "Allowed document archive");
+} catch (VpAuthorizationException $e) {
+    assertIsolation("9.3 Non-owner cannot archive document (403)", $e->getCode() === 403, "Code: " . $e->getCode());
+}
+
+// Test 9.4: Non-owner cannot toggle legal hold
+try {
+    vp_authorize($u1017, 'document:legal_hold', $doc1019, $pdo);
+    assertIsolation("9.4 Non-owner cannot toggle legal hold", false, "Allowed legal hold toggle");
+} catch (VpAuthorizationException $e) {
+    assertIsolation("9.4 Non-owner cannot toggle legal hold (403)", $e->getCode() === 403, "Code: " . $e->getCode());
+}
+
+// Test 9.5: Non-owner cannot delete document
+try {
+    vp_authorize($u1017, 'document:delete', $doc1019, $pdo);
+    assertIsolation("9.5 Non-owner cannot delete document", false, "Allowed document delete");
+} catch (VpAuthorizationException $e) {
+    assertIsolation("9.5 Non-owner cannot delete document (403)", $e->getCode() === 403, "Code: " . $e->getCode());
+}
+
+// -----------------------------------------------------------------------------
+// SECTION 10: FINANCE COMPREHENSIVE DUAL-CONTROL (PHASE 4.4)
+// -----------------------------------------------------------------------------
+echo "\n--- DOMAIN 10: FINANCE COMPREHENSIVE DUAL-CONTROL ---\n";
+
+$uCfo = makeUser($pdo->query("SELECT * FROM employees WHERE emp_id = 'EMP-1003'")->fetch(PDO::FETCH_ASSOC));
+$uDir = makeUser($pdo->query("SELECT * FROM employees WHERE emp_id = 'EMP-1059'")->fetch(PDO::FETCH_ASSOC));
+$uStaffA = makeUser($pdo->query("SELECT * FROM employees WHERE emp_id = 'EMP-1060'")->fetch(PDO::FETCH_ASSOC));
+$uStaffB = makeUser($pdo->query("SELECT * FROM employees WHERE emp_id = 'EMP-1061'")->fetch(PDO::FETCH_ASSOC));
+$uReconciler = makeUser($pdo->query("SELECT * FROM employees WHERE emp_id = 'EMP-1062'")->fetch(PDO::FETCH_ASSOC));
+
+// Test 10.1: Multiple distinct staff can create invoices
+try {
+    vp_authorize($uStaffA, 'finance:create');
+    vp_authorize($uStaffB, 'finance:create');
+    vp_authorize($uCfo, 'finance:create');
+    assertIsolation("10.1 Multiple distinct users (Staff A, B, CFO) can create invoices (200)", true);
+} catch (Throwable $e) {
+    assertIsolation("10.1 Invoice creation authorization", false, $e->getMessage());
+}
+
+// Simulated invoice created by Staff A
+$finInv = ['inv_id' => 'INV-TEST-999', 'created_by_emp_id' => 'EMP-1060'];
+
+// Test 10.2: Creator cannot approve own invoice (403)
+try {
+    vp_authorize($uStaffA, 'finance:approve', $finInv);
+    assertIsolation("10.2 Creator self-approval blocked", false, "Allowed self-approval");
+} catch (VpAuthorizationException $e) {
+    assertIsolation("10.2 Creator self-approval blocked (403)", $e->getCode() === 403, "Code: " . $e->getCode());
+}
+
+// Test 10.3: Controller / Director can approve invoice (200)
+try {
+    vp_authorize($uDir, 'finance:approve', $finInv);
+    assertIsolation("10.3 Finance Director can approve invoice (200)", true);
+} catch (Throwable $e) {
+    assertIsolation("10.3 Finance Director approval", false, $e->getMessage());
+}
+
+// Test 10.4: CFO can approve invoice (200)
+try {
+    vp_authorize($uCfo, 'finance:approve', $finInv);
+    assertIsolation("10.4 CFO can approve invoice (200)", true);
+} catch (Throwable $e) {
+    assertIsolation("10.4 CFO approval", false, $e->getMessage());
+}
+
+$finInv['approved_by_emp_id'] = 'EMP-1059';
+
+// Test 10.5: Creator barred from marking invoice paid (403)
+try {
+    vp_authorize($uStaffA, 'finance:mark_paid', $finInv);
+    assertIsolation("10.5 Creator barred from marking paid", false, "Creator marked paid");
+} catch (VpAuthorizationException $e) {
+    assertIsolation("10.5 Creator barred from marking paid (403)", $e->getCode() === 403, "Code: " . $e->getCode());
+}
+
+// Test 10.6: Approver barred from marking invoice paid (403)
+try {
+    vp_authorize($uDir, 'finance:mark_paid', $finInv);
+    assertIsolation("10.6 Approver barred from marking paid", false, "Approver marked paid");
+} catch (VpAuthorizationException $e) {
+    assertIsolation("10.6 Approver barred from marking paid (403)", $e->getCode() === 403, "Code: " . $e->getCode());
+}
+
+// Test 10.7: Distinct third party marks invoice paid (200)
+try {
+    vp_authorize($uReconciler, 'finance:mark_paid', $finInv);
+    assertIsolation("10.7 Distinct Reconciler (EMP-1062) can mark paid (200)", true);
+} catch (Throwable $e) {
+    assertIsolation("10.7 Distinct Reconciler mark paid", false, $e->getMessage());
+}
+
+// Test 10.8: Voiding invoice (Staff barred 403, CFO allowed 200)
+try {
+    vp_authorize($uStaffA, 'finance:void', $finInv);
+    assertIsolation("10.8 Staff barred from voiding invoice", false, "Staff voided invoice");
+} catch (VpAuthorizationException $e) {
+    assertIsolation("10.8 Staff barred from voiding invoice (403)", $e->getCode() === 403, "Code: " . $e->getCode());
+}
+try {
+    vp_authorize($uCfo, 'finance:void', $finInv);
+    assertIsolation("10.9 CFO can void invoice (200)", true);
+} catch (Throwable $e) {
+    assertIsolation("10.9 CFO void invoice", false, $e->getMessage());
+}
+
+// -----------------------------------------------------------------------------
+// SECTION 11: HR, DEVELOPER, & ADMIN PRIVILEGED MATRIX (PHASE 4.6)
+// -----------------------------------------------------------------------------
+echo "\n--- DOMAIN 11: HR, DEVELOPER, & ADMIN PRIVILEGED MATRIX ---\n";
+
+// 11.1 HR Record modification restricted to HRA/EXE
+$uHraActual = makeUser($pdo->query("SELECT * FROM employees WHERE department_code = 'HRA' LIMIT 1")->fetch(PDO::FETCH_ASSOC));
+try {
+    vp_authorize($uStaffA, 'hr:update', ['emp_id' => 'EMP-1022']);
+    assertIsolation("11.1 Non-HRA employee editing HR record blocked", false, "Non-HRA updated record");
+} catch (VpAuthorizationException $e) {
+    assertIsolation("11.1 Non-HRA employee editing HR record blocked (403)", $e->getCode() === 403, "Code: " . $e->getCode());
+}
+try {
+    vp_authorize($uHraActual, 'hr:update', ['emp_id' => 'EMP-1022']);
+    assertIsolation("11.2 HRA Specialist can update HR record (200)", true);
+} catch (Throwable $e) {
+    assertIsolation("11.2 HRA Specialist update HR record", false, $e->getMessage());
+}
+
+// 11.3 Developer credential isolation
+$uDevA = makeUser($pdo->query("SELECT * FROM employees WHERE emp_id = 'EMP-1077'")->fetch(PDO::FETCH_ASSOC));
+$uDevB = makeUser($pdo->query("SELECT * FROM employees WHERE emp_id = 'EMP-1078'")->fetch(PDO::FETCH_ASSOC));
+$credA = ['key_id' => 991, 'created_by_user_id' => $uDevA['emp_id'], 'created_by_account_id' => 10, 'partner_id' => 'PART-A'];
+
+try {
+    vp_authorize($uDevB, 'developer_credential:read', $credA);
+    assertIsolation("11.3 Dev B reading Dev A's credential returns 404", false, "Cross-dev credential leak");
+} catch (VpAuthorizationException $e) {
+    assertIsolation("11.3 Dev B reading Dev A's credential returns 404", $e->getCode() === 404, "Code: " . $e->getCode());
+}
+try {
+    vp_authorize($uDevB, 'developer_credential:revoke', $credA);
+    assertIsolation("11.4 Dev B revoking Dev A's credential blocked (403)", false, "Cross-dev credential revoke");
+} catch (VpAuthorizationException $e) {
+    assertIsolation("11.4 Dev B revoking Dev A's credential blocked (403)", $e->getCode() === 403, "Code: " . $e->getCode());
+}
+try {
+    vp_authorize($uDevA, 'developer_credential:read', $credA);
+    assertIsolation("11.5 Dev A reading own credential allowed (200)", true);
+} catch (Throwable $e) {
+    assertIsolation("11.5 Dev A read own credential", false, $e->getMessage());
+}
+
+// 11.6 Admin privileged operations
+try {
+    vp_authorize($uStaffA, 'admin:attest');
+    assertIsolation("11.6 Non-admin attest blocked", false, "Non-admin attest allowed");
+} catch (VpAuthorizationException $e) {
+    assertIsolation("11.6 Non-admin attest blocked (403)", $e->getCode() === 403, "Code: " . $e->getCode());
+}
+try {
+    vp_authorize($uStaffA, 'admin:sever');
+    assertIsolation("11.7 Non-admin sever session blocked", false, "Non-admin sever allowed");
+} catch (VpAuthorizationException $e) {
+    assertIsolation("11.7 Non-admin sever session blocked (403)", $e->getCode() === 403, "Code: " . $e->getCode());
+}
+try {
+    vp_authorize($uStaffA, 'admin:purge');
+    assertIsolation("11.8 Non-admin purge blocked", false, "Non-admin purge allowed");
+} catch (VpAuthorizationException $e) {
+    assertIsolation("11.8 Non-admin purge blocked (403)", $e->getCode() === 403, "Code: " . $e->getCode());
+}
+try {
+    vp_authorize($u1001, 'admin:purge');
+    assertIsolation("11.9 SuperAdmin can execute purge (200)", true);
+} catch (Throwable $e) {
+    assertIsolation("11.9 SuperAdmin purge", false, $e->getMessage());
+}
+
+// 11.10 Shop & Customer company vs private
+$uCusA2 = ['account_type' => 'Customer', 'cus_id' => 'CUS-1001', 'account_id' => 3];
+$companyOrder = ['order_id' => 101, 'cus_id' => 'CUS-1001', 'account_id' => 1];
+
+try {
+    vp_authorize($uCus2, 'shop:read', $companyOrder);
+    assertIsolation("11.10 Cross-company order reading returns 404", false, "Cross-company order leak");
+} catch (VpAuthorizationException $e) {
+    assertIsolation("11.10 Cross-company order reading returns 404", $e->getCode() === 404, "Code: " . $e->getCode());
+}
+try {
+    vp_authorize($uCusA2, 'shop:read', $companyOrder);
+    assertIsolation("11.11 Same-company customer reading company order allowed (200)", true);
+} catch (Throwable $e) {
+    assertIsolation("11.11 Same-company order read", false, $e->getMessage());
+}
+
 
 // -----------------------------------------------------------------------------
 // SUMMARY REPORT

@@ -8,6 +8,7 @@ $_vp_user = vp_api_guard('DEV', []);
 require_once __DIR__ . '/db_helper.php';
 
 try {
+    vp_authorize($_vp_user, 'developer_credential:change', $_POST, $pdo);
     $pdo = getDbConnection();
     ensureDeveloperTables($pdo);
 

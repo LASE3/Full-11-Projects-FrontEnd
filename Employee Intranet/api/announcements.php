@@ -64,6 +64,7 @@ if ($method === 'GET') {
 }
 
 if ($method === 'POST') {
+    vp_authorize($_vp_user, 'hr:update', $_POST, $pdo);
     $data = json_decode(file_get_contents('php://input'), true) ?: $_POST;
     $title = trim((string)($data['title'] ?? ''));
     $body  = trim((string)($data['body'] ?? ($data['content'] ?? '')));

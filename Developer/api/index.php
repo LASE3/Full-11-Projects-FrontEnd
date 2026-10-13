@@ -10,7 +10,10 @@ declare(strict_types=1);
  * and unified routing via /api/index.php?service=<name>&action=<action>
  */
 
+require_once __DIR__ . '/../../includes/api_bootstrap.php';
+$_vp_user = vp_api_guard('DEV', ['csrf' => false]);
 require_once __DIR__ . '/db_helper.php';
+vp_authorize($_vp_user, 'developer_credential:read', [], getDbConnection());
 
 $payload = getRequestPayload();
 $service = trim($payload['service'] ?? '');

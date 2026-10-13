@@ -34,6 +34,9 @@ if ($method === 'GET') {
     }
 
     try {
+    $_vp_user = $user ?? $currentUser ?? ($_SESSION['vostok_user'] ?? []);
+
+    vp_authorize($_vp_user, 'shop:quote_create', $_POST, $pdo);
         $stmt = $pdo->prepare("
             SELECT 
                 q.quote_id,

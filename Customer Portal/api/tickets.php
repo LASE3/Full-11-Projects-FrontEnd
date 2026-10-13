@@ -101,6 +101,9 @@ if ($method === 'GET') {
 }
 
 if ($method === 'POST') {
+    $_vp_user = $user ?? $currentUser ?? ($_SESSION['vostok_user'] ?? []);
+
+    vp_authorize($_vp_user, 'ticket:create', $_POST, $pdo);
     $rawInput = file_get_contents('php://input');
     $data = json_decode($rawInput, true) ?: $_POST;
 

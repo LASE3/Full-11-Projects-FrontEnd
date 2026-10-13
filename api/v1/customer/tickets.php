@@ -22,6 +22,9 @@ if ($method === 'GET') {
     $tktId = $_GET['id'] ?? null;
 
     try {
+    $_vp_user = $user ?? $currentUser ?? ($_SESSION['vostok_user'] ?? []);
+
+    vp_authorize($_vp_user, 'ticket:read', $_GET, $pdo);
         if ($tktId) {
             $chk = $pdo->prepare("SELECT requester_cus_id FROM tickets WHERE tkt_id = :tid");
             $chk->execute([':tid' => $tktId]);

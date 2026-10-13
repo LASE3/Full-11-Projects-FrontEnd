@@ -17,6 +17,7 @@ $payload = getRequestPayload();
 
 // 1. GET: Fetch SLA Policies & Computed Metrics
 if ($method === 'GET') {
+    vp_authorize($user, 'ticket:read', ['dept' => 'IT'], $pdo);
     $policies = $pdo->query("SELECT * FROM sla_policies ORDER BY FIELD(priority, 'Critical', 'High', 'Medium', 'Low')")->fetchAll(PDO::FETCH_ASSOC);
 
     // Compute SLA metrics
@@ -44,6 +45,7 @@ if ($method === 'GET') {
 // 2. POST: Update Policy
 $action = trim((string)($_GET['action'] ?? ($payload['action'] ?? 'update')));
 
+vp_authorize($user, 'ticket:update', $payload, $pdo);
 if ($action === 'update' || $action === 'update_policy') {
     $slaId = (int)($payload['sla_id'] ?? ($payload['policy_id'] ?? 0));
     $respMinutes = (int)($payload['first_response_time_minutes'] ?? 0);

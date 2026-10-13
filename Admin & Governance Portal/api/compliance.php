@@ -65,6 +65,7 @@ try {
     // 2. POST: Actions
     // -------------------------------------------------------------------------
     if ($method === 'POST') {
+        vp_authorize($_vp_user, 'admin:attest', $input ?? [], $pdo);
         $action = trim($input['action'] ?? 'create_control');
 
         // CREATE CONTROL
@@ -274,7 +275,6 @@ try {
     }
 
     jsonResponse(['success' => false, 'error' => 'Unsupported method.'], 405);
-} catch (Exception $e) {
-    error_log("API error: " . $e->getMessage());
-        jsonResponse(['success' => false, 'error' => 'An internal server error occurred.'], 500);
+} catch (Throwable $e) {
+    vp_handle_api_exception($e, $pdo);
 }

@@ -30,6 +30,7 @@ try {
             if (!$policy) {
                 jsonResponse(['success' => false, 'error' => 'Policy not found'], 404);
             }
+            vp_authorize($_vp_user, 'admin:read', $policy, $pdo);
             jsonResponse(['success' => true, 'policy' => $policy]);
         }
 
@@ -65,6 +66,7 @@ try {
     // 2. POST: Create, Update, Delete
     // -------------------------------------------------------------------------
     if ($method === 'POST') {
+        vp_authorize($_vp_user, 'admin:policy_update', $input, $pdo);
         $action = trim($input['action'] ?? 'create');
 
         // CREATE

@@ -64,10 +64,12 @@ try {
             Response::error("Customer account not found.", 404);
         }
 
+        vp_authorize($_vp_user, 'customer:read', $account, $pdo);
         Response::success($account, "Customer profile loaded");
     }
 
     if ($method === 'POST' || $method === 'PUT' || $method === 'PATCH') {
+        vp_authorize($_vp_user, 'customer:update', ['cus_id' => $cusId], $pdo);
         $raw = file_get_contents('php://input');
         $data = json_decode($raw, true) ?: $_POST;
 
@@ -130,10 +132,6 @@ try {
 
         Response::success(['cus_id' => $cusId], "Account settings updated successfully in database");
     }
-} catch (Exception $e) {
-    if ($pdo->inTransaction()) {
-        $pdo->rollBack();
-    }
-    error_log("Account API Error: " . $e->getMessage());
-        Response::error("Account API Error. Please try again later.", 500);
+} catch (Throwable $e) {
+    vp_handle_api_exception($e, $pdo);
 }

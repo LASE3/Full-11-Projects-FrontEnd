@@ -77,6 +77,7 @@ $orderId = trim((string)($_POST['order_id'] ?? ''));
 $folder = !empty($_POST['folder']) ? trim((string)$_POST['folder']) : 'Orders & Procurement';
 
 try {
+    vp_authorize($_vp_user, 'shop:read', $_POST, $pdo);
     $stmt = $pdo->prepare("
         INSERT INTO documents (
             doc_id, file_name, description, classification, folder, department,

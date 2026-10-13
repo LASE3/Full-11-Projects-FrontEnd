@@ -40,6 +40,9 @@ $pdo->exec("
 
 // Check if system_code / title / severity columns exist (in case table was from an older migration)
 try {
+    $_vp_user = $user ?? $currentUser ?? ($_SESSION['vostok_user'] ?? []);
+
+    vp_authorize($_vp_user, 'user_data:read', [], $pdo);
     $cols = $pdo->query("SHOW COLUMNS FROM portal_notifications")->fetchAll(PDO::FETCH_COLUMN);
     if (!in_array('title', $cols, true)) {
         $pdo->exec("ALTER TABLE portal_notifications ADD COLUMN title VARCHAR(255) NOT NULL AFTER portal_user_id");

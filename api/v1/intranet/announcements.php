@@ -21,6 +21,9 @@ $method  = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 
 if ($method === 'GET') {
     try {
+    $_vp_user = $user ?? $currentUser ?? ($_SESSION['vostok_user'] ?? []);
+
+    vp_authorize($_vp_user, 'hr:update', $_POST, $pdo);
         $stmt = $pdo->prepare("
             SELECT 
                 a.announcement_id,

@@ -17,6 +17,9 @@ $lang  = $_GET['lang'] ?? 'en';
 $cusId = $_GET['id'] ?? null;
 
 try {
+    $_vp_user = $user ?? $currentUser ?? ($_SESSION['vostok_user'] ?? []);
+
+    vp_authorize($_vp_user, 'crm:read', $_GET, $pdo);
     if ($cusId) {
         // Deep Customer 360 Dossier
         $stmt = $pdo->prepare("

@@ -62,11 +62,13 @@ try {
             if (!$key) {
                 sendJsonError('API Key not found', 404);
             }
+            vp_authorize($_vp_user, 'developer_credential:read', $key, $pdo);
             unset($key['token_full'], $key['token_hash']);
             sendJsonSuccess($key, 'API Key retrieved');
             break;
 
         case 'create':
+            vp_authorize($_vp_user, 'developer_credential:change', $payload, $pdo);
             $label = trim((string)($payload['label'] ?? ''));
             if ($label === '') {
                 sendJsonError('Field label is required for credential creation.', 422);
@@ -171,6 +173,7 @@ try {
             break;
 
         case 'revoke':
+            vp_authorize($_vp_user, 'developer_credential:revoke', $payload, $pdo);
             $id = (int)($payload['id'] ?? 0);
             if ($id <= 0) {
                 sendJsonError('Key ID is required to revoke');
@@ -183,6 +186,7 @@ try {
             break;
 
         case 'delete':
+            vp_authorize($_vp_user, 'developer_credential:delete', $payload, $pdo);
             $id = (int)($payload['id'] ?? 0);
             if ($id <= 0) {
                 sendJsonError('Key ID is required to delete', 422);

@@ -16,6 +16,9 @@ $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 
 if ($method === 'GET') {
     try {
+    $_vp_user = $user ?? $currentUser ?? ($_SESSION['vostok_user'] ?? []);
+
+    vp_authorize($_vp_user, 'crm:read', $_GET, $pdo);
         $stmt = $pdo->query("
             SELECT 
                 sf.forecast_id,

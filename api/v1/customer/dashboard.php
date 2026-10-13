@@ -17,6 +17,9 @@ $cusId = enforceCustomerTenant($user, $_GET['cus_id'] ?? null);
 $lang  = $_GET['lang'] ?? 'en';
 
 try {
+    $_vp_user = $user ?? $currentUser ?? ($_SESSION['vostok_user'] ?? []);
+
+    vp_authorize($_vp_user, 'customer:read', $_GET, $pdo);
     // 1. Core Profile & Aggregate Metrics
     $stmt = $pdo->prepare("
         SELECT 

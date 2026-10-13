@@ -76,6 +76,7 @@ $projectRef = trim($_POST['project_ref'] ?? '');
 $relatedPrjId = !empty($_POST['related_prj_id']) ? trim($_POST['related_prj_id']) : null;
 
 try {
+    vp_authorize($_vp_user, 'customer:read', $_POST, $pdo);
     $stmt = $pdo->prepare("
         INSERT INTO documents (
             doc_id, file_name, description, classification, folder, department,

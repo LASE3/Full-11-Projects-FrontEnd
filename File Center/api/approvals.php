@@ -28,6 +28,7 @@ $req = array_merge($_GET, $_POST, $inputData);
 $action = $req['action'] ?? '';
 
 try {
+    vp_authorize($_vp_user, 'document:update', $_POST, $pdo);
     if ($method === 'GET') {
         $docId = $req['doc_id'] ?? null;
 

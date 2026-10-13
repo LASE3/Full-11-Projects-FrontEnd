@@ -30,6 +30,7 @@ if ($method === 'GET') {
     $docIdQuery = trim($_GET['id'] ?? ($_GET['doc_id'] ?? ''));
 
     try {
+    vp_authorize($_vp_user, 'document:read', $_GET, $pdo);
         $sql = "
             SELECT 
                 d.doc_id,

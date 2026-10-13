@@ -6,6 +6,7 @@ require_once __DIR__ . '/../../includes/api_bootstrap.php';
 require_once __DIR__ . '/db_helper.php';
 
 try {
+    vp_authorize($_vp_user, 'developer_credential:read', [], $pdo);
     $pdo = getDbConnection();
     ensureDeveloperTables($pdo);
 

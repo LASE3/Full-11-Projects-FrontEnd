@@ -67,6 +67,7 @@ if ($type === 'documents' && !empty($docId)) {
 }
 
 try {
+    vp_authorize($_vp_user, 'customer:read', $_GET, $pdo);
     $rows = [];
     $filename = "export_{$type}_" . date('Ymd_His');
 

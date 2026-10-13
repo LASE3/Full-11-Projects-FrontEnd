@@ -27,6 +27,9 @@ $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 // Handle GET: Retrieve orders
 if ($method === 'GET') {
     try {
+    $_vp_user = $user ?? $currentUser ?? ($_SESSION['vostok_user'] ?? []);
+
+    vp_authorize($_vp_user, 'shop:order_create', $_POST, $pdo);
         $orderId = $_GET['order_id'] ?? null;
         if ($orderId) {
             // Check ownership

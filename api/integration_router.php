@@ -68,6 +68,9 @@ if ($method === 'GET') {
     $includeLogs = isset($_GET['include_logs']) ? (bool)$_GET['include_logs'] : true;
 
     try {
+    $_vp_user = $user ?? $currentUser ?? ($_SESSION['vostok_user'] ?? []);
+
+    vp_authorize($_vp_user, 'admin:attest', $_POST, $pdo);
         if (!empty($linkCode)) {
             $stmt = $pdo->prepare("SELECT * FROM system_integrations WHERE link_code = ? LIMIT 1");
             $stmt->execute([$linkCode]);

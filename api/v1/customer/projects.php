@@ -19,6 +19,9 @@ $lang  = $_GET['lang'] ?? 'en';
 $prjId = $_GET['id'] ?? null;
 
 try {
+    $_vp_user = $user ?? $currentUser ?? ($_SESSION['vostok_user'] ?? []);
+
+    vp_authorize($_vp_user, 'customer:read', $_GET, $pdo);
     if ($prjId) {
         // 1. Check ownership (Anti-IDOR Protection)
         $checkStmt = $pdo->prepare("SELECT cus_id FROM projects WHERE prj_id = :pid");

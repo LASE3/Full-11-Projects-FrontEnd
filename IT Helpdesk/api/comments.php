@@ -17,6 +17,7 @@ $payload = getRequestPayload();
 
 // 1. GET: Fetch comments for a ticket
 if ($method === 'GET') {
+    vp_authorize($user, 'ticket:read', ['tkt_id' => $payload['tkt_id'] ?? ''], $pdo);
     $tktId = trim((string)($payload['tkt_id'] ?? ''));
     if ($tktId === '') {
         sendJsonError("Ticket ID is required.");
@@ -50,6 +51,7 @@ if ($method === 'GET') {
 // 2. POST: Add or Delete Comment
 $action = trim((string)($_GET['action'] ?? ($payload['action'] ?? 'create')));
 
+vp_authorize($user, 'ticket:update', ['tkt_id' => $payload['tkt_id'] ?? ''], $pdo);
 if ($action === 'create') {
     $tktId = trim((string)($payload['tkt_id'] ?? ($payload['ticket_id'] ?? ($payload['id'] ?? ''))));
     $text = trim((string)($payload['comment_text'] ?? ($payload['message'] ?? '')));

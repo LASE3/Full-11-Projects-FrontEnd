@@ -23,6 +23,7 @@ function nextProdId(PDO $pdo): string {
 }
 
 try {
+    vp_authorize($_vp_user, 'shop:product_manage', $_POST, $pdo);
     // ── GET: list all products (admin view with stock, soft-deleted flag) ───
     if ($method === 'GET' && $action === 'list') {
         $stmt = $pdo->query("

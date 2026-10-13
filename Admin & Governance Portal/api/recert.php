@@ -33,6 +33,7 @@ try {
     }
 
     if ($method === 'POST') {
+        vp_authorize($_vp_user, 'admin:recert', $input, $pdo);
         $title = trim($input['title'] ?? 'Quarterly Statutory Re-Certification Window');
         $startDate = trim($input['start_date'] ?? date('Y-m-d'));
         $endDate = trim($input['end_date'] ?? date('Y-m-d', strtotime('+30 days')));

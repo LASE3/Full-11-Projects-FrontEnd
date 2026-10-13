@@ -61,6 +61,7 @@ if ($method === 'GET') {
 }
 
 if ($method === 'POST') {
+    vp_authorize($_vp_user, 'customer:service_request', $_POST, $pdo);
     $raw = file_get_contents('php://input');
     $data = json_decode($raw, true) ?: $_POST;
 

@@ -35,6 +35,7 @@ if ($rawInput !== false && trim($rawInput) !== '') {
 $data = array_merge(is_array($_GET) ? $_GET : [], is_array($_POST) ? $_POST : [], $jsonBody);
 
 if ($method === 'GET') {
+    vp_authorize($_vp_user, 'crm:read', $_GET, $pdo);
     try {
         $stmt = $pdo->query("
             SELECT 
@@ -66,6 +67,7 @@ if ($method === 'GET') {
 }
 
 if ($method === 'POST') {
+    vp_authorize($_vp_user, 'crm:update', $_POST, $pdo);
     $action = strtolower(trim((string)($data['action'] ?? '')));
     if ($action === 'delete' || $action === 'delete_contract') {
         goto handle_delete_contract;

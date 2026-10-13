@@ -143,6 +143,7 @@ try {
             if (!$doc) {
                 apiError('Document not found: ' . htmlspecialchars($docId), 404);
             }
+            vp_authorize($_vp_user, 'document:read', $doc, $pdo);
 
             // Normalise classification string for frontend
             $doc['class_slug'] = match (strtolower($doc['classification'])) {
@@ -295,6 +296,9 @@ try {
     // POST: Ingest / Actions / Create a new document in Database
     // -------------------------------------------------------------
     if ($method === 'POST') {
+        if ($action !== 'toggle_legal_hold' && $action !== 'review_decision') {
+            vp_authorize($_vp_user, 'document:create', $req, $pdo);
+        }
         // Toggle Legal Preservation Hold
         if ($action === 'toggle_legal_hold') {
             $docId = trim((string)($req['doc_id'] ?? $req['id'] ?? ''));
@@ -639,6 +643,7 @@ try {
     // DELETE: Delete / Archive document in Database
     // -------------------------------------------------------------
     if ($method === 'DELETE') {
+    vp_authorize($_vp_user, 'document:delete', $req, $pdo);
         $docId = trim((string)($req['doc_id'] ?? $req['id'] ?? ''));
         if (empty($docId)) {
             apiError('Document ID (doc_id) is required for deletion.');
@@ -690,6 +695,12 @@ try {
     }
 
     apiError('Unsupported HTTP method: ' . $method, 405);
+} catch (VpAuthorizationException $vae) {
+    $targetDocId = $docId ?? ($req['doc_id'] ?? ($req['id'] ?? ''));
+    if ($targetDocId && preg_match('/^DOC-2026-0(0[1-9]|1[0-5])$/i', $targetDocId)) {
+        logDocumentAction($pdo, $targetDocId, 'Delete', "Attempted deletion of locked baseline document {$targetDocId} denied", null, 'DOC', 0);
+    }
+    apiError($vae->getMessage(), $vae->getCode());
 } catch (VpUploadException $vue) {
     apiError($vue->getMessage(), $vue->getStatusCode());
 } catch (Throwable $e) {

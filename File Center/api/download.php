@@ -52,6 +52,9 @@ if (empty($docId)) {
 $inline = (!empty($_GET['inline']) && $_GET['inline'] !== '0' && $_GET['inline'] !== 'false');
 
 try {
+    $_vp_user = $user ?? $currentUser ?? ($_SESSION['vostok_user'] ?? []);
+
+    vp_authorize($_vp_user, 'document:read', $_GET, $pdo);
     vp_serve_document($pdo, $docId, $currentUser, $inline);
 } catch (Throwable $e) {
     error_log("Document Download Exception: " . $e->getMessage());

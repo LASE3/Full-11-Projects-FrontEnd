@@ -40,6 +40,7 @@ function jsonRes(mixed $data, int $code = 200): void {
 }
 
 try {
+    vp_authorize($_vp_user, 'admin:policy_update', $_POST, $pdo);
     // -------------------------------------------------------------
     // SECTION 1: ANNOUNCEMENTS / NEWS
     // -------------------------------------------------------------

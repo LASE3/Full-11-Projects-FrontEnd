@@ -28,6 +28,7 @@ $req = array_merge($_GET, $_POST, $inputData);
 $action = $req['action'] ?? '';
 
 try {
+    vp_authorize($_vp_user, 'document:read', [], $pdo);
     if ($method === 'GET') {
         $q = trim((string)($req['q'] ?? ''));
 

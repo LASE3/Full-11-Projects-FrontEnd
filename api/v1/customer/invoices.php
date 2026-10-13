@@ -18,6 +18,9 @@ $lang  = $_GET['lang'] ?? 'en';
 $invId = $_GET['id'] ?? null;
 
 try {
+    $_vp_user = $user ?? $currentUser ?? ($_SESSION['vostok_user'] ?? []);
+
+    vp_authorize($_vp_user, 'finance:read', $_GET, $pdo);
     if ($invId) {
         // Tenant ownership check
         $chkStmt = $pdo->prepare("SELECT cus_id FROM invoices WHERE inv_id = :iid");

@@ -33,6 +33,7 @@ try {
         if ($owner === false) {
             Response::error("Project not found.", 404);
         }
+        vp_authorize($_vp_user, 'customer:read', ['cus_id' => $owner], $pdo);
 
         if ($owner !== $cusId) {
             // Log security incident for Cyber Range tracking

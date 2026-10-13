@@ -34,6 +34,7 @@ $timestamp = date('Y-m-d_His');
 $filename  = "vostok_shop_{$type}_{$timestamp}";
 
 try {
+    vp_authorize($_vp_user, 'shop:read', $_GET, $pdo);
     $rows = [];
 
     switch ($type) {

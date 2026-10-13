@@ -65,6 +65,7 @@ try {
     // 2. POST: Actions
     // -------------------------------------------------------------------------
     if ($method === 'POST') {
+        vp_authorize($_vp_user, 'admin:sever', $input, $pdo);
         $action = trim($input['action'] ?? '');
 
         // SEVER CREDENTIALS / SUSPEND PRIVILEGED ACCOUNT

@@ -42,6 +42,7 @@ try {
         if (!$invoice) {
             Response::error("Invoice not found or unauthorized.", 404);
         }
+        vp_authorize($_vp_user, 'finance:read', $invoice, $pdo);
 
         $invoice['payment_status_display'] = I18n::translate($invoice['payment_status'], $lang);
 

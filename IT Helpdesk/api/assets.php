@@ -18,6 +18,7 @@ $payload = getRequestPayload();
 
 // 1. GET: Fetch Assets
 if ($method === 'GET') {
+    vp_authorize($user, 'ticket:read', ['dept' => 'IT'], $pdo);
     $assetId = (int)($payload['asset_id'] ?? 0);
 
     if ($assetId > 0) {
@@ -52,6 +53,7 @@ if ($method === 'GET') {
 // 2. POST: Create, Update, Delete
 $action = trim((string)($_GET['action'] ?? ($payload['action'] ?? 'create')));
 
+vp_authorize($user, 'ticket:update', $payload, $pdo);
 if ($action === 'create') {
     $tag = trim((string)($payload['asset_tag'] ?? ''));
     $model = trim((string)($payload['device_model'] ?? ''));

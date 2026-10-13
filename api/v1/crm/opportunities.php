@@ -22,6 +22,9 @@ if ($method === 'GET') {
     $empFilter = $_GET['sales_emp_id'] ?? null;
 
     try {
+    $_vp_user = $user ?? $currentUser ?? ($_SESSION['vostok_user'] ?? []);
+
+    vp_authorize($_vp_user, 'crm:read', $_GET, $pdo);
         $sql = "
             SELECT 
                 o.opp_id,

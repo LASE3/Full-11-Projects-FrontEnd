@@ -23,6 +23,9 @@ if ($method === 'GET') {
     $leadId = $_GET['id'] ?? null;
 
     try {
+    $_vp_user = $user ?? $currentUser ?? ($_SESSION['vostok_user'] ?? []);
+
+    vp_authorize($_vp_user, 'crm:read', $_GET, $pdo);
         if ($leadId) {
             $stmt = $pdo->prepare("
                 SELECT 

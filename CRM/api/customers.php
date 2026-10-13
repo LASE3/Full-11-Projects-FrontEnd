@@ -55,6 +55,8 @@ if ($method === 'GET') {
                 Response::error("Customer account not found.", 404);
             }
 
+            vp_authorize($_vp_user, 'crm:read', $customer, $pdo);
+
             // Linked Contacts
             $cStmt = $pdo->prepare("SELECT * FROM contacts WHERE cus_id = :cid ORDER BY contact_id ASC");
             $cStmt->execute([':cid' => $cusId]);
@@ -143,6 +145,16 @@ if ($method === 'GET') {
                 $params[':q5'] = $wildcard;
             }
 
+            $scopedReps = vp_crm_get_scoped_reps($_vp_user, $pdo);
+            if ($scopedReps !== null) {
+                if (empty($scopedReps)) {
+                    $whereClauses[] = "1=0";
+                } else {
+                    $repInList = implode(',', array_map(fn($r) => $pdo->quote($r), $scopedReps));
+                    $whereClauses[] = "c.account_manager_emp_id IN ({$repInList})";
+                }
+            }
+
             $whereSql = !empty($whereClauses) ? ' WHERE ' . implode(' AND ', $whereClauses) : '';
 
             $countSql = "SELECT COUNT(*) FROM customers c LEFT JOIN employees e ON c.account_manager_emp_id = e.emp_id {$whereSql}";
@@ -181,8 +193,7 @@ if ($method === 'GET') {
             Response::paginated($customers, $total, $page, $perPage);
         }
     } catch (Throwable $e) {
-        error_log("Failed to load customer records: " . $e->getMessage());
-        Response::error("Unable to load customer directory at this time.", 500);
+        vp_handle_api_exception($e, $pdo);
     }
 }
 
@@ -204,6 +215,7 @@ if ($method === 'POST') {
     }
 
     try {
+        vp_authorize($_vp_user, 'crm:create', $data, $pdo);
         $newCusId = vp_next_id($pdo, 'customers', 'CUS-', 4);
 
         $stmt = $pdo->prepare("
@@ -233,8 +245,7 @@ if ($method === 'POST') {
 
         Response::success(['cus_id' => $newCusId, 'company_name' => $companyName], "Customer account created", 201);
     } catch (Throwable $e) {
-        error_log("Failed to create customer: " . $e->getMessage());
-        Response::error("Failed to create customer account. Please verify input data.", 500);
+        vp_handle_api_exception($e, $pdo);
     }
 }
 
@@ -263,6 +274,14 @@ if ($method === 'PUT' || $method === 'PATCH') {
     }
 
     try {
+        $chk = $pdo->prepare("SELECT * FROM customers WHERE cus_id = ?");
+        $chk->execute([$cusId]);
+        $targetCus = $chk->fetch(PDO::FETCH_ASSOC);
+        if (!$targetCus) {
+            Response::error("Customer account not found.", 404);
+        }
+        vp_authorize($_vp_user, 'crm:update', $targetCus, $pdo);
+
         $sql = "UPDATE customers SET " . implode(", ", $fields) . " WHERE cus_id = :cid";
         $stmt = $pdo->prepare($sql);
         $stmt->execute($params);
@@ -281,8 +300,7 @@ if ($method === 'PUT' || $method === 'PATCH') {
 
         Response::success(['cus_id' => $cusId], "Customer account updated");
     } catch (Throwable $e) {
-        error_log("Failed to update customer: " . $e->getMessage());
-        Response::error("Failed to update customer account.", 500);
+        vp_handle_api_exception($e, $pdo);
     }
 }
 
@@ -312,6 +330,14 @@ if ($method === 'DELETE') {
     }
 
     try {
+        $chk = $pdo->prepare("SELECT * FROM customers WHERE cus_id = ?");
+        $chk->execute([$cusId]);
+        $targetCus = $chk->fetch(PDO::FETCH_ASSOC);
+        if (!$targetCus) {
+            Response::error("Customer account not found.", 404);
+        }
+        vp_authorize($_vp_user, 'crm:delete', $targetCus, $pdo);
+
         $stmt = $pdo->prepare("DELETE FROM customers WHERE cus_id = ?");
         $stmt->execute([$cusId]);
 
@@ -329,10 +355,9 @@ if ($method === 'DELETE') {
 
         Response::success(['cus_id' => $cusId], "Customer account removed");
     } catch (Throwable $e) {
-        error_log("Failed to delete customer: " . $e->getMessage());
         if ($e instanceof PDOException && ($e->getCode() === '23000' || str_contains($e->getMessage(), '1451'))) {
             Response::error("Customer has linked records; archive instead.", 409);
         }
-        Response::error("Failed to delete customer account.", 500);
+        vp_handle_api_exception($e, $pdo);
     }
 }

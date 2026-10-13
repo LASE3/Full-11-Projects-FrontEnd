@@ -98,6 +98,7 @@ AuditLogger::logAction(
 // If uploaded for a customer, add to crm_activities
 if (!empty($targetCusId)) {
     try {
+    vp_authorize($_vp_user, 'crm:update', $_POST, $pdo);
         $pdo->prepare("
             INSERT INTO `crm_activities` (activity_type, title, description, cus_id, emp_id)
             VALUES ('Document', 'Document Uploaded', :desc, :cid, :eid)

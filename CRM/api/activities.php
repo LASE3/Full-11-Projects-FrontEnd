@@ -33,6 +33,7 @@ if ($rawInput !== false && trim($rawInput) !== '') {
 $data = array_merge(is_array($_GET) ? $_GET : [], is_array($_POST) ? $_POST : [], $jsonBody);
 
 if ($method === 'GET') {
+    vp_authorize($_vp_user, 'crm:read', $_GET, $pdo);
     try {
         $stmt = $pdo->query("
             SELECT 
@@ -54,6 +55,7 @@ if ($method === 'GET') {
 }
 
 if ($method === 'POST') {
+    vp_authorize($_vp_user, 'crm:update', $_POST, $pdo);
     $title = trim((string)($data['title'] ?? 'Commercial Meeting / Audit'));
     $type  = trim((string)($data['activity_type'] ?? 'Meeting'));
     $desc  = trim((string)($data['description'] ?? ($data['notes'] ?? '')));

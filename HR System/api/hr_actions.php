@@ -42,15 +42,17 @@ $json = json_decode($inputRaw, true) ?: [];
 $action = $_POST['action'] ?? $json['action'] ?? $_GET['action'] ?? '';
 $payload = array_merge($_POST, $json);
 
-switch ($action) {
-    case 'add_employee':
-        if (empty($payload['full_name'])) {
-            echo json_encode(['success' => false, 'message' => 'Employee full name is required.']);
-            exit;
-        }
-        $res = hr_createEmployee($payload);
-        echo json_encode($res);
-        break;
+try {
+    switch ($action) {
+        case 'add_employee':
+            if (empty($payload['full_name'])) {
+                echo json_encode(['success' => false, 'message' => 'Employee full name is required.']);
+                exit;
+            }
+            vp_authorize($_vp_user, 'hr:create', $payload);
+            $res = hr_createEmployee($payload);
+            echo json_encode($res);
+            break;
 
     case 'update_employee':
         $empId = trim($payload['emp_id'] ?? '');
@@ -224,4 +226,7 @@ switch ($action) {
     default:
         echo json_encode(['success' => false, 'message' => "Unrecognized action '{$action}'."]);
         break;
+    }
+} catch (Throwable $e) {
+    vp_handle_api_exception($e);
 }

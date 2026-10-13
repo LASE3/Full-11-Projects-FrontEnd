@@ -28,6 +28,7 @@ $req = array_merge($_GET, $_POST, $inputData);
 $action = $req['action'] ?? '';
 
 try {
+    vp_authorize($_vp_user, 'document:legal_hold', $_POST, $pdo);
     if ($method === 'GET') {
         // Export complete manifest
         if ($action === 'export_manifest') {

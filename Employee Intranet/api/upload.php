@@ -95,6 +95,7 @@ if (!in_array($classification, ['Public', 'Internal', 'Confidential', 'TopSecret
 }
 
 try {
+    vp_authorize($_vp_user, 'user_data:read', [], $pdo);
     $stmt = $pdo->prepare("
         INSERT INTO documents 
         (doc_id, file_name, description, classification, folder, department, file_size, file_hash, status, owner_emp_id, created_at, updated_at)

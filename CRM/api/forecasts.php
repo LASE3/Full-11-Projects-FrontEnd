@@ -19,6 +19,7 @@ $pdo = getDbConnection();
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 
 if ($method === 'GET') {
+    vp_authorize($_vp_user, 'crm:read', $_GET, $pdo);
     try {
         $stmt = $pdo->query("
             SELECT 
@@ -42,6 +43,7 @@ if ($method === 'GET') {
 }
 
 if ($method === 'POST') {
+    vp_authorize($_vp_user, 'crm:update', $_POST, $pdo);
     $data = json_decode(file_get_contents('php://input'), true);
     $empId    = trim($_SESSION['emp_id'] ?? ($_SESSION['vostok_user']['emp_id'] ?? ($_SESSION['vostok_user']['user_id'] ?? ($data['sales_emp_id'] ?? ''))));
     $period   = trim($data['period'] ?? '');

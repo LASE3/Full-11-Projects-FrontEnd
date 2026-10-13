@@ -48,6 +48,7 @@ if ($method === 'GET') {
             if (!$lead) {
                 Response::error("Lead not found.", 404);
             }
+            vp_authorize($_vp_user, 'crm:read', $lead, $pdo);
 
             $lead['status_display'] = I18n::translate($lead['status'], $lang);
             Response::success($lead, "Lead detail loaded");
@@ -126,6 +127,7 @@ if ($method === 'GET') {
 }
 
 if ($method === 'POST') {
+    vp_authorize($_vp_user, 'crm:update', $_POST, $pdo);
     $raw = file_get_contents('php://input');
     $data = json_decode($raw, true);
     $action = $_GET['action'] ?? 'create';

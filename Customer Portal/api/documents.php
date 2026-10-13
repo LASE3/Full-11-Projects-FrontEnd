@@ -58,7 +58,8 @@ try {
             $doc = $stmt->fetch(PDO::FETCH_ASSOC);
 
             if (!$doc) {
-                Response::error("Document #{$docId} not found or unauthorized.", 404);
+                Response::error("Document #{$docId}
+            vp_authorize($_vp_user, 'document:read', $doc, $pdo); not found or unauthorized.", 404);
             }
 
             Response::success($doc, "Document details loaded");

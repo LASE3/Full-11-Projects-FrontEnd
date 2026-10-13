@@ -27,6 +27,9 @@ if (!function_exists('requireApiAuth')) {
 if (!function_exists('vp_authorize')) {
     require_once __DIR__ . '/authorize.php';
 }
+if (!function_exists('vp_handle_api_exception')) {
+    require_once __DIR__ . '/api_errors.php';
+}
 
 /**
  * Clearance level numeric values for comparison.

@@ -156,3 +156,26 @@ The entire ecosystem relies on a centralized **Authentication Guard** (`includes
 - **Role-Based Access Control (RBAC)**: Strictly enforced via `employee_roles`, `roles`, `permissions`, and `role_system_access`. Never uses hardcoded emails or department arrays.
 - **Tenant Isolation**: Inbound customer API calls and data access queries strictly restrict rows where `cus_id` matches the authenticated customer session.
 - **Single Sign-On (SSO)**: 8-hour HMAC-SHA256 encrypted SSO cookie containing unique `jti` tracked in `user_sessions`, enabling instant enterprise-wide session revocation upon employee offboarding.
+
+---
+
+## 💼 Finance Role Map & Maker-Checker Dual-Control Matrix
+
+Per enterprise governance specifications (Finance owner: CFO `EMP-1003`), financial transactions strictly enforce maker-checker separation: `creator ≠ approver ≠ payer`, with at least two distinct authorized users capable of performing each operational step.
+
+| Role / Title | Persona Emp ID | Department | Create Invoice | Approve Invoice | Mark Paid / Reconcile | Void Invoice | Update Budget |
+| :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: |
+| **Chief Financial Officer (CFO)** | `EMP-1003` | `FIN` | ✅ Yes | ✅ Yes *(if not creator)* | ✅ Yes *(if not creator/approver)* | ✅ Yes | ✅ Yes |
+| **Finance Director & Controller** | `EMP-1059` | `FIN` | ✅ Yes | ✅ Yes *(if not creator)* | ✅ Yes *(if not creator/approver)* | ❌ No | ✅ Yes |
+| **Senior Financial Accountant** | `EMP-1060` | `FIN` | ✅ Yes | ❌ No | ✅ Yes *(if not creator)* | ❌ No | ❌ No |
+| **B2B Billing Operations Lead** | `EMP-1061` | `FIN` | ✅ Yes | ❌ No | ✅ Yes *(if not creator)* | ❌ No | ❌ No |
+| **AP / AR Specialists** | `EMP-1062`, `EMP-1063` | `FIN` | ✅ Yes | ❌ No | ✅ Yes *(if not creator)* | ❌ No | ❌ No |
+| **ERP Financial Reconciler** | `EMP-1067` | `FIN` | ❌ No | ❌ No | ✅ Yes *(if not creator)* | ❌ No | ❌ No |
+| **Non-Finance Staff (e.g. OPS, ITD, SAL)** | `EMP-1011`, `EMP-1017`, `EMP-1022` | Other | ❌ No *(403)* | ❌ No *(403)* | ❌ No *(403)* | ❌ No *(403)* | ❌ No *(403)* |
+
+### Dual-Control Lifecycle Enforcement
+1. **Creation**: Any authorized FIN specialist, Controller, or CFO creates an invoice (`creator`).
+2. **Approval**: An invoice must be approved by an authorized Finance Director or CFO where `approver ≠ creator`.
+3. **Settlement**: Marking as paid or reconciliation must be executed by a distinct authorized financial officer where `payer ≠ creator` AND `payer ≠ approver`.
+4. **Void**: Only the CFO (`EMP-1003`) or Executive / SuperAdmin (`EMP-1001`) may void invoices.
+

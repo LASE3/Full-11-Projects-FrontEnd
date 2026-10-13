@@ -29,6 +29,7 @@ $timestamp = date('Y-m-d_His');
 $filename  = "vostok_crm_{$type}_{$timestamp}";
 
 try {
+    vp_authorize($_vp_user, 'crm:read', $_GET, $pdo);
     $rows = [];
 
     switch ($type) {

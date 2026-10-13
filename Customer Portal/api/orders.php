@@ -57,7 +57,8 @@ try {
             $order = $stmt->fetch(PDO::FETCH_ASSOC);
 
             if (!$order) {
-                Response::error("Order #{$orderId} not found or unauthorized.", 404);
+                Response::error("Order #{$orderId}
+            vp_authorize($_vp_user, 'shop:read', $order, $pdo); not found or unauthorized.", 404);
             }
 
             // Fetch order line items
@@ -108,6 +109,7 @@ try {
     }
 
     if ($method === 'POST') {
+    vp_authorize($_vp_user, 'shop:order_create', $_POST, $pdo);
         $raw = file_get_contents('php://input');
         $data = json_decode($raw, true) ?: $_POST;
 

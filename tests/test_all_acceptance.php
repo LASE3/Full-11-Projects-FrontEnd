@@ -550,6 +550,14 @@ $hyOut = shell_exec(escapeshellarg($phpBin) . " " . escapeshellarg(__DIR__ . '/.
 $hyPass = str_contains((string)$hyOut, 'ALL REPOSITORY HYGIENE CHECKS PASSED');
 recordTest(14, 'Repository Hygiene: Clean uploads, no mock data, offline fonts', $hyPass, $hyPass ? 'All 10 hygiene rules PASS' : 'Failures detected');
 
+// =========================================================================
+// TEST 15: API AUTHORIZATION COVERAGE (PHASE 4.1 SCANNER)
+// =========================================================================
+$authScanOut = shell_exec(escapeshellarg($phpBin) . " " . escapeshellarg(__DIR__ . '/../scripts/list_unauthorized_endpoints.php') . " 2>&1");
+$authScanPass = str_contains((string)$authScanOut, 'AUDIT RESULT: PASS (0 UNWIRED)');
+recordTest(15, 'Authorization Coverage: 100% of mutation / by-id APIs wired', $authScanPass, $authScanPass ? '137/137 endpoints wired (0 unwired)' : 'Unwired endpoints detected');
+
+
 
 // -------------------------------------------------------------------------
 // DISPLAY FINAL ACCEPTANCE RESULTS TABLE

@@ -34,6 +34,7 @@ if ($type === 'policies' && !empty($_GET['doc_id'])) {
         http_response_code(404);
         die("Document '{$docId}' not found in database.");
     }
+    vp_authorize($_vp_user, 'document:read', $doc, $pdo);
 
     // Check if real file exists in uploads
     $uploadDir = __DIR__ . '/../uploads';

@@ -23,6 +23,7 @@ $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 $empId = $_SESSION['emp_id'] ?? ($_SESSION['vostok_user']['emp_id'] ?? ($_SESSION['vostok_user']['user_id'] ?? null));
 
 if ($method === 'GET') {
+    vp_authorize($_vp_user, 'crm:read', $_GET, $pdo);
     $stage = $_GET['stage'] ?? null;
     $empFilter = $_GET['sales_emp_id'] ?? null;
 

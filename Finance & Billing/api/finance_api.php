@@ -159,6 +159,7 @@ try {
             if (!$invoice) {
                 jsonReply(['success' => false, 'error' => 'Invoice not found'], 404);
             }
+            vp_authorize($_vp_user, 'finance:read', $invoice, $pdo);
 
             // Fetch Line Items from invoice_items table
             $itemStmt = $pdo->prepare("SELECT * FROM invoice_items WHERE inv_id = ? ORDER BY item_id ASC");
@@ -270,12 +271,13 @@ try {
                 jsonReply(['success' => false, 'error' => 'Invoice ID required'], 400);
             }
 
-            $stmt = $pdo->prepare("SELECT total_value, currency, cus_id FROM invoices WHERE inv_id = ?");
+            $stmt = $pdo->prepare("SELECT inv_id, total_value, currency, cus_id, created_by_emp_id, approved_by_emp_id FROM invoices WHERE inv_id = ?");
             $stmt->execute([$invId]);
             $inv = $stmt->fetch();
             if (!$inv) {
                 jsonReply(['success' => false, 'error' => 'Invoice not found'], 404);
             }
+            vp_authorize($_vp_user, 'finance:mark_paid', $inv, $pdo);
 
             $pdo->beginTransaction();
 
@@ -633,6 +635,7 @@ try {
             if (!$inv) {
                 jsonReply(['success' => false, 'error' => 'Invoice not found'], 404);
             }
+            vp_authorize($_vp_user, 'finance:void', $inv, $pdo);
             if ($inv['payment_status'] === 'Void') {
                 jsonReply(['success' => false, 'error' => 'Invoice is already voided.'], 400);
             }
@@ -833,12 +836,6 @@ try {
         default:
             jsonReply(['success' => false, 'error' => "Action '{$action}' not recognized."], 400);
     }
-} catch (Exception $e) {
-    if ($pdo->inTransaction()) {
-        $pdo->rollBack();
-    }
-    jsonReply([
-        'success' => false,
-        'error' => 'Database operation failed. Please contact system support.'
-    ], 500);
+} catch (Throwable $e) {
+    vp_handle_api_exception($e, $pdo);
 }
