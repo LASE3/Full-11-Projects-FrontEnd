@@ -115,7 +115,7 @@ try {
         if (!in_array($phrase, $validPhrases, true)) {
             jsonResponse([
                 'success' => false,
-                'error' => 'Invalid confirmation phrase. Expected: ' . implode(' or ', $validPhrases)
+                'error' => 'Confirmation phrase incorrect'
             ], 422);
         }
 
@@ -152,7 +152,7 @@ try {
                     event_type, source_system, source_system_id, actor_emp_id,
                     description, severity, event_time, raw_event, status, reported_to_governance
                 ) VALUES (
-                    :type, 'Admin & Governance Portal', 'SYS-11', :actor,
+                    :type, 'Admin & Governance Portal', 'ADM', :actor,
                     :desc, 'Critical', NOW(), :raw, 'Active', 1
                 )
             ");

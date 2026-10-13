@@ -194,6 +194,10 @@
 
           const data = await res.json();
           if (res.ok && data.success) {
+            // Real in-place DOM update (capture before closeLockdownModal clears them)
+            const action = currentModalAction;
+            const targetSys = currentTargetSystemId;
+            const newStatus = data.new_status || data.status;
             closeLockdownModal();
             window.showToast?.(
               "LOCKDOWN COMMAND EXECUTED",
@@ -201,7 +205,39 @@
               "success",
               "verified_user"
             );
-            /* in-place lockdown toggle */
+
+            if (action === "toggle_system" && targetSys) {
+              const btn = document.querySelector(`button[onclick*="'${targetSys}'"]`) || document.querySelector(`button[onclick*='"${targetSys}"']`);
+              if (btn) {
+                if (newStatus === "ISOLATED") {
+                  btn.className = "px-space-xs py-[2px] bg-error text-on-error hover:bg-error/80 font-security-stamp text-[9px] rounded uppercase font-bold transition-all shadow-sm";
+                  btn.textContent = "ISOLATED (UNLOCK)";
+                } else {
+                  btn.className = "px-space-xs py-[2px] bg-primary-container text-on-primary-container hover:bg-primary hover:text-on-primary font-security-stamp text-[9px] rounded uppercase font-bold transition-all shadow-sm";
+                  btn.textContent = "ISOLATE NODE";
+                }
+              }
+            } else if (action === "isolate_all") {
+              const buttons = document.querySelectorAll("button[onclick*='toggleSystemLockdown']");
+              buttons.forEach((b) => {
+                b.className = "px-space-xs py-[2px] bg-error text-on-error hover:bg-error/80 font-security-stamp text-[9px] rounded uppercase font-bold transition-all shadow-sm";
+                b.textContent = "ISOLATED (UNLOCK)";
+              });
+              const defconPill = document.querySelector(".bg-primary-container.rounded.border");
+              if (defconPill) {
+                defconPill.innerHTML = '<div class="w-2 h-2 rounded-full bg-error animate-ping"></div><span class="font-security-stamp text-security-stamp text-error">CYBER-RANGE-PROD</span><span class="text-outline-variant font-telemetry-micro text-telemetry-micro">|</span><span class="font-telemetry-micro text-telemetry-micro text-error font-bold">DEFCON-1 / TOTAL AIR-GAP</span>';
+              }
+            } else if (action === "restore_all") {
+              const buttons = document.querySelectorAll("button[onclick*='toggleSystemLockdown']");
+              buttons.forEach((b) => {
+                b.className = "px-space-xs py-[2px] bg-primary-container text-on-primary-container hover:bg-primary hover:text-on-primary font-security-stamp text-[9px] rounded uppercase font-bold transition-all shadow-sm";
+                b.textContent = "ISOLATE NODE";
+              });
+              const defconPill = document.querySelector(".bg-primary-container.rounded.border");
+              if (defconPill) {
+                defconPill.innerHTML = '<div class="w-2 h-2 rounded-full bg-secondary-fixed animate-pulse"></div><span class="font-security-stamp text-security-stamp text-secondary-fixed">CYBER-RANGE-PROD</span><span class="text-outline-variant font-telemetry-micro text-telemetry-micro">|</span><span class="font-telemetry-micro text-telemetry-micro text-on-primary-container font-medium">DEFCON-4 / NORMAL OPS</span>';
+              }
+            }
           } else {
             confirmBtn.disabled = false;
             confirmBtn.textContent = "Confirm Action";
