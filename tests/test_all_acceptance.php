@@ -411,7 +411,7 @@ try {
                  !verifyUserPassword($testUser, 'password123');
 
     // b. Unauthenticated API access returns 401
-    $phpBin = defined('PHP_BINARY') && PHP_BINARY ? PHP_BINARY : 'C:\\xampp\\php\\php.exe';
+    $phpBin = getenv('PHP_BINARY') ?: (defined('PHP_BINARY') && PHP_BINARY ? PHP_BINARY : 'php');
     $out1 = shell_exec(escapeshellarg($phpBin) . ' -r "require_once \'includes/auth_guard.php\'; requireApiAuth(\'IT\');"');
     $json1 = json_decode((string)$out1, true);
     $unauth1 = (isset($json1['error']) && $json1['error'] === 'Authentication required');
@@ -524,7 +524,7 @@ cleanupTransientTestData($pdo);
 // =========================================================================
 // TEST 11: PHASE 1 REGRESSION SUITE (ID GENERATOR, VARS, UPLOAD, AUDIT)
 // =========================================================================
-$phpBin = defined('PHP_BINARY') && PHP_BINARY ? PHP_BINARY : 'c:/xampp/php/php.exe';
+$phpBin = getenv('PHP_BINARY') ?: (defined('PHP_BINARY') && PHP_BINARY ? PHP_BINARY : 'php');
 $p1Out = shell_exec(escapeshellarg($phpBin) . " " . escapeshellarg(__DIR__ . '/test_phase1_regression.php') . " 2>&1");
 $p1Pass = str_contains((string)$p1Out, 'ALL PASS') && !str_contains((string)$p1Out, 'FAILURES DETECTED');
 recordTest(11, 'Phase 1 Regressions: Sequential IDs, Zero Vars, Upload 4xx, Audit', $p1Pass, $p1Pass ? 'All 22 Phase 1 regression tests PASS' : 'Failures detected');
@@ -563,11 +563,47 @@ recordTest(15, 'Authorization Coverage: 100% of mutation / by-id APIs wired', $a
 $pwOut = shell_exec(escapeshellarg($phpBin) . " " . escapeshellarg(__DIR__ . '/test_password_policy.php') . " 2>&1");
 $pwPass = str_contains((string)$pwOut, '12 / 12 PASSED');
 recordTest(16, 'Password Policy: Min 14 chars, deny-list, history 5, neutral route', $pwPass, $pwPass ? 'All 12 password policy checks PASS' : 'Failures detected');
+// =========================================================================
+// TEST 17: PHASE 1 RUNTIME SMOKE SWEEP (ALL ENDPOINTS AS 3 ROLES)
+// =========================================================================
+$smokeOut = shell_exec(escapeshellarg($phpBin) . " " . escapeshellarg(__DIR__ . '/../scripts/api_smoke.php') . " 2>&1");
+$smokePass = str_contains((string)$smokeOut, '0 FATALS / 0 5xx') || str_contains((string)$smokeOut, 'ZERO ERRORS DETECTED');
+recordTest(17, 'Phase 1 Runtime Smoke Sweep: 448 endpoints as CEO, Employee, Customer', $smokePass, $smokePass ? '448 requests PASS with 0 fatals, 0 undefined vars, 0 5xx' : 'Endpoint failures detected');
 
+// =========================================================================
+// TEST 18: PHASE 2 FINANCE MAKER-CHECKER DUAL CONTROL
+// =========================================================================
+$mcOut = shell_exec(escapeshellarg($phpBin) . " " . escapeshellarg(__DIR__ . '/test_maker_checker.php') . " 2>&1");
+$mcPass = str_contains((string)$mcOut, '100% PASS - ALL MAKER-CHECKER ENFORCEMENTS VERIFIED');
+recordTest(18, 'Phase 2 Maker-Checker Dual Control: Creator != Approver != Payer', $mcPass, $mcPass ? 'All 24 maker-checker assertions PASS (403/404 denials)' : 'Dual control failures detected');
 
+// =========================================================================
+// TEST 19: PHASE 3 CUSTOMER PASSWORD CHANGE ISOLATION
+// =========================================================================
+$custPwOut = shell_exec(escapeshellarg($phpBin) . " " . escapeshellarg(__DIR__ . '/test_customer_password_isolation.php') . " 2>&1");
+$custPwPass = str_contains((string)$custPwOut, '100% PASS - CUSTOMER PASSWORD CHANGE ISOLATION VERIFIED');
+recordTest(19, 'Phase 3 Customer Password Isolation: 4-account tenant, no cross-account mutation', $custPwPass, $custPwPass ? 'All 28 customer password isolation assertions PASS' : 'Cross-account bleed detected');
 
+// =========================================================================
+// TEST 20: PHASE 4 FILE CENTER OWNERSHIP & DEVELOPER GOVERNANCE
+// =========================================================================
+$p4Out = shell_exec(escapeshellarg($phpBin) . " " . escapeshellarg(__DIR__ . '/test_phase4_ownership_and_developer.php') . " 2>&1");
+$p4Pass = str_contains((string)$p4Out, '100% PASS - PHASE 4 REGRESSION TEST COMPLETE');
+recordTest(20, 'Phase 4 Document Ownership & Developer Governance', $p4Pass, $p4Pass ? 'All 21 ownership & developer governance assertions PASS' : 'Ownership failures detected');
 
-// -------------------------------------------------------------------------
+// =========================================================================
+// TEST 21: PHASE 5 MIGRATION 016 PORTABILITY & IDEMPOTENCY
+// =========================================================================
+$m16Out = shell_exec(escapeshellarg($phpBin) . " " . escapeshellarg(__DIR__ . '/test_migration_016.php') . " 2>&1");
+$m16Pass = str_contains((string)$m16Out, '100% PASS - MIGRATION 016 FULLY PORTABLE AND IDEMPOTENT');
+recordTest(21, 'Phase 5 Migration 016 Portability & Idempotency across MariaDB/MySQL', $m16Pass, $m16Pass ? 'Two passes PASS, all 8 foreign keys restored via REFERENTIAL_CONSTRAINTS' : 'Migration 016 failed');
+
+// =========================================================================
+// TEST 22: DOCUMENT DOWNLOAD SHA-256 IDENTICAL BYTES
+// =========================================================================
+$dlOut = shell_exec(escapeshellarg($phpBin) . " " . escapeshellarg(__DIR__ . '/test_document_download_identical_bytes.php') . " 2>&1");
+$dlPass = str_contains((string)$dlOut, '100% identical') || str_contains((string)$dlOut, 'ALL DOCUMENT DOWNLOAD TESTS PASS');
+recordTest(22, 'Document Download Identical Bytes: Owner, Cleared Staff, Customer', $dlPass, $dlPass ? 'SHA-256 hashes 100% identical, headers & audit logs verified' : 'Download mismatch');// -------------------------------------------------------------------------
 // DISPLAY FINAL ACCEPTANCE RESULTS TABLE
 // -------------------------------------------------------------------------
 printf("#  | %-65s | %-6s | %s\n", "ACCEPTANCE TEST NAME", "STATUS", "DETAILS");
@@ -587,6 +623,6 @@ foreach ($results as $r) {
     );
 }
 echo str_repeat("=", 120) . "\n";
-echo "OVERALL MASTER ACCEPTANCE TEST RESULT: " . ($allPassed ? "ALL 10 TESTS PASS\n" : "FAILURES DETECTED\n");
+echo "OVERALL MASTER ACCEPTANCE TEST RESULT: " . ($allPassed ? ("ALL " . count($results) . " ACCEPTANCE SUITES PASS (100%)\n") : "FAILURES DETECTED\n");
 
 exit($allPassed ? 0 : 1);

@@ -28,7 +28,6 @@ $req = array_merge($_GET, $_POST, $inputData);
 $action = $req['action'] ?? '';
 
 try {
-    vp_authorize($_vp_user, 'document:legal_hold', $_POST, $pdo);
     if ($method === 'GET') {
         // Export complete manifest
         if ($action === 'export_manifest') {
@@ -112,13 +111,15 @@ try {
             apiError('Document ID (doc_id) is required.');
         }
 
-        $chkStmt = $pdo->prepare("SELECT doc_id, file_name, is_legal_hold FROM documents WHERE doc_id = :id");
+        $chkStmt = $pdo->prepare("SELECT doc_id, file_name, is_legal_hold, classification, owner_emp_id, department FROM documents WHERE doc_id = :id");
         $chkStmt->execute([':id' => $docId]);
         $doc = $chkStmt->fetch(PDO::FETCH_ASSOC);
 
         if (!$doc) {
             apiError("Document {$docId} not found in database.", 404);
         }
+
+        vp_authorize($_vp_user, 'document:legal_hold', $doc, $pdo);
 
         $currentHold = (int)$doc['is_legal_hold'];
         $newHold = $currentHold ? 0 : 1;
@@ -181,6 +182,8 @@ try {
     }
 
     apiError('Unsupported HTTP method.', 405);
+} catch (VpAuthorizationException $e) {
+    vp_handle_api_exception($e, $pdo);
 } catch (Throwable $e) {
     error_log("API Error in retention.php: " . $e->getMessage());
     error_log("Retention operation failed: " . $e->getMessage());

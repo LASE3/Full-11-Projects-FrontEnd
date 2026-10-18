@@ -21,9 +21,6 @@ $method  = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 
 if ($method === 'GET') {
     try {
-    $_vp_user = $user ?? $currentUser ?? ($_SESSION['vostok_user'] ?? []);
-
-    vp_authorize($_vp_user, 'hr:update', $_POST, $pdo);
         $stmt = $pdo->prepare("
             SELECT 
                 a.announcement_id,
@@ -59,7 +56,8 @@ if ($method === 'GET') {
 }
 
 if ($method === 'POST') {
-    $data = json_decode(file_get_contents('php://input'), true);
+    $data = json_decode(file_get_contents('php://input'), true) ?: $_POST;
+    vp_authorize($user, 'announcement:create', $data, $pdo);
     $title = trim($data['title'] ?? '');
     $body  = trim($data['body'] ?? '');
     $targetDept = !empty($data['audience_dept']) ? trim($data['audience_dept']) : null;

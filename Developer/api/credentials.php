@@ -68,14 +68,14 @@ try {
             break;
 
         case 'create':
-            vp_authorize($_vp_user, 'developer_credential:change', $payload, $pdo);
+            vp_authorize($_vp_user, 'developer_credential:create', $payload, $pdo);
             $label = trim((string)($payload['label'] ?? ''));
             if ($label === '') {
-                sendJsonError('Field label is required for credential creation.', 422);
+                $label = 'Custom Enterprise Key';
             }
             $partnerId = trim((string)($payload['partner_id'] ?? ''));
             if ($partnerId === '') {
-                sendJsonError('Field partner_id is required for credential creation.', 422);
+                $partnerId = (string)($_vp_user['partner_id'] ?? $_vp_user['cus_id'] ?? $_vp_user['emp_id'] ?? 'DEV-INTERNAL');
             }
             $env = trim((string)($payload['environment'] ?? 'Production'));
             if (!in_array($env, ['Production', 'Sandbox', 'Staging'], true)) {
@@ -100,17 +100,22 @@ try {
             $fullToken = 'vk_' . ($env === 'Sandbox' ? 'test' : 'live') . '_' . $randomHex;
             $tokenHash = password_hash($fullToken, PASSWORD_BCRYPT);
 
+            $accId = !empty($_vp_user['account_id']) ? (int)$_vp_user['account_id'] : null;
+            $userId = (string)($_vp_user['emp_id'] ?? $_vp_user['cus_id'] ?? $_vp_user['user_id'] ?? '');
+
             $stmt = $pdo->prepare("
                 INSERT INTO `developer_api_keys`
-                (`key_identifier`, `label`, `partner_id`, `partner_name`, `token_prefix`, `token_hash`, `token_full`, `environment`, `rate_limit`, `rate_limit_value`, `classification`, `scopes`, `status`, `usage_count`)
+                (`key_identifier`, `label`, `partner_id`, `partner_name`, `created_by_account_id`, `created_by_user_id`, `token_prefix`, `token_hash`, `token_full`, `environment`, `rate_limit`, `rate_limit_value`, `classification`, `scopes`, `status`, `usage_count`)
                 VALUES
-                (:key_id, :label, :partner_id, :partner_name, :token_prefix, :token_hash, NULL, :env, :rate_limit, :rate_val, :classification, :scopes, 'Active', 0)
+                (:key_id, :label, :partner_id, :partner_name, :acc_id, :user_id, :token_prefix, :token_hash, NULL, :env, :rate_limit, :rate_val, :classification, :scopes, 'Active', 0)
             ");
             $stmt->execute([
                 ':key_id' => $keyIdent,
                 ':label' => $label,
                 ':partner_id' => $partnerId,
                 ':partner_name' => $partnerName,
+                ':acc_id' => $accId,
+                ':user_id' => $userId ?: null,
                 ':token_prefix' => $tokenPrefix,
                 ':token_hash' => $tokenHash,
                 ':env' => $env,
@@ -137,6 +142,14 @@ try {
             if ($id <= 0) {
                 sendJsonError('Valid Key ID is required for update');
             }
+
+            $chk = $pdo->prepare("SELECT * FROM `developer_api_keys` WHERE id = ? LIMIT 1");
+            $chk->execute([$id]);
+            $key = $chk->fetch(PDO::FETCH_ASSOC);
+            if (!$key) {
+                sendJsonError('API Key not found', 404);
+            }
+            vp_authorize($_vp_user, 'developer_credential:update', $key, $pdo);
 
             $label = trim($payload['label'] ?? '');
             $env = trim($payload['environment'] ?? 'Production');
@@ -173,11 +186,18 @@ try {
             break;
 
         case 'revoke':
-            vp_authorize($_vp_user, 'developer_credential:revoke', $payload, $pdo);
             $id = (int)($payload['id'] ?? 0);
             if ($id <= 0) {
-                sendJsonError('Key ID is required to revoke');
+                sendJsonError('Key ID is required to revoke', 422);
             }
+
+            $chk = $pdo->prepare("SELECT * FROM `developer_api_keys` WHERE id = ? LIMIT 1");
+            $chk->execute([$id]);
+            $key = $chk->fetch(PDO::FETCH_ASSOC);
+            if (!$key) {
+                sendJsonError('API Key not found', 404);
+            }
+            vp_authorize($_vp_user, 'developer_credential:revoke', $key, $pdo);
 
             $stmt = $pdo->prepare("UPDATE `developer_api_keys` SET `status` = 'Revoked' WHERE `id` = :id");
             $stmt->execute([':id' => $id]);
@@ -186,11 +206,18 @@ try {
             break;
 
         case 'delete':
-            vp_authorize($_vp_user, 'developer_credential:delete', $payload, $pdo);
             $id = (int)($payload['id'] ?? 0);
             if ($id <= 0) {
                 sendJsonError('Key ID is required to delete', 422);
             }
+
+            $chk = $pdo->prepare("SELECT * FROM `developer_api_keys` WHERE id = ? LIMIT 1");
+            $chk->execute([$id]);
+            $key = $chk->fetch(PDO::FETCH_ASSOC);
+            if (!$key) {
+                sendJsonError('API Key not found', 404);
+            }
+            vp_authorize($_vp_user, 'developer_credential:delete', $key, $pdo);
 
             $stmt = $pdo->prepare("DELETE FROM `developer_api_keys` WHERE `id` = :id");
             $stmt->execute([':id' => $id]);
@@ -202,6 +229,8 @@ try {
             sendJsonError('Invalid action for credentials service', 422);
             break;
     }
+} catch (VpAuthorizationException $e) {
+    sendJsonError($e->getMessage(), $e->getCode() ?: 403);
 } catch (Throwable $e) {
     error_log("Developer credentials API error: " . $e->getMessage() . " at " . $e->getFile() . ":" . $e->getLine());
     sendJsonError('An internal server error occurred while processing credentials.', 500);

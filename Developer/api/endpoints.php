@@ -6,7 +6,6 @@ require_once __DIR__ . '/../../includes/api_bootstrap.php';
 require_once __DIR__ . '/db_helper.php';
 
 try {
-    vp_authorize($_vp_user, 'developer_credential:read', [], $pdo);
     $pdo = getDbConnection();
     ensureDeveloperTables($pdo);
 
@@ -56,6 +55,7 @@ try {
             break;
 
         case 'create':
+            vp_authorize($_vp_user, 'developer_endpoint:create', $payload, $pdo);
             $title = trim($payload['title'] ?? '');
             $path = trim($payload['path'] ?? '');
             $httpMethod = strtoupper(trim($payload['method'] ?? 'GET'));
@@ -132,6 +132,7 @@ try {
             break;
 
         case 'update':
+            vp_authorize($_vp_user, 'developer_endpoint:update', $payload, $pdo);
             $id = (int)($payload['id'] ?? 0);
             if ($id <= 0) {
                 sendJsonError('Endpoint ID is required for update');
@@ -195,6 +196,7 @@ try {
             break;
 
         case 'delete':
+            vp_authorize($_vp_user, 'developer_endpoint:delete', $payload, $pdo);
             $id = (int)($payload['id'] ?? 0);
             if ($id <= 0) {
                 sendJsonError('Endpoint ID is required for deletion');
@@ -210,6 +212,8 @@ try {
             sendJsonError('Invalid action for endpoints service');
             break;
     }
+} catch (VpAuthorizationException $e) {
+    sendJsonError($e->getMessage(), $e->getCode() ?: 403);
 } catch (Throwable $e) {
     error_log("Database error: " . $e->getMessage());
     sendJsonError("Database error. An internal error occurred.", 500);

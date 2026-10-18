@@ -157,6 +157,87 @@ function getDbConnection(): PDO
  * @param string $userId Username, Employee ID, Customer ID, or Email
  * @return array<string, mixed>|null
  */
+function queryUserByAccountId(int $accountId, ?string $accountType = null): ?array
+{
+    if ($accountId <= 0) {
+        return null;
+    }
+
+    try {
+        $pdo = getDbConnection();
+
+        if ($accountType === null || $accountType === 'Employee') {
+            $stmt = $pdo->prepare("
+                SELECT
+                    ea.account_id,
+                    ea.emp_id,
+                    ea.username,
+                    ea.password_hash,
+                    ea.status AS account_status,
+                    COALESCE(ea.must_change_password, 0) AS must_change_password,
+                    e.full_name,
+                    e.job_title,
+                    e.department_code,
+                    e.clearance_level,
+                    e.email,
+                    e.employment_status,
+                    r.role_id,
+                    r.role_name,
+                    'Employee' AS account_type
+                FROM employee_accounts ea
+                JOIN employees e ON ea.emp_id = e.emp_id
+                LEFT JOIN employee_roles er ON ea.emp_id = er.emp_id
+                LEFT JOIN roles r ON er.role_id = r.role_id
+                WHERE ea.account_id = ?
+                ORDER BY (r.role_name = 'SuperAdmin') DESC
+                LIMIT 1
+            ");
+            $stmt->execute([$accountId]);
+            $emp = $stmt->fetch();
+            if ($emp) {
+                return $emp;
+            }
+        }
+
+        if ($accountType === null || $accountType === 'Customer') {
+            $stmtCus = $pdo->prepare("
+                SELECT
+                    ca.account_id,
+                    ca.cus_id,
+                    ca.username,
+                    ca.password_hash,
+                    ca.status AS account_status,
+                    COALESCE(ca.must_change_password, 0) AS must_change_password,
+                    c.company_name,
+                    c.primary_contact_name,
+                    c.sector,
+                    ca.email,
+                    'L1' AS clearance_level,
+                    'CUS' AS department_code,
+                    r.role_id,
+                    r.role_name,
+                    'Customer' AS account_type
+                FROM customer_accounts ca
+                JOIN customers c ON ca.cus_id = c.cus_id
+                LEFT JOIN roles r ON r.role_name IN ('Customer Client Account', 'Customer Client', 'Customer')
+                WHERE ca.account_id = ?
+                LIMIT 1
+            ");
+            $stmtCus->execute([$accountId]);
+            $cus = $stmtCus->fetch();
+            if ($cus) {
+                $cus['full_name'] = $cus['primary_contact_name'] . ' (' . $cus['company_name'] . ')';
+                $cus['emp_id'] = $cus['cus_id'];
+                return $cus;
+            }
+        }
+    } catch (Throwable $e) {
+        error_log('queryUserByAccountId error: ' . $e->getMessage());
+    }
+
+    return null;
+}
+
 function queryUserByCredentials(string $userId): ?array
 {
     $userId = trim($userId);
@@ -188,13 +269,17 @@ function queryUserByCredentials(string $userId): ?array
             JOIN employees e ON ea.emp_id = e.emp_id
             LEFT JOIN employee_roles er ON ea.emp_id = er.emp_id
             LEFT JOIN roles r ON er.role_id = r.role_id
-            WHERE LOWER(TRIM(ea.username)) = LOWER(:u1)
-               OR LOWER(TRIM(ea.emp_id)) = LOWER(:u2)
-               OR LOWER(TRIM(e.email)) = LOWER(:u3)
-            ORDER BY (r.role_name = 'SuperAdmin') DESC, ea.account_id ASC
+            WHERE LOWER(TRIM(ea.username)) = ?
+               OR LOWER(TRIM(ea.emp_id)) = ?
+               OR LOWER(TRIM(e.email)) = ?
+            ORDER BY 
+                (LOWER(TRIM(ea.username)) = ?) DESC,
+                (LOWER(TRIM(e.email)) = ?) DESC,
+                (r.role_name = 'SuperAdmin') DESC, 
+                ea.account_id ASC
             LIMIT 1
         ");
-        $stmt->execute([':u1' => $userId, ':u2' => $userId, ':u3' => $userId]);
+        $stmt->execute([$userId, $userId, $userId, $userId, $userId]);
         $emp = $stmt->fetch();
 
         if ($emp) {
@@ -221,12 +306,16 @@ function queryUserByCredentials(string $userId): ?array
             FROM customer_accounts ca
             JOIN customers c ON ca.cus_id = c.cus_id
             LEFT JOIN roles r ON r.role_name IN ('Customer Client Account', 'Customer Client', 'Customer')
-            WHERE LOWER(TRIM(ca.username)) = LOWER(:u1)
-               OR LOWER(TRIM(ca.cus_id)) = LOWER(:u2)
-               OR LOWER(TRIM(ca.email)) = LOWER(:u3)
+            WHERE LOWER(TRIM(ca.username)) = ?
+               OR LOWER(TRIM(ca.cus_id)) = ?
+               OR LOWER(TRIM(ca.email)) = ?
+            ORDER BY 
+                (LOWER(TRIM(ca.username)) = ?) DESC,
+                (LOWER(TRIM(ca.email)) = ?) DESC,
+                ca.account_id ASC
             LIMIT 1
         ");
-        $stmtCus->execute([':u1' => $userId, ':u2' => $userId, ':u3' => $userId]);
+        $stmtCus->execute([$userId, $userId, $userId, $userId, $userId]);
         $cus = $stmtCus->fetch();
 
         if ($cus) {
@@ -534,7 +623,15 @@ function verifySsoCookie(?string $token = null): ?array
         }
     }
 
-    $user = queryUserByCredentials($userId);
+    $accIdInt = (int)$accId;
+    $user = null;
+    if ($accIdInt > 0) {
+        $accType = (str_starts_with((string)$userId, 'EMP-') ? 'Employee' : (str_starts_with((string)$userId, 'CUS-') ? 'Customer' : null));
+        $user = queryUserByAccountId($accIdInt, $accType);
+    }
+    if (!$user) {
+        $user = queryUserByCredentials($userId);
+    }
     if (!$user) {
         return null;
     }

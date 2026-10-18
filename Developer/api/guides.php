@@ -6,7 +6,6 @@ require_once __DIR__ . '/../../includes/api_bootstrap.php';
 require_once __DIR__ . '/db_helper.php';
 
 try {
-    vp_authorize($_vp_user, 'developer_credential:read', [], $pdo);
     $pdo = getDbConnection();
     ensureDeveloperTables($pdo);
 
@@ -41,6 +40,7 @@ try {
             break;
 
         case 'create':
+            vp_authorize($_vp_user, 'developer_guide:create', $payload, $pdo);
             $title = trim($payload['title'] ?? '');
             $category = trim($payload['category'] ?? 'General Standard');
             $classification = trim($payload['classification'] ?? 'Internal Standard');
@@ -79,6 +79,7 @@ try {
             break;
 
         case 'update':
+            vp_authorize($_vp_user, 'developer_guide:update', $payload, $pdo);
             $id = (int)($payload['id'] ?? 0);
             if ($id <= 0) {
                 sendJsonError('Guide ID is required');
@@ -121,6 +122,7 @@ try {
             break;
 
         case 'delete':
+            vp_authorize($_vp_user, 'developer_guide:delete', $payload, $pdo);
             $id = (int)($payload['id'] ?? 0);
             if ($id <= 0) {
                 sendJsonError('Guide ID is required');
@@ -136,6 +138,8 @@ try {
             sendJsonError('Invalid action for guides service');
             break;
     }
+} catch (VpAuthorizationException $e) {
+    sendJsonError($e->getMessage(), $e->getCode() ?: 403);
 } catch (Throwable $e) {
     error_log("Database error: " . $e->getMessage());
     sendJsonError("Database error. An internal error occurred.", 500);

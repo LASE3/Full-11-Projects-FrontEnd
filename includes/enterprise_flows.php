@@ -22,7 +22,7 @@ require_once __DIR__ . '/AuditLogger.php';
  * @param int|string $orderId Order ID
  * @return array<string, mixed> Processing summary
  */
-function vp_process_order(PDO $pdo, int|string $orderId): array
+function vp_process_order(PDO $pdo, int|string $orderId, ?string $creatorEmpId = 'EMP-1060'): array
 {
     $startedTx = false;
     if (!$pdo->inTransaction()) {
@@ -113,14 +113,15 @@ function vp_process_order(PDO $pdo, int|string $orderId): array
             INSERT INTO invoices 
             (inv_id, cus_id, prj_id, created_by_emp_id, total_value, currency, payment_status, issued_at, due_date, payment_terms, notes)
             VALUES 
-            (:id, :cid, :pid, 'SHP-SYSTEM', :val, 'EUR', 'Pending', CURDATE(), DATE_ADD(CURDATE(), INTERVAL 30 DAY), 'Net-30', :notes)
+            (:id, :cid, :pid, :creator, :val, 'EUR', 'Pending', CURDATE(), DATE_ADD(CURDATE(), INTERVAL 30 DAY), 'Net-30', :notes)
         ");
         $insInv->execute([
-            ':id'    => $invId,
-            ':cid'   => $cusId,
-            ':pid'   => $linkedPrjId,
-            ':val'   => $totalOrderAmount,
-            ':notes' => "Automated B2B Purchase Order #{$orderId}"
+            ':id'      => $invId,
+            ':cid'     => $cusId,
+            ':pid'     => $linkedPrjId,
+            ':creator' => $creatorEmpId ?: null,
+            ':val'     => $totalOrderAmount,
+            ':notes'   => "Automated B2B Purchase Order #{$orderId}"
         ]);
 
         // Insert invoice line items

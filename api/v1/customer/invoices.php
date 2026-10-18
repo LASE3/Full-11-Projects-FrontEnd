@@ -18,14 +18,17 @@ $lang  = $_GET['lang'] ?? 'en';
 $invId = $_GET['id'] ?? null;
 
 try {
-    $_vp_user = $user ?? $currentUser ?? ($_SESSION['vostok_user'] ?? []);
-
-    vp_authorize($_vp_user, 'finance:read', $_GET, $pdo);
     if ($invId) {
         // Tenant ownership check
         $chkStmt = $pdo->prepare("SELECT cus_id FROM invoices WHERE inv_id = :iid");
         $chkStmt->execute([':iid' => $invId]);
         $realOwner = $chkStmt->fetchColumn();
+
+        if ($realOwner === false) {
+            Response::error("Invoice not found.", 404);
+        }
+
+        vp_authorize($user, 'finance:read', ['cus_id' => (string)$realOwner, 'inv_id' => $invId], $pdo);
 
         if ($realOwner === false) {
             Response::error("Invoice not found.", 404);
@@ -63,6 +66,7 @@ try {
 
         Response::success($invoice, "Invoice details loaded");
     } else {
+        vp_authorize($user, 'finance:read', ['cus_id' => $cusId], $pdo);
         $stmt = $pdo->prepare("
             SELECT 
                 i.inv_id,
@@ -88,7 +92,9 @@ try {
 
         Response::success($invoices, "Customer invoices loaded");
     }
+} catch (VpAuthorizationException $e) {
+    Response::error($e->getMessage(), $e->getCode() ?: 403);
 } catch (Exception $e) {
     error_log("Failed to load invoices: " . $e->getMessage());
-        Response::error("Failed to load invoices. Please try again later.", 500);
+    Response::error("Failed to load invoices. Please try again later.", 500);
 }

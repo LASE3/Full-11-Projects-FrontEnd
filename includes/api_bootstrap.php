@@ -30,6 +30,9 @@ if (!function_exists('vp_authorize')) {
 if (!function_exists('vp_handle_api_exception')) {
     require_once __DIR__ . '/api_errors.php';
 }
+if (!function_exists('vp_next_id')) {
+    require_once __DIR__ . '/id_generator.php';
+}
 
 /**
  * Clearance level numeric values for comparison.

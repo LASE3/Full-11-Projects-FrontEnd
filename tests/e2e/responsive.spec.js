@@ -13,13 +13,14 @@
 const { chromium } = require('playwright');
 const { execSync } = require('child_process');
 
-const BASE_URL = 'http://127.0.0.1/Full-11-Projects-FrontEnd';
+const BASE_URL = (process.env.BASE_URL || 'http://127.0.0.1/Full-11-Projects-FrontEnd').replace(/\/+$/, '');
+const PHP_BIN = process.env.PHP_BINARY || 'php';
 
 // Generate fresh SSO cookie token via PHP helper
 function getSsoToken() {
   try {
-    const cmd = `& "c:\\xampp\\php\\php.exe" -r "require 'config/db.php'; echo createSsoCookie(['user_id'=>'EMP-1001','emp_id'=>'EMP-1001','account_id'=>1,'clearance_level'=>'L4','role_name'=>'SuperAdmin','account_type'=>'Employee','full_name'=>'SuperAdmin','email'=>'admin@vostokpribor.local']);"`;
-    const token = execSync(cmd, { shell: 'powershell.exe' }).toString().trim();
+    const code = "require 'config/db.php'; echo createSsoCookie(['user_id'=>'EMP-1001','emp_id'=>'EMP-1001','account_id'=>1,'clearance_level'=>'L4','role_name'=>'SuperAdmin','account_type'=>'Employee','full_name'=>'SuperAdmin','email'=>'admin@vostokpribor.local']);";
+    const token = execSync(`${JSON.stringify(PHP_BIN)} -r ${JSON.stringify(code)}`).toString().trim();
     return token;
   } catch (err) {
     console.error('Failed to generate SSO token:', err.message);

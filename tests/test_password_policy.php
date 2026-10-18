@@ -97,7 +97,8 @@ ob_start();
 require '{$script}';
 ";
     file_put_contents($tmpRunner, $code);
-    $res = shell_exec("C:\\xampp\\php\\php.exe " . escapeshellarg($tmpRunner) . " 2>&1");
+    $phpBin = getenv('PHP_BINARY') ?: (defined('PHP_BINARY') && PHP_BINARY ? PHP_BINARY : 'php');
+    $res = shell_exec(escapeshellarg($phpBin) . " " . escapeshellarg($tmpRunner) . " 2>&1");
     @unlink($tmpInput);
     @unlink($tmpRunner);
 

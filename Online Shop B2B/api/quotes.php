@@ -32,11 +32,9 @@ if ($method === 'GET') {
     if (!$cusId) {
         Response::error("Customer ID required to retrieve quotes.", 401);
     }
+    vp_authorize($user, 'shop:quote_read', ['cus_id' => $cusId], $pdo);
 
     try {
-    $_vp_user = $user ?? $currentUser ?? ($_SESSION['vostok_user'] ?? []);
-
-    vp_authorize($_vp_user, 'shop:quote_create', $_POST, $pdo);
         $stmt = $pdo->prepare("
             SELECT 
                 q.quote_id,
@@ -73,6 +71,7 @@ if ($method === 'POST') {
     if (!$targetCus) {
         Response::error("Customer ID is required.", 422);
     }
+    vp_authorize($user, 'shop:quote_create', ['cus_id' => $targetCus], $pdo);
     $cChk = $pdo->prepare("SELECT account_manager_emp_id FROM customers WHERE cus_id = ?");
     $cChk->execute([$targetCus]);
     $mgrEmpId = $cChk->fetchColumn();

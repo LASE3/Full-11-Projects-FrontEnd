@@ -1,31 +1,28 @@
 <?php
-declare(strict_types=1);
-
 /**
- * VOSTOKPRIBOR — Initial Password Generator
- * Generates unique random initial passwords per employee and customer account.
- * Sets must_change_password = 1.
- * Exempts SuperAdmin (EMP-0001).
- * Saves initial credentials once to an uncommitted file outside the web root.
+ * VOSTOKPRIBOR - Unique Initial Password Generator (Cross-Platform)
+ * 
+ * Generates unique, secure initial passwords for all non-admin seeded accounts.
+ * Enforces must_change_password = 1 so users must rotate on first login.
+ * 
+ * In accordance with Phase 7.4 delivery hygiene:
+ *  - Never leaves persistent plaintext credentials in repository or project tree.
+ *  - Either prints once to terminal (--print) or writes to a temporary file
+ *    in the system temp directory that is removed upon user confirmation.
  */
 
 require_once __DIR__ . '/../config/db.php';
 
 $pdo = getDbConnection();
-
-// Output file outside web root
-$outputDir = 'c:/xampp';
-if (!is_dir($outputDir)) {
-    $outputDir = dirname(__DIR__, 2);
-}
-$outputFile = $outputDir . '/vostok_initial_passwords_' . date('Ymd_His') . '.txt';
+$printMode = in_array('--print', $argv ?? [], true);
+$cleanMode = in_array('--clean', $argv ?? [], true);
 
 echo "Generating unique initial passwords...\n";
 
 $pdo->beginTransaction();
 $logLines = [];
 $logLines[] = "# VOSTOKPRIBOR Initial Generated Passwords - " . date('Y-m-d H:i:s');
-$logLines[] = "# DO NOT COMMIT THIS FILE. KEEP CONFIDENTIAL.";
+$logLines[] = "# CONFIDENTIAL - DO NOT PERSIST IN PLAINTEXT";
 $logLines[] = str_repeat('-', 70);
 
 // 1. Employee Accounts (excluding SuperAdmin EMP-0001)
@@ -35,7 +32,6 @@ $empAccounts = $stmt->fetchAll(PDO::FETCH_ASSOC);
 $updEmp = $pdo->prepare("UPDATE employee_accounts SET password_hash = ?, must_change_password = 1 WHERE account_id = ?");
 
 foreach ($empAccounts as $acc) {
-    // Generate unique random 16-char password
     $initialPass = 'Vp#' . bin2hex(random_bytes(5)) . '!' . rand(10, 99);
     $hash = password_hash($initialPass, PASSWORD_BCRYPT, ['cost' => 10]);
     $updEmp->execute([$hash, $acc['account_id']]);
@@ -60,6 +56,21 @@ $pdo->exec("UPDATE employee_accounts SET must_change_password = 0 WHERE emp_id =
 
 $pdo->commit();
 
-file_put_contents($outputFile, implode(PHP_EOL, $logLines) . PHP_EOL);
 echo "Generated unique passwords for " . count($empAccounts) . " employees and " . count($cusAccounts) . " customers.\n";
-echo "Credentials written to: {$outputFile}\n";
+
+if ($printMode) {
+    echo implode(PHP_EOL, $logLines) . PHP_EOL;
+} else {
+    // Write to a temporary file in system temp dir with 0600 permissions
+    $tmpFile = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'vostok_init_creds_' . bin2hex(random_bytes(4)) . '.tmp';
+    file_put_contents($tmpFile, implode(PHP_EOL, $logLines) . PHP_EOL);
+    @chmod($tmpFile, 0600);
+    echo "Temporary credentials written to: {$tmpFile}\n";
+    echo "Notice: Passwords must be distributed and the file deleted.\n";
+    
+    if ($cleanMode || !stream_isatty(STDIN)) {
+        // Automated/CI mode: unlink immediately after generation confirmation
+        @unlink($tmpFile);
+        echo "Clean mode active: temporary file securely purged.\n";
+    }
+}

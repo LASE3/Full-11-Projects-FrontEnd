@@ -52,12 +52,13 @@ try {
                 e.email AS account_manager_email,
                 e.job_title AS account_manager_title
             FROM customers c
-            LEFT JOIN customer_accounts ca ON c.cus_id = ca.cus_id
+            LEFT JOIN customer_accounts ca ON c.cus_id = ca.cus_id AND ca.account_id = :aid
             LEFT JOIN employees e ON c.account_manager_emp_id = e.emp_id
             WHERE c.cus_id = :cid
             LIMIT 1
         ");
-        $stmt->execute([':cid' => $cusId]);
+        $accId = (int)($_vp_user['account_id'] ?? 0);
+        $stmt->execute([':cid' => $cusId, ':aid' => $accId]);
         $account = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if (!$account) {
@@ -113,12 +114,15 @@ try {
             $stmt->execute($params);
         }
 
-        // Handle password update if provided
+        // Handle password update if provided strictly for authenticated account
         if (!empty($data['new_password'])) {
-            $newPassword = $data['new_password'];
-            $hash = password_hash($newPassword, PASSWORD_BCRYPT, ['cost' => 12]);
-            $pwdStmt = $pdo->prepare("UPDATE customer_accounts SET password_hash = :hash WHERE cus_id = :cid");
-            $pwdStmt->execute([':hash' => $hash, ':cid' => $cusId]);
+            $accId = (int)($_vp_user['account_id'] ?? 0);
+            if ($accId > 0) {
+                $newPassword = $data['new_password'];
+                $hash = password_hash($newPassword, PASSWORD_BCRYPT, ['cost' => 12]);
+                $pwdStmt = $pdo->prepare("UPDATE customer_accounts SET password_hash = :hash WHERE account_id = :aid");
+                $pwdStmt->execute([':hash' => $hash, ':aid' => $accId]);
+            }
         }
 
         // Update session user full_name if contact name changed

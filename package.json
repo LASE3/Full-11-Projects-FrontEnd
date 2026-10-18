@@ -1,0 +1,19 @@
+{
+  "name": "vostokpribor-enterprise",
+  "version": "1.0.0",
+  "description": "VOSTOKPRIBOR 11-system industrial instrumentation and telemetry ecosystem",
+  "private": true,
+  "scripts": {
+    "test": "php tests/test_all_acceptance.php",
+    "test:sweep": "php scripts/api_smoke.php",
+    "test:migration": "php tests/test_migration_016.php",
+    "test:maker-checker": "php tests/test_maker_checker.php",
+    "test:password": "php tests/test_customer_password_isolation.php",
+    "test:phase4": "php tests/test_phase4_ownership_and_developer.php",
+    "test:e2e": "node tests/e2e/clickthrough.spec.js",
+    "release": "php scripts/make_release.php"
+  },
+  "devDependencies": {
+    "playwright": "^1.40.0"
+  }
+}

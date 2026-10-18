@@ -73,12 +73,12 @@ try {
     if ($method === 'POST') {
         // Enforce CSRF
         vp_enforce_csrf([]);
-        vp_authorize($_vp_user, 'admin:lockdown', $input ?? [], $pdo);
-
         $input = getRequestInput();
         if (empty($input) || !is_array($input)) {
             jsonResponse(['success' => false, 'error' => 'Unprocessable entity: Payload cannot be empty.'], 422);
         }
+
+        vp_authorize($_vp_user, 'admin:lockdown', $input, $pdo);
 
         // Permission check for lockdown
         if (!isSuperAdmin($_vp_user) && !hasEmployeePermission($pdo, $_vp_user, 'INITIATE_LOCKDOWN')) {

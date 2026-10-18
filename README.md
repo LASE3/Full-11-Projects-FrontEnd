@@ -179,3 +179,42 @@ Per enterprise governance specifications (Finance owner: CFO `EMP-1003`), financ
 3. **Settlement**: Marking as paid or reconciliation must be executed by a distinct authorized financial officer where `payer ≠ creator` AND `payer ≠ approver`.
 4. **Void**: Only the CFO (`EMP-1003`) or Executive / SuperAdmin (`EMP-1001`) may void invoices.
 
+---
+
+## 🧪 Automated Testing & Verification Suite
+
+All test suites and scripts support Windows, Linux, and macOS by detecting `PHP_BINARY` / `process.env.PHP_BINARY` dynamically without hardcoded paths. All tests execute against the strict SQL mode (`STRICT_ALL_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION`).
+
+### Test Commands & Single Entry Points
+
+| Command | Entry Point | Scope & Description |
+| :--- | :--- | :--- |
+| `npm test` | `php tests/test_all_acceptance.php` | Full master acceptance suite (22 acceptance & regression sub-suites) |
+| `npm run test:sweep` | `php scripts/api_smoke.php` | Runtime HTTP sweep of 448 endpoints across 3 roles (CEO, Employee, Customer) with zero 5xx/fatals |
+| `npm run test:e2e` | `node tests/e2e/clickthrough.spec.js` | Headless Playwright click-through test monitoring UI actions & background `/api/` calls |
+| `npm run test:maker-checker` | `php tests/test_maker_checker.php` | Verification of Phase 2 dual-control invoice creator != approver != payer rules |
+| `npm run test:password` | `php tests/test_customer_password_isolation.php` | Verification of Phase 3 customer account password isolation & deny-lists |
+| `npm run test:phase4` | `php tests/test_phase4_ownership_and_developer.php` | Verification of File Center document ownership and Developer credentials governance |
+| `npm run test:migration` | `php tests/test_migration_016.php` | Dual-pass idempotency test for Migration 016 across MariaDB 10.4, 10.11 & MySQL 8.0 |
+| `npm run release` | `php scripts/make_release.php` | Packages clean distribution archive without `node_modules/`, `.git/`, `.env`, or documents |
+
+### Direct PHP / Shell Commands
+
+```bash
+# 1. Rebuild database from scratch in strict mode
+php DataBase/build.php
+
+# 2. Run the 22-suite master acceptance run
+php tests/test_all_acceptance.php
+
+# 3. Run the runtime sweep across all endpoints
+php scripts/api_smoke.php
+
+# 4. Run the Playwright E2E browser test
+BASE_URL="http://127.0.0.1/Full-11-Projects-FrontEnd" node tests/e2e/clickthrough.spec.js
+
+# 5. Build clean production release zip
+php scripts/make_release.php
+```
+
+

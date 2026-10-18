@@ -212,7 +212,7 @@ try {
 }
 
 // Test 3.2: Maker-Checker separation: Invoice creator cannot mark it paid (403)
-$invoiceMock = ['inv_id' => 'INV-2026-TEST1', 'created_by_emp_id' => $u1014['emp_id'], 'cus_id' => 'CUS-1001'];
+$invoiceMock = ['inv_id' => 'INV-2026-TEST1', 'created_by_emp_id' => $u1014['emp_id'], 'approved_by_emp_id' => 'EMP-1003', 'cus_id' => 'CUS-1001'];
 try {
     vp_authorize($u1014, 'finance:mark_paid', $invoiceMock);
     assertIsolation("3.2 Invoice creator (EMP-1014) cannot mark own invoice paid", false, "Allowed self-mark-paid");
@@ -311,7 +311,8 @@ $GLOBALS["currentUser"] = $_SESSION["vostok_user"];
 $GLOBALS["isAuthenticated"] = true;
 include __DIR__ . "/../Employee Intranet/api/directory.php";
 ');
-$dirRaw = shell_exec('C:\\xampp\\php\\php.exe ' . escapeshellarg($subScript));
+$phpBin = getenv('PHP_BINARY') ?: (defined('PHP_BINARY') && PHP_BINARY ? PHP_BINARY : 'php');
+$dirRaw = shell_exec(escapeshellarg($phpBin) . ' ' . escapeshellarg($subScript));
 @unlink($subScript);
 $jsonStart = strpos((string)$dirRaw, '{');
 $dirJson = ($jsonStart !== false) ? json_decode(substr((string)$dirRaw, $jsonStart), true) : null;

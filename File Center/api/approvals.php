@@ -28,7 +28,6 @@ $req = array_merge($_GET, $_POST, $inputData);
 $action = $req['action'] ?? '';
 
 try {
-    vp_authorize($_vp_user, 'document:update', $_POST, $pdo);
     if ($method === 'GET') {
         $docId = $req['doc_id'] ?? null;
 
@@ -112,6 +111,14 @@ try {
 
     if ($method === 'POST') {
         $docId = trim((string)($req['doc_id'] ?? 'DOC-2026-004'));
+        $chkDoc = $pdo->prepare("SELECT * FROM documents WHERE doc_id = ? LIMIT 1");
+        $chkDoc->execute([$docId]);
+        $docRow = $chkDoc->fetch(PDO::FETCH_ASSOC);
+        if (!$docRow) {
+            apiError("Document {$docId} not found.", 404);
+        }
+        vp_authorize($_vp_user, 'document:update', $docRow, $pdo);
+
         $custodian = getCurrentCustodian();
         $reviewerEmpId = trim((string)($req['reviewer_emp_id'] ?? $custodian['emp_id']));
         $comments = trim((string)($req['comments'] ?? 'Certified compliance and approved release'));
@@ -214,6 +221,8 @@ try {
     }
 
     apiError('Unsupported HTTP method.', 405);
+} catch (VpAuthorizationException $e) {
+    vp_handle_api_exception($e, $pdo);
 } catch (Throwable $e) {
     error_log("API Error in approvals.php: " . $e->getMessage());
     error_log("Approval operation failed: " . $e->getMessage());

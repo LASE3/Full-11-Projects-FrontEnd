@@ -5,8 +5,12 @@ async function testLockdown() {
   const browser = await chromium.launch({ headless: true });
   const context = await browser.newContext({ viewport: { width: 1440, height: 900 } });
   
+  const baseUrl = process.env.BASE_URL || 'http://127.0.0.1/Full-11-Projects-FrontEnd/';
+  const urlObj = new URL(baseUrl);
+  const phpBin = process.env.PHP_BINARY || 'php';
+
   // Login as SuperAdmin EMP-0001
-  const ssoToken = execFileSync('c:\\xampp\\php\\php.exe', [
+  const ssoToken = execFileSync(phpBin, [
     'scripts/get_sso_cookie.php',
     'EMP-0001'
   ]).toString().trim();
@@ -14,7 +18,7 @@ async function testLockdown() {
   await context.addCookies([{
     name: 'vostok_sso_token',
     value: ssoToken,
-    domain: '127.0.0.1',
+    domain: urlObj.hostname,
     path: '/'
   }]);
 
@@ -31,7 +35,7 @@ async function testLockdown() {
     }
   });
 
-  await page.goto('http://127.0.0.1/Full-11-Projects-FrontEnd/Admin%20&%20Governance%20Portal/EmergencyLockdown.php');
+  await page.goto(baseUrl + 'Admin%20&%20Governance%20Portal/EmergencyLockdown.php');
   await page.waitForSelector('button[onclick*="toggleSystemLockdown"]');
 
   // TEST 1: INVALID CONFIRMATION PHRASE
@@ -79,7 +83,7 @@ async function testLockdown() {
   console.log(`Isolated system: ${isolatedSysId}`);
 
   // Assert DB status in systems_catalog
-  const dbCheck = JSON.parse(execFileSync('c:\\xampp\\php\\php.exe', [
+  const dbCheck = JSON.parse(execFileSync(phpBin, [
     'scripts/query_db.php',
     'query',
     `SELECT system_id, status, isolation_reason, isolated_by FROM systems_catalog WHERE system_id = '${isolatedSysId}'`
@@ -90,7 +94,7 @@ async function testLockdown() {
   }
 
   // Assert security_events row written with ADM
-  const secCheck = JSON.parse(execFileSync('c:\\xampp\\php\\php.exe', [
+  const secCheck = JSON.parse(execFileSync(phpBin, [
     'scripts/query_db.php',
     'query',
     `SELECT event_type, source_system_id, actor_emp_id FROM security_events WHERE event_type = 'NODE_ISOLATION_TOGGLED' ORDER BY event_id DESC LIMIT 1`
@@ -135,7 +139,7 @@ async function testLockdown() {
     throw new Error(`Restore execution failed: ${JSON.stringify(restoreResp)}`);
   }
 
-  const restoredDbCheck = JSON.parse(execFileSync('c:\\xampp\\php\\php.exe', [
+  const restoredDbCheck = JSON.parse(execFileSync(phpBin, [
     'scripts/query_db.php',
     'query',
     `SELECT system_id, status FROM systems_catalog WHERE system_id = '${isolatedSysId}'`
@@ -156,7 +160,7 @@ async function testLockdown() {
   console.log('[PASS] Test 3: Restoration verified end-to-end in DB and screen.');
 
   // Clean up transient security events created during test
-  execFileSync('c:\\xampp\\php\\php.exe', [
+  execFileSync(phpBin, [
     'scripts/query_db.php',
     'exec',
     `DELETE FROM security_events WHERE description LIKE '%containment drill%'`

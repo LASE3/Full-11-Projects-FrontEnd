@@ -102,7 +102,8 @@ check(
 );
 
 // 8. Run mock personas scan
-$personaCmd = '"c:\\xampp\\php\\php.exe" "' . $root . '/scripts/scan_mock_data.php"';
+$phpBin = getenv('PHP_BINARY') ?: (defined('PHP_BINARY') && PHP_BINARY ? PHP_BINARY : 'php');
+$personaCmd = escapeshellarg($phpBin) . ' ' . escapeshellarg($root . '/scripts/scan_mock_data.php');
 $personaOutput = shell_exec($personaCmd);
 $personaPass = str_contains((string)$personaOutput, '0 foreign mock persona occurrences remain') || !str_contains((string)$personaOutput, 'FAIL');
 check("Mock persona strings eliminated", $personaPass, "Found hardcoded foreign personas in UI files");

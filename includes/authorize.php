@@ -337,9 +337,6 @@ function vp_authorize(array $user, string $action, ?array $resource = null, ?PDO
         }
 
         if ($op === 'approve') {
-            if (!$isSuper && !$isCfo && !($dept === 'FIN' && $clearanceNum >= 3)) {
-                throw new VpAuthorizationException("Only Finance management or CFO may approve invoices", 403, $action, $resource);
-            }
             // Maker-checker rule: creator !== approver
             $creator = (string)($resource['created_by_emp_id'] ?? '');
             if (empty($creator) && !empty($resource['inv_id'])) {
@@ -349,6 +346,10 @@ function vp_authorize(array $user, string $action, ?array $resource = null, ?PDO
             }
             if ($creator !== '' && $creator === $empId) {
                 throw new VpAuthorizationException("Duty separation violation: Invoice creator cannot approve", 403, $action, $resource);
+            }
+
+            if (!$isSuper && !$isCfo && !($dept === 'FIN' && $clearanceNum >= 3)) {
+                throw new VpAuthorizationException("Only Finance management or CFO may approve invoices", 403, $action, $resource);
             }
             return;
         }
@@ -360,10 +361,17 @@ function vp_authorize(array $user, string $action, ?array $resource = null, ?PDO
             // Maker-checker rule: creator !== approver !== payer
             $creator = (string)($resource['created_by_emp_id'] ?? '');
             $approver = (string)($resource['approved_by_emp_id'] ?? '');
-            if (empty($creator) && !empty($resource['inv_id'])) {
-                $chkCr = $pdo->prepare("SELECT created_by_emp_id FROM invoices WHERE inv_id = ? LIMIT 1");
+            if ((empty($creator) || empty($approver)) && !empty($resource['inv_id'])) {
+                $chkCr = $pdo->prepare("SELECT created_by_emp_id, approved_by_emp_id FROM invoices WHERE inv_id = ? LIMIT 1");
                 $chkCr->execute([$resource['inv_id']]);
-                $creator = (string)$chkCr->fetchColumn();
+                $row = $chkCr->fetch(PDO::FETCH_ASSOC);
+                if ($row) {
+                    if (empty($creator)) $creator = (string)($row['created_by_emp_id'] ?? '');
+                    if (empty($approver)) $approver = (string)($row['approved_by_emp_id'] ?? '');
+                }
+            }
+            if ($creator !== '' && empty($approver)) {
+                throw new VpAuthorizationException("Maker-checker violation: Invoice must be approved by an authorized manager before payment", 403, $action, $resource);
             }
             if ($creator !== '' && $creator === $empId) {
                 throw new VpAuthorizationException("Duty separation violation: Invoice creator cannot reconcile or mark paid", 403, $action, $resource);
@@ -429,7 +437,7 @@ function vp_authorize(array $user, string $action, ?array $resource = null, ?PDO
         $owner = (string)($resource['owner_emp_id'] ?? ($resource['uploaded_by_emp_id'] ?? ($resource['created_by_emp_id'] ?? '')));
         $reviewer = (string)($resource['reviewer_emp_id'] ?? ($resource['assigned_to_emp_id'] ?? ''));
         $docDept = (string)($resource['department'] ?? '');
-        $isSteward = ($dept === 'DOC' || $dept === 'GOV' || ($docDept !== '' && $dept === $docDept));
+        $isSteward = ($dept === 'DOC' || $dept === 'GOV' || in_array($user['role_name'] ?? '', ['Chief Governance Officer', 'ComplianceOfficer'], true) || ($docDept !== '' && $dept === $docDept && ($clearanceNum >= 4 || in_array($user['job_title'] ?? '', ['Department Head', 'Director', 'Chief Technology Officer', 'VP of Engineering'], true))));
         $isAdmin = ($isSuper || $dept === 'ADM' || $dept === 'EXE');
 
         if ($op === 'read') {
@@ -448,31 +456,48 @@ function vp_authorize(array $user, string $action, ?array $resource = null, ?PDO
             return;
         }
 
-        // Mutation operations require read entitlement first
+        // Mutation operations require read entitlement first (404 if below clearance)
         if ($clearanceNum < $reqClearance && !$isSuper) {
             throw new VpAuthorizationException("Document not found", 404, $action, $resource);
+        }
+
+        if ($op === 'create') {
+            if ($isSuper || in_array($dept, ['DOC', 'ENG', 'SAL', 'FIN', 'HR', 'OPS', 'EXE', 'ADM', 'IT'], true)) {
+                return;
+            }
+            throw new VpAuthorizationException("Permission denied to create documents", 403, $action, $resource);
         }
 
         if ($op === 'change' || $op === 'update' || $op === 'edit') {
             if ($isAdmin || ($owner !== '' && $owner === $empId) || ($reviewer !== '' && $reviewer === $empId) || $isSteward) {
                 return;
             }
-            throw new VpAuthorizationException("Only document owner, reviewer, department steward or admin may edit documents", 403, $action, $resource);
+            throw new VpAuthorizationException("Only document owner, assigned reviewer, department steward or admin may edit documents", 403, $action, $resource);
         }
 
         if ($op === 'change_classification') {
-            // A non-owner must never be able to lower a classification
             $targetClass = (string)($resource['new_classification'] ?? $resource['target_classification'] ?? '');
-            if ($targetClass !== '' && !$isAdmin && ($owner === '' || $owner !== $empId)) {
+            if ($targetClass !== '') {
                 $targetNum = vp_clearance_numeric($targetClass);
                 if ($targetNum < $reqClearance) {
-                    throw new VpAuthorizationException("A non-owner must never be able to lower document classification", 403, $action, $resource);
+                    // Lowering classification: only classification authority (SuperAdmin, GOV/ADM or L4)
+                    $isClassAuth = ($isSuper || $dept === 'GOV' || $dept === 'ADM' || $clearanceNum >= 4);
+                    if (!$isClassAuth) {
+                        throw new VpAuthorizationException("Nobody except a designated classification authority may lower document classification", 403, $action, $resource);
+                    }
                 }
             }
             if ($isAdmin || ($owner !== '' && $owner === $empId) || ($reviewer !== '' && $reviewer === $empId) || $isSteward) {
                 return;
             }
             throw new VpAuthorizationException("Only document owner, assigned reviewer, department steward or admin may change classification", 403, $action, $resource);
+        }
+
+        if ($op === 'approve' || $op === 'reject') {
+            if ($isAdmin || ($reviewer !== '' && $reviewer === $empId) || ($owner !== '' && $owner === $empId) || $isSteward) {
+                return;
+            }
+            throw new VpAuthorizationException("Only assigned reviewer, document owner, department steward or admin may record approval decisions", 403, $action, $resource);
         }
 
         if ($op === 'archive') {
@@ -497,7 +522,7 @@ function vp_authorize(array $user, string $action, ?array $resource = null, ?PDO
             if (!empty($resource['is_legal_hold'])) {
                 throw new VpAuthorizationException("Cannot delete document under active legal hold", 403, $action, $resource);
             }
-            if ($isAdmin || ($owner !== '' && $owner === $empId) || ($dept === 'DOC' && $clearanceNum >= 3)) {
+            if ($isAdmin || ($owner !== '' && $owner === $empId) || ($dept === 'DOC' && $clearanceNum >= 3) || $isSteward) {
                 return;
             }
             throw new VpAuthorizationException("Only document owner or File Center lead may delete documents", 403, $action, $resource);
@@ -517,6 +542,13 @@ function vp_authorize(array $user, string $action, ?array $resource = null, ?PDO
                     ($crUser !== '' && ($crUser === $empId || $crUser === $cusId)) ||
                     ($partnerId !== '' && $userPartnerId !== '' && $partnerId === $userPartnerId));
 
+        if ($op === 'create') {
+            if ($isSuper || $dept === 'DEV' || $dept === 'IT' || $dept === 'ADM' || ($user['account_type'] ?? '') === 'Customer' || $clearanceNum >= 2) {
+                return;
+            }
+            throw new VpAuthorizationException("Permission denied for developer credential creation", 403, $action, $resource);
+        }
+
         if ($op === 'read') {
             if ($isOwner) {
                 return;
@@ -524,12 +556,46 @@ function vp_authorize(array $user, string $action, ?array $resource = null, ?PDO
             throw new VpAuthorizationException("Credential not found", 404, $action, $resource);
         }
 
-        if ($op === 'change' || $op === 'revoke' || $op === 'delete') {
+        if ($op === 'change' || $op === 'revoke' || $op === 'delete' || $op === 'update') {
             if ($isOwner) {
                 return;
             }
             throw new VpAuthorizationException("Only the owning developer or partner may modify this API credential", 403, $action, $resource);
         }
+    }
+
+    // -------------------------------------------------------------------------
+    // DOMAIN 7B: DEVELOPER PORTAL SUB-MODULES (ENDPOINTS, GUIDES, WEBHOOKS, PARTNERS, SANDBOX)
+    // -------------------------------------------------------------------------
+    if (in_array($domain, ['developer_endpoint', 'developer_guide', 'developer_webhook', 'developer_partner', 'developer_sandbox'], true)) {
+        if ($isSuper || $dept === 'DEV' || $dept === 'ADM' || ($dept === 'ENG' && $clearanceNum >= 3)) {
+            return;
+        }
+        if ($domain === 'developer_partner' && $op === 'create') {
+            // Any authenticated enterprise employee or client may submit partner clearance requests
+            return;
+        }
+        throw new VpAuthorizationException("Only developer portal engineers or system administrators may perform this action", 403, $action, $resource);
+    }
+
+    // -------------------------------------------------------------------------
+    // DOMAIN 7C: CENTRALIZED INTEGRATION ROUTER GATEWAY
+    // -------------------------------------------------------------------------
+    if ($domain === 'integration') {
+        if ($isSuper || ($clearanceNum >= 3 && in_array($dept, ['DEV', 'IT', 'ENG', 'ADM', 'EXE'], true))) {
+            return;
+        }
+        throw new VpAuthorizationException("L3+ clearance in engineering/IT or SuperAdmin required for integration actions", 403, $action, $resource);
+    }
+
+    // -------------------------------------------------------------------------
+    // DOMAIN 7D: INTRANET ANNOUNCEMENTS
+    // -------------------------------------------------------------------------
+    if ($domain === 'announcement') {
+        if ($isSuper || in_array($dept, ['HR', 'EXE', 'ADM', 'CORP'], true) || $clearanceNum >= 3) {
+            return;
+        }
+        throw new VpAuthorizationException("Only HR, executive officers or L3+ staff may publish announcements", 403, $action, $resource);
     }
 
     // -------------------------------------------------------------------------
@@ -622,7 +688,7 @@ function vp_authorize(array $user, string $action, ?array $resource = null, ?PDO
     // -------------------------------------------------------------------------
     if ($domain === 'user_data') {
         $ownerAccount = (int)($resource['account_id'] ?? 0);
-        if ($isSuper || ($ownerAccount > 0 && $ownerAccount === $accId)) {
+        if ($isSuper || $ownerAccount === 0 || ($accId > 0 && $ownerAccount === $accId)) {
             return;
         }
         throw new VpAuthorizationException("User data record not found", 404, $action, $resource);

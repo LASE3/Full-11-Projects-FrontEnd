@@ -9,6 +9,16 @@ declare(strict_types=1);
  */
 
 require_once __DIR__ . '/../config/db.php';
+if (!function_exists('vp_authorize')) {
+    require_once __DIR__ . '/authorize.php';
+}
+if (!function_exists('vp_handle_api_exception')) {
+    require_once __DIR__ . '/api_errors.php';
+}
+if (!function_exists('vp_next_id')) {
+    require_once __DIR__ . '/id_generator.php';
+}
+
 
 if (session_status() === PHP_SESSION_NONE) {
     if (!headers_sent()) {
