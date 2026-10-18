@@ -50,13 +50,7 @@ $isSuperAdmin = isSuperAdmin($currentUser);
 
 // Mutating actions require L3+/SuperAdmin
 if ($method !== 'GET') {
-    $clearanceRank = ['L1' => 1, 'L2' => 2, 'L3' => 3, 'L4' => 4];
-    $userRank = $clearanceRank[$userClearance] ?? 1;
-    if (!$isSuperAdmin && $userRank < 3) {
-        http_response_code(403);
-        echo json_encode(['success' => false, 'error' => 'Forbidden', 'message' => 'L3+ clearance or SuperAdmin required for mutating actions.'], JSON_UNESCAPED_UNICODE);
-        exit;
-    }
+    vp_authorize($currentUser, 'integration:mutate', ['method' => $method], $pdo);
 }
 
 // -----------------------------------------------------------------------------
@@ -68,9 +62,6 @@ if ($method === 'GET') {
     $includeLogs = isset($_GET['include_logs']) ? (bool)$_GET['include_logs'] : true;
 
     try {
-    $_vp_user = $user ?? $currentUser ?? ($_SESSION['vostok_user'] ?? []);
-
-    vp_authorize($_vp_user, 'admin:attest', $_POST, $pdo);
         if (!empty($linkCode)) {
             $stmt = $pdo->prepare("SELECT * FROM system_integrations WHERE link_code = ? LIMIT 1");
             $stmt->execute([$linkCode]);

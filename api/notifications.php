@@ -11,8 +11,7 @@ declare(strict_types=1);
 header('Content-Type: application/json; charset=UTF-8');
 header('Cache-Control: no-cache, must-revalidate');
 
-require_once __DIR__ . '/../config/db.php';
-require_once __DIR__ . '/../includes/auth_guard.php';
+require_once __DIR__ . '/../includes/api_bootstrap.php';
 
 $user = requireApiAuth();
 
@@ -40,9 +39,7 @@ $pdo->exec("
 
 // Check if system_code / title / severity columns exist (in case table was from an older migration)
 try {
-    $_vp_user = $user ?? $currentUser ?? ($_SESSION['vostok_user'] ?? []);
-
-    vp_authorize($_vp_user, 'user_data:read', [], $pdo);
+    vp_authorize($user, 'user_data:read', ['account_id' => (int)($user['account_id'] ?? 0)], $pdo);
     $cols = $pdo->query("SHOW COLUMNS FROM portal_notifications")->fetchAll(PDO::FETCH_COLUMN);
     if (!in_array('title', $cols, true)) {
         $pdo->exec("ALTER TABLE portal_notifications ADD COLUMN title VARCHAR(255) NOT NULL AFTER portal_user_id");

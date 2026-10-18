@@ -528,11 +528,14 @@ function cus_updateAccountSettings(string $cusId, array $data): bool
         $pdo->prepare($sql)->execute($params);
     }
 
-    // Update password if requested
+    // Update password if requested strictly by account_id
     if (!empty($data['new_password'])) {
-        $hash = password_hash($data['new_password'], PASSWORD_BCRYPT);
-        $pUpd = $pdo->prepare("UPDATE customer_accounts SET password_hash = :hash WHERE cus_id = :cid");
-        $pUpd->execute([':hash' => $hash, ':cid' => $cusId]);
+        $accId = (int)($_SESSION['vostok_user']['account_id'] ?? 0);
+        if ($accId > 0) {
+            $hash = password_hash($data['new_password'], PASSWORD_BCRYPT);
+            $pUpd = $pdo->prepare("UPDATE customer_accounts SET password_hash = :hash WHERE account_id = :aid");
+            $pUpd->execute([':hash' => $hash, ':aid' => $accId]);
+        }
     }
 
     return true;

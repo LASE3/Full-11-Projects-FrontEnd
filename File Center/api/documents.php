@@ -296,18 +296,17 @@ try {
     // POST: Ingest / Actions / Create a new document in Database
     // -------------------------------------------------------------
     if ($method === 'POST') {
-        if ($action !== 'toggle_legal_hold' && $action !== 'review_decision') {
-            vp_authorize($_vp_user, 'document:create', $req, $pdo);
-        }
         // Toggle Legal Preservation Hold
         if ($action === 'toggle_legal_hold') {
             $docId = trim((string)($req['doc_id'] ?? $req['id'] ?? ''));
             if (empty($docId)) apiError('doc_id required for legal hold toggle', 422);
 
-            $stmt = $pdo->prepare("SELECT is_legal_hold, file_name FROM documents WHERE doc_id = :id");
+            $stmt = $pdo->prepare("SELECT * FROM documents WHERE doc_id = :id");
             $stmt->execute([':id' => $docId]);
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
             if (!$row) apiError("Document {$docId} not found", 404);
+
+            vp_authorize($_vp_user, 'document:legal_hold', $row, $pdo);
 
             $newHold = empty($row['is_legal_hold']) ? 1 : 0;
             $upd = $pdo->prepare("UPDATE documents SET is_legal_hold = :h, updated_at = NOW() WHERE doc_id = :id");
@@ -331,10 +330,12 @@ try {
             $docId = trim((string)($req['doc_id'] ?? $req['id'] ?? ''));
             if (empty($docId)) apiError('doc_id required for approval action', 422);
 
-            $stmt = $pdo->prepare("SELECT status, file_name FROM documents WHERE doc_id = :id");
+            $stmt = $pdo->prepare("SELECT * FROM documents WHERE doc_id = :id");
             $stmt->execute([':id' => $docId]);
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
             if (!$row) apiError("Document {$docId} not found", 404);
+
+            vp_authorize($_vp_user, 'document:' . $action, $row, $pdo);
 
             $newStatus = ($action === 'approve') ? 'Approved' : 'Rejected';
             $upd = $pdo->prepare("UPDATE documents SET status = :s, updated_at = NOW() WHERE doc_id = :id");
@@ -365,6 +366,57 @@ try {
                 'status' => $newStatus,
             ], "Document {$docId} decision recorded: {$newStatus}");
         }
+
+        // Archive Document
+        if ($action === 'archive') {
+            $docId = trim((string)($req['doc_id'] ?? $req['id'] ?? ''));
+            if (empty($docId)) apiError('doc_id required for archive action', 422);
+
+            $stmt = $pdo->prepare("SELECT * FROM documents WHERE doc_id = :id");
+            $stmt->execute([':id' => $docId]);
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            if (!$row) apiError("Document {$docId} not found", 404);
+
+            vp_authorize($_vp_user, 'document:archive', $row, $pdo);
+
+            $upd = $pdo->prepare("UPDATE documents SET status = 'Archived', updated_at = NOW() WHERE doc_id = :id");
+            $upd->execute([':s' => 'Archived', ':id' => $docId]);
+
+            logDocumentAction($pdo, $docId, 'Archive', "Document '{$row['file_name']}' archived");
+            apiSuccess(['doc_id' => $docId, 'status' => 'Archived'], "Document {$docId} archived successfully");
+        }
+
+        // Change Classification
+        if ($action === 'change_classification') {
+            $docId = trim((string)($req['doc_id'] ?? $req['id'] ?? ''));
+            if (empty($docId)) apiError('doc_id required for classification change', 422);
+
+            $stmt = $pdo->prepare("SELECT * FROM documents WHERE doc_id = :id");
+            $stmt->execute([':id' => $docId]);
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            if (!$row) apiError("Document {$docId} not found", 404);
+
+            $rawClass = trim((string)($req['classification'] ?? $req['new_classification'] ?? ''));
+            $newClassification = match (strtolower($rawClass)) {
+                'highly-confidential', 'topsecret' => 'TopSecret',
+                'confidential'                      => 'Confidential',
+                'public'                            => 'Public',
+                default                             => 'Internal',
+            };
+
+            vp_authorize($_vp_user, 'document:change_classification', array_merge($row, [
+                'new_classification' => $newClassification,
+                'target_classification' => $newClassification
+            ]), $pdo);
+
+            $upd = $pdo->prepare("UPDATE documents SET classification = :c, updated_at = NOW() WHERE doc_id = :id");
+            $upd->execute([':c' => $newClassification, ':id' => $docId]);
+
+            logDocumentAction($pdo, $docId, 'Change Classification', "Classification updated from '{$row['classification']}' to '{$newClassification}'");
+            apiSuccess(['doc_id' => $docId, 'classification' => $newClassification], "Document classification updated to: {$newClassification}");
+        }
+
+        vp_authorize($_vp_user, 'document:create', $req, $pdo);
 
         $title = trim((string)($req['title'] ?? $req['file_name'] ?? ''));
         if (empty($title)) {
@@ -576,6 +628,8 @@ try {
             apiError("Document {$docId} not found in database.", 404);
         }
 
+        vp_authorize($_vp_user, 'document:edit', $existing, $pdo);
+
         $title = isset($req['file_name']) ? trim((string)$req['file_name']) : $existing['file_name'];
         $description = isset($req['description']) ? trim((string)$req['description']) : $existing['description'];
         $folder = isset($req['folder']) ? trim((string)$req['folder']) : $existing['folder'];
@@ -594,6 +648,12 @@ try {
                 'public'                            => 'Public',
                 default                             => 'Internal',
             };
+            if ($classification !== $existing['classification']) {
+                vp_authorize($_vp_user, 'document:change_classification', array_merge($existing, [
+                    'new_classification' => $classification,
+                    'target_classification' => $classification
+                ]), $pdo);
+            }
         }
 
         $updateStmt = $pdo->prepare("
@@ -643,19 +703,20 @@ try {
     // DELETE: Delete / Archive document in Database
     // -------------------------------------------------------------
     if ($method === 'DELETE') {
-    vp_authorize($_vp_user, 'document:delete', $req, $pdo);
         $docId = trim((string)($req['doc_id'] ?? $req['id'] ?? ''));
         if (empty($docId)) {
             apiError('Document ID (doc_id) is required for deletion.');
         }
 
-        $checkStmt = $pdo->prepare("SELECT doc_id, file_name, is_legal_hold, storage_path FROM documents WHERE doc_id = :id");
+        $checkStmt = $pdo->prepare("SELECT * FROM documents WHERE doc_id = :id");
         $checkStmt->execute([':id' => $docId]);
         $existing = $checkStmt->fetch(PDO::FETCH_ASSOC);
 
         if (!$existing) {
             apiError("Document {$docId} not found.", 404);
         }
+
+        vp_authorize($_vp_user, 'document:delete', $existing, $pdo);
 
         // 1. Locked Baseline records (DOC-2026-001..015) must NEVER be deleted
         if (preg_match('/^DOC-2026-0(0[1-9]|1[0-5])$/i', $docId)) {

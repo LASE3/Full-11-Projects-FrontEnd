@@ -8,7 +8,6 @@ $_vp_user = vp_api_guard('DEV', []);
 require_once __DIR__ . '/db_helper.php';
 
 try {
-    vp_authorize($_vp_user, 'developer_credential:change', $_POST, $pdo);
     $pdo = getDbConnection();
     ensureDeveloperTables($pdo);
 
@@ -24,6 +23,7 @@ try {
             break;
 
         case 'create_preset':
+            vp_authorize($_vp_user, 'developer_sandbox:create_preset', $payload, $pdo);
             $title = trim($payload['title'] ?? '');
             $url = trim($payload['url'] ?? '');
             $reqMethod = strtoupper(trim($payload['method'] ?? 'GET'));
@@ -50,6 +50,7 @@ try {
             break;
 
         case 'update_preset':
+            vp_authorize($_vp_user, 'developer_sandbox:update_preset', $payload, $pdo);
             $id = (int)($payload['id'] ?? 0);
             if ($id <= 0) {
                 sendJsonError('Preset ID is required');
@@ -79,6 +80,7 @@ try {
             break;
 
         case 'delete_preset':
+            vp_authorize($_vp_user, 'developer_sandbox:delete_preset', $payload, $pdo);
             $id = (int)($payload['id'] ?? 0);
             if ($id <= 0) {
                 sendJsonError('Preset ID is required');
@@ -276,6 +278,7 @@ try {
             break;
 
         case 'clear_logs':
+            vp_authorize($_vp_user, 'developer_sandbox:clear_logs', $payload, $pdo);
             $pdo->exec("TRUNCATE TABLE `developer_sandbox_logs`");
             sendJsonSuccess(null, 'Sandbox execution logs cleared');
             break;
@@ -284,6 +287,8 @@ try {
             sendJsonError('Invalid action for sandbox service');
             break;
     }
+} catch (VpAuthorizationException $e) {
+    sendJsonError($e->getMessage(), $e->getCode() ?: 403);
 } catch (Throwable $e) {
     error_log("Database error: " . $e->getMessage());
     sendJsonError("Database error. An internal error occurred.", 500);

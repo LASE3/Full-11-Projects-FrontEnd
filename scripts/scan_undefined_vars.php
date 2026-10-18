@@ -47,7 +47,7 @@ foreach ($iterator as $file) {
     // 1. PHP Syntax Check
     $lintOut = [];
     $lintRet = 0;
-    $phpBin = PHP_BINARY ?: 'C:\\xampp\\php\\php.exe';
+    $phpBin = getenv('PHP_BINARY') ?: (PHP_BINARY ?: 'php');
     exec(escapeshellarg($phpBin) . " -l " . escapeshellarg($filePath) . " 2>&1", $lintOut, $lintRet);
     if ($lintRet !== 0) {
         $syntaxErrors[] = "Syntax error in {$relPath}: " . implode("\n", $lintOut);
@@ -385,6 +385,6 @@ if (!empty($byFile)) {
     }
 }
 
-$exitCode = count($syntaxErrors) > 0 ? 1 : 0;
+$exitCode = (count($syntaxErrors) > 0 || count($errors) > 0) ? 1 : 0;
 echo "\nScan complete. Status: " . ($exitCode === 0 ? "PASS" : "FAIL") . "\n";
 exit($exitCode);

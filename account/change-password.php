@@ -25,15 +25,32 @@ if (empty($_SESSION['vostok_authenticated']) || empty($_SESSION['vostok_user']))
 
 $user = $_SESSION['vostok_user'];
 $isCustomer = (($user['account_type'] ?? '') === 'Customer');
+$accountId = (int)($user['account_id'] ?? 0);
 $userId = $isCustomer ? ($user['cus_id'] ?? $user['user_id'] ?? '') : ($user['emp_id'] ?? $user['user_id'] ?? '');
 
-// Load account record
+if ($accountId <= 0) {
+    http_response_code(403);
+    echo '<h1>No account identifier found in authenticated session.</h1>';
+    exit;
+}
+
+// Load account record strictly by account_id — never use WHERE cus_id / LIMIT 1
 if ($isCustomer) {
-    $accStmt = $pdo->prepare("SELECT account_id, username, email, password_hash, must_change_password FROM customer_accounts WHERE cus_id = ? LIMIT 1");
-    $accStmt->execute([$userId]);
+    $accStmt = $pdo->prepare("
+        SELECT ca.account_id, ca.cus_id, ca.username, ca.email, ca.password_hash, ca.must_change_password, c.company_name 
+        FROM customer_accounts ca 
+        JOIN customers c ON ca.cus_id = c.cus_id 
+        WHERE ca.account_id = ?
+    ");
+    $accStmt->execute([$accountId]);
 } else {
-    $accStmt = $pdo->prepare("SELECT ea.account_id, ea.username, e.email, ea.password_hash, ea.must_change_password FROM employee_accounts ea LEFT JOIN employees e ON ea.emp_id = e.emp_id WHERE ea.emp_id = ? LIMIT 1");
-    $accStmt->execute([$userId]);
+    $accStmt = $pdo->prepare("
+        SELECT ea.account_id, ea.emp_id, ea.username, e.email, ea.password_hash, ea.must_change_password 
+        FROM employee_accounts ea 
+        LEFT JOIN employees e ON ea.emp_id = e.emp_id 
+        WHERE ea.account_id = ?
+    ");
+    $accStmt->execute([$accountId]);
 }
 $account = $accStmt->fetch(PDO::FETCH_ASSOC);
 
@@ -85,7 +102,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $newPass  = (string)($_POST['new_password'] ?? '');
         $confPass = (string)($_POST['confirm_password'] ?? '');
 
-        // 1. Current password verification
+        // 1. Current password verification strictly against this specific account
         if (!password_verify($oldPass, $account['password_hash'])) {
             $error = 'Current password is incorrect.';
         } elseif (strlen($newPass) < 14) {
@@ -107,6 +124,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
             }
 
+            // Also check company name in deny-list (compacted and word tokens >= 3 chars)
+            $companyName = strtolower(trim((string)($account['company_name'] ?? '')));
+            if ($companyName !== '') {
+                $compClean = preg_replace('/[^a-z0-9]/', '', $companyName);
+                if ($compClean !== '' && strlen($compClean) >= 3 && str_contains($newLower, $compClean)) {
+                    $containsDeny = true;
+                }
+                $compWords = preg_split('/[^a-z0-9]+/', $companyName, -1, PREG_SPLIT_NO_EMPTY);
+                if (is_array($compWords)) {
+                    foreach ($compWords as $cw) {
+                        if (strlen($cw) >= 3 && !in_array($cw, ['group', 'ltd', 'inc', 'corp', 'gmbh', 'systems', 'the'], true) && str_contains($newLower, $cw)) {
+                            $containsDeny = true;
+                            break;
+                        }
+                    }
+                }
+            }
+
             $userLower = strtolower((string)($account['username'] ?? ''));
             $idLower   = strtolower((string)$userId);
             $emailPrefix = '';
@@ -124,10 +159,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             } elseif ($emailPrefix !== '' && str_contains($newLower, $emailPrefix)) {
                 $error = 'Password must not contain your email address.';
             } else {
-                // 4. History check (no reuse of the last 5 passwords)
+                // 4. History check (no reuse of the last 5 passwords for this account)
                 $accType = $isCustomer ? 'Customer' : 'Employee';
                 $histStmt = $pdo->prepare("SELECT password_hash FROM password_history WHERE account_type = :type AND account_id = :aid ORDER BY history_id DESC LIMIT 5");
-                $histStmt->execute([':type' => $accType, ':aid' => (int)$account['account_id']]);
+                $histStmt->execute([':type' => $accType, ':aid' => $accountId]);
                 $recentHashes = $histStmt->fetchAll(PDO::FETCH_COLUMN);
 
                 $reused = false;
@@ -141,28 +176,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 if ($reused) {
                     $error = 'You cannot reuse any of your last 5 passwords.';
                 } else {
-                    // Success path: Store old password into history, set new password
+                    // Success path: Store old password into history, set new password for THIS account_id only
                     $newHash = password_hash($newPass, PASSWORD_BCRYPT, ['cost' => 12]);
                     
                     // Archive existing password into history
                     $insHist = $pdo->prepare("INSERT INTO password_history (account_type, account_id, password_hash, created_at) VALUES (?, ?, ?, NOW())");
-                    $insHist->execute([$accType, (int)$account['account_id'], $account['password_hash']]);
+                    $insHist->execute([$accType, $accountId, $account['password_hash']]);
 
                     if ($isCustomer) {
-                        $pdo->prepare("UPDATE customer_accounts SET password_hash = ?, must_change_password = 0 WHERE cus_id = ?")->execute([$newHash, $userId]);
-                        $pdo->prepare("UPDATE user_sessions SET status = 'Revoked', ended_at = CURRENT_TIMESTAMP WHERE customer_account_id = ? AND status = 'Active'")->execute([(int)$account['account_id']]);
-                        AuditLogger::logAction(null, $userId, 'Customer Portal', 'CUS', 'PASSWORD_CHANGED', 'customer_accounts', (string)$account['account_id']);
+                        $pdo->prepare("UPDATE customer_accounts SET password_hash = ?, must_change_password = 0 WHERE account_id = ?")->execute([$newHash, $accountId]);
+                        // Revoke active sessions for THIS account only (other accounts in the company remain active)
+                        $pdo->prepare("UPDATE user_sessions SET status = 'Revoked', ended_at = CURRENT_TIMESTAMP WHERE customer_account_id = ? AND status = 'Active'")->execute([$accountId]);
+                        AuditLogger::logAction(null, (string)$account['cus_id'], 'Customer Portal', 'CUS', 'PASSWORD_CHANGED', 'customer_accounts', (string)$accountId);
                     } else {
-                        $pdo->prepare("UPDATE employee_accounts SET password_hash = ?, must_change_password = 0 WHERE emp_id = ?")->execute([$newHash, $userId]);
-                        $pdo->prepare("UPDATE user_sessions SET status = 'Revoked', ended_at = CURRENT_TIMESTAMP WHERE employee_account_id = ? AND status = 'Active'")->execute([(int)$account['account_id']]);
-                        AuditLogger::logAction($userId, null, 'Governance', 'ADM', 'PASSWORD_CHANGED', 'employee_accounts', (string)$account['account_id']);
+                        $pdo->prepare("UPDATE employee_accounts SET password_hash = ?, must_change_password = 0 WHERE account_id = ?")->execute([$newHash, $accountId]);
+                        // Revoke active sessions for THIS account only
+                        $pdo->prepare("UPDATE user_sessions SET status = 'Revoked', ended_at = CURRENT_TIMESTAMP WHERE employee_account_id = ? AND status = 'Active'")->execute([$accountId]);
+                        AuditLogger::logAction((string)$account['emp_id'], null, 'Governance', 'ADM', 'PASSWORD_CHANGED', 'employee_accounts', (string)$accountId);
                     }
 
                     $success = 'Password successfully updated.';
                     $_SESSION['vostok_user']['must_change_password'] = 0;
-                    if (function_exists('createSsoCookie')) {
-                        createSsoCookie($_SESSION['vostok_user']);
-                    }
+                    
+                    // Re-issue SSO token with new jti and register new active session for this user
+                    $newJti = bin2hex(random_bytes(16));
+                    createSsoCookie($_SESSION['vostok_user'], $newJti);
+                    registerUserSession($accType, $accountId, $originSys ?: ($isCustomer ? 'CUS' : 'EMP'), $newJti);
 
                     if (!$isJson) {
                         header("Location: " . $returnTo);

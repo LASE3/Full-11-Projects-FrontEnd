@@ -15,7 +15,7 @@ declare(strict_types=1);
 require_once __DIR__ . '/../config/db.php';
 
 $root = dirname(__DIR__);
-$phpBin = defined('PHP_BINARY') && PHP_BINARY ? PHP_BINARY : 'c:/xampp/php/php.exe';
+$phpBin = getenv('PHP_BINARY') ?: (defined('PHP_BINARY') && PHP_BINARY ? PHP_BINARY : 'php');
 $pdo = getDbConnection();
 
 echo "========================================================================\n";
@@ -71,9 +71,20 @@ foreach ($iter as $file) {
     }
 }
 
+$nodeBin = getenv('NODE_BINARY');
+if (!$nodeBin) {
+    if (file_exists('C:\\Program Files\\Microsoft Visual Studio\\18\\Community\\MSBuild\\Microsoft\\VisualStudio\\NodeJs\\node.exe')) {
+        $nodeBin = 'C:\\Program Files\\Microsoft Visual Studio\\18\\Community\\MSBuild\\Microsoft\\VisualStudio\\NodeJs\\node.exe';
+    } elseif (file_exists('C:\\Program Files\\nodejs\\node.exe')) {
+        $nodeBin = 'C:\\Program Files\\nodejs\\node.exe';
+    } else {
+        $nodeBin = 'node';
+    }
+}
+
 $jsErrors = 0;
 foreach ($jsFiles as $file) {
-    $cmd = "node --check " . escapeshellarg($file) . " 2>&1";
+    $cmd = escapeshellarg($nodeBin) . " --check " . escapeshellarg($file) . " 2>&1";
     $output = (string)shell_exec($cmd);
     if (!empty(trim($output))) {
         $jsErrors++;

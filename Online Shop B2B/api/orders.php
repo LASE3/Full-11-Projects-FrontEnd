@@ -37,23 +37,18 @@ $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 // Handle GET: Retrieve orders
 if ($method === 'GET') {
     try {
-    $_vp_user = $user ?? $currentUser ?? ($_SESSION['vostok_user'] ?? []);
-
-    vp_authorize($_vp_user, 'shop:order_create', $_POST, $pdo);
         $orderId = $_GET['order_id'] ?? null;
         if ($orderId) {
             // Check ownership
-            $chkStmt = $pdo->prepare("SELECT cus_id FROM orders WHERE order_id = :oid");
+            $chkStmt = $pdo->prepare("SELECT * FROM orders WHERE order_id = :oid");
             $chkStmt->execute([':oid' => $orderId]);
-            $owner = $chkStmt->fetchColumn();
+            $order = $chkStmt->fetch(PDO::FETCH_ASSOC);
 
-            if ($owner === false) {
+            if (!$order) {
                 Response::error("Order not found.", 404);
             }
 
-            if (!$isSA && ($user['account_type'] ?? '') === 'Customer' && $owner !== $cusId) {
-                Response::error("Forbidden: You do not have permission to view this order.", 403);
-            }
+            vp_authorize($user, 'shop:order_read', $order, $pdo);
 
             $stmt = $pdo->prepare("
                 SELECT o.*, c.company_name, c.primary_contact_name
@@ -138,6 +133,7 @@ if ($method === 'POST') {
     if (empty($targetCusId)) {
         Response::error("Target customer ID is required.", 422);
     }
+    vp_authorize($user, 'shop:order_create', ['cus_id' => $targetCusId], $pdo);
 
     $items = $input['items'] ?? [];
     if (empty($items) || !is_array($items)) {
@@ -267,9 +263,7 @@ if ($method === 'PUT') {
     $oldOrder = $chk->fetch(PDO::FETCH_ASSOC);
     if (!$oldOrder) Response::error("Order not found", 404);
 
-    if (!$isSA && ($user['account_type'] ?? '') === 'Customer') {
-        Response::error("Forbidden", 403);
-    }
+    vp_authorize($user, 'shop:order_update', $oldOrder, $pdo);
 
     $pdo->prepare("UPDATE orders SET status = ? WHERE order_id = ?")->execute([$newStatus, $orderId]);
 
@@ -304,9 +298,7 @@ if ($method === 'DELETE') {
     $oldOrder = $chk->fetch(PDO::FETCH_ASSOC);
     if (!$oldOrder) Response::error("Order not found", 404);
 
-    if (!$isSA && ($user['account_type'] ?? '') === 'Customer' && $oldOrder['cus_id'] !== $cusId) {
-        Response::error("Forbidden", 403);
-    }
+    vp_authorize($user, 'shop:order_cancel', $oldOrder, $pdo);
 
     $pdo->beginTransaction();
     $pdo->prepare("UPDATE orders SET status = 'Cancelled' WHERE order_id = ?")->execute([$orderId]);

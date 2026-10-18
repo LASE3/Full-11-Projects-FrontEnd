@@ -5,8 +5,12 @@ async function testReproduce() {
   const browser = await chromium.launch({ headless: true });
   const context = await browser.newContext({ viewport: { width: 1440, height: 900 } });
   
+  const baseUrl = process.env.BASE_URL || 'http://127.0.0.1/Full-11-Projects-FrontEnd/';
+  const urlObj = new URL(baseUrl);
+  const phpBin = process.env.PHP_BINARY || 'php';
+
   // Seed SSO as SuperAdmin EMP-0001
-  const ssoToken = execFileSync('c:\\xampp\\php\\php.exe', [
+  const ssoToken = execFileSync(phpBin, [
     'scripts/get_sso_cookie.php',
     'EMP-0001'
   ]).toString().trim();
@@ -14,7 +18,7 @@ async function testReproduce() {
   await context.addCookies([{
     name: 'vostok_sso_token',
     value: ssoToken,
-    domain: '127.0.0.1',
+    domain: urlObj.hostname,
     path: '/'
   }]);
 
@@ -31,7 +35,7 @@ async function testReproduce() {
     }
   });
 
-  await page.goto('http://127.0.0.1/Full-11-Projects-FrontEnd/IT%20Helpdesk/Dashboard.php');
+  await page.goto(baseUrl + 'IT%20Helpdesk/Dashboard.php');
   console.log('Current page URL after goto:', page.url());
   
   // Wait for page to load

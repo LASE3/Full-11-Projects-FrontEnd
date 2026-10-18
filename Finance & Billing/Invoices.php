@@ -525,6 +525,9 @@ $avgBudgetBurn = (float)$pdo->query("SELECT AVG((spent_amount / NULLIF(allocated
           <button id="btn-modal-send-reminder" class="btn btn-amber-outline">
             <span>⚡ Send Payment Reminder</span>
           </button>
+          <button id="btn-modal-approve" class="btn" style="background: #2563eb; color: #fff; border: 1px solid #1d4ed8; padding: 0.5rem 1rem; border-radius: var(--fin-radius-sm, 6px); font-weight: 600; cursor: pointer; display: none;">
+            <span>🛡️ Approve Invoice</span>
+          </button>
           <button id="btn-modal-mark-paid" class="btn btn-green">
             <span>✓ Mark as Paid (Commit to DB)</span>
           </button>

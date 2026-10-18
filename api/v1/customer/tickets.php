@@ -22,9 +22,6 @@ if ($method === 'GET') {
     $tktId = $_GET['id'] ?? null;
 
     try {
-    $_vp_user = $user ?? $currentUser ?? ($_SESSION['vostok_user'] ?? []);
-
-    vp_authorize($_vp_user, 'ticket:read', $_GET, $pdo);
         if ($tktId) {
             $chk = $pdo->prepare("SELECT requester_cus_id FROM tickets WHERE tkt_id = :tid");
             $chk->execute([':tid' => $tktId]);
@@ -32,6 +29,7 @@ if ($method === 'GET') {
             if ($owner === false) {
                 Response::error("Ticket not found.", 404);
             }
+            vp_authorize($user, 'ticket:read', ['requester_cus_id' => (string)$owner, 'tkt_id' => $tktId], $pdo);
             if (($user['account_type'] ?? '') === 'Customer' && $owner !== $cusId) {
                 Response::error("Forbidden: You do not have permission to view this ticket.", 403);
             }
@@ -68,6 +66,7 @@ if ($method === 'GET') {
 
             Response::success($ticket, "Ticket details loaded");
         } else {
+            vp_authorize($user, 'ticket:read', ['requester_cus_id' => $cusId], $pdo);
             $stmt = $pdo->prepare("
                 SELECT 
                     t.tkt_id,
@@ -92,6 +91,8 @@ if ($method === 'GET') {
 
             Response::success($tickets, "Customer tickets list loaded");
         }
+    } catch (VpAuthorizationException $e) {
+        Response::error($e->getMessage(), $e->getCode() ?: 403);
     } catch (Exception $e) {
         error_log("Failed to load tickets: " . $e->getMessage());
         Response::error("Failed to load tickets. Please try again later.", 500);

@@ -320,7 +320,7 @@ $slaPct = $sbStats['sla_pct'];
                   <th class="hd-text-right">Action</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody id="tickets-table-body" class="ticket-table-body">
                 <?php if (empty($myTickets)): ?>
                   <tr>
                     <td colspan="7" style="text-align: center; padding: 24px; color: var(--hd-text-muted);">

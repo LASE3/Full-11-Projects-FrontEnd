@@ -320,7 +320,7 @@ assertTest(
 
 // Test 1.3.4: Baseline document deletion attempt blocked (403) and logged (success=0)
 $docApiScript = __DIR__ . '/../File Center/api/documents.php';
-$custodianUser = queryUserByCredentials('EMP-1019');
+$custodianUser = queryUserByCredentials('EMP-1001');
 $fcAdminSession = [
     'vostok_user' => $custodianUser
 ];

@@ -96,8 +96,14 @@ if ($cusId) {
     $cStmt->execute([$cusId]);
     $customer = $cStmt->fetch(PDO::FETCH_ASSOC) ?: null;
 
-    $accStmt = $pdo->prepare("SELECT username, email, last_login FROM customer_accounts WHERE cus_id = ? LIMIT 1");
-    $accStmt->execute([$cusId]);
+    $sessAccId = (int)($_SESSION['vostok_user']['account_id'] ?? 0);
+    if ($sessAccId > 0) {
+        $accStmt = $pdo->prepare("SELECT username, email, last_login FROM customer_accounts WHERE account_id = ?");
+        $accStmt->execute([$sessAccId]);
+    } else {
+        $accStmt = $pdo->prepare("SELECT username, email, last_login FROM customer_accounts WHERE cus_id = ? LIMIT 1");
+        $accStmt->execute([$cusId]);
+    }
     $customerAccount = $accStmt->fetch(PDO::FETCH_ASSOC) ?: [];
 
     // Live badge counters

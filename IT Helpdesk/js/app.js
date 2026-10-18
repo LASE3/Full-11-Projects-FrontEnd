@@ -169,7 +169,42 @@
           const code = data.data?.tkt_id || data.ticket_code || "Incident";
           this.showToast("Ticket Created", `${code} created successfully in database.`, "green");
           this.closeModal("modal-create-ticket");
-          await this.refreshTicketsTable();
+
+          const tbody = document.getElementById("tickets-table-body") || document.querySelector("tbody.ticket-table-body");
+          if (tbody) {
+            const emptyCell = tbody.querySelector("td[colspan]");
+            if (emptyCell) emptyCell.parentElement.remove();
+
+            const tid = data.data?.tkt_id || code;
+            const prio = payload.priority || "Medium";
+            const prioClass = prio === 'Critical' ? 'priority-critical' : (prio === 'High' ? 'priority-high' : (prio === 'Medium' ? 'priority-medium' : 'priority-low'));
+            const escTid = window.vpEscape ? window.vpEscape(tid) : tid;
+            const escTitle = window.vpEscape ? window.vpEscape(payload.title || "") : payload.title;
+            const escSys = window.vpEscape ? window.vpEscape(payload.affected_system || payload.source_system || "IT") : "IT";
+
+            const newRowHtml = `
+              <tr class="hd-table-row hd-row-new" id="tkt-row-${escTid}">
+                <td><strong class="hd-mono-navy">${escTid}</strong> <span class="priority-badge" style="background: rgba(16,185,129,0.15); color: #10B981; font-size: 10px; margin-left: 4px; font-weight: bold;">NEW</span></td>
+                <td>
+                  <div class="hd-font-semibold-navy">${window.vpEscape ? window.vpEscape(payload.requester_name || "Authorized Personnel") : "Authorized Personnel"}</div>
+                  <div class="hd-text-muted-11">${escSys}</div>
+                </td>
+                <td>
+                  <div class="hd-font-semibold">${escTitle}</div>
+                  <div class="hd-text-muted-11">${window.vpEscape ? window.vpEscape(payload.description || "") : (payload.description || "")}</div>
+                </td>
+                <td><span class="priority-badge ${prioClass}">${prio.toUpperCase()}</span></td>
+                <td><strong class="hd-mono-navy">Active (Just Now)</strong></td>
+                <td><span class="status-pill status-open">Open</span></td>
+                <td class="hd-text-right">
+                  <div style="display: inline-flex; gap: 6px; align-items: center;">
+                    <a href="TicketDetail.php?id=${encodeURIComponent(tid)}" class="btn btn-primary-amber btn-sm">Triage →</a>
+                  </div>
+                </td>
+              </tr>
+            `;
+            tbody.insertAdjacentHTML("afterbegin", newRowHtml);
+          }
         } else {
           this.showToast("Creation Failed", data.error || "Could not register ticket.", "critical");
         }

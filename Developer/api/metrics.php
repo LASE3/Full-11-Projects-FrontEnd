@@ -8,7 +8,6 @@ $_vp_user = vp_api_guard('DEV', []);
 require_once __DIR__ . '/db_helper.php';
 
 try {
-    vp_authorize($_vp_user, 'developer_credential:read', [], $pdo);
     $pdo = getDbConnection();
     ensureDeveloperTables($pdo);
 
@@ -63,6 +62,7 @@ try {
             break;
 
         case 'create_webhook':
+            vp_authorize($_vp_user, 'developer_webhook:create', $payload, $pdo);
             $eventType = trim((string)($payload['event_type'] ?? ''));
             $endpoint = trim((string)($payload['target_endpoint'] ?? ''));
             if ($eventType === '' || $endpoint === '') {
@@ -96,6 +96,7 @@ try {
             break;
 
         case 'update_webhook':
+            vp_authorize($_vp_user, 'developer_webhook:update', $payload, $pdo);
             $id = (int)($payload['id'] ?? 0);
             if ($id <= 0) {
                 sendJsonError('Valid Webhook ID is required', 422);
@@ -129,6 +130,7 @@ try {
             break;
 
         case 'retry_webhook':
+            vp_authorize($_vp_user, 'developer_webhook:retry', $payload, $pdo);
             $id = (int)($payload['id'] ?? 0);
             $deliveryId = trim((string)($payload['delivery_id'] ?? ''));
 
@@ -154,6 +156,7 @@ try {
             break;
 
         case 'delete_webhook':
+            vp_authorize($_vp_user, 'developer_webhook:delete', $payload, $pdo);
             $id = (int)($payload['id'] ?? 0);
             if ($id <= 0) {
                 sendJsonError('Valid Webhook ID is required', 422);
@@ -169,6 +172,8 @@ try {
             sendJsonError('Invalid action for metrics service', 422);
             break;
     }
+} catch (VpAuthorizationException $e) {
+    sendJsonError($e->getMessage(), $e->getCode() ?: 403);
 } catch (Throwable $e) {
     error_log("Developer metrics API error: " . $e->getMessage() . " at " . $e->getFile() . ":" . $e->getLine());
     sendJsonError('An internal server error occurred while processing metrics.', 500);

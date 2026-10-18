@@ -1,0 +1,140 @@
+name: VOSTOKPRIBOR Multi-Engine CI Matrix
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  database-matrix-and-tests:
+    name: PHP 8.2 on ${{ matrix.db.name }} (${{ matrix.db.version }})
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        db:
+          - name: MariaDB
+            version: '10.4'
+            image: 'mariadb:10.4'
+            port: 3306
+          - name: MariaDB
+            version: '10.11'
+            image: 'mariadb:10.11'
+            port: 3306
+          - name: MySQL
+            version: '8.0'
+            image: 'mysql:8.0'
+            port: 3306
+
+    services:
+      database:
+        image: ${{ matrix.db.image }}
+        env:
+          MYSQL_ROOT_PASSWORD: rootpassword
+          MYSQL_DATABASE: vostokpribor
+        ports:
+          - ${{ matrix.db.port }}:3306
+        options: --health-cmd="mysqladmin ping --silent" --health-interval=10s --health-timeout=5s --health-retries=5
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup PHP 8.2
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: pdo, pdo_mysql, zip, mbstring, fileinfo, openssl, curl
+          ini-values: |
+            error_reporting=E_ALL
+            display_errors=On
+            display_startup_errors=On
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Start PHP Built-in Server
+        run: |
+          php -S 127.0.0.1:8080 -t . &
+          sleep 2
+
+      - name: Run Database Build & Migrations (Strict SQL Mode)
+        env:
+          DB_HOST: 127.0.0.1
+          DB_PORT: ${{ matrix.db.port }}
+          DB_NAME: vostokpribor
+          DB_USER: root
+          DB_PASS: rootpassword
+          APP_ENV: testing
+        run: |
+          php DataBase/build.php
+
+      - name: Run Migration 016 Portability & Idempotency Test
+        env:
+          DB_HOST: 127.0.0.1
+          DB_PORT: ${{ matrix.db.port }}
+          DB_NAME: vostokpribor
+          DB_USER: root
+          DB_PASS: rootpassword
+        run: |
+          php tests/test_migration_016.php
+
+      - name: Run API Smoke Sweeper (CEO, Employee, Customer)
+        env:
+          DB_HOST: 127.0.0.1
+          DB_PORT: ${{ matrix.db.port }}
+          DB_NAME: vostokpribor
+          DB_USER: root
+          DB_PASS: rootpassword
+          BASE_URL: http://127.0.0.1:8080/
+        run: |
+          php scripts/api_smoke.php
+
+      - name: Run Maker-Checker Regression Test
+        env:
+          DB_HOST: 127.0.0.1
+          DB_PORT: ${{ matrix.db.port }}
+          DB_NAME: vostokpribor
+          DB_USER: root
+          DB_PASS: rootpassword
+          BASE_URL: http://127.0.0.1:8080/
+        run: |
+          php tests/test_maker_checker.php
+
+      - name: Run Customer Password Isolation Regression Test
+        env:
+          DB_HOST: 127.0.0.1
+          DB_PORT: ${{ matrix.db.port }}
+          DB_NAME: vostokpribor
+          DB_USER: root
+          DB_PASS: rootpassword
+          BASE_URL: http://127.0.0.1:8080/
+        run: |
+          php tests/test_customer_password_isolation.php
+
+      - name: Run Phase 4 Ownership & Developer Test
+        env:
+          DB_HOST: 127.0.0.1
+          DB_PORT: ${{ matrix.db.port }}
+          DB_NAME: vostokpribor
+          DB_USER: root
+          DB_PASS: rootpassword
+          BASE_URL: http://127.0.0.1:8080/
+        run: |
+          php tests/test_phase4_ownership_and_developer.php
+
+      - name: Run Full Test Suite
+        env:
+          DB_HOST: 127.0.0.1
+          DB_PORT: ${{ matrix.db.port }}
+          DB_NAME: vostokpribor
+          DB_USER: root
+          DB_PASS: rootpassword
+          BASE_URL: http://127.0.0.1:8080/
+        run: |
+          php tests/run_all_tests.php

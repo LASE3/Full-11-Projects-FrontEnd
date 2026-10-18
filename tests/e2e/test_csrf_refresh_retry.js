@@ -5,7 +5,11 @@ async function testCsrfRefreshRetry() {
   const browser = await chromium.launch({ headless: true });
   const context = await browser.newContext({ viewport: { width: 1440, height: 900 } });
   
-  const ssoToken = execFileSync('c:\\xampp\\php\\php.exe', [
+  const baseUrl = process.env.BASE_URL || 'http://127.0.0.1/Full-11-Projects-FrontEnd/';
+  const urlObj = new URL(baseUrl);
+  const phpBin = process.env.PHP_BINARY || 'php';
+
+  const ssoToken = execFileSync(phpBin, [
     'scripts/get_sso_cookie.php',
     'EMP-0001'
   ]).toString().trim();
@@ -13,12 +17,12 @@ async function testCsrfRefreshRetry() {
   await context.addCookies([{
     name: 'vostok_sso_token',
     value: ssoToken,
-    domain: '127.0.0.1',
+    domain: urlObj.hostname,
     path: '/'
   }]);
 
   const page = await context.newPage();
-  await page.goto('http://127.0.0.1/Full-11-Projects-FrontEnd/IT%20Helpdesk/Dashboard.php');
+  await page.goto(baseUrl + 'IT%20Helpdesk/Dashboard.php');
 
   // Intentionally tamper with CSRF token in meta tag and memory to simulate expired token
   const result = await page.evaluate(async () => {
@@ -55,8 +59,8 @@ async function testCsrfRefreshRetry() {
   if (result.body && result.body.data && result.body.data.tkt_id) {
     const tktId = result.body.data.tkt_id;
     console.log(`Cleaning up test ticket ${tktId}...`);
-    execFileSync('c:\\xampp\\php\\php.exe', ['scripts/query_db.php', 'exec', `DELETE FROM ticket_comments WHERE tkt_id = '${tktId}'`]);
-    execFileSync('c:\\xampp\\php\\php.exe', ['scripts/query_db.php', 'exec', `DELETE FROM tickets WHERE tkt_id = '${tktId}'`]);
+    execFileSync(phpBin, ['scripts/query_db.php', 'exec', `DELETE FROM ticket_comments WHERE tkt_id = '${tktId}'`]);
+    execFileSync(phpBin, ['scripts/query_db.php', 'exec', `DELETE FROM tickets WHERE tkt_id = '${tktId}'`]);
   }
 
   await browser.close();

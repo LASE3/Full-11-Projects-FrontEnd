@@ -7,23 +7,20 @@ declare(strict_types=1);
  * Serves verified physical document files with clearance checks, tenant isolation, and audit logging.
  */
 
-require_once __DIR__ . '/../../config/db.php';
-require_once __DIR__ . '/../../includes/auth_guard.php';
+require_once __DIR__ . '/../../includes/api_bootstrap.php';
 require_once __DIR__ . '/../../includes/document_storage.php';
 
 // Authenticate session (allows EMP, CUS, or SuperAdmin)
+$currentUser = null;
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-$currentUser = $_SESSION['vostok_user'] ?? null;
-if (!$currentUser) {
-    // Check if token present in Authorization header
-    $authHeader = $_SERVER['HTTP_AUTHORIZATION'] ?? '';
-    if (preg_match('/Bearer\s+(.*)$/i', $authHeader, $m)) {
-        require_once __DIR__ . '/../../includes/api_bootstrap.php';
-        $currentUser = vp_api_guard('DOC', []);
-    }
+if (!empty($_SESSION['vostok_user'])) {
+    $currentUser = $_SESSION['vostok_user'];
+} else {
+    // Fall back to requireApiAuth
+    $currentUser = requireApiAuth();
 }
 
 if (!$currentUser) {
@@ -52,12 +49,23 @@ if (empty($docId)) {
 $inline = (!empty($_GET['inline']) && $_GET['inline'] !== '0' && $_GET['inline'] !== 'false');
 
 try {
-    $_vp_user = $user ?? $currentUser ?? ($_SESSION['vostok_user'] ?? []);
+    $stmt = $pdo->prepare("SELECT * FROM documents WHERE doc_id = :id LIMIT 1");
+    $stmt->execute([':id' => $docId]);
+    $doc = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    vp_authorize($_vp_user, 'document:read', $_GET, $pdo);
+    if (!$doc) {
+        http_response_code(404);
+        header('Content-Type: application/json');
+        echo json_encode(['success' => false, 'error' => "Document {$docId} not found."]);
+        exit;
+    }
+
+    vp_authorize($currentUser, 'document:read', $doc, $pdo);
     vp_serve_document($pdo, $docId, $currentUser, $inline);
+} catch (VpAuthorizationException $e) {
+    vp_handle_api_exception($e, $pdo);
 } catch (Throwable $e) {
-    error_log("Document Download Exception: " . $e->getMessage());
+    error_log("Document Download Exception: " . $e->getMessage() . " at " . $e->getFile() . ":" . $e->getLine());
     http_response_code(500);
     header('Content-Type: application/json');
     echo json_encode([

@@ -210,15 +210,16 @@ try {
             }
 
             $invId = generateNextInvoiceId($pdo);
+            $creatorEmpId = (string)($_vp_user['emp_id'] ?? $currUser['emp_id'] ?? '');
 
             $pdo->beginTransaction();
 
             $insertStmt = $pdo->prepare("
                 INSERT INTO invoices 
-                (inv_id, cus_id, prj_id, total_value, currency, payment_status, issued_at, due_date, payment_terms, notes)
-                VALUES (?, ?, ?, ?, ?, 'Pending', ?, ?, ?, ?)
+                (inv_id, cus_id, prj_id, created_by_emp_id, total_value, currency, payment_status, issued_at, due_date, payment_terms, notes)
+                VALUES (?, ?, ?, ?, ?, ?, 'Pending', ?, ?, ?, ?)
             ");
-            $insertStmt->execute([$invId, $cusId, $prjId, $totalValue, $currency, $issuedAt, $dueDate, $paymentTerms, $notes]);
+            $insertStmt->execute([$invId, $cusId, $prjId, $creatorEmpId ?: null, $totalValue, $currency, $issuedAt, $dueDate, $paymentTerms, $notes]);
 
             // Insert line item in invoice_items
             $itemStmt = $pdo->prepare("
@@ -263,7 +264,39 @@ try {
             break;
 
         // ====================================================================
-        // 3. MARK INVOICE AS PAID
+        // 2b. APPROVE INVOICE (Maker-Checker Step 2)
+        // ====================================================================
+        case 'approve_invoice':
+        case 'approve':
+            $invId = trim($_POST['inv_id'] ?? $_GET['inv_id'] ?? '');
+            if (empty($invId)) {
+                jsonReply(['success' => false, 'error' => 'Invoice ID required'], 400);
+            }
+
+            $stmt = $pdo->prepare("SELECT inv_id, total_value, currency, cus_id, payment_status, created_by_emp_id, approved_by_emp_id, paid_by_emp_id FROM invoices WHERE inv_id = ?");
+            $stmt->execute([$invId]);
+            $inv = $stmt->fetch();
+            if (!$inv) {
+                jsonReply(['success' => false, 'error' => 'Invoice not found'], 404);
+            }
+
+            vp_authorize($_vp_user, 'finance:approve', $inv, $pdo);
+
+            $approverEmpId = (string)($_vp_user['emp_id'] ?? $currUser['emp_id'] ?? '');
+
+            $uStmt = $pdo->prepare("UPDATE invoices SET approved_by_emp_id = ?, approved_at = NOW() WHERE inv_id = ?");
+            $uStmt->execute([$approverEmpId ?: null, $invId]);
+
+            jsonReply([
+                'success' => true,
+                'message' => "Invoice {$invId} approved successfully.",
+                'inv_id' => $invId,
+                'approved_by' => $approverEmpId
+            ]);
+            break;
+
+        // ====================================================================
+        // 3. MARK INVOICE AS PAID (Maker-Checker Step 3)
         // ====================================================================
         case 'mark_paid':
             $invId = trim($_POST['inv_id'] ?? $_GET['inv_id'] ?? '');
@@ -271,7 +304,7 @@ try {
                 jsonReply(['success' => false, 'error' => 'Invoice ID required'], 400);
             }
 
-            $stmt = $pdo->prepare("SELECT inv_id, total_value, currency, cus_id, created_by_emp_id, approved_by_emp_id FROM invoices WHERE inv_id = ?");
+            $stmt = $pdo->prepare("SELECT inv_id, total_value, currency, cus_id, payment_status, created_by_emp_id, approved_by_emp_id, paid_by_emp_id FROM invoices WHERE inv_id = ?");
             $stmt->execute([$invId]);
             $inv = $stmt->fetch();
             if (!$inv) {
@@ -279,11 +312,13 @@ try {
             }
             vp_authorize($_vp_user, 'finance:mark_paid', $inv, $pdo);
 
+            $payerEmpId = (string)($_vp_user['emp_id'] ?? $currUser['emp_id'] ?? '');
+
             $pdo->beginTransaction();
 
-            // Update invoice status
-            $uStmt = $pdo->prepare("UPDATE invoices SET payment_status = 'Paid', paid_at = CURDATE() WHERE inv_id = ?");
-            $uStmt->execute([$invId]);
+            // Update invoice status with paid_by_emp_id and paid_at
+            $uStmt = $pdo->prepare("UPDATE invoices SET payment_status = 'Paid', paid_by_emp_id = ?, paid_at = CURDATE() WHERE inv_id = ?");
+            $uStmt->execute([$payerEmpId ?: null, $invId]);
 
             // Ensure a reconciled payment record exists
             $checkPay = $pdo->prepare("SELECT COUNT(*) FROM payments WHERE inv_id = ? AND reconciled = 1");
@@ -302,6 +337,36 @@ try {
             jsonReply([
                 'success' => true,
                 'message' => "Invoice {$invId} marked as PAID. General ledger hash updated."
+            ]);
+            break;
+
+        // ====================================================================
+        // 3b. VOID INVOICE
+        // ====================================================================
+        case 'void_invoice':
+        case 'void':
+            $invId = trim($_POST['inv_id'] ?? $_GET['inv_id'] ?? '');
+            if (empty($invId)) {
+                jsonReply(['success' => false, 'error' => 'Invoice ID required'], 400);
+            }
+
+            $stmt = $pdo->prepare("SELECT inv_id, total_value, currency, cus_id, payment_status, created_by_emp_id, approved_by_emp_id, paid_by_emp_id FROM invoices WHERE inv_id = ?");
+            $stmt->execute([$invId]);
+            $inv = $stmt->fetch();
+            if (!$inv) {
+                jsonReply(['success' => false, 'error' => 'Invoice not found'], 404);
+            }
+
+            vp_authorize($_vp_user, 'finance:void', $inv, $pdo);
+
+            $pdo->beginTransaction();
+            $uStmt = $pdo->prepare("UPDATE invoices SET payment_status = 'Void' WHERE inv_id = ?");
+            $uStmt->execute([$invId]);
+            $pdo->commit();
+
+            jsonReply([
+                'success' => true,
+                'message' => "Invoice {$invId} has been voided."
             ]);
             break;
 

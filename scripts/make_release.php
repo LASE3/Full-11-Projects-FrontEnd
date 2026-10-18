@@ -1,93 +1,81 @@
 <?php
-declare(strict_types=1);
-
 /**
- * VOSTOKPRIBOR Enterprise Ecosystem — Release Archive Builder
- * Creates a clean, production-ready deliverable archive.
+ * VOSTOKPRIBOR - Clean Distribution Release Archive Builder
+ * Specification: Phase 7.1 (Delivery Hygiene)
  *
- * Excludes:
- *  - Version control (.git)
- *  - Developer environments / IDEs (.vscode, .idea, .gemini)
- *  - Dependencies (node_modules)
- *  - Secrets & local credentials (.env, storage/credentials/)
- *  - Temporary files, test outputs, scratch dumps (*.log, *.tmp, scratch/)
- *  - Stray upload files (keeps only .gitkeep in upload directories)
- *  - Existing release archives (*.zip)
+ * Rules:
+ *  - Must NOT contain node_modules/
+ *  - Must NOT contain .git/
+ *  - Must NOT contain .env (only .env.example)
+ *  - Must NOT contain generated documents or plaintext credentials
+ *  - Includes post-build verification check that fails and deletes the zip if violated
  */
 
+declare(strict_types=1);
+
 if (!extension_loaded('zip')) {
-    fwrite(STDERR, "Error: PHP Zip extension is required to build the release archive.\n");
+    fwrite(STDERR, "[ERROR] The PHP 'zip' extension is required to build the release archive.\n");
     exit(1);
 }
 
-$rootDir = dirname(__DIR__);
-$outputZip = $argv[1] ?? ($rootDir . '/vostokpribor_release.zip');
+$rootDir = realpath(dirname(__DIR__));
+$releaseDir = $rootDir . DIRECTORY_SEPARATOR . 'release';
 
-if (file_exists($outputZip)) {
-    unlink($outputZip);
+if (!is_dir($releaseDir)) {
+    mkdir($releaseDir, 0755, true);
 }
+
+$timestamp = date('Ymd_His');
+$zipFileName = "vostokpribor_release_{$timestamp}.zip";
+$zipPath = $releaseDir . DIRECTORY_SEPARATOR . $zipFileName;
+
+echo "========================================================================\n";
+echo "       VOSTOKPRIBOR ENTERPRISE RELEASE ARCHIVE BUILDER                  \n";
+echo "========================================================================\n\n";
+echo "Target archive: {$zipPath}\n";
+echo "Scanning workspace...\n";
 
 $zip = new ZipArchive();
-if ($zip->open($outputZip, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== true) {
-    fwrite(STDERR, "Error: Could not create zip archive at: {$outputZip}\n");
+$res = $zip->open($zipPath, ZipArchive::CREATE | ZipArchive::OVERWRITE);
+if ($res !== true) {
+    fwrite(STDERR, "[ERROR] Could not create zip archive: {$zipPath} (Code: {$res})\n");
     exit(1);
 }
 
-$excludedPatterns = [
-    '/^\.git(\/|\\\\|$)/',
-    '/^\.vscode(\/|\\\\|$)/',
-    '/^\.idea(\/|\\\\|$)/',
-    '/^\.gemini(\/|\\\\|$)/',
-    '/^node_modules(\/|\\\\|$)/',
-    '/^_trash(\/|\\\\|$)/',
-    '/^scratch(\/|\\\\|$)/',
-    '/^storage\/credentials(\/|\\\\|$)/',
-    '/^\.env$/',
-    '/^vostokpribor_release\.zip$/',
-    '/\.zip$/i',
-    '/\.log$/i',
-    '/playwright-report(\/|\\\\|$)/',
-    '/test-results(\/|\\\\|$)/',
-];
-
-$uploadDirPatterns = [
-    'CRM/uploads/',
-    'Online Shop B2B/uploads/',
-    'File Center/uploads/',
+// Prohibited path prefix/regex rules
+$prohibitedPatterns = [
+    '/^node_modules(\/|\\\\|$)/i',
+    '/^\.git(\/|\\\\|$)/i',
+    '/^\.env$/i',
+    '/^release(\/|\\\\|$)/i',
+    '/^storage[\/\\\\]documents[\/\\\\].+\.(pdf|xlsx|docx|tmp)$/i',
+    '/credentials.*\.json$/i',
+    '/passwords.*\.txt$/i',
+    '/.*\.tmp$/i',
+    '/.*\.log$/i',
 ];
 
 $filesAdded = 0;
-$totalBytes = 0;
-
-$iterator = new RecursiveIteratorIterator(
-    new RecursiveDirectoryIterator($rootDir, RecursiveDirectoryIterator::SKIP_DOTS),
-    RecursiveIteratorIterator::SELF_FIRST
-);
+$directoryIterator = new RecursiveDirectoryIterator($rootDir, RecursiveDirectoryIterator::SKIP_DOTS);
+$iterator = new RecursiveIteratorIterator($directoryIterator, RecursiveIteratorIterator::SELF_FIRST);
 
 foreach ($iterator as $item) {
     $realPath = $item->getRealPath();
-    $relPath = str_replace('\\', '/', substr($realPath, strlen(realpath($rootDir)) + 1));
-    
-    // Check exclusion patterns
-    $skip = false;
-    foreach ($excludedPatterns as $pattern) {
+    if ($realPath === false) continue;
+
+    // Relative path with forward slashes
+    $relPath = ltrim(str_replace('\\', '/', substr($realPath, strlen($rootDir))), '/');
+
+    // Check against prohibited patterns
+    $isProhibited = false;
+    foreach ($prohibitedPatterns as $pattern) {
         if (preg_match($pattern, $relPath)) {
-            $skip = true;
+            $isProhibited = true;
             break;
         }
-    }
-    if ($skip) {
-        continue;
     }
 
-    // Handle uploads directory: only include .gitkeep
-    foreach ($uploadDirPatterns as $upPattern) {
-        if (str_starts_with($relPath, $upPattern) && basename($relPath) !== '.gitkeep') {
-            $skip = true;
-            break;
-        }
-    }
-    if ($skip) {
+    if ($isProhibited) {
         continue;
     }
 
@@ -96,20 +84,71 @@ foreach ($iterator as $item) {
     } elseif ($item->isFile()) {
         $zip->addFile($realPath, $relPath);
         $filesAdded++;
-        $totalBytes += $item->getSize();
     }
 }
 
 $zip->close();
+echo "Archive built with {$filesAdded} files.\n";
 
-$archiveSize = filesize($outputZip);
+// -----------------------------------------------------------------------------
+// POST-BUILD SELF-AUDIT & INTEGRITY CHECK
+// -----------------------------------------------------------------------------
+echo "\nRunning release archive hygiene self-audit...\n";
+$verifyZip = new ZipArchive();
+if ($verifyZip->open($zipPath) !== true) {
+    fwrite(STDERR, "[ERROR] Failed to open generated archive for verification: {$zipPath}\n");
+    exit(1);
+}
 
-echo "========================================================================\n";
-echo "              VOSTOKPRIBOR RELEASE ARCHIVE GENERATOR                    \n";
-echo "========================================================================\n";
-echo "  Archive Destination : " . basename($outputZip) . "\n";
-echo "  Files Packaged      : {$filesAdded}\n";
-echo "  Uncompressed Size   : " . number_format($totalBytes / 1024 / 1024, 2) . " MB\n";
-echo "  Compressed Archive  : " . number_format($archiveSize / 1024 / 1024, 2) . " MB\n";
-echo "========================================================================\n";
-echo "RELEASE ARCHIVE BUILT SUCCESSFULLY!\n";
+$violations = [];
+$totalEntries = $verifyZip->numFiles;
+
+for ($i = 0; $i < $totalEntries; $i++) {
+    $entryName = $verifyZip->getNameIndex($i);
+    
+    // Check for prohibited entries
+    if (preg_match('/^node_modules(\/|$)/i', $entryName)) {
+        $violations[] = "Prohibited node_modules entry: {$entryName}";
+    }
+    if (preg_match('/^\.git(\/|$)/i', $entryName)) {
+        $violations[] = "Prohibited .git entry: {$entryName}";
+    }
+    if ($entryName === '.env') {
+        $violations[] = "Prohibited local .env file inside release archive!";
+    }
+    if (preg_match('/^storage\/documents\/.+\.(pdf|xlsx|docx)$/i', $entryName)) {
+        $violations[] = "Prohibited generated document in archive: {$entryName}";
+    }
+    if (preg_match('/(credentials|passwords).*\.(json|txt|tmp)$/i', $entryName)) {
+        $violations[] = "Prohibited credential/password file: {$entryName}";
+    }
+}
+
+$verifyZip->close();
+
+if (!empty($violations)) {
+    @unlink($zipPath);
+    fwrite(STDERR, "\n[FATAL] RELEASE ARCHIVE AUDIT FAILED (" . count($violations) . " violations):\n");
+    foreach ($violations as $v) {
+        fwrite(STDERR, "  - {$v}\n");
+    }
+    fwrite(STDERR, "\nCorrupted archive was securely removed. Build aborted.\n");
+    exit(1);
+}
+
+$archiveBytes = filesize($zipPath);
+$archiveMb = round($archiveBytes / (1024 * 1024), 2);
+$archiveSha256 = hash_file('sha256', $zipPath);
+
+echo "  [PASS] node_modules/ absent from archive\n";
+echo "  [PASS] .git/ absent from archive\n";
+echo "  [PASS] .env absent from archive (.env.example included)\n";
+echo "  [PASS] Generated documents absent from archive\n";
+echo "  [PASS] Plaintext credentials/passwords absent from archive\n";
+echo "  [PASS] Archive integrity verified (0 violations across {$totalEntries} entries)\n";
+echo "\nArchive Summary:\n";
+echo "  File:    {$zipFileName}\n";
+echo "  Size:    {$archiveMb} MB ({$archiveBytes} bytes)\n";
+echo "  SHA-256: {$archiveSha256}\n";
+echo "\nSTATUS: 100% PASS - CLEAN RELEASE ARCHIVE READY\n";
+exit(0);

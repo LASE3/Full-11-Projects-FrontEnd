@@ -347,19 +347,20 @@ ON DUPLICATE KEY UPDATE
 
 -- 5. INVOICES (10 Canonical Invoices: INV-2026-001 .. INV-2026-010)
 INSERT INTO invoices (inv_id, cus_id, prj_id, created_by_emp_id, total_value, currency, payment_status, issued_at, due_date, payment_terms, notes, paid_at) VALUES
-('INV-2026-001', 'CUS-1001', 'PRJ-2026-001', 'EMP-1005', 46250.00, 'EUR', 'Paid', '2026-01-15', '2026-02-14', 'Net-30', 'Aral Geomatics Laser Array - Milestone 1 Sign-off', '2026-02-10'),
-('INV-2026-002', 'CUS-1002', 'PRJ-2026-002', 'EMP-1005', 80000.00, 'EUR', 'Pending', '2026-02-15', '2026-03-17', 'Net-30', 'BaltNord SCADA Refurbishment - Hardware Advance', NULL),
-('INV-2026-003', 'CUS-1003', 'PRJ-2026-003', 'EMP-1005', 137500.00, 'EUR', 'Paid', '2026-02-28', '2026-03-30', 'Net-30', 'Steppe Mining Deep Shaft - Sensor Procurement Tranche', '2026-03-25'),
-('INV-2026-004', 'CUS-1004', 'PRJ-2026-004', 'EMP-1005', 55000.00, 'EUR', 'Pending', '2026-03-01', '2026-03-31', 'Net-30', 'RheinWerk Metrology - Cleanroom Bench Integration Phase 1', NULL),
-('INV-2026-005', 'CUS-1005', 'PRJ-2026-005', 'EMP-1005', 42000.00, 'EUR', 'Paid', '2026-03-10', '2026-04-09', 'Net-30', 'Tashkent Plant Chemical Dosing - Engineering Design Final', '2026-04-05'),
-('INV-2026-006', 'CUS-1006', 'PRJ-2026-006', 'EMP-1005', 32000.00, 'EUR', 'Pending', '2026-03-15', '2026-04-14', 'Net-30', 'Daugava Laser Interferometry - Prototype Fabrication', NULL),
-('INV-2026-007', 'CUS-1007', 'PRJ-2026-007', 'EMP-1005', 105000.00, 'EUR', 'Paid', '2026-01-30', '2026-03-01', 'Net-30', 'Caspian Welding Robot - Vision Head Commissioning', '2026-02-28'),
-('INV-2026-008', 'CUS-1008', 'PRJ-2026-008', 'EMP-1005', 68333.00, 'EUR', 'Pending', '2026-02-20', '2026-03-22', 'Net-30', 'Eurasia Water Pumping Grid - Phase 1 Telemetry Deployment', NULL),
-('INV-2026-009', 'CUS-1009', 'PRJ-2026-009', 'EMP-1005', 47333.00, 'EUR', 'Paid', '2026-02-10', '2026-03-12', 'Net-30', 'Altai Basin Eco-Telemetry - Sensor Calibration Package', '2026-03-08'),
-('INV-2026-010', 'CUS-1010', 'PRJ-2026-010', 'EMP-1005', 91667.00, 'EUR', 'Pending', '2026-03-12', '2026-04-11', 'Net-30', 'CentralRail Track Geometry - Laser Scanner Advance Payment', NULL)
+('INV-2026-001', 'CUS-1001', 'PRJ-2026-001', NULL, 46250.00, 'EUR', 'Paid', '2026-01-15', '2026-02-14', 'Net-30', 'Aral Geomatics Laser Array - Milestone 1 Sign-off', '2026-02-10'),
+('INV-2026-002', 'CUS-1002', 'PRJ-2026-002', NULL, 80000.00, 'EUR', 'Pending', '2026-02-15', '2026-03-17', 'Net-30', 'BaltNord SCADA Refurbishment - Hardware Advance', NULL),
+('INV-2026-003', 'CUS-1003', 'PRJ-2026-003', NULL, 137500.00, 'EUR', 'Paid', '2026-02-28', '2026-03-30', 'Net-30', 'Steppe Mining Deep Shaft - Sensor Procurement Tranche', '2026-03-25'),
+('INV-2026-004', 'CUS-1004', 'PRJ-2026-004', NULL, 55000.00, 'EUR', 'Pending', '2026-03-01', '2026-03-31', 'Net-30', 'RheinWerk Metrology - Cleanroom Bench Integration Phase 1', NULL),
+('INV-2026-005', 'CUS-1005', 'PRJ-2026-005', NULL, 42000.00, 'EUR', 'Paid', '2026-03-10', '2026-04-09', 'Net-30', 'Tashkent Plant Chemical Dosing - Engineering Design Final', '2026-04-05'),
+('INV-2026-006', 'CUS-1006', 'PRJ-2026-006', NULL, 32000.00, 'EUR', 'Pending', '2026-03-15', '2026-04-14', 'Net-30', 'Daugava Laser Interferometry - Prototype Fabrication', NULL),
+('INV-2026-007', 'CUS-1007', 'PRJ-2026-007', NULL, 105000.00, 'EUR', 'Paid', '2026-01-30', '2026-03-01', 'Net-30', 'Caspian Welding Robot - Vision Head Commissioning', '2026-02-28'),
+('INV-2026-008', 'CUS-1008', 'PRJ-2026-008', NULL, 68333.00, 'EUR', 'Pending', '2026-02-20', '2026-03-22', 'Net-30', 'Eurasia Water Pumping Grid - Phase 1 Telemetry Deployment', NULL),
+('INV-2026-009', 'CUS-1009', 'PRJ-2026-009', NULL, 47333.00, 'EUR', 'Paid', '2026-02-10', '2026-03-12', 'Net-30', 'Altai Basin Eco-Telemetry - Sensor Calibration Package', '2026-03-08'),
+('INV-2026-010', 'CUS-1010', 'PRJ-2026-010', NULL, 91667.00, 'EUR', 'Pending', '2026-03-12', '2026-04-11', 'Net-30', 'CentralRail Track Geometry - Laser Scanner Advance Payment', NULL)
 ON DUPLICATE KEY UPDATE 
     cus_id = VALUES(cus_id),
     prj_id = VALUES(prj_id),
+    created_by_emp_id = VALUES(created_by_emp_id),
     total_value = VALUES(total_value),
     currency = VALUES(currency),
     payment_status = VALUES(payment_status),
@@ -451,5 +452,12 @@ CREATE TABLE IF NOT EXISTS `password_history` (
     INDEX `idx_acc_hist` (`account_type`, `account_id`, `created_at`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- 11. FINANCE DEPARTMENT ROLES (EMP-1003 CFO owner, FIN staff operate)
+INSERT IGNORE INTO `employee_roles` (`emp_id`, `role_id`, `granted_at`, `granted_by_emp_id`)
+SELECT e.`emp_id`, 6, '2026-09-21 16:36:11', 'EMP-1003'
+FROM `employees` e
+WHERE e.`department_code` = 'FIN';
+
 SET FOREIGN_KEY_CHECKS = 1;
+
 

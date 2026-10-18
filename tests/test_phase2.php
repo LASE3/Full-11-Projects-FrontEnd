@@ -151,7 +151,7 @@ $_POST = [
 require __DIR__ . "/../VOSTOKPRIBOR Corporate Web Platform/api/contact.php";
 ';
 file_put_contents($runnerScript, $runCode);
-$phpBin = defined('PHP_BINARY') && PHP_BINARY ? PHP_BINARY : 'C:\\xampp\\php\\php.exe';
+$phpBin = getenv('PHP_BINARY') ?: (defined('PHP_BINARY') && PHP_BINARY ? PHP_BINARY : 'php');
 $output = shell_exec(escapeshellarg($phpBin) . ' ' . escapeshellarg($runnerScript));
 @unlink($runnerScript);
 

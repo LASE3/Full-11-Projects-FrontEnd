@@ -88,8 +88,8 @@
       const statusEl = document.getElementById("modal-inv-status");
       const issueEl = document.getElementById("modal-inv-issue");
       const dueEl = document.getElementById("modal-inv-due");
-      const itemsBody = document.getElementById("modal-inv-items-body");
       const timelineBody = document.getElementById("modal-inv-timeline-body");
+      const btnApprove = document.getElementById("btn-modal-approve");
       const btnMarkPaid = document.getElementById("btn-modal-mark-paid");
       const btnSendReminder = document.getElementById(
         "btn-modal-send-reminder",
@@ -143,7 +143,7 @@
               statusEl.innerHTML = "✓ Paid";
             } else if (inv.payment_status === "Pending") {
               statusEl.className = "status-badge-pending";
-              statusEl.innerHTML = "⚡ Pending";
+              statusEl.innerHTML = inv.approved_by_emp_id ? "⚡ Pending Payment (Approved)" : "⏳ Awaiting Approval";
             } else {
               statusEl.className = "status-badge-overdue";
               statusEl.innerHTML = "⚠️ Overdue";
@@ -203,8 +203,8 @@
               timelineBody.innerHTML = `
                 <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.6rem 0.85rem; background: var(--fin-surface-dim); border-radius: var(--fin-radius-sm); border-left: 3px solid ${inv.payment_status === "Paid" ? "var(--fin-green)" : "var(--fin-amber)"};">
                   <div>
-                    <div style="font-weight: 600; color: var(--fin-navy); font-size: 12px;">${inv.payment_status === "Paid" ? "Milestone Settlement Completed" : "Awaiting Settlement Clearance"}</div>
-                    <div style="font-size: 11px; color: var(--fin-text-muted);">Due: ${inv.due_date || "Net-30"} · Terms: ${escapeHtml(inv.payment_terms || "Net-30")}</div>
+                    <div style="font-weight: 600; color: var(--fin-navy); font-size: 12px;">${inv.payment_status === "Paid" ? "Milestone Settlement Completed" : (inv.approved_by_emp_id ? "Approved · Awaiting Payment Settlement" : "Awaiting Manager Approval")}</div>
+                    <div style="font-size: 11px; color: var(--fin-text-muted);">Due: ${inv.due_date || "Net-30"} · Terms: ${escapeHtml(inv.payment_terms || "Net-30")}${inv.approved_by_emp_id ? " · Approved by: " + escapeHtml(inv.approved_by_emp_id) : ""}</div>
                   </div>
                   <div style="text-align: right;">
                     <div style="font-family: var(--fin-font-mono); font-weight: 700; color: var(--fin-navy);">${finApp.formatCurrency(inv.total_value, curr)}</div>
@@ -216,9 +216,15 @@
           }
 
           // Attach actions to buttons
+          if (btnApprove) {
+            const needsApproval = inv.payment_status !== "Paid" && !inv.approved_by_emp_id;
+            btnApprove.style.display = needsApproval ? "inline-flex" : "none";
+            btnApprove.onclick = () => finApp.approveInvoice(inv.inv_id);
+          }
           if (btnMarkPaid) {
-            btnMarkPaid.style.display =
-              inv.payment_status === "Paid" ? "none" : "inline-flex";
+            // Maker-checker: payment requires approval (or legacy backfilled records)
+            const canPay = inv.payment_status !== "Paid" && (Boolean(inv.approved_by_emp_id) || !inv.created_by_emp_id);
+            btnMarkPaid.style.display = canPay ? "inline-flex" : "none";
             btnMarkPaid.onclick = () => finApp.markInvoicePaid(inv.inv_id);
           }
           if (btnSendReminder) {
@@ -237,7 +243,36 @@
         });
     },
 
-    // Mark Invoice as Paid in DB
+    // Approve Invoice (Maker-Checker Step 2)
+    approveInvoice: function (invId) {
+      if (!confirm(`Ratify and approve invoice ${invId}?`)) return;
+
+      const fd = new FormData();
+      fd.append("action", "approve_invoice");
+      fd.append("inv_id", invId);
+
+      fetch(this.apiBase, { method: "POST", body: fd })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.success) {
+            finApp.showToast(
+              "Invoice Approved",
+              data.message || `Invoice ${invId} approved.`,
+              "green",
+            );
+            finApp.inspectInvoice(invId);
+          } else {
+            finApp.showToast(
+              "Approval Refused",
+              data.error || "Failed to approve invoice.",
+              "error",
+            );
+          }
+        })
+        .catch((err) => finApp.showToast("Error", err.message, "error"));
+    },
+
+    // Mark Invoice as Paid in DB (Maker-Checker Step 3)
     markInvoicePaid: function (invId) {
       if (
         !confirm(`Confirm mark invoice ${invId} as PAID in the General Ledger?`)

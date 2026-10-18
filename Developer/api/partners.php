@@ -8,7 +8,6 @@ $_vp_user = vp_api_guard('DEV', []);
 require_once __DIR__ . '/db_helper.php';
 
 try {
-    vp_authorize($_vp_user, 'developer_credential:change', $_POST, $pdo);
     $pdo = getDbConnection();
     ensureDeveloperTables($pdo);
 
@@ -35,6 +34,7 @@ try {
             break;
 
         case 'create':
+            vp_authorize($_vp_user, 'developer_partner:create', $payload, $pdo);
             $company = trim($payload['company_name'] ?? '');
             $partnerId = trim($payload['partner_id'] ?? '');
             $contactName = trim($payload['contact_name'] ?? '');
@@ -119,6 +119,7 @@ try {
             break;
 
         case 'update':
+            vp_authorize($_vp_user, 'developer_partner:update', $payload, $pdo);
             $id = (int)($payload['id'] ?? 0);
             if ($id <= 0) {
                 sendJsonError('Valid Application ID is required');
@@ -216,6 +217,7 @@ try {
             break;
 
         case 'delete':
+            vp_authorize($_vp_user, 'developer_partner:delete', $payload, $pdo);
             $id = (int)($payload['id'] ?? 0);
             if ($id <= 0) {
                 sendJsonError('Valid Application ID is required');
@@ -231,6 +233,8 @@ try {
             sendJsonError('Invalid action for partners service');
             break;
     }
+} catch (VpAuthorizationException $e) {
+    sendJsonError($e->getMessage(), $e->getCode() ?: 403);
 } catch (Throwable $e) {
     error_log("Database error: " . $e->getMessage());
     sendJsonError("Database error. An internal error occurred.", 500);
