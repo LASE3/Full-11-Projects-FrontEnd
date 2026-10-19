@@ -24,14 +24,12 @@ body.vostok-launchpad {
     box-shadow: 0 12px 24px -10px rgba(0, 0, 0, 0.5);
 }
 
-@media (pointer: coarse), (max-width: 768px) {
-    .system-card a,
-    .system-card button,
-    .vostok-launchpad a,
-    .vostok-launchpad button,
-    a.bg-brand-panel {
-        min-height: 44px !important;
-        min-width: 44px !important;
-        box-sizing: border-box !important;
-    }
+.system-card a,
+.system-card button,
+.vostok-launchpad a,
+.vostok-launchpad button,
+a.bg-brand-panel {
+    min-height: 44px !important;
+    min-width: 44px !important;
+    box-sizing: border-box !important;
 }

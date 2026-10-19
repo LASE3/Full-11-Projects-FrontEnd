@@ -11,7 +11,7 @@
  */
 
 const { chromium } = require('playwright');
-const { execSync } = require('child_process');
+const { execFileSync } = require('child_process');
 
 const BASE_URL = (process.env.BASE_URL || 'http://127.0.0.1/Full-11-Projects-FrontEnd').replace(/\/+$/, '');
 const PHP_BIN = process.env.PHP_BINARY || (require('fs').existsSync('C:\\xampp\\php\\php.exe') ? 'C:\\xampp\\php\\php.exe' : 'php');
@@ -19,10 +19,11 @@ const PHP_BIN = process.env.PHP_BINARY || (require('fs').existsSync('C:\\xampp\\
 // Generate fresh SSO cookie token via PHP helper
 function getSsoToken() {
   try {
-    const resetCode = "require 'config/db.php'; $pdo = getDbConnection(); $pdo->exec('UPDATE employee_accounts SET must_change_password = 0'); $pdo->exec('UPDATE customer_accounts SET must_change_password = 0');";
-    execSync(`${JSON.stringify(PHP_BIN)} -r ${JSON.stringify(resetCode)}`);
-    const code = "require 'config/db.php'; echo createSsoCookie(['user_id'=>'EMP-1001','emp_id'=>'EMP-1001','account_id'=>1,'clearance_level'=>'L4','role_name'=>'SuperAdmin','account_type'=>'Employee','full_name'=>'SuperAdmin','email'=>'admin@vostokpribor.local']);";
-    const token = execSync(`${JSON.stringify(PHP_BIN)} -r ${JSON.stringify(code)}`).toString().trim();
+    const token = execFileSync(PHP_BIN, [
+      'scripts/get_sso_cookie.php',
+      'EMP-1001',
+      '--active'
+    ]).toString().trim();
     return token;
   } catch (err) {
     console.error('Failed to generate SSO token:', err.message);

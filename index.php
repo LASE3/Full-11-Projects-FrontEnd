@@ -185,7 +185,7 @@ $systems = [
             <?php foreach ($systems as $sys): ?>
                 <div class="system-card bg-brand-card rounded-lg border border-brand-border flex flex-col justify-between overflow-hidden">
                     <!-- Card Header Accent -->
-                    <div class="h-1 w-full" style="background-color: <?= $sys['accent'] ?>;"></div>
+                    <div class="h-1 w-full" style="background-color: <?= $sys['accent'] ?>; min-height: 44px; min-width: 44px;"></div>
 
                     <div class="p-5 flex-1 flex flex-col">
                         <div class="flex items-start justify-between gap-3 mb-3">
@@ -221,12 +221,12 @@ $systems = [
                             $btnIcon = $isPublicCorp ? 'language' : 'login';
                             ?>
                             <a href="<?= $targetUrl ?>" target="_blank" rel="noopener noreferrer" class="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded text-xs font-semibold text-white transition-colors shadow-sm"
-                                style="background-color: <?= $sys['accent'] ?>;" title="Open <?= htmlspecialchars($sys['name']) ?> in a new tab">
+                                style="background-color: <?= $sys['accent'] ?>; min-height: 44px; min-width: 44px;" title="Open <?= htmlspecialchars($sys['name']) ?> in a new tab">
                                 <span class="material-symbols-outlined text-sm"><?= $btnIcon ?></span>
                                 <span><?= $btnLabel ?></span>
                             </a>
                             <a href="<?= $targetUrl ?>" target="_blank" rel="noopener noreferrer"
-                                class="inline-flex items-center justify-center gap-1 px-3 py-2 rounded text-xs font-mono font-semibold text-slate-200 bg-brand-panel hover:bg-brand-border hover:text-white border border-brand-border transition-colors shadow-sm"
+                                class="inline-flex items-center justify-center gap-1 px-3 py-2.5 rounded text-xs font-mono font-semibold text-slate-200 bg-brand-panel hover:bg-brand-border hover:text-white border border-brand-border transition-colors shadow-sm" style="min-height: 44px; min-width: 44px;"
                                 title="Run <?= htmlspecialchars($sys['name']) ?>">
                                 <span class="material-symbols-outlined text-sm text-emerald-400">play_arrow</span>
                                 <span>Run</span>
