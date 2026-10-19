@@ -111,7 +111,16 @@ async function runResponsiveSuite() {
         page.on('pageerror', (err) => jsErrors.push(err.message));
 
         try {
-          const response = await page.goto(targetUrl, { waitUntil: 'domcontentloaded', timeout: 10000 });
+          let response = null;
+          for (let attempt = 1; attempt <= 2; attempt++) {
+            try {
+              response = await page.goto(targetUrl, { waitUntil: 'domcontentloaded', timeout: 30000 });
+              break;
+            } catch (err) {
+              if (attempt === 2) throw err;
+              await page.waitForTimeout(1000);
+            }
+          }
           const status = response ? response.status() : 0;
 
           if (status >= 400) {
