@@ -10,7 +10,11 @@
     "test:maker-checker": "php tests/test_maker_checker.php",
     "test:password": "php tests/test_customer_password_isolation.php",
     "test:phase4": "php tests/test_phase4_ownership_and_developer.php",
+    "test:responsive": "node tests/e2e/responsive.spec.js",
     "test:e2e": "node tests/e2e/clickthrough.spec.js",
+    "test:hygiene": "php scripts/check_repo_hygiene.php",
+    "test:touch-target": "php tests/test_touch_target_css.php",
+    "check-env": "php scripts/check_env.php",
     "release": "php scripts/make_release.php"
   },
   "devDependencies": {

@@ -27,7 +27,9 @@ $opsTasks = intra_getOpsTasks();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <?php require_once __DIR__ . '/../includes/head_security.php'; ?>
-">
+    <script>
+        window.__CSRF_TOKEN__ = <?= json_encode(getCsrfToken()) ?>;
+    </script>
     <title>VOSTOKPRIBOR Intranet • Home Feed</title>
     <meta name="description" content="VOSTOKPRIBOR Enterprise Employee Communications & Operational Hub">
 

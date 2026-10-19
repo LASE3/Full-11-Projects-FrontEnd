@@ -58,10 +58,11 @@
       return;
     }
 
+    const csrfToken = (typeof getCsrfToken === 'function' ? getCsrfToken() : '') || window.__CSRF_TOKEN__ || (document.querySelector('meta[name="csrf-token"]')?.content) || '';
     fetch("api/risks.php", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ action: "delete", risk_id: id })
+      headers: { "Content-Type": "application/json", "X-CSRF-Token": csrfToken },
+      body: JSON.stringify({ action: "delete", risk_id: id, csrf_token: csrfToken })
     })
       .then((res) => res.json())
       .then((data) => {
@@ -99,9 +100,12 @@
       threat_vector: document.getElementById("modalRiskThreatVector").value
     };
 
+    const csrfToken = (typeof getCsrfToken === 'function' ? getCsrfToken() : '') || window.__CSRF_TOKEN__ || (document.querySelector('meta[name="csrf-token"]')?.content) || '';
+    payload.csrf_token = csrfToken;
+
     fetch("api/risks.php", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", "X-CSRF-Token": csrfToken },
       body: JSON.stringify(payload)
     })
       .then((res) => res.json())

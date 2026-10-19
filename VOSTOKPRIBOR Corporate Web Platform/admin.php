@@ -24,7 +24,7 @@ $csrfToken = getCsrfToken();
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <?php require_once __DIR__ . '/../includes/head_security.php'; ?>
-" />
+    <link rel="stylesheet" href="../assets/css/responsive-core.css" />
     <title>WEB Admin Editor • VOSTOKPRIBOR Corporate Platform</title>
 
                     <link rel="stylesheet" href="css/theme.css" />

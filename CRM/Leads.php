@@ -578,26 +578,26 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
       <div class="modal-body">
         <div class="form-group">
           <label class="form-label">Plant / Enterprise Name</label>
-          <input type="text" class="form-input" placeholder="e.g. Nornickel Copper Plant #3" required />
+          <input id="new-lead-company" type="text" class="form-input" placeholder="e.g. Nornickel Copper Plant #3" required />
         </div>
         <div class="crm-grid-2col" >
           <div class="form-group">
             <label class="form-label">Contact Engineer</label>
-            <input type="text" class="form-input" placeholder="Dr. Alexey Smirnov" required />
+            <input id="new-lead-name" type="text" class="form-input" placeholder="Dr. Alexey Smirnov" required />
           </div>
           <div class="form-group">
             <label class="form-label">Estimated Deal Scope (USD)</label>
-            <input type="number" class="form-input" placeholder="850000" required />
+            <input id="new-lead-val" type="number" class="form-input" placeholder="850000" required />
           </div>
         </div>
         <div class="form-group">
           <label class="form-label">Equipment Specification / Scope Notes</label>
-          <textarea class="form-textarea" rows="2" placeholder="Requested instrumentation scope, hazardous environment certifications..."></textarea>
+          <textarea id="new-lead-notes" class="form-textarea" rows="2" placeholder="Requested instrumentation scope, hazardous environment certifications..."></textarea>
         </div>
       </div>
       <div class="modal-footer">
         <button class="btn btn-outline" onclick="window.crmApp.closeModal('modal-new-lead')">Cancel</button>
-        <button class="btn btn-primary-amber" onclick="window.crmApp.showToast('Lead Logged', 'New lead registered in intake ledger.'); window.crmApp.closeModal('modal-new-lead');">Save Lead</button>
+        <button id="btnSaveNewLead" class="btn btn-primary-amber" onclick="window.crmApp.saveNewLead();">Save Lead</button>
       </div>
     </div>
   </div>

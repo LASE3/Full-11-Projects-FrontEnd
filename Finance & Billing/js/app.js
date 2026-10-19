@@ -88,6 +88,7 @@
       const statusEl = document.getElementById("modal-inv-status");
       const issueEl = document.getElementById("modal-inv-issue");
       const dueEl = document.getElementById("modal-inv-due");
+      const itemsBody = document.getElementById("modal-inv-items-body");
       const timelineBody = document.getElementById("modal-inv-timeline-body");
       const btnApprove = document.getElementById("btn-modal-approve");
       const btnMarkPaid = document.getElementById("btn-modal-mark-paid");
@@ -395,7 +396,6 @@
               data.message,
               "green",
             );
-            /* in-place update */ const statusEl = document.querySelector(`tr[data-inv-id="${invId || ""}"] .status-pill`); if (statusEl) { statusEl.className = "status-pill status-paid"; statusEl.textContent = "Paid"; }
           } else {
             finApp.showToast(
               "Auto-Match Failed",
@@ -423,7 +423,6 @@
         .then((data) => {
           if (data.success) {
             finApp.showToast("Telemetry Ingested", data.message, "green");
-            /* in-place update */ const statusEl = document.querySelector(`tr[data-inv-id="${invId || ""}"] .status-pill`); if (statusEl) { statusEl.className = "status-pill status-paid"; statusEl.textContent = "Paid"; }
           } else {
             finApp.showToast(
               "Sync Error",
@@ -506,7 +505,7 @@
               "green",
             );
             finApp.closeModal("modal-create-invoice");
-            /* in-place update */ const statusEl = document.querySelector(`tr[data-inv-id="${invId || ""}"] .status-pill`); if (statusEl) { statusEl.className = "status-pill status-paid"; statusEl.textContent = "Paid"; }
+            /* in-place update */ const statusEl = document.querySelector(`tr[data-inv-id="${data.inv_id || ""}"] .status-pill`); if (statusEl) { statusEl.className = "status-pill status-pending"; statusEl.textContent = "Pending Approval"; }
           } else {
             finApp.showToast(
               "Error Creating Invoice",
@@ -535,7 +534,6 @@
           if (data.success) {
             finApp.showToast("Budget Updated", data.message, "green");
             finApp.closeModal("modal-update-budget");
-            /* in-place update */ const statusEl = document.querySelector(`tr[data-inv-id="${invId || ""}"] .status-pill`); if (statusEl) { statusEl.className = "status-pill status-paid"; statusEl.textContent = "Paid"; }
           } else {
             finApp.showToast(
               "Budget Error",

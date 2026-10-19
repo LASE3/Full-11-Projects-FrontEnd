@@ -1546,28 +1546,28 @@
                     <form id="quick-action-form" style="padding: 1.5rem;" onsubmit="event.preventDefault(); window.submitQuickAction('leave')">
                         <div class="form-group">
                             <label class="form-label">Absence Category</label>
-                            <select class="form-select" required>
-                                <option value="annual">Annual Paid Vacation (Accrual balance: 18.5 days)</option>
-                                <option value="field">Field Engineering / Commissioning Assignment</option>
-                                <option value="medical">Medical / Health Absence</option>
-                                <option value="compassionate">Compassionate Leave</option>
+                            <select id="leave-type-select" class="form-select" required>
+                                <option value="Annual Leave">Annual Paid Vacation (Accrual balance: 18.5 days)</option>
+                                <option value="Field Assignment">Field Engineering / Commissioning Assignment</option>
+                                <option value="Medical Leave">Medical / Health Absence</option>
+                                <option value="Compassionate">Compassionate Leave</option>
                             </select>
                         </div>
 
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;" class="form-group">
                             <div>
                                 <label class="form-label">Start Date</label>
-                                <input type="date" class="form-input" required value="2026-09-18" />
+                                <input id="leave-start-input" type="date" class="form-input" required value="2026-09-18" />
                             </div>
                             <div>
                                 <label class="form-label">End Date</label>
-                                <input type="date" class="form-input" required value="2026-09-25" />
+                                <input id="leave-end-input" type="date" class="form-input" required value="2026-09-25" />
                             </div>
                         </div>
 
                         <div class="form-group">
                             <label class="form-label">Operational Handover Personnel</label>
-                            <input type="text" class="form-input" placeholder="e.g. Farida Iskakova (ITD) - Systems PM" value="Farida Iskakova (ITD)" required />
+                            <input id="leave-handover-input" type="text" class="form-input" placeholder="e.g. Farida Iskakova (ITD) - Systems PM" value="Farida Iskakova (ITD)" required />
                             <div class="form-hint">Designated colleague to cover urgent incidents during your absence.</div>
                         </div>
 
@@ -1575,7 +1575,7 @@
                             <span style="font-size: 0.75rem; color: var(--neutral-500); font-family: var(--font-mono);">Routing: HRA & Exec Review</span>
                             <div style="display: flex; gap: 0.75rem;">
                                 <button type="button" class="btn btn-secondary" onclick="document.getElementById('request-modal').classList.remove('show')">Cancel</button>
-                                <button type="submit" class="btn btn-primary">
+                                <button type="submit" id="btnSubmitLeave" class="btn btn-primary">
                                     <span class="material-symbols-outlined" style="font-size: 1rem;">send</span>
                                     Submit Absence Requisition
                                 </button>
@@ -1919,7 +1919,38 @@
       const itype = form ? (form.querySelector('[name="incident_type"]')?.value || "Safety Notice") : "Safety Notice";
       showToast("HSE Safety Report Logged", `${itype} (${sev} severity) filed with safety audit log.`, "success");
     } else if (type === "leave") {
-      showToast("Leave Request Submitted", "Absence form transmitted to HRA and supervisor. Tracking ID: LR-2026-4481", "success");
+      const leaveType = form?.querySelector('#leave-type-select')?.value || 'Annual Leave';
+      const startDate = form?.querySelector('#leave-start-input')?.value || '2026-09-18';
+      const endDate = form?.querySelector('#leave-end-input')?.value || '2026-09-25';
+      const reason = form?.querySelector('#leave-handover-input')?.value || 'Operational Handover';
+      const csrfToken = window.__CSRF_TOKEN__ || (window.getCsrfToken ? window.getCsrfToken() : '') || (document.cookie.match(/(^|;)\s*vostok_csrf_token\s*=\s*([^;]+)/) || [])[2] || '';
+
+      fetch('api/leaves.php', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': csrfToken
+        },
+        body: JSON.stringify({
+          leave_type: leaveType,
+          start_date: startDate,
+          end_date: endDate,
+          reason: reason,
+          csrf_token: csrfToken
+        })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          const lId = (data.data && data.data.leave_id) || '4481';
+          showToast("Leave Request Submitted", `Absence form transmitted to HRA. Tracking ID: LR-${lId}`, "success");
+        } else {
+          showToast("Leave Error", data.message || "Failed to submit leave", "error");
+        }
+      })
+      .catch(err => {
+        console.error("Leave request error:", err);
+      });
     } else {
       showToast("Support Incident Logged", "IT Ticket INC-2026-9044 assigned to Leonid Volkov (ITD). Resolution SLA: 15 mins.", "success");
     }

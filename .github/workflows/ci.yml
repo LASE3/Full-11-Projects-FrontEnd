@@ -24,10 +24,6 @@ jobs:
             version: '10.11'
             image: 'mariadb:10.11'
             port: 3306
-          - name: MySQL
-            version: '8.0'
-            image: 'mysql:8.0'
-            port: 3306
 
     services:
       database:
@@ -38,6 +34,17 @@ jobs:
         ports:
           - ${{ matrix.db.port }}:3306
         options: --health-cmd="mysqladmin ping --silent" --health-interval=10s --health-timeout=5s --health-retries=5
+
+    env:
+      VOSTOK_SSO_SECRET: ${{ secrets.VOSTOK_SSO_SECRET || 'vostok_enterprise_sso_secret_key_32chars_2026_x7a9' }}
+      TEST_ADMIN_PASSWORD: ${{ secrets.TEST_ADMIN_PASSWORD || 'VostokPribor2026!' }}
+      BASE_URL: http://127.0.0.1:8080/
+      APP_ENV: test
+      DB_HOST: 127.0.0.1
+      DB_PORT: 3306
+      DB_NAME: vostokpribor
+      DB_USER: vostok_app
+      DB_PASS: ${{ secrets.DB_APP_PASS || 'VostokApp2026!Secure' }}
 
     steps:
       - name: Checkout repository
@@ -57,6 +64,23 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
+
+      - name: Environment Preflight Check
+        run: |
+          php scripts/check_env.php
+
+      - name: Install Node.js Dependencies & Playwright Browsers
+        run: |
+          if [ -f package-lock.json ]; then npm ci; else npm install; fi
+          npx playwright install --with-deps chromium
+
+      - name: Run Repository Hygiene Gate
+        run: |
+          php scripts/check_repo_hygiene.php
+
+      - name: Run Touch Target & Responsive CSS Gate
+        run: |
+          php tests/test_touch_target_css.php
 
       - name: Create least-privilege app database user
         env:
@@ -189,3 +213,20 @@ jobs:
           BASE_URL: http://127.0.0.1:8080/
         run: |
           php tests/run_all_tests.php
+
+      - name: Run Responsive & Mobile Zero-Overflow E2E Suite
+        env:
+          BASE_URL: http://127.0.0.1:8080/
+        run: |
+          node tests/e2e/responsive.spec.js
+
+      - name: Run Click-Through E2E Suite
+        env:
+          BASE_URL: http://127.0.0.1:8080/
+          DB_HOST: 127.0.0.1
+          DB_PORT: ${{ matrix.db.port }}
+          DB_NAME: vostokpribor
+          DB_USER: vostok_app
+          DB_PASS: ${{ secrets.DB_APP_PASS || 'VostokApp2026!Secure' }}
+        run: |
+          node tests/e2e/clickthrough.spec.js

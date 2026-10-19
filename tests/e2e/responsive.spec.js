@@ -14,11 +14,13 @@ const { chromium } = require('playwright');
 const { execSync } = require('child_process');
 
 const BASE_URL = (process.env.BASE_URL || 'http://127.0.0.1/Full-11-Projects-FrontEnd').replace(/\/+$/, '');
-const PHP_BIN = process.env.PHP_BINARY || 'php';
+const PHP_BIN = process.env.PHP_BINARY || (require('fs').existsSync('C:\\xampp\\php\\php.exe') ? 'C:\\xampp\\php\\php.exe' : 'php');
 
 // Generate fresh SSO cookie token via PHP helper
 function getSsoToken() {
   try {
+    const resetCode = "require 'config/db.php'; $pdo = getDbConnection(); $pdo->exec('UPDATE employee_accounts SET must_change_password = 0'); $pdo->exec('UPDATE customer_accounts SET must_change_password = 0');";
+    execSync(`${JSON.stringify(PHP_BIN)} -r ${JSON.stringify(resetCode)}`);
     const code = "require 'config/db.php'; echo createSsoCookie(['user_id'=>'EMP-1001','emp_id'=>'EMP-1001','account_id'=>1,'clearance_level'=>'L4','role_name'=>'SuperAdmin','account_type'=>'Employee','full_name'=>'SuperAdmin','email'=>'admin@vostokpribor.local']);";
     const token = execSync(`${JSON.stringify(PHP_BIN)} -r ${JSON.stringify(code)}`).toString().trim();
     return token;
@@ -137,6 +139,55 @@ async function runResponsiveSuite() {
             failures.push({ test: pageLabel, error: `Horizontal overflow: scrollWidth=${layoutMetrics.scrollWidth} > innerWidth=${layoutMetrics.winWidth} (+${diff}px)` });
             console.log(`  [FAIL] ${pageLabel} - Overflow (+${diff}px)`);
             continue;
+          }
+
+          // Touch target validation on touch viewports (375px/768px, WCAG 2.5.5 / 2.5.8)
+          if (vp.hasTouch) {
+            const tapTargetViolations = await page.evaluate(() => {
+              const elements = Array.from(document.querySelectorAll('button, a, input, select'));
+              const violations = [];
+
+              for (const el of elements) {
+                const style = window.getComputedStyle(el);
+                if (style.display === 'none' || style.visibility === 'hidden' || style.opacity === '0') continue;
+                if (el.closest('.hidden, [hidden], [style*="display: none"], [style*="display:none"]')) continue;
+
+                // Documented exceptions:
+                // 1. Native checkboxes, radios, and hidden inputs (compact native browser elements)
+                if (el.tagName === 'INPUT' && (el.type === 'checkbox' || el.type === 'radio' || el.type === 'hidden')) continue;
+                // 2. Inline links within running body prose paragraphs, spans, or labels
+                if (el.tagName === 'A' && (el.closest('p') || el.closest('label') || el.closest('.prose') || el.classList.contains('inline-prose-link') || el.classList.contains('text-link'))) continue;
+                // 3. Off-canvas drawer elements when sidebar is closed
+                if (!document.body.classList.contains('sidebar-open') && el.closest('aside.sidebar, .app-sidebar, .portal-sidebar, .admin-sidebar')) continue;
+                // 4. Inactive/hidden modal contents
+                if (el.closest('.vk-modal-overlay:not(.active), .modal:not(.show), .modal:not(.active)')) continue;
+
+                const rect = el.getBoundingClientRect();
+                if (rect.width === 0 && rect.height === 0) continue;
+
+                // 43px threshold with 1px subpixel rounding tolerance for 44px
+                if (rect.width < 43 || rect.height < 43) {
+                  violations.push({
+                    tag: el.tagName,
+                    text: (el.textContent || el.value || el.placeholder || '').trim().slice(0, 30),
+                    width: Math.round(rect.width),
+                    height: Math.round(rect.height),
+                    cls: el.className
+                  });
+                }
+              }
+              return violations;
+            });
+
+            if (tapTargetViolations.length > 0) {
+              const sample = tapTargetViolations[0];
+              failures.push({
+                test: pageLabel,
+                error: `Touch target violation: ${tapTargetViolations.length} controls < 44x44px. Sample: <${sample.tag} class="${sample.cls}"> "${sample.text}" is ${sample.width}x${sample.height}px`
+              });
+              console.log(`  [FAIL] ${pageLabel} - Touch target (${tapTargetViolations.length} controls < 44x44px)`);
+              continue;
+            }
           }
 
           if (jsErrors.length > 0) {

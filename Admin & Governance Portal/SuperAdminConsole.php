@@ -424,7 +424,7 @@ $totalAuditSystems = (int)$pdo->query(
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <?php require_once __DIR__ . '/../includes/head_security.php'; ?>
-"/>
+    <link rel="stylesheet" href="../assets/css/responsive-core.css">
     <title>SuperAdmin Console — VOSTOKPRIBOR</title>
     <meta name="description" content="SuperAdmin read-only console: table browser, audit logs, view-as, integration link health"/>
     <style>
@@ -464,7 +464,7 @@ $totalAuditSystems = (int)$pdo->query(
             padding: 20px 0; flex-shrink: 0;
         }
         nav a {
-            display: block; padding: 10px 20px; color: var(--muted); text-decoration: none;
+            display: flex; align-items: center; min-height: 44px; padding: 10px 20px; color: var(--muted); text-decoration: none;
             font-size: 13px; transition: all 0.15s;
         }
         nav a:hover, nav a.active { background: var(--bg3); color: var(--accent2); border-left: 3px solid var(--accent); }
@@ -545,7 +545,7 @@ $totalAuditSystems = (int)$pdo->query(
     <div class="user-info">
         <?= htmlspecialchars($currentUser['full_name'] ?? 'Administrator') ?>
         &nbsp;|&nbsp; <?= htmlspecialchars($currentUser['clearance_level'] ?? 'L4') ?>
-        &nbsp;|&nbsp; <a href="login.php" style="color:var(--danger);font-size:12px;">Logout</a>
+        &nbsp;|&nbsp; <a href="login.php" style="color:var(--danger);font-size:12px;min-height:44px;min-width:44px;display:inline-flex;align-items:center;justify-content:center;">Logout</a>
     </div>
 </header>
 

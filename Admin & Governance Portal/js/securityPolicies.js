@@ -96,9 +96,12 @@
       description: document.getElementById("modalDescription").value
     };
 
+    const csrfToken = (typeof getCsrfToken === 'function' ? getCsrfToken() : '') || window.__CSRF_TOKEN__ || (document.querySelector('meta[name="csrf-token"]')?.content) || '';
+    payload.csrf_token = csrfToken;
+
     fetch("api/policies.php", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", "X-CSRF-Token": csrfToken },
       body: JSON.stringify(payload)
     })
       .then((res) => res.json())

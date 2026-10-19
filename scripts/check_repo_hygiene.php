@@ -157,6 +157,88 @@ check("Storage credentials uncommitted & clean", !file_exists($root . '/storage/
 // 13. Check release builder make_release.php exists
 check("Release archive generator present", file_exists($root . '/scripts/make_release.php'), "scripts/make_release.php missing");
 
+// 14. Check scratch/ absent from git and repository
+$gitScratch = shell_exec('git ls-files scratch/');
+$scratchFiles = trim((string)$gitScratch);
+check(
+    "scratch/ directory absent from git tracking",
+    empty($scratchFiles),
+    "Tracked scratch files found in git: " . $scratchFiles
+);
+
+// 15. Check *.zip absent from repository tree and git tracking
+$gitZips = trim((string)shell_exec('git ls-files "*.zip"'));
+$rootZips = glob($root . '/*.zip');
+check(
+    "*.zip archives absent from repository",
+    empty($gitZips) && empty($rootZips),
+    "Found zip archives: " . ($gitZips ?: implode(', ', $rootZips))
+);
+
+// 16. Check debug scripts eliminated
+$gitPhpFiles = explode("\n", trim((string)shell_exec('git ls-files "*.php"')));
+$foundDebugScripts = [];
+foreach ($gitPhpFiles as $pf) {
+    $pf = trim($pf);
+    if ($pf === '') continue;
+    if (preg_match('/(debug|scratch|temp|tmp).*\.php$/i', basename($pf))) {
+        $foundDebugScripts[] = $pf;
+    }
+}
+check(
+    "Ad-hoc debug and scratch scripts eliminated",
+    empty($foundDebugScripts),
+    "Found debug/scratch scripts: " . implode(', ', $foundDebugScripts)
+);
+
+// 17. Check .gitignore rules for hygiene
+$gitignoreContent = file_exists($root . '/.gitignore') ? (string)file_get_contents($root . '/.gitignore') : '';
+$missingGitignore = [];
+foreach (['scratch/', 'release/', '.env', 'node_modules/', 'storage/documents/*'] as $pattern) {
+    if (!str_contains($gitignoreContent, $pattern)) {
+        $missingGitignore[] = $pattern;
+    }
+}
+check(
+    ".gitignore contains scratch/, release/, .env, node_modules/, storage/documents/*",
+    empty($missingGitignore),
+    "Missing patterns in .gitignore: " . implode(', ', $missingGitignore)
+);
+
+// 18. Check tracked files are referenced / canonical project files
+$unreferenced = [];
+$allowedRoots = [
+    '.github', 'account', 'Admin & Governance Portal', 'api', 'assets', 'config',
+    'CRM', 'Customer Portal', 'DataBase', 'Developer', 'Employee Intranet',
+    'File Center', 'Finance & Billing', 'HR System', 'includes', 'IT Helpdesk',
+    'Online Shop B2B', 'scripts', 'storage', 'tests',
+    'VOSTOKPRIBOR Corporate Web Platform'
+];
+$allowedRootFiles = [
+    '.env.example', '.gitignore', '.gitattributes', '.htaccess', 'index.php', 'package.json',
+    'package-lock.json', 'README.md', 'SECURITY.md', 'LICENSE'
+];
+$allTracked = explode("\n", trim((string)shell_exec('git ls-files')));
+foreach ($allTracked as $tf) {
+    $tf = trim(str_replace('\\', '/', $tf));
+    if ($tf === '') continue;
+    $parts = explode('/', $tf);
+    if (count($parts) === 1) {
+        if (!in_array($parts[0], $allowedRootFiles, true)) {
+            $unreferenced[] = $tf;
+        }
+    } else {
+        if (!in_array($parts[0], $allowedRoots, true)) {
+            $unreferenced[] = $tf;
+        }
+    }
+}
+check(
+    "All tracked files referenced within canonical project structure",
+    empty($unreferenced),
+    "Found unreferenced stray files: " . implode(', ', $unreferenced)
+);
+
 echo "\n========================================================================\n";
 echo "                      HYGIENE SUMMARY RESULTS                           \n";
 echo "========================================================================\n";

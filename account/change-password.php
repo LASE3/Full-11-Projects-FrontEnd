@@ -233,6 +233,7 @@ $mustChange = (bool)($account['must_change_password'] ?? false);
     <?php require_once __DIR__ . '/../includes/head_security.php'; ?>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <link rel="stylesheet" href="../assets/css/responsive-core.css">
     <title>Change Password — VOSTOKPRIBOR</title>
     <meta name="description" content="Secure account password update for VOSTOKPRIBOR enterprise users"/>
     <style>
@@ -264,12 +265,14 @@ $mustChange = (bool)($account['must_change_password'] ?? false);
         input[type=password] {
             width: 100%; background: #0c1220; color: var(--text); border: 1px solid var(--border);
             padding: 11px 14px; border-radius: var(--radius); font-size: 14px; margin-bottom: 16px;
+            min-height: 44px; box-sizing: border-box;
             transition: border-color 0.15s;
         }
         input[type=password]:focus { outline: none; border-color: var(--accent); }
         .btn {
             width: 100%; background: var(--accent); color: #fff; border: none;
             padding: 12px; border-radius: var(--radius); font-size: 15px; font-weight: 600;
+            min-height: 44px; min-width: 44px; box-sizing: border-box;
             cursor: pointer; transition: background 0.15s; margin-top: 8px;
         }
         .btn:hover { background: var(--accent2); }
@@ -279,7 +282,7 @@ $mustChange = (bool)($account['must_change_password'] ?? false);
                    padding: 10px 14px; border-radius: var(--radius); font-size: 13px; margin-bottom: 16px; }
         .rules { color: var(--muted); font-size: 12px; margin-top: 20px; border-top: 1px solid var(--border); padding-top: 16px; }
         .rules li { margin: 4px 0 4px 18px; }
-        .back { display: inline-block; margin-top: 20px; color: var(--accent2); text-decoration: none; font-size: 13px; }
+        .back { display: inline-flex; align-items: center; min-height: 44px; min-width: 44px; margin-top: 20px; color: var(--accent2); text-decoration: none; font-size: 13px; }
         .back:hover { text-decoration: underline; }
         .strength { height: 4px; border-radius: 2px; margin-top: -10px; margin-bottom: 16px; background: #0c1220; overflow: hidden; }
         .strength-bar { height: 100%; border-radius: 2px; transition: width 0.3s, background 0.3s; width: 0; }

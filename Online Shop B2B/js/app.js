@@ -2397,14 +2397,50 @@
       const poNumber =
         document.getElementById("po-number-input")?.value ||
         `PO-VP-${Math.floor(1000 + Math.random() * 9000)}`;
-      showToast(
-        `Purchase Order ${poNumber} submitted! Invoice and Statement of Work logged to Finance (System 07).`,
-        "green",
-      );
-      state.cartItems = [];
-      updateBadgeCounts();
-      closeAllModals();
-      switchScreen("tracking");
+
+      if (state.cartItems.length === 0) {
+        showToast("Direct B2B Cart is empty.", "amber");
+        return;
+      }
+
+      const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+      const payload = {
+        csrf_token: csrfToken,
+        cus_id: state.activeCustomer?.id || 'CUS-1001',
+        po_number: poNumber,
+        items: state.cartItems.map((item) => ({
+          prod_id: item.id,
+          quantity: item.qty || 1
+        }))
+      };
+
+      fetch("api/orders.php", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRF-Token": csrfToken
+        },
+        body: JSON.stringify(payload)
+      })
+      .then((res) => res.json())
+      .then((res) => {
+        if (res.success) {
+          const ordId = res.data?.order_id || '';
+          showToast(
+            `Purchase Order ${poNumber} submitted! Order #${ordId} committed to database and Finance.`,
+            "green"
+          );
+          state.cartItems = [];
+          updateBadgeCounts();
+          closeAllModals();
+          switchScreen("tracking");
+        } else {
+          showToast(res.error || "Order submission failed.", "red");
+        }
+      })
+      .catch((err) => {
+        showToast(err.message || "Network error submitting order.", "red");
+      });
     },
 
     submitOfficialRfq: function () {

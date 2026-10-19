@@ -118,11 +118,13 @@ if ($method === 'POST') {
             Response::error("Ticket ID and comment text required.", 422);
         }
 
-        // Verify ownership
-        $check = $pdo->prepare("SELECT COUNT(*) FROM tickets WHERE tkt_id = :tid AND requester_cus_id = :cid");
-        $check->execute([':tid' => $tktId, ':cid' => $cusId]);
-        if (!$check->fetchColumn()) {
-            Response::error("Ticket access denied.", 403);
+        // Verify ownership for customer accounts
+        if (($user['account_type'] ?? '') === 'Customer' && !empty($cusId)) {
+            $check = $pdo->prepare("SELECT COUNT(*) FROM tickets WHERE tkt_id = :tid AND (requester_cus_id = :cid OR requester_cus_id IS NULL)");
+            $check->execute([':tid' => $tktId, ':cid' => $cusId]);
+            if (!$check->fetchColumn()) {
+                Response::error("Ticket access denied.", 403);
+            }
         }
 
         $ins = $pdo->prepare("INSERT INTO ticket_comments (tkt_id, author_emp_id, author_name, author_type, comment_text, created_at) VALUES (:tid, NULL, :name, 'requester', :txt, NOW())");

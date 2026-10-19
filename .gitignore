@@ -31,24 +31,29 @@ Thumbs.db
 vendor/
 composer.lock
 node_modules/
-package-lock.json
 
 # Test artifacts
 tests/output/
 tests/*.html
 test-results/
 
+# Scratch & debug directories
+scratch/
+
 # Backup SQL dumps (keep migrations, exclude generated dumps)
 DataBase/dump_*.sql
 DataBase/*_backup.sql
 
-# Seeded credentials
+# Seeded credentials & generated storage documents
 storage/credentials/
 storage/credentials/*
+storage/documents/*
+!storage/documents/.gitkeep
 
 # Archived mock files
 _trash/
 
 # Release archives
+release/
 *.zip
 vostokpribor_release.zip

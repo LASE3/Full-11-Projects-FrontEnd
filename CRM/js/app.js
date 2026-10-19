@@ -262,6 +262,44 @@
       }
     },
 
+    saveNewLead: function () {
+      const comp = (document.getElementById("new-lead-company")?.value || "").trim() || "Novatek Arctic LNG";
+      const name = (document.getElementById("new-lead-name")?.value || "").trim() || "Dmitry Orlov";
+      const val = (document.getElementById("new-lead-val")?.value || "").trim() || "850000";
+      const notes = (document.getElementById("new-lead-notes")?.value || "").trim() || "Cryogenic temperature sensor instrumentation package";
+      const token = window.__CSRF_TOKEN__ || (window.getCsrfToken ? window.getCsrfToken() : '') || (document.cookie.match(/(^|;)\s*vostok_csrf_token\s*=\s*([^;]+)/) || [])[2] || '';
+
+      const self = this;
+      fetch("api/leads.php", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRF-Token": token
+        },
+        body: JSON.stringify({
+          company_name: comp,
+          full_name: name,
+          email: name.toLowerCase().replace(/[^a-z0-9]/g, ".") + "@industrial-client.ru",
+          phone: "+7 (495) 800-44-22",
+          message: notes,
+          source_page: "CRM Manual Lead Form",
+          csrf_token: token
+        })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          self.showToast("Lead Created", `New lead #${data.data?.lead_id || "OK"} registered in database.`, "success");
+          self.closeModal("modal-new-lead");
+        } else {
+          self.showToast("Lead Creation Error", data.message || "Failed to create lead", "error");
+        }
+      })
+      .catch(err => {
+        console.error("Save lead error:", err);
+      });
+    },
+
     // Render Kanban Cards (for Opportunities page)
     renderKanban: function () {
       const stages = [

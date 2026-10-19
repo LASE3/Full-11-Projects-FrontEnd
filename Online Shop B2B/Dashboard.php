@@ -59,7 +59,7 @@ if ($cusId) {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <?php require_once __DIR__ . '/../includes/head_security.php'; ?>
-">
+
   <title>VOSTOKPRIBOR | B2B Industrial E-Commerce Platform (shop.vostokpribor.local)</title>
 
 

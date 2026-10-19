@@ -719,7 +719,7 @@ window.CURRENT_USER = <?= json_encode($currUser, JSON_HEX_TAG | JSON_HEX_APOS | 
                                                 class="px-unit-base py-2 rounded bg-surface-container-low text-secondary font-headline-sm text-headline-sm hover:text-primary transition-colors">
                                                 Save Draft
                                             </button>
-                                            <button onclick="postTechnicalResponse()"
+                                            <button id="btnPostResponse" onclick="postTechnicalResponse()"
                                                 class="inline-flex items-center gap-1.5 px-unit-lg py-2 rounded bg-tertiary-fixed-dim text-primary-container font-headline-sm text-headline-sm font-bold shadow hover:bg-on-tertiary-container hover:text-surface-container-lowest transition-all">
                                                 <span class="material-symbols-outlined text-base">send</span>
                                                 <span>Post Technical Response</span>

@@ -408,6 +408,8 @@ function renderVostokScripts(): void {
     <script>
     window.VOSTOK_USER = <?= json_encode($currUser, JSON_UNESCAPED_UNICODE) ?>;
     window.CURRENT_USER = window.VOSTOK_USER;
+    window.VOSTOK_CSRF_TOKEN = <?= json_encode(getCsrfToken()) ?>;
+    window.__CSRF_TOKEN__ = window.VOSTOK_CSRF_TOKEN;
     window.VOSTOK_STATS = {
         orders: <?= (int)$badgeOrders ?>,
         projects: <?= (int)$badgeProjects ?>,

@@ -563,9 +563,9 @@
     },
 
     // Prompt to modify clearance tier
-    elevateClearancePrompt: function () {
+    elevateClearancePrompt: function (directClr) {
       if (!currentDossierEmpId) return;
-      const newClr = prompt(
+      const newClr = directClr || prompt(
         `Enter new clearance tier for ${currentDossierEmpId} (L1, L2, L3, L4):`,
         "L3",
       );
@@ -580,6 +580,7 @@
           .then((data) => {
             if (data.success && data.employee) {
               const emp = data.employee;
+              const csrfToken = window.__CSRF_TOKEN__ || (window.getCsrfToken ? window.getCsrfToken() : '') || (document.cookie.match(/(^|;)\s*vostok_csrf_token\s*=\s*([^;]+)/) || [])[2] || '';
               const formData = new FormData();
               formData.append("action", "update_employee");
               formData.append("emp_id", currentDossierEmpId);
@@ -589,8 +590,13 @@
               formData.append("clearance_level", newClr.toUpperCase());
               formData.append("email", emp.email);
               formData.append("employment_status", emp.employment_status);
+              formData.append("csrf_token", csrfToken);
 
-              fetch("api/hr_actions.php", { method: "POST", body: formData })
+              fetch("api/hr_actions.php", {
+                method: "POST",
+                headers: { "X-CSRF-Token": csrfToken },
+                body: formData
+              })
                 .then((r) => r.json())
                 .then((upd) => {
                   if (upd.success) {

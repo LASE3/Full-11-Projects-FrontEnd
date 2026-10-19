@@ -1,6 +1,6 @@
 <?php
 /**
- * Test Migration 016 portability and idempotency on MariaDB/MySQL
+ * Test Migration 016 portability and idempotency on MariaDB
  */
 require_once __DIR__ . '/../config/db.php';
 $pdo = getDbConnection();

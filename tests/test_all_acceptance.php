@@ -596,7 +596,7 @@ recordTest(20, 'Phase 4 Document Ownership & Developer Governance', $p4Pass, $p4
 // =========================================================================
 $m16Out = shell_exec(escapeshellarg($phpBin) . " " . escapeshellarg(__DIR__ . '/test_migration_016.php') . " 2>&1");
 $m16Pass = str_contains((string)$m16Out, '100% PASS - MIGRATION 016 FULLY PORTABLE AND IDEMPOTENT');
-recordTest(21, 'Phase 5 Migration 016 Portability & Idempotency across MariaDB/MySQL', $m16Pass, $m16Pass ? 'Two passes PASS, all 8 foreign keys restored via REFERENTIAL_CONSTRAINTS' : 'Migration 016 failed');
+recordTest(21, 'Phase 5 Migration 016 Portability & Idempotency across MariaDB', $m16Pass, $m16Pass ? 'Two passes PASS, all 8 foreign keys restored via REFERENTIAL_CONSTRAINTS' : 'Migration 016 failed');
 
 // =========================================================================
 // TEST 22: DOCUMENT DOWNLOAD SHA-256 IDENTICAL BYTES

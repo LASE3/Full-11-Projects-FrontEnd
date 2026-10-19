@@ -33,62 +33,19 @@ echo "========================================================================\n
 echo "       VOSTOKPRIBOR ENTERPRISE RELEASE ARCHIVE BUILDER                  \n";
 echo "========================================================================\n\n";
 echo "Target archive: {$zipPath}\n";
-echo "Scanning workspace...\n";
+echo "Building release archive from tracked files (git archive HEAD)...\n";
 
-$zip = new ZipArchive();
-$res = $zip->open($zipPath, ZipArchive::CREATE | ZipArchive::OVERWRITE);
-if ($res !== true) {
-    fwrite(STDERR, "[ERROR] Could not create zip archive: {$zipPath} (Code: {$res})\n");
+$cmdOutput = [];
+$exitCode = 0;
+$archiveCmd = 'git archive HEAD --format=zip -o ' . escapeshellarg($zipPath);
+exec($archiveCmd, $cmdOutput, $exitCode);
+
+if ($exitCode !== 0 || !file_exists($zipPath)) {
+    fwrite(STDERR, "[ERROR] git archive command failed (Exit code: {$exitCode})\n");
     exit(1);
 }
 
-// Prohibited path prefix/regex rules
-$prohibitedPatterns = [
-    '/^node_modules(\/|\\\\|$)/i',
-    '/^\.git(\/|\\\\|$)/i',
-    '/^\.env$/i',
-    '/^release(\/|\\\\|$)/i',
-    '/^storage[\/\\\\]documents[\/\\\\].+\.(pdf|xlsx|docx|tmp)$/i',
-    '/credentials.*\.json$/i',
-    '/passwords.*\.txt$/i',
-    '/.*\.tmp$/i',
-    '/.*\.log$/i',
-];
-
-$filesAdded = 0;
-$directoryIterator = new RecursiveDirectoryIterator($rootDir, RecursiveDirectoryIterator::SKIP_DOTS);
-$iterator = new RecursiveIteratorIterator($directoryIterator, RecursiveIteratorIterator::SELF_FIRST);
-
-foreach ($iterator as $item) {
-    $realPath = $item->getRealPath();
-    if ($realPath === false) continue;
-
-    // Relative path with forward slashes
-    $relPath = ltrim(str_replace('\\', '/', substr($realPath, strlen($rootDir))), '/');
-
-    // Check against prohibited patterns
-    $isProhibited = false;
-    foreach ($prohibitedPatterns as $pattern) {
-        if (preg_match($pattern, $relPath)) {
-            $isProhibited = true;
-            break;
-        }
-    }
-
-    if ($isProhibited) {
-        continue;
-    }
-
-    if ($item->isDir()) {
-        $zip->addEmptyDir($relPath);
-    } elseif ($item->isFile()) {
-        $zip->addFile($realPath, $relPath);
-        $filesAdded++;
-    }
-}
-
-$zip->close();
-echo "Archive built with {$filesAdded} files.\n";
+echo "Archive created successfully via git archive HEAD.\n";
 
 // -----------------------------------------------------------------------------
 // POST-BUILD SELF-AUDIT & INTEGRITY CHECK
@@ -107,6 +64,15 @@ for ($i = 0; $i < $totalEntries; $i++) {
     $entryName = $verifyZip->getNameIndex($i);
     
     // Check for prohibited entries
+    if (preg_match('/^scratch(\/|$)/i', $entryName)) {
+        $violations[] = "Prohibited scratch/ entry in release archive: {$entryName}";
+    }
+    if (preg_match('/\.zip$/i', $entryName)) {
+        $violations[] = "Prohibited zip archive nested inside release archive: {$entryName}";
+    }
+    if (preg_match('/(debug|scratch|tmp|temp).*\.php$/i', $entryName)) {
+        $violations[] = "Prohibited debug script in release archive: {$entryName}";
+    }
     if (preg_match('/^node_modules(\/|$)/i', $entryName)) {
         $violations[] = "Prohibited node_modules entry: {$entryName}";
     }

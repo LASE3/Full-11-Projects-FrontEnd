@@ -17,7 +17,8 @@ $initError = $_GET['error'] ?? '';
   <meta name="description"
     content="VOSTOKPRIBOR Corporate Web Platform - Content management and corporate administration authentication.">
   <title>Corporate Platform Login · VOSTOKPRIBOR WEB</title>
-  <link rel="stylesheet" href="../Admin & Governance Portal/css/login.css">
+  <link rel="stylesheet" href="../Admin%20%26%20Governance%20Portal/css/login.css">
+  <link rel="stylesheet" href="../assets/css/responsive-core.css">
   <style>
   .vp-sim-bar, .theme-simulation-bar, [class*="vp-sim"], [class*="theme-sim"] {
     display: none !important;

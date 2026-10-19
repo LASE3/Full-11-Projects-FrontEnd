@@ -156,7 +156,7 @@
       const submitBtn = form.querySelector('button[type="submit"]');
       submitBtn.disabled = true;
       submitBtn.innerHTML =
-        '<span class="material-symbols-outlined text-[16px] animate-spin">sync</span> Ingesting into MySQL Database...';
+        '<span class="material-symbols-outlined text-[16px] animate-spin">sync</span> Ingesting into Vault Database...';
 
       const progressContainer = document.getElementById("upload-progress-container");
       const progressBar = document.getElementById("upload-progress-bar");
@@ -237,7 +237,7 @@
           if (window.showToast) {
             window.showToast(
               "DOCUMENT SECURED IN VAULT",
-              `Assigned ${doc.doc_id}. Registered in MySQL database and Almaty HSM hardware ledger.`,
+              `Assigned ${doc.doc_id}. Registered in database and Almaty HSM hardware ledger.`,
               "success",
               "security"
             );

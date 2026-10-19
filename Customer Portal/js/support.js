@@ -419,6 +419,24 @@
 
     input.value = "";
     window.renderMessages(currentTicket.messages);
+
+    const csrfToken = window.__CSRF_TOKEN__ || (window.getCsrfToken ? window.getCsrfToken() : '') || (document.cookie.match(/(^|;)\s*vostok_csrf_token\s*=\s*([^;]+)/) || [])[2] || '';
+    fetch("api/tickets.php?action=comment", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRF-Token": csrfToken
+      },
+      body: JSON.stringify({
+        action: "comment",
+        ticket_id: currentActiveTicket,
+        tkt_id: currentActiveTicket,
+        comment: text,
+        comment_text: text,
+        csrf_token: csrfToken
+      })
+    }).catch(err => console.error("Ticket comment persist error:", err));
+
     if (window.showToast)
       window.showToast(
         "Note Dispatched",

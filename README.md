@@ -1,5 +1,7 @@
 # VOSTOKPRIBOR Enterprise Ecosystem
 
+[![VOSTOKPRIBOR Multi-Engine CI Matrix](https://github.com/LASE3/Full-11-Projects-FrontEnd/actions/workflows/ci.yml/badge.svg)](https://github.com/LASE3/Full-11-Projects-FrontEnd/actions/workflows/ci.yml)
+
 A comprehensive, 11-system digital infrastructure designed for industrial manufacturing and optical instrumentation excellence. This ecosystem serves as the core technological backbone for internal operations, external client interactions, e-commerce, and research & development.
 
 ---
@@ -37,7 +39,10 @@ The entire platform is unified under a singular architectural vision, ensuring a
 
 ### Technology Stack
 
-- **Backend**: PHP 8.2 with PDO, MariaDB 10.4, Strict Typed Database Layer.
+- **Backend**: PHP 8.2 with PDO, MariaDB 10.4–10.11 (Supported: MariaDB 10.4–10.11; MySQL 8.0 unsupported due to MariaDB-specific schema features & collation semantics), Strict Typed Database Layer.
+  - **Supported Database Engine**:
+    - **Supported: MariaDB 10.4–10.11** (Active CI matrix testing against official MariaDB 10.4 and 10.11 images).
+    - **Unsupported: MySQL 8.0** (Excluded from supported matrix due to incompatibilities with MariaDB sequences, temporal defaults, and referential constraints).
   - **MariaDB Strict SQL Mode Requirement**:
     - MariaDB must run with `sql_mode='STRICT_ALL_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION'` across development, testing, CI, and production.
     - Default non-strict modes silently truncate strings and mask bugs.
@@ -181,9 +186,23 @@ Per enterprise governance specifications (Finance owner: CFO `EMP-1003`), financ
 
 ---
 
-## 🧪 Automated Testing & Verification Suite
+## 🧪 Automated Testing & Continuous Integration (CI)
 
-All test suites and scripts support Windows, Linux, and macOS by detecting `PHP_BINARY` / `process.env.PHP_BINARY` dynamically without hardcoded paths. All tests execute against the strict SQL mode (`STRICT_ALL_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION`).
+All test suites and scripts support Windows, Linux, and macOS by detecting `PHP_BINARY` / `process.env.PHP_BINARY` dynamically without hardcoded paths. All tests execute against the strict SQL mode (`STRICT_ALL_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION`) on supported MariaDB engines (10.4–10.11).
+
+### Mandatory CI Quality Gates
+
+| Gate | Tool / Script | Enforcement Scope |
+| :--- | :--- | :--- |
+| **Preflight Environment** | `scripts/check_env.php` | Validates required environment variables (`DB_USER`, `DB_PASS`, `VOSTOK_SSO_SECRET >= 32 chars`, `APP_ENV`) and checks configuration before build. |
+| **Repository Hygiene** | `scripts/check_repo_hygiene.php` | Enforces zero untracked scratch/debug files, zero `.zip` archives, clean upload directories, and valid `.gitignore` rules (20/20 checks). |
+| **Touch Target Dimensions** | `tests/test_touch_target_css.php` | Enforces minimum `44x44px` touch targets (`min-height: 44px; min-width: 44px;`) across all buttons, anchors, and inputs on coarse pointers and viewport `<= 768px`. |
+| **Zero Horizontal Overflow** | `tests/e2e/responsive.spec.js` | Headless Playwright test asserting `scrollWidth <= clientWidth` (zero horizontal overflow) across 279 views at 375px mobile, 768px tablet, and 1440px desktop. |
+| **Click-Through E2E Writes** | `tests/e2e/clickthrough.spec.js` | Full 11-system real UI write actions verified both on-screen and directly in MariaDB tables at both 375px (Mobile) and 1440px (Desktop), with network blocking and `/api/ >= 400` failure assertions. |
+| **Dual-Control Dual Maker-Checker** | `tests/test_maker_checker.php` | Verifies financial separation of duty: `creator != approver != payer` with 24 assertions. |
+| **Customer Password Isolation** | `tests/test_customer_password_isolation.php` | Multi-account password isolation, history rotation, and deny-list enforcement across 28 assertions. |
+| **Document & Developer Governance**| `tests/test_phase4_ownership_and_developer.php` | Verifies document classification access control, immutable audit logs, and developer API key lifecycle. |
+| **Master Acceptance Suite** | `tests/test_all_acceptance.php` | Comprehensive 22-suite master acceptance run verifying baseline integrity, integration flows, and security policies. |
 
 ### Test Commands & Single Entry Points
 
@@ -192,28 +211,38 @@ All test suites and scripts support Windows, Linux, and macOS by detecting `PHP_
 | `npm test` | `php tests/test_all_acceptance.php` | Full master acceptance suite (22 acceptance & regression sub-suites) |
 | `npm run test:sweep` | `php scripts/api_smoke.php` | Runtime HTTP sweep of 448 endpoints across 3 roles (CEO, Employee, Customer) with zero 5xx/fatals |
 | `npm run test:e2e` | `node tests/e2e/clickthrough.spec.js` | Headless Playwright click-through test monitoring UI actions & background `/api/` calls |
+| `npm run test:responsive` | `node tests/e2e/responsive.spec.js` | 279-test responsive layout & zero horizontal overflow verification |
 | `npm run test:maker-checker` | `php tests/test_maker_checker.php` | Verification of Phase 2 dual-control invoice creator != approver != payer rules |
 | `npm run test:password` | `php tests/test_customer_password_isolation.php` | Verification of Phase 3 customer account password isolation & deny-lists |
 | `npm run test:phase4` | `php tests/test_phase4_ownership_and_developer.php` | Verification of File Center document ownership and Developer credentials governance |
-| `npm run test:migration` | `php tests/test_migration_016.php` | Dual-pass idempotency test for Migration 016 across MariaDB 10.4, 10.11 & MySQL 8.0 |
-| `npm run release` | `php scripts/make_release.php` | Packages clean distribution archive without `node_modules/`, `.git/`, `.env`, or documents |
+| `npm run test:migration` | `php tests/test_migration_016.php` | Dual-pass idempotency test for Migration 016 across MariaDB 10.4 and 10.11 |
+| `npm run test:hygiene` | `php scripts/check_repo_hygiene.php` | Repository hygiene gate verifying zero untracked scratch files |
+| `npm run test:touch-target` | `php tests/test_touch_target_css.php` | Verifies touch target CSS rules in `assets/css/responsive-core.css` |
+| `npm run check-env` | `php scripts/check_env.php` | Validates environment and config before running builds or tests |
+| `npm run release` | `php scripts/make_release.php` | Packages clean distribution archive via `git archive HEAD` with post-build self-audit |
 
 ### Direct PHP / Shell Commands
 
 ```bash
-# 1. Rebuild database from scratch in strict mode
+# 1. Check environment and configuration
+php scripts/check_env.php
+
+# 2. Rebuild database from scratch in strict mode
 php DataBase/build.php
 
-# 2. Run the 22-suite master acceptance run
+# 3. Run the 22-suite master acceptance run
 php tests/test_all_acceptance.php
 
-# 3. Run the runtime sweep across all endpoints
+# 4. Run the runtime sweep across all endpoints
 php scripts/api_smoke.php
 
-# 4. Run the Playwright E2E browser test
+# 5. Run the responsive zero-overflow suite
+node tests/e2e/responsive.spec.js
+
+# 6. Run the Playwright E2E browser click-through test
 BASE_URL="http://127.0.0.1/Full-11-Projects-FrontEnd" node tests/e2e/clickthrough.spec.js
 
-# 5. Build clean production release zip
+# 7. Build clean production release zip from tracked files
 php scripts/make_release.php
 ```
 
