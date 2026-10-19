@@ -11,6 +11,7 @@ $_vp_user = vp_api_guard('ADM', ['min_clearance' => 'L3']);
 
 require_once __DIR__ . '/db_helper.php';
 
+$pdo = null;
 try {
     $pdo = getDbConnection();
     gov_ensureSchemaReady($pdo);
