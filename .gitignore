@@ -57,3 +57,4 @@ _trash/
 release/
 *.zip
 vostokpribor_release.zip
+.hintrc
