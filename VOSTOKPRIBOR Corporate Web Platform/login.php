@@ -20,6 +20,24 @@ $initError = $_GET['error'] ?? '';
   <link rel="stylesheet" href="../Admin%20%26%20Governance%20Portal/css/login.css">
   <link rel="stylesheet" href="../assets/css/responsive-core.css">
   <style>
+  @media (pointer: coarse), (max-width: 768px) {
+    .auth-brand-link,
+    .auth-top-bar a,
+    .auth-back-link,
+    .auth-submit-btn,
+    .form-input,
+    .input-container input {
+      min-height: 44px !important;
+      box-sizing: border-box !important;
+    }
+    .auth-brand-link,
+    .auth-back-link,
+    .auth-submit-btn {
+      min-width: 44px !important;
+      display: inline-flex !important;
+      align-items: center !important;
+    }
+  }
   .vp-sim-bar, .theme-simulation-bar, [class*="vp-sim"], [class*="theme-sim"] {
     display: none !important;
     visibility: hidden !important;

@@ -121,6 +121,7 @@ async function runResponsiveSuite() {
               await page.waitForTimeout(1000);
             }
           }
+          await page.waitForLoadState('load').catch(() => {});
           const status = response ? response.status() : 0;
 
           if (status >= 400) {
