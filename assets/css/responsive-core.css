@@ -313,7 +313,29 @@ input[type="submit"],
   .pagination a,
   .pagination button,
   div[role="tablist"] a,
-  div[role="tablist"] button {
+  div[role="tablist"] button,
+  .form-input,
+  .form-control,
+  .form-select,
+  .auth-brand-link,
+  .auth-back-link,
+  .auth-submit-btn,
+  .auth-top-bar a,
+  .auth-card-footer a,
+  .input-container input,
+  .input-container select,
+  .btn-demo-autofill,
+  .demo-fill-btn {
+    min-height: 44px !important;
+    min-width: 44px !important;
+    box-sizing: border-box !important;
+  }
+
+  .auth-brand-link,
+  .auth-back-link,
+  .auth-submit-btn {
+    display: inline-flex !important;
+    align-items: center !important;
     min-height: 44px !important;
     min-width: 44px !important;
     box-sizing: border-box !important;

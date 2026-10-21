@@ -591,6 +591,26 @@ body {
   }
 }
 
+@media (pointer: coarse), (max-width: 768px) {
+  .auth-brand-link,
+  .auth-top-bar a,
+  .auth-back-link,
+  .auth-submit-btn,
+  .form-input,
+  .input-container input,
+  .btn-demo-autofill {
+    min-height: 44px !important;
+    box-sizing: border-box !important;
+  }
+  .auth-brand-link,
+  .auth-back-link,
+  .auth-submit-btn {
+    min-width: 44px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+  }
+}
+
 /* ==========================================================================
    DYNAMIC SENTIMENT & KEYWORD THEME (VOSTOKPRIBOR ENTERPRISE DESIGN SYSTEM)
    Keywords: 'Welcome'/'Hello' -> Blue, 'Error'/'Failed' -> Red,

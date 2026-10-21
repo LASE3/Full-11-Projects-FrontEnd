@@ -174,22 +174,40 @@ async function testWebsiteRfq(browser, vp, record) {
   const { context, page, apiErrors, jsErrors } = await setupPageContext(browser, vp);
   try {
     await page.goto(`${BASE_URL}/VOSTOKPRIBOR%20Corporate%20Web%20Platform/index.php`, { waitUntil: 'domcontentloaded' });
-    const ts = Date.now();
-    const testEmail = `corp.rfq.${ts}@nord-metallurgy.local`;
-    const testCompany = `Nord Metallurgy Plant ${ts}`;
+    const uniqueId = `${Date.now()}_${Math.floor(Math.random() * 1000000)}`;
+    const testEmail = `corp.rfq.${uniqueId}@nord-metallurgy.local`;
+    const testCompany = `Nord Metallurgy Plant ${uniqueId}`;
 
-    await page.waitForSelector('#corporateRfqForm', { timeout: 8000 });
+    await page.waitForSelector('#corporateRfqForm', { timeout: 15000 });
     await page.fill('#rfqCompanyName', testCompany);
     await page.fill('#rfqContactName', 'Ing. Gennady Morozov');
     await page.fill('#rfqEmail', testEmail);
-    await page.fill('#rfqNotes', `Telemetry integration and sensor probe array requirements. Timestamp: ${ts}`);
+    await page.fill('#rfqNotes', `Telemetry integration and sensor probe array requirements. Timestamp: ${uniqueId}`);
 
-    await page.click('#corporateRfqForm button[type="submit"]');
+    // Wait for the form's POST response to api/contact.php (status 200)
+    await Promise.all([
+      page.waitForResponse(
+        res => res.url().includes('api/contact.php') && res.request().method() === 'POST' && res.status() === 200,
+        { timeout: 15000 }
+      ),
+      page.click('#corporateRfqForm button[type="submit"]')
+    ]);
 
-    await page.waitForSelector('#confirmedLeadId, #rfqConfirmationBackdrop.show, .toast, .vp-toast', { timeout: 8000 });
+    // Wait for the lead row in the database
+    let dbFound = false;
+    let dbRows = [];
+    const dbPollStart = Date.now();
+    while (Date.now() - dbPollStart < 5000) {
+      dbRows = queryDb(`SELECT lead_id, company_name, full_name, email FROM leads WHERE email = '${testEmail}'`);
+      if (dbRows.length > 0 && dbRows[0].company_name === testCompany) {
+        dbFound = true;
+        break;
+      }
+      await page.waitForTimeout(200);
+    }
 
-    const dbRows = queryDb(`SELECT lead_id, company_name, full_name, email FROM leads WHERE email = '${testEmail}'`);
-    const dbFound = dbRows.length > 0 && dbRows[0].company_name === testCompany;
+    // Assert the confirmation is visible with a generous timeout
+    await page.waitForSelector('#confirmedLeadId', { state: 'visible', timeout: 15000 });
 
     record(`1. [Website] RFQ submission on ${vp.name}`, dbFound, `Lead in DB: ${dbFound ? dbRows[0].lead_id : 'MISSING'}`);
     await assertPageHealth(page, `Website RFQ (${vp.name})`, apiErrors, jsErrors);
