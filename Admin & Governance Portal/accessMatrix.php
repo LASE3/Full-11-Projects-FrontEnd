@@ -77,7 +77,7 @@ $sidebarBadges = gov_getSidebarBadges();
                 </div>
             </div>
 
-            <!-- Top Bar Sign Out -->
+            <?php /* Top Bar Sign Out */ ?>
             <a href="../api/logout.php?system=Admin%20%26%20Governance%20Portal&redirect=../Admin%20%26%20Governance%20Portal/login.php" class="top-signout-btn" title="Sign Out of Admin &amp; Governance Portal" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" ><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
         </div>
     </header>
@@ -85,7 +85,7 @@ $sidebarBadges = gov_getSidebarBadges();
     <div class="pl-[260px]">
         <main class="relative pt-[60px] w-full min-h-screen bg-surface px-gutter-desktop py-space-lg">
             <div class="flex flex-col w-full gap-space-md">
-                <!-- TOP BREADCRUMB & METADATA BAR -->
+                <?php /* TOP BREADCRUMB & METADATA BAR */ ?>
                 <div
                     class="flex flex-wrap items-center justify-between gap-space-sm bg-surface-container-lowest p-space-sm rounded border border-outline-variant/60 shadow-sm">
                     <div class="flex flex-wrap items-center gap-space-xs font-telemetry-micro text-telemetry-micro">
@@ -114,7 +114,7 @@ $sidebarBadges = gov_getSidebarBadges();
                                 SEC-OPS CENTRAL</strong></span>
                     </div>
                 </div>
-                <!-- HEADER & DUAL-CUSTODY ATTESTATION BANNER -->
+                <?php /* HEADER & DUAL-CUSTODY ATTESTATION BANNER */ ?>
                 <div
                     class="relative bg-surface-container-lowest border border-outline-variant/60 rounded p-space-md shadow-sm overflow-hidden">
                     <div class="absolute top-0 left-0 bottom-0 w-1 bg-primary"></div>
@@ -136,7 +136,7 @@ $sidebarBadges = gov_getSidebarBadges();
                                 Directives.
                             </p>
                         </div>
-                        <!-- Quick Action Console -->
+                        <?php /* Quick Action Console */ ?>
                         <div class="flex items-center gap-space-xs flex-wrap self-start xl:self-center">
                             <button id="simulateEnforceBtn"
                                 class="h-control-height-sm px-space-sm bg-surface-container hover:bg-surface-container-high text-on-surface font-body-compact text-body-compact font-semibold rounded border border-outline-variant flex items-center gap-space-xs transition-colors shadow-sm cursor-pointer"
@@ -160,7 +160,7 @@ $sidebarBadges = gov_getSidebarBadges();
                             </button>
                         </div>
                     </div>
-                    <!-- Sub-status Bar -->
+                    <?php /* Sub-status Bar */ ?>
                     <div
                         class="mt-space-md pt-space-sm border-t border-outline-variant/40 grid grid-cols-2 md:grid-cols-4 gap-space-sm text-telemetry-micro font-telemetry-micro">
                         <div class="flex items-center gap-space-xs">
@@ -186,9 +186,9 @@ $sidebarBadges = gov_getSidebarBadges();
                         </div>
                     </div>
                 </div>
-                <!-- SUMMARY METRICS / CLASSIFICATION TIERS (Row of 4 cards with 4px left-border Classification strips) -->
+                <?php /* SUMMARY METRICS / CLASSIFICATION TIERS (Row of 4 cards with 4px left-border Classification strips) */ ?>
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-space-md">
-                    <!-- Card 1: Highly Confidential (#B23A32 strip) -->
+                    <?php /* Card 1: Highly Confidential (#B23A32 strip) */ ?>
                     <div
                         class="relative bg-surface-container-lowest p-space-md rounded border border-outline-variant/60 shadow-sm overflow-hidden flex flex-col justify-between">
                         <div class="absolute top-0 left-0 bottom-0 w-1 bg-[#B23A32]"></div>
@@ -216,7 +216,7 @@ $sidebarBadges = gov_getSidebarBadges();
                             <span class="text-error font-bold font-mono">TOKEN REQ.</span>
                         </div>
                     </div>
-                    <!-- Card 2: Confidential (#D9822B strip) -->
+                    <?php /* Card 2: Confidential (#D9822B strip) */ ?>
                     <div
                         class="relative bg-surface-container-lowest p-space-md rounded border border-outline-variant/60 shadow-sm overflow-hidden flex flex-col justify-between">
                         <div class="absolute top-0 left-0 bottom-0 w-1 bg-[#D9822B]"></div>
@@ -245,7 +245,7 @@ $sidebarBadges = gov_getSidebarBadges();
                             <span class="text-on-surface font-bold font-mono">42 DAYS</span>
                         </div>
                     </div>
-                    <!-- Card 3: Internal (#3E7CB1 strip) -->
+                    <?php /* Card 3: Internal (#3E7CB1 strip) */ ?>
                     <div
                         class="relative bg-surface-container-lowest p-space-md rounded border border-outline-variant/60 shadow-sm overflow-hidden flex flex-col justify-between">
                         <div class="absolute top-0 left-0 bottom-0 w-1 bg-[#3E7CB1]"></div>
@@ -273,7 +273,7 @@ $sidebarBadges = gov_getSidebarBadges();
                             <span class="text-secondary font-bold font-mono">3 SITES</span>
                         </div>
                     </div>
-                    <!-- Card 4: Precision Teal (#0E7C86 strip) -->
+                    <?php /* Card 4: Precision Teal (#0E7C86 strip) */ ?>
                     <div
                         class="relative bg-surface-container-lowest p-space-md rounded border border-outline-variant/60 shadow-sm overflow-hidden flex flex-col justify-between">
                         <div class="absolute top-0 left-0 bottom-0 w-1 bg-[#0E7C86]"></div>
@@ -302,12 +302,12 @@ $sidebarBadges = gov_getSidebarBadges();
                         </div>
                     </div>
                 </div>
-                <!-- MAIN SPLIT WORKBENCH: ROLE MATRIX CONFIGURATION (LEFT 8 COLS) + INSPECTOR (RIGHT 4 COLS) -->
+                <?php /* MAIN SPLIT WORKBENCH: ROLE MATRIX CONFIGURATION (LEFT 8 COLS) + INSPECTOR (RIGHT 4 COLS) */ ?>
                 <div class="grid grid-cols-1 xl:grid-cols-12 gap-space-md items-start">
-                    <!-- ROLE CATALOG & CLEARANCE MAP PANEL (xl:col-span-8) -->
+                    <?php /* ROLE CATALOG & CLEARANCE MAP PANEL (xl:col-span-8) */ ?>
                     <div
                         class="xl:col-span-8 flex flex-col gap-space-sm bg-surface-container-lowest rounded border border-outline-variant/60 shadow-sm overflow-hidden">
-                        <!-- Panel Bar -->
+                        <?php /* Panel Bar */ ?>
                         <div
                             class="bg-surface-container p-space-sm border-b border-outline-variant/60 flex flex-wrap items-center justify-between gap-space-sm">
                             <div class="flex items-center gap-space-sm">
@@ -353,7 +353,7 @@ $sidebarBadges = gov_getSidebarBadges();
                                 </div>
                             </div>
                         </div>
-                        <!-- Node Filters Bar (SYS-01 to SYS-11 Quick Toggles) -->
+                        <?php /* Node Filters Bar (SYS-01 to SYS-11 Quick Toggles) */ ?>
                         <div
                             class="px-space-md py-space-xs bg-surface-container-low/60 border-b border-outline-variant/40 flex items-center gap-space-xs overflow-x-auto" id="nodeFilterContainer">
                             <span class="font-label-uppercase text-label-uppercase text-on-surface-variant uppercase whitespace-nowrap mr-space-xs">Nodes:</span>
@@ -366,7 +366,7 @@ $sidebarBadges = gov_getSidebarBadges();
                             <button data-node="SYS-07" class="node-pill-btn px-space-xs py-[2px] bg-surface hover:bg-surface-container text-on-surface font-telemetry-micro text-telemetry-micro rounded border border-outline-variant/70 cursor-pointer">SYS-07 Logistics</button>
                             <button data-node="SYS-11" class="node-pill-btn px-space-xs py-[2px] bg-surface hover:bg-surface-container text-on-surface font-telemetry-micro text-telemetry-micro rounded border border-outline-variant/70 cursor-pointer">SYS-11 Core</button>
                         </div>
-                        <!-- Dense Matrix Data Table -->
+                        <?php /* Dense Matrix Data Table */ ?>
                         <div class="overflow-x-auto">
                             <table class="w-full text-left border-collapse">
                                 <thead>
@@ -434,7 +434,7 @@ $sidebarBadges = gov_getSidebarBadges();
                                 </tbody>
                             </table>
                         </div>
-                        <!-- Table Pagination / Status Footer -->
+                        <?php /* Table Pagination / Status Footer */ ?>
                         <div
                             class="p-space-sm bg-surface-container flex flex-wrap items-center justify-between gap-space-sm text-telemetry-micro font-telemetry-micro border-t border-outline-variant/60">
                             <div class="flex items-center gap-space-sm text-on-surface-variant">
@@ -454,10 +454,10 @@ $sidebarBadges = gov_getSidebarBadges();
                             </div>
                         </div>
                     </div>
-                    <!-- DETAIL & PRIVILEGE BOUNDARY INSPECTOR PANEL (xl:col-span-4) -->
+                    <?php /* DETAIL & PRIVILEGE BOUNDARY INSPECTOR PANEL (xl:col-span-4) */ ?>
                     <div
                         class="xl:col-span-4 flex flex-col gap-space-md bg-surface-container-lowest rounded border border-outline-variant/60 shadow-sm overflow-hidden">
-                        <!-- Inspector Header with Alert Red / Amber Accent Border -->
+                        <?php /* Inspector Header with Alert Red / Amber Accent Border */ ?>
                         <div class="p-space-md bg-surface-container border-b border-outline-variant/60 relative">
                             <div class="absolute top-0 left-0 bottom-0 w-1 bg-[#D9822B]"></div>
                             <div class="flex items-center justify-between gap-space-sm mb-space-2xs">
@@ -473,9 +473,9 @@ $sidebarBadges = gov_getSidebarBadges();
                             <h2 class="font-headline-md text-headline-md text-primary font-bold" id="inspectorRoleId">ROLE-AUT-02</h2>
                             <p class="font-body-compact text-body-compact text-on-surface-variant" id="inspectorRoleName">SCADA Automation Lead Engineer (Karaganda Node Cluster)</p>
                         </div>
-                        <!-- Inspector Core Body -->
+                        <?php /* Inspector Core Body */ ?>
                         <div class="p-space-md flex flex-col gap-space-md">
-                            <!-- Separation of Duties (SoD) Conflict Matrix -->
+                            <?php /* Separation of Duties (SoD) Conflict Matrix */ ?>
                             <div class="flex flex-col gap-space-xs">
                                 <div class="flex items-center justify-between">
                                     <span
@@ -487,7 +487,7 @@ $sidebarBadges = gov_getSidebarBadges();
                                         VERIFIED</span>
                                 </div>
                                 <div class="flex flex-col gap-space-xs">
-                                    <!-- Constraint 1: Telemetry R/W -->
+                                    <?php /* Constraint 1: Telemetry R/W */ ?>
                                     <div
                                         class="p-space-xs bg-surface-container-low rounded border border-outline-variant/40 flex items-start justify-between gap-space-xs">
                                         <div class="flex flex-col">
@@ -505,7 +505,7 @@ $sidebarBadges = gov_getSidebarBadges();
                                             ALLOWED
                                         </span>
                                     </div>
-                                    <!-- Constraint 2: Firmware Flash -->
+                                    <?php /* Constraint 2: Firmware Flash */ ?>
                                     <div
                                         class="p-space-xs bg-tertiary-fixed/20 rounded border border-[#D9822B]/30 flex items-start justify-between gap-space-xs">
                                         <div class="flex flex-col">
@@ -523,7 +523,7 @@ $sidebarBadges = gov_getSidebarBadges();
                                             DUAL-SIGN
                                         </span>
                                     </div>
-                                    <!-- Constraint 3: Root Keyring -->
+                                    <?php /* Constraint 3: Root Keyring */ ?>
                                     <div
                                         class="p-space-xs bg-error-container/20 rounded border border-error/30 flex items-start justify-between gap-space-xs">
                                         <div class="flex flex-col">
@@ -543,7 +543,7 @@ $sidebarBadges = gov_getSidebarBadges();
                                     </div>
                                 </div>
                             </div>
-                            <!-- Ingestion Bridges Bound -->
+                            <?php /* Ingestion Bridges Bound */ ?>
                             <div
                                 class="flex flex-col gap-space-2xs p-space-sm bg-surface-container-low rounded border border-outline-variant/50">
                                 <div
@@ -575,13 +575,13 @@ $sidebarBadges = gov_getSidebarBadges();
                                     </div>
                                 </div>
                             </div>
-                            <!-- Role Modification Controls / Boundary Tuner -->
+                            <?php /* Role Modification Controls / Boundary Tuner */ ?>
                             <div class="flex flex-col gap-space-sm pt-space-xs border-t border-outline-variant/60">
                                 <span
                                     class="font-label-uppercase text-label-uppercase text-on-surface-variant tracking-wider uppercase">
                                     Boundary Parameters &amp; Security Locks
                                 </span>
-                                <!-- Ephemeral Elevation Slider -->
+                                <?php /* Ephemeral Elevation Slider */ ?>
                                 <div class="flex flex-col gap-space-2xs">
                                     <div
                                         class="flex items-center justify-between font-telemetry-micro text-telemetry-micro">
@@ -597,7 +597,7 @@ $sidebarBadges = gov_getSidebarBadges();
                                         <span>24 HR (AUDIT REQUIRED)</span>
                                     </div>
                                 </div>
-                                <!-- MFA Hardware Token Rule Toggle -->
+                                <?php /* MFA Hardware Token Rule Toggle */ ?>
                                 <div
                                     class="flex items-center justify-between p-space-xs bg-surface-container-low rounded border border-outline-variant/40">
                                     <div class="flex flex-col">
@@ -612,7 +612,7 @@ $sidebarBadges = gov_getSidebarBadges();
                                         <div class="w-4 h-4 bg-on-primary rounded-full shadow"></div>
                                     </div>
                                 </div>
-                                <!-- Shadow Session Recording Toggle -->
+                                <?php /* Shadow Session Recording Toggle */ ?>
                                 <div
                                     class="flex items-center justify-between p-space-xs bg-surface-container-low rounded border border-outline-variant/40">
                                     <div class="flex flex-col">
@@ -629,7 +629,7 @@ $sidebarBadges = gov_getSidebarBadges();
                                     </div>
                                 </div>
                             </div>
-                            <!-- Action Buttons for Selected Role -->
+                            <?php /* Action Buttons for Selected Role */ ?>
                             <div class="flex flex-col gap-space-xs pt-space-xs">
                                 <button
                                     class="w-full h-control-height-sm bg-primary hover:bg-primary-container text-on-primary font-body-compact text-body-compact font-bold rounded flex items-center justify-center gap-space-xs transition-colors shadow-sm"
@@ -647,7 +647,7 @@ $sidebarBadges = gov_getSidebarBadges();
                         </div>
                     </div>
                 </div>
-                <!-- BOTTOM AUDIT FOOTER & CRYPTOGRAPHIC ANCHOR -->
+                <?php /* BOTTOM AUDIT FOOTER & CRYPTOGRAPHIC ANCHOR */ ?>
                 <div
                     class="bg-primary text-on-primary p-space-md rounded border border-outline/30 shadow-md flex flex-col md:flex-row md:items-center justify-between gap-space-md">
                     <div class="flex items-center gap-space-md flex-wrap">

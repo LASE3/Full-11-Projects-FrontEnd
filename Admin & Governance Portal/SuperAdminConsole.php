@@ -427,105 +427,7 @@ $totalAuditSystems = (int)$pdo->query(
     <link rel="stylesheet" href="../assets/css/responsive-core.css">
     <title>SuperAdmin Console — VOSTOKPRIBOR</title>
     <meta name="description" content="SuperAdmin read-only console: table browser, audit logs, view-as, integration link health"/>
-    <style>
-        :root {
-            --bg: #0a0f1e; --bg2: #111827; --bg3: #1a2438;
-            --accent: #6366f1; --accent2: #818cf8;
-            --danger: #ef4444; --warn: #f59e0b; --ok: #10b981;
-            --text: #e2e8f0; --muted: #94a3b8; --border: #1e293b;
-            --radius: 8px;
-        }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', system-ui, sans-serif; font-size: 14px; }
-
-        /* View-As Banner */
-        .view-as-banner {
-            background: linear-gradient(90deg, #7c3aed, #db2777);
-            color: #fff; padding: 8px 24px;
-            display: flex; align-items: center; gap: 12px;
-            font-weight: 600; letter-spacing: 0.05em; font-size: 13px;
-        }
-        .view-as-banner a { color: #fde68a; text-decoration: underline; margin-left: auto; }
-
-        header {
-            background: var(--bg2); border-bottom: 2px solid var(--accent);
-            padding: 14px 28px; display: flex; align-items: center; gap: 16px;
-        }
-        header h1 { font-size: 18px; font-weight: 700; letter-spacing: 0.08em; color: var(--accent2); }
-        header .badge {
-            background: var(--accent); color: #fff;
-            padding: 2px 10px; border-radius: 999px; font-size: 11px; font-weight: 700;
-        }
-        header .user-info { margin-left: auto; color: var(--muted); font-size: 12px; }
-
-        .layout { display: flex; min-height: calc(100vh - 56px); }
-        nav {
-            width: 220px; background: var(--bg2); border-right: 1px solid var(--border);
-            padding: 20px 0; flex-shrink: 0;
-        }
-        nav a {
-            display: flex; align-items: center; min-height: 44px; padding: 10px 20px; color: var(--muted); text-decoration: none;
-            font-size: 13px; transition: all 0.15s;
-        }
-        nav a:hover, nav a.active { background: var(--bg3); color: var(--accent2); border-left: 3px solid var(--accent); }
-        nav .section-label { padding: 16px 20px 6px; font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: #475569; font-weight: 700; }
-
-        main { flex: 1; padding: 28px; overflow: auto; }
-        .section { display: none; }
-        .section.active { display: block; }
-
-        h2 { font-size: 16px; font-weight: 700; color: var(--accent2); margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
-        h2 .count { font-size: 12px; background: var(--bg3); padding: 2px 8px; border-radius: 999px; color: var(--muted); }
-
-        .card {
-            background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius);
-            padding: 16px; margin-bottom: 16px;
-        }
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; margin-bottom: 24px; }
-        .stat-card {
-            background: var(--bg3); border: 1px solid var(--border); border-radius: var(--radius);
-            padding: 16px 20px; text-align: center;
-        }
-        .stat-card .val { font-size: 28px; font-weight: 800; color: var(--accent2); }
-        .stat-card .lbl { font-size: 11px; color: var(--muted); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.08em; }
-
-        table { width: 100%; border-collapse: collapse; font-size: 12px; }
-        th { background: var(--bg3); color: var(--muted); text-align: left; padding: 8px 10px; font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid var(--border); white-space: nowrap; }
-        td { padding: 7px 10px; border-bottom: 1px solid var(--border); vertical-align: top; max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        tr:hover td { background: var(--bg3); }
-
-        .badge-ok   { background: rgba(16,185,129,.15); color: var(--ok);    padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 600; }
-        .badge-warn { background: rgba(245,158,11,.15); color: var(--warn);  padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 600; }
-        .badge-err  { background: rgba(239,68,68,.15);  color: var(--danger); padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 600; }
-
-        select, input[type=text] {
-            background: var(--bg3); color: var(--text); border: 1px solid var(--border);
-            padding: 7px 12px; border-radius: var(--radius); font-size: 13px;
-        }
-        select:focus, input[type=text]:focus { outline: 2px solid var(--accent); }
-
-        .form-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 16px; }
-        .btn {
-            background: var(--accent); color: #fff; border: none; padding: 8px 18px;
-            border-radius: var(--radius); cursor: pointer; font-size: 13px; font-weight: 600; transition: opacity 0.15s;
-        }
-        .btn:hover { opacity: 0.85; }
-        .btn-danger { background: var(--danger); }
-        .btn-sm { padding: 4px 12px; font-size: 12px; }
-
-        .pagination { display: flex; gap: 6px; margin-top: 12px; align-items: center; }
-        .pagination a {
-            background: var(--bg3); color: var(--text); text-decoration: none;
-            padding: 5px 12px; border-radius: var(--radius); border: 1px solid var(--border); font-size: 12px;
-        }
-        .pagination a.current { background: var(--accent); color: #fff; border-color: var(--accent); }
-        .pagination .info { color: var(--muted); font-size: 12px; }
-
-        .error-box { background: rgba(239,68,68,.1); border: 1px solid rgba(239,68,68,.3); color: var(--danger); padding: 12px 16px; border-radius: var(--radius); margin-bottom: 12px; }
-
-        .view-as-form { background: var(--bg3); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; margin-bottom: 20px; }
-        .view-as-form label { display: block; margin-bottom: 6px; color: var(--muted); font-size: 12px; }
-    </style>
+    <link rel="stylesheet" href="css/superAdmin.css">
 </head>
 <body>
 
@@ -567,7 +469,7 @@ $totalAuditSystems = (int)$pdo->query(
 
         <?php $tab = $_GET['tab'] ?? 'overview'; ?>
 
-        <!-- ── OVERVIEW ─────────────────────────────────────────────────── -->
+        <?php /* ── OVERVIEW ─────────────────────────────────────────────────── */ ?>
         <?php if ($tab === 'overview'): ?>
         <h2>System Overview</h2>
         <div class="stats-grid">
@@ -620,7 +522,7 @@ $totalAuditSystems = (int)$pdo->query(
         </table>
         </div>
 
-        <!-- ── TABLE BROWSER ─────────────────────────────────────────────── -->
+        <?php /* ── TABLE BROWSER ─────────────────────────────────────────────── */ ?>
         <?php elseif ($tab === 'tables'): ?>
         <?php 
         $isReadOnly = in_array($selectedTable, READ_ONLY_TABLES, true);
@@ -725,7 +627,7 @@ $totalAuditSystems = (int)$pdo->query(
             <?php endif; ?>
         </div>
 
-        <!-- ── AUDIT LOGS ────────────────────────────────────────────────── -->
+        <?php /* ── AUDIT LOGS ────────────────────────────────────────────────── */ ?>
         <?php elseif ($tab === 'audit'): ?>
         <h2>Audit Logs <span class="count"><?= $auditTotal ?> events</span></h2>
 
@@ -772,7 +674,7 @@ $totalAuditSystems = (int)$pdo->query(
             </div>
         </div>
 
-        <!-- ── INTEGRATION LINKS ─────────────────────────────────────────── -->
+        <?php /* ── INTEGRATION LINKS ─────────────────────────────────────────── */ ?>
         <?php elseif ($tab === 'links'): ?>
         <h2>Integration Links <span class="count"><?= count($linkHealth) ?> total | <?= $activeCount ?> Active | <?= $notImplCount ?> NotImplemented</span></h2>
         <div class="card">
@@ -799,7 +701,7 @@ $totalAuditSystems = (int)$pdo->query(
         </table>
         </div>
 
-        <!-- ── VIEW-AS ────────────────────────────────────────────────────── -->
+        <?php /* ── VIEW-AS ────────────────────────────────────────────────────── */ ?>
         <?php elseif ($tab === 'viewas'): ?>
         <h2>View-As Mode <span class="count">Read-Only Perspective</span></h2>
         <p style="color:var(--muted);margin-bottom:16px;font-size:13px;">
@@ -841,7 +743,7 @@ $totalAuditSystems = (int)$pdo->query(
     </main>
 </div>
 
-<!-- ── MODALS (CREATE, EDIT, DELETE, UPLOAD) ───────────────────────────── -->
+<?php /* ── MODALS (CREATE, EDIT, DELETE, UPLOAD) ───────────────────────────── */ ?>
 <div id="sa-modal-backdrop" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:9999;align-items:center;justify-content:center;">
     <div style="background:var(--bg2);border:1px solid var(--accent);border-radius:var(--radius);padding:24px;max-width:550px;width:90%;max-height:85vh;overflow:auto;box-shadow:0 20px 25px -5px rgba(0,0,0,0.5);">
         <h3 id="sa-modal-title" style="color:var(--accent2);margin-bottom:16px;font-size:16px;">Action</h3>

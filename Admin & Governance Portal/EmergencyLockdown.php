@@ -81,7 +81,7 @@ $defconStatus = ($isolatedCount === $totalSystems && $totalSystems > 0) ? 'MAXIM
                 </div>
             </div>
 
-            <!-- Top Bar Sign Out -->
+            <?php /* Top Bar Sign Out */ ?>
             <a href="../api/logout.php?system=Admin%20%26%20Governance%20Portal&redirect=../Admin%20%26%20Governance%20Portal/login.php" class="top-signout-btn" title="Sign Out of Admin &amp; Governance Portal" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" ><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
         </div>
     </header>
@@ -89,7 +89,7 @@ $defconStatus = ($isolatedCount === $totalSystems && $totalSystems > 0) ? 'MAXIM
     <div class="pl-[260px]">
         <main class="relative pt-[60px] w-full min-h-screen bg-surface px-gutter-desktop py-space-lg">
             <div class="flex flex-col w-full">
-                <!-- BREADCRUMB & METADATA BAR -->
+                <?php /* BREADCRUMB & METADATA BAR */ ?>
                 <div class="flex flex-wrap items-center justify-between gap-space-sm pb-space-sm">
                     <div
                         class="flex items-center gap-space-xs font-telemetry-micro text-telemetry-micro text-on-surface-variant uppercase tracking-wider">
@@ -117,16 +117,16 @@ $defconStatus = ($isolatedCount === $totalSystems && $totalSystems > 0) ? 'MAXIM
                         </div>
                     </div>
                 </div>
-                <!-- EMERGENCY LOCKDOWN MASTER BANNER -->
+                <?php /* EMERGENCY LOCKDOWN MASTER BANNER */ ?>
                 <div
                     class="relative overflow-hidden bg-primary text-on-primary rounded-lg shadow-md p-space-md mb-space-base">
-                    <!-- Hazard diagonal background accent line (pure CSS pattern) -->
+                    <?php /* Hazard diagonal background accent line (pure CSS pattern) */ ?>
                     <div
                         class="absolute inset-0 opacity-10 pointer-events-none bg-[radial-gradient(#96eef9_1px,transparent_1px)] [background-size:16px_16px]">
                     </div>
                     <div
                         class="relative flex flex-col xl:flex-row items-start xl:items-center justify-between gap-space-md">
-                        <!-- Title & Live Flare -->
+                        <?php /* Title & Live Flare */ ?>
                         <div class="flex items-start gap-space-md">
                             <div
                                 class="relative flex items-center justify-center w-12 h-12 rounded bg-error/20 text-error flex-shrink-0 mt-space-2xs">
@@ -161,7 +161,7 @@ $defconStatus = ($isolatedCount === $totalSystems && $totalSystems > 0) ? 'MAXIM
                                 </p>
                             </div>
                         </div>
-                        <!-- Action Buttons Bar -->
+                        <?php /* Action Buttons Bar */ ?>
                         <div class="flex flex-wrap items-center gap-space-xs xl:self-center flex-shrink-0">
                             <button
                                 class="h-control-height-md px-space-base bg-error text-on-error hover:bg-on-error-container transition-all font-body-default text-body-default font-semibold rounded flex items-center gap-space-xs shadow-sm"
@@ -184,9 +184,9 @@ $defconStatus = ($isolatedCount === $totalSystems && $totalSystems > 0) ? 'MAXIM
                         </div>
                     </div>
                 </div>
-                <!-- TOP INCIDENT & DEFENSE METRICS ROW (4 Classification Strips) -->
+                <?php /* TOP INCIDENT & DEFENSE METRICS ROW (4 Classification Strips) */ ?>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-space-md mb-space-base">
-                    <!-- Card 1: DEFCON Posture (Alert Red strip) -->
+                    <?php /* Card 1: DEFCON Posture (Alert Red strip) */ ?>
                     <div
                         class="relative bg-surface-container-lowest rounded shadow-sm p-space-md flex flex-col justify-between overflow-hidden">
                         <div class="absolute left-0 top-0 bottom-0 w-1 bg-error"></div>
@@ -219,7 +219,7 @@ $defconStatus = ($isolatedCount === $totalSystems && $totalSystems > 0) ? 'MAXIM
                             </span>
                         </div>
                     </div>
-                    <!-- Card 2: Hardware Quorum / Dual Custody (Signal Amber strip) -->
+                    <?php /* Card 2: Hardware Quorum / Dual Custody (Signal Amber strip) */ ?>
                     <div
                         class="relative bg-surface-container-lowest rounded shadow-sm p-space-md flex flex-col justify-between overflow-hidden">
                         <div class="absolute left-0 top-0 bottom-0 w-1 bg-on-tertiary-container"></div>
@@ -250,7 +250,7 @@ $defconStatus = ($isolatedCount === $totalSystems && $totalSystems > 0) ? 'MAXIM
                             <span class="text-tertiary font-semibold font-telemetry-data">50.0% OF COLD-KEY</span>
                         </div>
                     </div>
-                    <!-- Card 3: Quarantine Reach (Internal Blue strip) -->
+                    <?php /* Card 3: Quarantine Reach (Internal Blue strip) */ ?>
                     <div
                         class="relative bg-surface-container-lowest rounded shadow-sm p-space-md flex flex-col justify-between overflow-hidden">
                         <div class="absolute left-0 top-0 bottom-0 w-1 bg-primary"></div>
@@ -284,7 +284,7 @@ $defconStatus = ($isolatedCount === $totalSystems && $totalSystems > 0) ? 'MAXIM
                             </span>
                         </div>
                     </div>
-                    <!-- Card 4: State Reporting Dispatch (Precision Teal strip) -->
+                    <?php /* Card 4: State Reporting Dispatch (Precision Teal strip) */ ?>
                     <div
                         class="relative bg-surface-container-lowest rounded shadow-sm p-space-md flex flex-col justify-between overflow-hidden">
                         <div class="absolute left-0 top-0 bottom-0 w-1 bg-secondary"></div>
@@ -314,11 +314,11 @@ $defconStatus = ($isolatedCount === $totalSystems && $totalSystems > 0) ? 'MAXIM
                         </div>
                     </div>
                 </div>
-                <!-- MAIN OPERATIONAL GRID (70 / 30 LAYOUT) -->
+                <?php /* MAIN OPERATIONAL GRID (70 / 30 LAYOUT) */ ?>
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-space-base mb-space-base items-start">
-                    <!-- LEFT COLUMN: INDUSTRIAL NODE ISOLATION MATRIX (8 cols) -->
+                    <?php /* LEFT COLUMN: INDUSTRIAL NODE ISOLATION MATRIX (8 cols) */ ?>
                     <div class="lg:col-span-8 flex flex-col gap-space-base">
-                        <!-- Panel 1: Industrial Node Isolation Matrix (SYS-01 to SYS-10) -->
+                        <?php /* Panel 1: Industrial Node Isolation Matrix (SYS-01 to SYS-10) */ ?>
                         <div class="bg-surface-container-lowest rounded shadow-sm overflow-hidden">
                             <div
                                 class="bg-surface-container px-space-base py-space-sm flex flex-wrap items-center justify-between gap-space-xs">
@@ -341,7 +341,7 @@ $defconStatus = ($isolatedCount === $totalSystems && $totalSystems > 0) ? 'MAXIM
                                     </button>
                                 </div>
                             </div>
-                            <!-- Density Table of Nodes -->
+                            <?php /* Density Table of Nodes */ ?>
                             <div class="overflow-x-auto">
                                 <table class="w-full text-left border-collapse">
                                     <thead>
@@ -396,7 +396,7 @@ $defconStatus = ($isolatedCount === $totalSystems && $totalSystems > 0) ? 'MAXIM
                                 </table>
                             </div>
                         </div>
-                        <!-- Panel 2: Automated Defensive Measures Engaged -->
+                        <?php /* Panel 2: Automated Defensive Measures Engaged */ ?>
                         <div class="bg-surface-container-lowest rounded shadow-sm p-space-base">
                             <div
                                 class="flex items-center justify-between mb-space-sm pb-space-xs border-b border-surface-container-high">
@@ -412,7 +412,7 @@ $defconStatus = ($isolatedCount === $totalSystems && $totalSystems > 0) ? 'MAXIM
                                 </span>
                             </div>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-space-sm">
-                                <!-- Defense Item 1 -->
+                                <?php /* Defense Item 1 */ ?>
                                 <div class="p-space-sm bg-surface-container-low rounded flex items-start gap-space-sm">
                                     <div
                                         class="w-5 h-5 rounded bg-secondary text-on-secondary flex items-center justify-center flex-shrink-0 mt-[2px]">
@@ -428,7 +428,7 @@ $defconStatus = ($isolatedCount === $totalSystems && $totalSystems > 0) ? 'MAXIM
                                         </p>
                                     </div>
                                 </div>
-                                <!-- Defense Item 2 -->
+                                <?php /* Defense Item 2 */ ?>
                                 <div class="p-space-sm bg-surface-container-low rounded flex items-start gap-space-sm">
                                     <div
                                         class="w-5 h-5 rounded bg-secondary text-on-secondary flex items-center justify-center flex-shrink-0 mt-[2px]">
@@ -445,7 +445,7 @@ $defconStatus = ($isolatedCount === $totalSystems && $totalSystems > 0) ? 'MAXIM
                                         </p>
                                     </div>
                                 </div>
-                                <!-- Defense Item 3 -->
+                                <?php /* Defense Item 3 */ ?>
                                 <div class="p-space-sm bg-surface-container-low rounded flex items-start gap-space-sm">
                                     <div
                                         class="w-5 h-5 rounded bg-secondary text-on-secondary flex items-center justify-center flex-shrink-0 mt-[2px]">
@@ -462,7 +462,7 @@ $defconStatus = ($isolatedCount === $totalSystems && $totalSystems > 0) ? 'MAXIM
                                         </p>
                                     </div>
                                 </div>
-                                <!-- Defense Item 4 -->
+                                <?php /* Defense Item 4 */ ?>
                                 <div class="p-space-sm bg-error-container/40 rounded flex items-start gap-space-sm">
                                     <div
                                         class="w-5 h-5 rounded bg-error text-on-error flex items-center justify-center flex-shrink-0 mt-[2px]">
@@ -480,7 +480,7 @@ $defconStatus = ($isolatedCount === $totalSystems && $totalSystems > 0) ? 'MAXIM
                                 </div>
                             </div>
                         </div>
-                        <!-- Real-Time Syslog Stream Console -->
+                        <?php /* Real-Time Syslog Stream Console */ ?>
                         <div class="bg-surface-container-lowest rounded shadow-sm overflow-hidden">
                             <div
                                 class="bg-primary text-on-primary px-space-base py-space-xs flex items-center justify-between">
@@ -519,9 +519,9 @@ $defconStatus = ($isolatedCount === $totalSystems && $totalSystems > 0) ? 'MAXIM
                             </div>
                         </div>
                     </div>
-                    <!-- RIGHT COLUMN: DUAL-CUSTODY INTERLOCK & AUTHORIZATION CONSOLE (4 cols) -->
+                    <?php /* RIGHT COLUMN: DUAL-CUSTODY INTERLOCK & AUTHORIZATION CONSOLE (4 cols) */ ?>
                     <div class="lg:col-span-4 flex flex-col gap-space-base">
-                        <!-- Panel: Physical Hardware Custodian Panel (Dual-Custody) -->
+                        <?php /* Panel: Physical Hardware Custodian Panel (Dual-Custody) */ ?>
                         <div
                             class="bg-surface-container-lowest rounded shadow-sm p-space-base relative overflow-hidden">
                             <div
@@ -541,7 +541,7 @@ $defconStatus = ($isolatedCount === $totalSystems && $totalSystems > 0) ? 'MAXIM
                                 Universal de-escalation or irreversible sovereign payload dispatch mandates concurrent
                                 physical hardware authentication from both designated security officers.
                             </p>
-                            <!-- Slot A: Timur Akhmetov (LATCHED) -->
+                            <?php /* Slot A: Timur Akhmetov (LATCHED) */ ?>
                             <div
                                 class="p-space-sm bg-surface-container-low rounded mb-space-sm relative overflow-hidden">
                                 <div
@@ -575,7 +575,7 @@ $defconStatus = ($isolatedCount === $totalSystems && $totalSystems > 0) ? 'MAXIM
                                     </div>
                                 </div>
                             </div>
-                            <!-- Slot B: Leonid Volkov (PENDING PIN CHALLENGE) -->
+                            <?php /* Slot B: Leonid Volkov (PENDING PIN CHALLENGE) */ ?>
                             <div
                                 class="p-space-sm bg-surface-container-high rounded mb-space-md relative overflow-hidden">
                                 <div
@@ -623,7 +623,7 @@ $defconStatus = ($isolatedCount === $totalSystems && $totalSystems > 0) ? 'MAXIM
                                     <span>Authorize &amp; Lock All Upstream Nodes</span>
                                 </button>
                             </div>
-                            <!-- Emergency Rollback Protocol Notice -->
+                            <?php /* Emergency Rollback Protocol Notice */ ?>
                             <div class="p-space-sm bg-surface-container-low rounded text-on-surface">
                                 <div class="flex items-center gap-space-xs mb-space-2xs">
                                     <span class="material-symbols-outlined text-[16px] text-primary">restart_alt</span>
@@ -640,7 +640,7 @@ $defconStatus = ($isolatedCount === $totalSystems && $totalSystems > 0) ? 'MAXIM
                                 </div>
                             </div>
                         </div>
-                        <!-- Facility Environmental & Radio Telemetry Pod -->
+                        <?php /* Facility Environmental & Radio Telemetry Pod */ ?>
                         <div class="bg-surface-container-lowest rounded shadow-sm p-space-base">
                             <div
                                 class="flex items-center justify-between mb-space-sm pb-space-xs border-b border-surface-container-high">
@@ -674,7 +674,7 @@ $defconStatus = ($isolatedCount === $totalSystems && $totalSystems > 0) ? 'MAXIM
                         </div>
                     </div>
                 </div>
-                <!-- CRYPTOGRAPHIC TAMPER-EVIDENT FOOTER -->
+                <?php /* CRYPTOGRAPHIC TAMPER-EVIDENT FOOTER */ ?>
                 <div
                     class="bg-surface-container-lowest rounded shadow-sm p-space-md flex flex-col md:flex-row items-start md:items-center justify-between gap-space-md text-on-surface-variant">
                     <div class="flex flex-col gap-[2px]">
@@ -702,7 +702,7 @@ $defconStatus = ($isolatedCount === $totalSystems && $totalSystems > 0) ? 'MAXIM
                         </div>
                     </div>
                 </div>
-                <!-- Simple Modal / Dialog for Abort / Lockdown Interlock Actions -->
+                <?php /* Simple Modal / Dialog for Abort / Lockdown Interlock Actions */ ?>
                 <div class="fixed inset-0 bg-primary/70 backdrop-blur-[2px] z-50 flex items-center justify-center p-space-base hidden"
                     id="modalOverlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
                     <div

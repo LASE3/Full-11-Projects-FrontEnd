@@ -36,7 +36,7 @@ try {
             $owner = $chkStmt->fetchColumn();
 
             if ($owner === false) {
-                Response::error("Order #{$orderId} not found.", 404);
+                Response::error("Order not found.", 404);
             }
 
             if (!$isSA && $owner !== $cusId) {
@@ -57,17 +57,25 @@ try {
             $order = $stmt->fetch(PDO::FETCH_ASSOC);
 
             if (!$order) {
-                Response::error("Order #{$orderId}
-            vp_authorize($_vp_user, 'shop:read', $order, $pdo); not found or unauthorized.", 404);
+                Response::error("Order not found.", 404);
             }
+
+            vp_authorize($_vp_user, 'shop:read', $order, $pdo);
 
             // Fetch order line items
             $itemsStmt = $pdo->prepare("
                 SELECT 
                     oi.*,
+                    p.product_name AS name,
                     p.product_name,
-                    p.sku,
-                    p.category
+                    p.prod_id AS sku,
+                    p.billing_model AS category,
+                    p.billing_model,
+                    p.price,
+                    p.stock,
+                    p.is_active,
+                    p.image_url,
+                    p.description
                 FROM order_items oi
                 LEFT JOIN products p ON oi.prod_id = p.prod_id
                 WHERE oi.order_id = :oid

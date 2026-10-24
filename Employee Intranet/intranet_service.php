@@ -192,8 +192,13 @@ function intra_getDirectory(array $filters = []): array
     }
 
     if (!empty($filters['search'])) {
-        $where[] = "(e.full_name LIKE :s OR e.job_title LIKE :s OR e.email LIKE :s OR e.emp_id LIKE :s OR d.dept_name LIKE :s)";
-        $params[':s'] = '%' . $filters['search'] . '%';
+        $where[] = "(e.full_name LIKE :s1 OR e.job_title LIKE :s2 OR e.email LIKE :s3 OR e.emp_id LIKE :s4 OR d.dept_name LIKE :s5)";
+        $sTerm = '%' . $filters['search'] . '%';
+        $params[':s1'] = $sTerm;
+        $params[':s2'] = $sTerm;
+        $params[':s3'] = $sTerm;
+        $params[':s4'] = $sTerm;
+        $params[':s5'] = $sTerm;
     }
 
     $whereSql = "WHERE " . implode(" AND ", $where);
@@ -231,12 +236,6 @@ function intra_getEmployee(string $empId): ?array
     $stmt->execute([$empId]);
     $emp = $stmt->fetch(PDO::FETCH_ASSOC);
     return $emp ?: null;
-}
-
-function intra_getDepartments(): array
-{
-    $pdo = getDbConnection();
-    return $pdo->query("SELECT * FROM departments ORDER BY dept_code ASC")->fetchAll(PDO::FETCH_ASSOC);
 }
 
 // ============================================================================
@@ -346,13 +345,6 @@ function intra_updateLeaveStatus(int $leaveId, string $decision, ?string $approv
         error_log("Failed to emit EMP_TO_ADM: " . $e->getMessage());
     }
     return $res;
-}
-
-function intra_cancelLeaveRequest(int $leaveId, string $empId): bool
-{
-    $pdo = getDbConnection();
-    $stmt = $pdo->prepare("DELETE FROM leave_requests WHERE leave_id = :lid AND emp_id = :eid AND status = 'Pending'");
-    return $stmt->execute([':lid' => $leaveId, ':eid' => $empId]);
 }
 
 // ============================================================================

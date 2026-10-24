@@ -43,7 +43,7 @@ try {
 <body>
 
   <div class="app-container">
-    <!-- Top Navigation Bar -->
+    <?php /* Top Navigation Bar */ ?>
     <header class="top-nav">
       <div class="top-nav__accent-stripe"></div>
       <div class="top-nav__content">
@@ -98,13 +98,13 @@ try {
           </div>
         </div>
 
-        <!-- Top Bar Sign Out -->
+        <?php /* Top Bar Sign Out */ ?>
         <a href="./api/logout.php?redirect=../login.php" class="top-signout-btn" title="Sign Out of CRM" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" ><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
       </div>
     </header>
 
     <div class="main-layout">
-      <!-- Sidebar Navigation -->
+      <?php /* Sidebar Navigation */ ?>
       <aside class="sidebar">
         <div>
           <div class="sidebar-section-title">Sales Management</div>
@@ -138,7 +138,7 @@ try {
               <span class="sidebar-badge">28</span>
             </a>
 
-            <!-- Customers (Active) -->
+            <?php /* Customers (Active) */ ?>
             <a href="Customers.php" class="sidebar-nav-item active">
               <div class="sidebar-item-left">
                 <span class="sidebar-icon">
@@ -212,7 +212,7 @@ try {
               <span class="sidebar-badge badge-green">+14%</span>
             </a>
           
-            <!-- Inter-System Integrations (SYS02) -->
+            <?php /* Inter-System Integrations (SYS02) */ ?>
             <a href="Integrations.php" class="sidebar-nav-item">
               <div class="sidebar-item-left">
                 <span class="sidebar-icon">
@@ -259,7 +259,7 @@ try {
             <span class="sidebar-badge crm-text-xs" >SYS 04</span>
           </a>
         </nav>
-        <!-- Log Out -->
+        <?php /* Log Out */ ?>
 
         <div class="sidebar-footer">
           <div class="quota-widget-card">
@@ -278,10 +278,10 @@ try {
         </div>
       </aside>
 
-      <!-- Main Content Area -->
+      <?php /* Main Content Area */ ?>
       <main class="content-wrapper">
         <div class="portal-container">
-          <!-- Breadcrumb & Top Actions -->
+          <?php /* Breadcrumb & Top Actions */ ?>
           <div class="page-header">
             <div class="page-header-info">
               <div class="breadcrumb-trail">
@@ -304,7 +304,7 @@ try {
             </div>
           </div>
 
-          <!-- Customer Header Card (Amber-Orange #D9822B Left Border) -->
+          <?php /* Customer Header Card (Amber-Orange #D9822B Left Border) */ ?>
           <div class="customer-detail-header-card">
             <div class="customer-header-top-row">
               <div>
@@ -327,7 +327,7 @@ try {
               </div>
             </div>
 
-            <!-- Customer Info 4-Col Grid -->
+            <?php /* Customer Info 4-Col Grid */ ?>
             <div class="customer-info-grid">
               <div class="customer-info-col">
                 <span class="info-label">Lead Account Manager</span>
@@ -352,7 +352,7 @@ try {
             </div>
           </div>
 
-          <!-- Tabbed Section Navigation -->
+          <?php /* Tabbed Section Navigation */ ?>
           <div class="customer-tabs-nav">
             <button class="customer-tab-btn active" data-tab="overview" onclick="window.crmApp.switchCustomerTab('overview')">
               <span>Overview</span>
@@ -375,10 +375,10 @@ try {
             </button>
           </div>
 
-          <!-- TAB 1: OVERVIEW (Active by Default) -->
+          <?php /* TAB 1: OVERVIEW (Active by Default) */ ?>
           <div id="tab-panel-overview" class="tab-content-panel active">
             <div class="overview-summary-grid">
-              <!-- Left Column: Linked Engineering Projects List -->
+              <?php /* Left Column: Linked Engineering Projects List */ ?>
               <div class="crm-card">
                 <div class="card-header-row">
                   <div>
@@ -391,7 +391,7 @@ try {
                 </div>
 
                 <div class="crm-flex-col-gap-md" >
-                  <!-- Project Item 1 -->
+                  <?php /* Project Item 1 */ ?>
                   <div class="crm-card-indigo-border" >
                     <div class="crm-flex-between-start-mb2" >
                       <div>
@@ -407,7 +407,7 @@ try {
                     </div>
                   </div>
 
-                  <!-- Project Item 2 -->
+                  <?php /* Project Item 2 */ ?>
                   <div class="crm-card-info-border" >
                     <div class="crm-flex-between-start-mb2" >
                       <div>
@@ -423,7 +423,7 @@ try {
                     </div>
                   </div>
 
-                  <!-- Project Item 3 -->
+                  <?php /* Project Item 3 */ ?>
                   <div class="crm-card-purple-border" >
                     <div class="crm-flex-between-start-mb2" >
                       <div>
@@ -441,9 +441,9 @@ try {
                 </div>
               </div>
 
-              <!-- Right Column: Invoices Summary & Highly Confidential Contract Value Card -->
+              <?php /* Right Column: Invoices Summary & Highly Confidential Contract Value Card */ ?>
               <div class="overview-right-col">
-                <!-- 1. Invoice Status Summary Widget -->
+                <?php /* 1. Invoice Status Summary Widget */ ?>
                 <div class="crm-card">
                   <div class="card-header-row">
                     <div>
@@ -474,7 +474,7 @@ try {
                   </div>
                 </div>
 
-                <!-- 2. "Highly Confidential" Alert-Red (#B23A32) Tagged Contract Value Card -->
+                <?php /* 2. "Highly Confidential" Alert-Red (#B23A32) Tagged Contract Value Card */ ?>
                 <div class="confidential-contract-card">
                   <div class="confidential-badge-banner">
                     <span class="confidential-pill">
@@ -517,7 +517,7 @@ try {
             </div>
           </div>
 
-          <!-- TAB 2: PROJECTS PANEL -->
+          <?php /* TAB 2: PROJECTS PANEL */ ?>
           <div id="tab-panel-projects" class="tab-content-panel">
             <div class="crm-card">
               <h3 class="card-title crm-mb-4" >Complete Engineering Projects Matrix</h3>
@@ -562,7 +562,7 @@ try {
             </div>
           </div>
 
-          <!-- TAB 3: DOCUMENTS PANEL -->
+          <?php /* TAB 3: DOCUMENTS PANEL */ ?>
           <div id="tab-panel-documents" class="tab-content-panel">
             <div class="crm-card">
               <h3 class="card-title crm-mb-4" >Customer Technical Dossiers &amp; Compliance Certificates</h3>
@@ -586,7 +586,7 @@ try {
             </div>
           </div>
 
-          <!-- TAB 4: CONTRACTS PANEL -->
+          <?php /* TAB 4: CONTRACTS PANEL */ ?>
           <div id="tab-panel-contracts" class="tab-content-panel">
             <div class="confidential-contract-card">
               <div class="confidential-badge-banner">
@@ -630,7 +630,7 @@ try {
             </div>
           </div>
 
-          <!-- TAB 5: SUPPORT HISTORY PANEL -->
+          <?php /* TAB 5: SUPPORT HISTORY PANEL */ ?>
           <div id="tab-panel-support" class="tab-content-panel">
             <div class="crm-card">
               <h3 class="card-title crm-mb-4" >Service Desk &amp; Field Incident History (Client Incident Log)</h3>
@@ -660,7 +660,7 @@ try {
     </div>
   </div>
 
-  <!-- Modal: + New Opportunity -->
+  <?php /* Modal: + New Opportunity */ ?>
   <div id="modal-new-opportunity" class="modal-backdrop">
     <div class="modal-card">
       <div class="modal-header">

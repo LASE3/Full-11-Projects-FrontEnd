@@ -69,6 +69,22 @@ function vp_api_guard(string $system, array $opts = []): array
         header('Content-Type: application/json; charset=utf-8');
     }
 
+    // Enforce input length limits to prevent DB strict mode truncation errors
+    require_once __DIR__ . '/helpers/Validator.php';
+    if (!empty($_GET)) {
+        Validator::validateLengthsOrExit($_GET);
+    }
+    if (!empty($_POST)) {
+        Validator::validateLengthsOrExit($_POST);
+    }
+    $rawInput = file_get_contents('php://input');
+    if ($rawInput !== false && trim($rawInput) !== '' && str_starts_with(trim($rawInput), '{')) {
+        $decoded = json_decode($rawInput, true);
+        if (is_array($decoded)) {
+            Validator::validateLengthsOrExit($decoded);
+        }
+    }
+
     // Step 1: Require valid authentication
     $user = requireApiAuth($system);
 
@@ -190,62 +206,3 @@ function vp_enforce_csrf(array $opts): void
     }
 }
 
-/**
- * Read request payload consistently for JSON, POST, PUT, PATCH, DELETE.
- */
-function vp_get_payload(): array
-{
-    $method = strtoupper($_SERVER['REQUEST_METHOD'] ?? 'GET');
-    $contentType = $_SERVER['CONTENT_TYPE'] ?? $_SERVER['HTTP_CONTENT_TYPE'] ?? '';
-    
-    if (str_contains(strtolower($contentType), 'application/json') || in_array($method, ['PUT', 'PATCH', 'DELETE'], true)) {
-        $raw = (string)file_get_contents('php://input');
-        $json = json_decode($raw, true);
-        if (is_array($json)) {
-            return $json;
-        }
-    }
-    return !empty($_POST) ? $_POST : [];
-}
-
-/**
- * Require a valid customer session (for Customer Portal API endpoints).
- * Returns the authenticated customer ID.
- * Never falls back to a default customer.
- */
-function vp_require_customer_session(): string
-{
-    if (!headers_sent()) {
-        header('Content-Type: application/json; charset=utf-8');
-    }
-
-    if (session_status() === PHP_SESSION_NONE) {
-        session_start();
-    }
-
-    $user = $_SESSION['vostok_user'] ?? null;
-    if (!$user) {
-        http_response_code(401);
-        echo json_encode([
-            'success' => false,
-            'error'   => 'Authentication required',
-            'message' => 'Customer session required. Please log in.',
-        ], JSON_UNESCAPED_UNICODE);
-        exit;
-    }
-
-    $reqCus = (($user['account_type'] ?? '') === 'Customer') ? null : ($_GET['cus_id'] ?? $_POST['cus_id'] ?? null);
-    $cusId = enforceCustomerTenant($user, $reqCus);
-
-    if (empty($cusId)) {
-        http_response_code(403);
-        echo json_encode([
-            'success' => false,
-            'error'   => 'No customer selected',
-            'message' => 'Please select a customer perspective.',
-        ], JSON_UNESCAPED_UNICODE);
-        exit;
-    }
-
-    return (string)$cusId;
-}

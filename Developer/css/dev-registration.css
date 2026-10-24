@@ -8,38 +8,6 @@
   margin: 0 auto;
 }
 
-.reg-step-indicator {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 24px;
-  background: #ffffff;
-  border: 1px solid var(--vk-neutral-200);
-  border-radius: var(--radius-md);
-  padding: 16px 24px;
-  box-shadow: var(--shadow-sm);
-}
-
-.reg-step {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.reg-step-number {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  background: var(--vk-neutral-200);
-  color: var(--vk-neutral-600);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: var(--font-mono);
-  font-size: 12px;
-  font-weight: 700;
-}
-
 .reg-step.active .reg-step-number {
   background: var(--vk-sys-accent);
   color: #ffffff;
@@ -50,21 +18,8 @@
   color: #ffffff;
 }
 
-.reg-step-label {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--vk-neutral-600);
-}
-
 .reg-step.active .reg-step-label {
   color: var(--vk-primary);
-}
-
-.reg-step-divider {
-  flex: 1;
-  height: 2px;
-  background: var(--vk-neutral-200);
-  margin: 0 16px;
 }
 
 .form-grid-2col {
@@ -134,6 +89,8 @@
   display: flex;
   align-items: flex-start;
   gap: 12px;
+  min-height: 44px;
+  min-width: 44px;
 }
 
 .scope-card-option:hover {

@@ -64,21 +64,21 @@ if ($cusId) {
 
 
         
-  <!-- Consolidated Stylesheet (Strict System Tokens & UI Components) -->
+  <?php /* Consolidated Stylesheet (Strict System Tokens & UI Components) */ ?>
   <link rel="stylesheet" href="css/style.css?v=<?= time() ?>">
 </head>
 
 <body>
 
-  <!-- ========================================================================
+  <?php /* ========================================================================
        TOP NAVIGATION BAR (#0F2438 Deep Navy + #0E7C86 4px Teal Accent Stripe)
-       ======================================================================== -->
+       ======================================================================== */ ?>
   <header class="top-nav">
-    <!-- 4px System Identity Stripe -->
+    <?php /* 4px System Identity Stripe */ ?>
     <div class="top-nav__accent-stripe"></div>
 
     <div class="top-nav__content">
-      <!-- Brand & System Identifier -->
+      <?php /* Brand & System Identifier */ ?>
       <div class="brand-section">
         <button class="mobile-nav-toggle" id="b2b-sidebar-toggle" onclick="document.body.classList.toggle('sidebar-open')" title="Toggle Sidebar Navigation">
           <span class="material-symbols-outlined">menu</span>
@@ -102,11 +102,11 @@ if ($cusId) {
         </div>
       </div>
 
-      <!-- (Navigation links moved to left sidebar) -->
+      <?php /* (Navigation links moved to left sidebar) */ ?>
 
-      <!-- Right Header Actions (Customer Context, Cart, RFQ Button) -->
+      <?php /* Right Header Actions (Customer Context, Cart, RFQ Button) */ ?>
       <div class="header-actions">
-        <!-- Authenticated User Profile Badge -->
+        <?php /* Authenticated User Profile Badge */ ?>
         <?php
           $userDisplayName = ($isSuperAdmin || ($currUser['email'] ?? '') === 'admin@gmail.com' || ($currUser['emp_id'] ?? '') === 'EMP-0001')
               ? 'Super Administrator'
@@ -125,7 +125,7 @@ if ($cusId) {
           </div>
         </div>
 
-        <!-- Account / Customer Context Switcher -->
+        <?php /* Account / Customer Context Switcher */ ?>
         <div class="customer-context-selector" onclick="window.shopApp && window.shopApp.toggleCustomerDropdown ? window.shopApp.toggleCustomerDropdown(event) : document.getElementById('customer-dropdown-menu').classList.toggle('show')" title="Active Enterprise Customer Persona">
           <span style="font-size:10px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;color:#F59E0B;background:rgba(245,158,11,0.15);padding:2px 6px;border-radius:3px;margin-right:2px;">CLIENT</span>
           <div class="customer-avatar" id="header-customer-avatar"><?= htmlspecialchars(strtoupper(substr($customer['company_name'] ?? 'T', 0, 1))) ?></div>
@@ -138,7 +138,7 @@ if ($cusId) {
             <polyline points="6 9 12 15 18 9" />
           </svg>
 
-          <!-- Dropdown Account Switcher Menu -->
+          <?php /* Dropdown Account Switcher Menu */ ?>
           <div class="customer-dropdown-menu" id="customer-dropdown-menu" onclick="event.stopPropagation()">
             <div class="dropdown-header-label">
               <div style="display:flex;align-items:center;gap:6px;">
@@ -187,7 +187,7 @@ if ($cusId) {
           </div>
         </div>
 
-        <!-- Direct Cart Icon with Amber Item-Count Badge -->
+        <?php /* Direct Cart Icon with Amber Item-Count Badge */ ?>
         <div class="cart-button" onclick="window.shopApp.openCartDrawer()" title="Procurement Cart">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="9" cy="21" r="1" />
@@ -197,7 +197,7 @@ if ($cusId) {
           <span class="cart-count-badge" id="header-cart-badge">0</span>
         </div>
 
-        <!-- Live Enterprise Notifications Bell -->
+        <?php /* Live Enterprise Notifications Bell */ ?>
         <button class="icon-button notifications-btn" id="notifications-toggle-btn" title="Live B2B Notifications & Telemetry" style="background:transparent;border:none;color:#bdc6cf;cursor:pointer;padding:6px;display:flex;align-items:center;justify-content:center;position:relative;">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
@@ -205,7 +205,7 @@ if ($cusId) {
           </svg>
         </button>
 
-        <!-- Quick RFQ CTA Button -->
+        <?php /* Quick RFQ CTA Button */ ?>
         <button class="rfq-quick-btn" onclick="window.shopApp.openRfqDrawer()">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
             <path d="M12 5v14M5 12h14" />
@@ -214,14 +214,14 @@ if ($cusId) {
         </button>
       </div>
 
-      <!-- Top Bar Sign Out -->
+      <?php /* Top Bar Sign Out */ ?>
       <a href="./api/logout.php?redirect=../login.php" class="top-signout-btn" title="Sign Out of Online Shop B2B" onclick="(function(){sessionStorage.clear();localStorage.clear();})()"><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
     </div>
   </header>
 
-  <!-- ========================================================================
+  <?php /* ========================================================================
        LEFT SIDEBAR NAVIGATION (Hover-to-Open & Hover-to-Close)
-       ======================================================================== -->
+       ======================================================================== */ ?>
   <aside class="sidebar b2b-sidebar" id="b2b-sidebar" style="background-color: #0f2438 !important; border-right: 1px solid rgba(255, 255, 255, 0.1) !important;">
     <div class="sidebar-section-title">E-Commerce Navigation</div>
     <nav class="sidebar-nav">
@@ -281,9 +281,9 @@ if ($cusId) {
     </div>
   </aside>
 
-  <!-- ========================================================================
+  <?php /* ========================================================================
        SUB-HEADER BAR: Breadcrumbs & Telemetry Baseline Status
-       ======================================================================== -->
+       ======================================================================== */ ?>
   <div class="sub-header-bar">
     <div class="sub-header-content">
       <div class="breadcrumbs" id="app-breadcrumbs">
@@ -307,15 +307,15 @@ if ($cusId) {
     </div>
   </div>
 
-  <!-- ========================================================================
+  <?php /* ========================================================================
        MAIN APPLICATION VIEW CONTAINER
-       ======================================================================== -->
+       ======================================================================== */ ?>
   <main class="app-container">
 
     <?php if ($canManageProducts): ?>
-    <!-- ======================================================================
+    <?php /* ======================================================================
          SCREEN: PRODUCT ADMINISTRATION (SuperAdmin & Logistics Only)
-         ====================================================================== -->
+         ====================================================================== */ ?>
     <section class="screen-view" id="view-admin-products" style="padding: 24px; max-width: 1400px; margin: 0 auto; display:none;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:16px;">
         <div>
@@ -359,13 +359,13 @@ if ($cusId) {
     </section>
     <?php endif; ?>
 
-    <!-- ======================================================================
+    <?php /* ======================================================================
          SCREEN 1: PRODUCT CATALOG
-         ====================================================================== -->
+         ====================================================================== */ ?>
     <section class="screen-view active" id="view-catalog">
       <div class="catalog-layout">
 
-        <!-- Left Filter Sidebar -->
+        <?php /* Left Filter Sidebar */ ?>
         <aside class="catalog-sidebar">
           <div class="sidebar-header">
             <div class="sidebar-title">
@@ -377,7 +377,7 @@ if ($cusId) {
             <button class="reset-filters-btn" onclick="window.shopApp.resetAllFilters()">Reset All</button>
           </div>
 
-          <!-- Category Filter -->
+          <?php /* Category Filter */ ?>
           <div class="filter-group">
             <div class="filter-title">
               <span>Category</span>
@@ -420,7 +420,7 @@ if ($cusId) {
             </div>
           </div>
 
-          <!-- Industry Sector Filter -->
+          <?php /* Industry Sector Filter */ ?>
           <div class="filter-group">
             <div class="filter-title">
               <span>Target Sector</span>
@@ -470,7 +470,7 @@ if ($cusId) {
             </div>
           </div>
 
-          <!-- Availability Filter -->
+          <?php /* Availability Filter */ ?>
           <div class="filter-group">
             <div class="filter-title">
               <span>Availability</span>
@@ -499,7 +499,7 @@ if ($cusId) {
             </div>
           </div>
 
-          <!-- Billing Model Filter -->
+          <?php /* Billing Model Filter */ ?>
           <div class="filter-group">
             <div class="filter-title">
               <span>Billing Model</span>
@@ -535,7 +535,7 @@ if ($cusId) {
             </div>
           </div>
 
-          <!-- Price Range Filter -->
+          <?php /* Price Range Filter */ ?>
           <div class="filter-group">
             <div class="filter-title">
               <span>Price Range Ceiling</span>
@@ -553,13 +553,13 @@ if ($cusId) {
             </div>
           </div>
 
-          <!-- Log Out -->
+          <?php /* Log Out */ ?>
 
         </aside>
 
-        <!-- Main Product Catalog Area -->
+        <?php /* Main Product Catalog Area */ ?>
         <section class="catalog-main">
-          <!-- Toolbar (Search, Sort, Layout Switcher) -->
+          <?php /* Toolbar (Search, Sort, Layout Switcher) */ ?>
           <div class="catalog-toolbar">
             <div class="toolbar-search-box">
               <svg class="shop-text-tertiary" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
@@ -610,39 +610,39 @@ if ($cusId) {
             </div>
           </div>
 
-          <!-- Active Filter Chips Bar -->
+          <?php /* Active Filter Chips Bar */ ?>
           <div class="active-filters-bar" id="catalog-active-filters"></div>
 
-          <!-- Product Grid Container -->
+          <?php /* Product Grid Container */ ?>
           <div class="product-grid" id="catalog-products-grid">
-            <!-- Dynamically populated by app.js -->
+            <?php /* Dynamically populated by app.js */ ?>
           </div>
         </section>
 
       </div>
     </section>
 
-    <!-- ======================================================================
+    <?php /* ======================================================================
          SCREEN 2: PRODUCT DETAIL PAGE (PDP)
-         ====================================================================== -->
+         ====================================================================== */ ?>
     <section class="screen-view" id="view-product-detail">
       <div id="pdp-dynamic-content">
-        <!-- Dynamically rendered by app.js -->
+        <?php /* Dynamically rendered by app.js */ ?>
       </div>
     </section>
 
-    <!-- ======================================================================
+    <?php /* ======================================================================
          SCREEN 3: ORDER TRACKING DASHBOARD
-         ====================================================================== -->
+         ====================================================================== */ ?>
     <section class="screen-view" id="view-tracking">
       <div class="dashboard-layout">
 
-        <!-- Top Horizontal Status Timeline Component -->
+        <?php /* Top Horizontal Status Timeline Component */ ?>
         <div id="tracking-timeline-container">
-          <!-- Dynamically populated by app.js -->
+          <?php /* Dynamically populated by app.js */ ?>
         </div>
 
-        <!-- KPI Metric Cards -->
+        <?php /* KPI Metric Cards */ ?>
         <div class="dashboard-kpi-grid">
           <div class="kpi-card">
             <span class="kpi-title">Active Platform Orders</span>
@@ -677,7 +677,7 @@ if ($cusId) {
           </div>
         </div>
 
-        <!-- Confidential Orders Data Table with Amber-Orange Left-Border Tag -->
+        <?php /* Confidential Orders Data Table with Amber-Orange Left-Border Tag */ ?>
         <div class="orders-table-card">
           <div class="orders-table-header">
             <div class="table-header-left">
@@ -712,7 +712,7 @@ if ($cusId) {
                 </tr>
               </thead>
               <tbody id="tracking-orders-table-body">
-                <!-- Rows dynamically rendered with .confidential-row (#D9822B amber-orange left border) -->
+                <?php /* Rows dynamically rendered with .confidential-row (#D9822B amber-orange left border) */ ?>
               </tbody>
             </table>
           </div>
@@ -723,12 +723,12 @@ if ($cusId) {
 
   </main>
 
-  <!-- ========================================================================
+  <?php /* ========================================================================
        MODALS & SLIDE-IN DRAWERS (RFQ Builder, Cart Drawer)
-       ======================================================================== -->
+       ======================================================================== */ ?>
   <div class="modal-overlay" id="modal-overlay" onclick="window.shopApp.closeAllModals()"></div>
 
-  <!-- RFQ / Quotation Package Drawer -->
+  <?php /* RFQ / Quotation Package Drawer */ ?>
   <div class="drawer-container" id="rfq-drawer">
     <div class="drawer-header">
       <div class="drawer-title-group">
@@ -752,7 +752,7 @@ if ($cusId) {
       </div>
 
       <div class="drawer-items-list" id="rfq-items-list">
-        <!-- Dynamically populated -->
+        <?php /* Dynamically populated */ ?>
       </div>
 
       <div class="shop-form-group">
@@ -786,7 +786,7 @@ if ($cusId) {
     </div>
   </div>
 
-  <!-- Direct Procurement Cart Drawer -->
+  <?php /* Direct Procurement Cart Drawer */ ?>
   <div class="drawer-container" id="cart-drawer">
     <div class="drawer-header">
       <div class="drawer-title-group">
@@ -803,7 +803,7 @@ if ($cusId) {
       </div>
 
       <div class="drawer-items-list" id="cart-items-list">
-        <!-- Dynamically populated -->
+        <?php /* Dynamically populated */ ?>
       </div>
 
       <div
@@ -843,14 +843,14 @@ if ($cusId) {
     </div>
   </div>
 
-  <!-- Toast Container -->
+  <?php /* Toast Container */ ?>
   <div class="toast-container" id="toast-container"></div>
 
   <?php if ($canManageProducts): ?>
-  <!-- ========================================================================
+  <?php /* ========================================================================
        PRODUCT CATALOG ADMIN MODALS (SuperAdmin & Logistics)
-       ======================================================================== -->
-  <!-- 1. Add / Edit Product Modal -->
+       ======================================================================== */ ?>
+  <?php /* 1. Add / Edit Product Modal */ ?>
   <div id="admin-product-modal" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); z-index:10050; width:90%; max-width:540px; background:#0F2438; border:1px solid #1B3A5C; border-radius:10px; box-shadow:0 20px 50px rgba(0,0,0,0.7); color:#e2e8f0; font-family:'IBM Plex Sans', sans-serif;">
     <div style="display:flex; justify-content:space-between; align-items:center; padding:16px 20px; border-bottom:1px solid #1B3A5C; background:#142c44;">
       <h3 id="admin-prod-modal-title" style="margin:0; font-size:16px; font-weight:700; color:#fff; display:flex; align-items:center; gap:8px;">
@@ -907,7 +907,7 @@ if ($cusId) {
     </form>
   </div>
 
-  <!-- 2. Technical Image Upload Modal -->
+  <?php /* 2. Technical Image Upload Modal */ ?>
   <div id="admin-upload-modal" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); z-index:10050; width:90%; max-width:480px; background:#0F2438; border:1px solid #1B3A5C; border-radius:10px; box-shadow:0 20px 50px rgba(0,0,0,0.7); color:#e2e8f0; font-family:'IBM Plex Sans', sans-serif;">
     <div style="display:flex; justify-content:space-between; align-items:center; padding:16px 20px; border-bottom:1px solid #1B3A5C; background:#142c44;">
       <h3 style="margin:0; font-size:16px; font-weight:700; color:#fff; display:flex; align-items:center; gap:8px;">
@@ -934,7 +934,7 @@ if ($cusId) {
     </form>
   </div>
 
-  <!-- 3. Force Delete Confirmation Modal -->
+  <?php /* 3. Force Delete Confirmation Modal */ ?>
   <div id="admin-forcedel-modal" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); z-index:10050; width:90%; max-width:480px; background:#0F2438; border:1px solid #EF4444; border-radius:10px; box-shadow:0 20px 50px rgba(0,0,0,0.7); color:#e2e8f0; font-family:'IBM Plex Sans', sans-serif;">
     <div style="display:flex; justify-content:space-between; align-items:center; padding:16px 20px; border-bottom:1px solid rgba(239,68,68,0.3); background:#271216;">
       <h3 style="margin:0; font-size:16px; font-weight:700; color:#EF4444; display:flex; align-items:center; gap:8px;">
@@ -970,9 +970,9 @@ if ($cusId) {
   <div id="admin-modal-backdrop" onclick="closeAllAdminModals()" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.7); z-index:10040; backdrop-filter:blur(2px);"></div>
   <?php endif; ?>
 
-  <!-- ========================================================================
+  <?php /* ========================================================================
        FOOTER (Baseline Architecture Reference)
-       ======================================================================== -->
+       ======================================================================== */ ?>
   <footer class="app-footer">
     <div class="footer-content">
       <div class="footer-left">
@@ -987,8 +987,8 @@ if ($cusId) {
       <div class="footer-links">
         <span>FQDN: <code>shop.vostokpribor.local</code></span>
         <span class="shop-divider-v">·</span>
-        <a href="javascript:void(0)" onclick="window.shopApp.navigateTo('catalog')">Catalog</a>
-        <a href="javascript:void(0)" onclick="window.shopApp.navigateTo('tracking')">Order Tracking</a>
+        <button type="button" class="footer-btn-link bg-transparent border-0 text-inherit p-0 cursor-pointer font-inherit" onclick="window.shopApp.navigateTo('catalog')">Catalog</button>
+        <button type="button" class="footer-btn-link bg-transparent border-0 text-inherit p-0 cursor-pointer font-inherit" onclick="window.shopApp.navigateTo('tracking')">Order Tracking</button>
         <a href="../VOSTOKPRIBOR Corporate Web Platform/index.php">Corporate (Sys 01)</a>
         <a href="../Customer Portal/Dashboard.php">Customer Portal (Sys 03)</a>
         <a href="../Employee Intranet/login.php">Intranet (Sys 04)</a>
@@ -999,13 +999,12 @@ if ($cusId) {
         <a href="../File Center/login.php">File Center (Sys 09)</a>
         <a href="../Developer/login.php">Developer (Sys 10)</a>
         <a href="../Admin & Governance Portal/login.php">Admin (Sys 11)</a>
-        <a href="javascript:void(0)"
-          onclick="window.shopApp.downloadDoc('DOC-2026-009', 'Full Catalog PDF')">DOC-2026-009</a>
+        <button type="button" class="footer-btn-link bg-transparent border-0 text-inherit p-0 cursor-pointer font-inherit" onclick="window.shopApp.downloadDoc('DOC-2026-009', 'Full Catalog PDF')">DOC-2026-009</button>
       </div>
     </div>
   </footer>
 
-  <!-- Consolidated JavaScript Application -->
+  <?php /* Consolidated JavaScript Application */ ?>
   <script src="js/app.js?v=<?= time() ?>"></script>
   <link rel="stylesheet" href="../assets/css/api-ui.css">
   <script src="../assets/js/api-core.js"></script>

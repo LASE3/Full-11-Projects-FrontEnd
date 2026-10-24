@@ -112,14 +112,14 @@ $monthlyData = [
 <body>
 
   <div class="app-container">
-    <!-- ========================================================================
+    <?php /* ========================================================================
          TOP NAVIGATION BAR
-         ======================================================================== -->
+         ======================================================================== */ ?>
     <header class="top-nav">
       <div class="top-nav__accent-stripe"></div>
 
       <div class="top-nav__content">
-        <!-- Brand & System Identifier -->
+        <?php /* Brand & System Identifier */ ?>
         <div class="brand-section">
           <button class="mobile-nav-toggle" id="fin-sidebar-toggle" onclick="document.body.classList.toggle('sidebar-open')" title="Toggle Menu"><span class="material-symbols-outlined">menu</span></button>
           <a href="Dashboard.php" class="brand-logo-container">
@@ -140,7 +140,7 @@ $monthlyData = [
           </a>
         </div>
 
-        <!-- Global Omni Search -->
+        <?php /* Global Omni Search */ ?>
         <div class="top-search-bar">
           <div class="search-input-wrapper">
             <span class="search-icon">🔍</span>
@@ -149,7 +149,7 @@ $monthlyData = [
           </div>
         </div>
 
-        <!-- Right System Metrics, Confidential Badge & Profile -->
+        <?php /* Right System Metrics, Confidential Badge & Profile */ ?>
         <div class="top-nav__actions">
           <div class="confidential-system-pill" title="Restricted Financial Records (Banking & Audit Level Access)">
             <span>🔒</span>
@@ -172,7 +172,7 @@ $monthlyData = [
           </div>
         </div>
 
-        <!-- Top Bar Sign Out -->
+        <?php /* Top Bar Sign Out */ ?>
         <a href="../api/logout.php?system=Finance%20%26%20Billing&redirect=../Finance%20%26%20Billing/login.php" class="top-signout-btn" title="Sign Out of Finance &amp; Billing" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" >
           <span>Sign Out</span>
         </a>
@@ -180,9 +180,9 @@ $monthlyData = [
     </header>
 
     <div class="main-layout">
-      <!-- ========================================================================
+      <?php /* ========================================================================
            LEFT SIDEBAR NAVIGATION
-           ======================================================================== -->
+           ======================================================================== */ ?>
       <aside class="sidebar">
         <div>
           <div class="sidebar-section-title">Finance &amp; Treasury</div>
@@ -325,12 +325,12 @@ $monthlyData = [
         </div>
       </aside>
 
-      <!-- ========================================================================
+      <?php /* ========================================================================
            MAIN CONTENT AREA: SCREEN 1 DASHBOARD
-           ======================================================================== -->
+           ======================================================================== */ ?>
       <main class="content-wrapper">
         <div class="portal-container">
-          <!-- Page Header -->
+          <?php /* Page Header */ ?>
           <div class="page-header">
             <div class="page-header-info">
               <div class="breadcrumb-trail">
@@ -353,9 +353,9 @@ $monthlyData = [
             </div>
           </div>
 
-          <!-- Top Row of 4 KPI Cards -->
+          <?php /* Top Row of 4 KPI Cards */ ?>
           <div class="kpi-grid">
-            <!-- KPI 1: Total Outstanding -->
+            <?php /* KPI 1: Total Outstanding */ ?>
             <div class="fin-card kpi-card">
               <div class="kpi-header">
                 <span class="kpi-title">Total Outstanding</span>
@@ -370,7 +370,7 @@ $monthlyData = [
               </div>
             </div>
 
-            <!-- KPI 2: Revenue This Year -->
+            <?php /* KPI 2: Revenue This Year */ ?>
             <div class="fin-card kpi-card">
               <div class="kpi-header">
                 <span class="kpi-title">Revenue Recognized</span>
@@ -385,7 +385,7 @@ $monthlyData = [
               </div>
             </div>
 
-            <!-- KPI 3: Overdue Invoices -->
+            <?php /* KPI 3: Overdue Invoices */ ?>
             <div class="fin-card kpi-card">
               <div class="kpi-header">
                 <span class="kpi-title">Overdue Invoices</span>
@@ -400,7 +400,7 @@ $monthlyData = [
               </div>
             </div>
 
-            <!-- KPI 4: Reconciliation Backlog -->
+            <?php /* KPI 4: Reconciliation Backlog */ ?>
             <div class="fin-card kpi-card">
               <div class="kpi-header">
                 <span class="kpi-title">Reconciliation Backlog</span>
@@ -416,7 +416,7 @@ $monthlyData = [
             </div>
           </div>
 
-          <!-- Revenue Trend Line Chart Spanning Several Months -->
+          <?php /* Revenue Trend Line Chart Spanning Several Months */ ?>
           <div class="fin-card fin-mb-6" >
             <div class="card-header-row">
               <div>
@@ -437,7 +437,7 @@ $monthlyData = [
               </div>
             </div>
 
-            <!-- Dynamic Multi-Month Interactive Chart -->
+            <?php /* Dynamic Multi-Month Interactive Chart */ ?>
             <div class="fin-chart-wrap" >
               <svg class="fin-chart-svg" viewBox="0 0 900 240" >
                 <defs>
@@ -447,27 +447,27 @@ $monthlyData = [
                   </linearGradient>
                 </defs>
 
-                <!-- Gridlines -->
+                <?php /* Gridlines */ ?>
                 <line x1="50" y1="20" x2="880" y2="20" stroke="#E1E6EB" stroke-dasharray="3,3" />
                 <line x1="50" y1="70" x2="880" y2="70" stroke="#E1E6EB" stroke-dasharray="3,3" />
                 <line x1="50" y1="120" x2="880" y2="120" stroke="#E1E6EB" stroke-dasharray="3,3" />
                 <line x1="50" y1="170" x2="880" y2="170" stroke="#E1E6EB" stroke-dasharray="3,3" />
                 <line x1="50" y1="210" x2="880" y2="210" stroke="#CBD5E0" />
 
-                <!-- Y-Axis Labels -->
+                <?php /* Y-Axis Labels */ ?>
                 <text x="40" y="24" font-size="10" font-family="'JetBrains Mono', monospace" fill="#718096" text-anchor="end">€500K</text>
                 <text x="40" y="74" font-size="10" font-family="'JetBrains Mono', monospace" fill="#718096" text-anchor="end">€375K</text>
                 <text x="40" y="124" font-size="10" font-family="'JetBrains Mono', monospace" fill="#718096" text-anchor="end">€250K</text>
                 <text x="40" y="174" font-size="10" font-family="'JetBrains Mono', monospace" fill="#718096" text-anchor="end">€125K</text>
                 <text x="40" y="214" font-size="10" font-family="'JetBrains Mono', monospace" fill="#718096" text-anchor="end">€0</text>
 
-                <!-- Area Fill for Green -->
+                <?php /* Area Fill for Green */ ?>
                 <polygon points="100,160 240,140 380,120 520,95 660,75 800,45 800,210 100,210" fill="url(#chartGreenGrad)" />
 
-                <!-- Target Billed Line (Amber dashed) -->
+                <?php /* Target Billed Line (Amber dashed) */ ?>
                 <polyline points="100,170 240,150 380,130 520,105 660,85 800,55" fill="none" stroke="#E8A33D" stroke-width="2.5" stroke-dasharray="5,4" />
 
-                <!-- Actual Collected Line (Deep Green solid) -->
+                <?php /* Actual Collected Line (Deep Green solid) */ ?>
                 <polyline points="100,160 240,140 380,120 520,95 660,75 800,45" fill="none" stroke="#2E6E4E" stroke-width="3.5" stroke-linecap="round" />
 
                 <?php
@@ -485,7 +485,7 @@ $monthlyData = [
             </div>
           </div>
 
-          <!-- Pending Payment Matching List Widget -->
+          <?php /* Pending Payment Matching List Widget */ ?>
           <div class="fin-card fin-panel-flush" >
             <div class="fin-table-header-bar" >
               <div>

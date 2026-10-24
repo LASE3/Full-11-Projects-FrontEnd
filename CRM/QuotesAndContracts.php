@@ -18,7 +18,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
 <body>
 
   <div class="app-container">
-    <!-- Top Navigation Bar -->
+    <?php /* Top Navigation Bar */ ?>
     <header class="top-nav">
       <div class="top-nav__accent-stripe"></div>
       <div class="top-nav__content">
@@ -73,13 +73,13 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
           </div>
         </div>
 
-        <!-- Top Bar Sign Out -->
+        <?php /* Top Bar Sign Out */ ?>
         <a href="./api/logout.php?redirect=../login.php" class="top-signout-btn" title="Sign Out of CRM" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" ><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
       </div>
     </header>
 
     <div class="main-layout">
-      <!-- Sidebar Navigation -->
+      <?php /* Sidebar Navigation */ ?>
       <aside class="sidebar">
         <div>
           <div class="sidebar-section-title">Sales Management</div>
@@ -143,7 +143,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
               <span class="sidebar-badge">42</span>
             </a>
 
-            <!-- Quotes & Contracts (Active) -->
+            <?php /* Quotes & Contracts (Active) */ ?>
             <a href="QuotesAndContracts.php" class="sidebar-nav-item active">
               <div class="sidebar-item-left">
                 <span class="sidebar-icon">
@@ -187,7 +187,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
               <span class="sidebar-badge badge-green">+14%</span>
             </a>
           
-            <!-- Inter-System Integrations (SYS02) -->
+            <?php /* Inter-System Integrations (SYS02) */ ?>
             <a href="Integrations.php" class="sidebar-nav-item">
               <div class="sidebar-item-left">
                 <span class="sidebar-icon">
@@ -234,7 +234,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
             <span class="sidebar-badge crm-text-xs" >SYS 04</span>
           </a>
         </nav>
-        <!-- Log Out -->
+        <?php /* Log Out */ ?>
 
         <div class="sidebar-footer">
           <div class="quota-widget-card">
@@ -253,10 +253,10 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
         </div>
       </aside>
 
-      <!-- Main Content Area -->
+      <?php /* Main Content Area */ ?>
       <main class="content-wrapper">
         <div class="portal-container">
-          <!-- Page Header -->
+          <?php /* Page Header */ ?>
           <div class="page-header">
             <div class="page-header-info">
               <div class="breadcrumb-trail">
@@ -279,7 +279,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
             </div>
           </div>
 
-          <!-- KPI Strip -->
+          <?php /* KPI Strip */ ?>
           <div class="kpi-grid">
             <div class="crm-card kpi-card crm-border-t-confidential" >
               <div class="kpi-header">
@@ -342,7 +342,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
             </div>
           </div>
 
-          <!-- Section 1: "Highly Confidential" Alert-Red (#B23A32) Tagged Master Contracts Registry -->
+          <?php /* Section 1: "Highly Confidential" Alert-Red (#B23A32) Tagged Master Contracts Registry */ ?>
           <div class="confidential-contract-card crm-mb-6" >
             <div class="confidential-badge-banner">
               <div class="crm-flex-gap-md" >
@@ -440,7 +440,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
             </table>
           </div>
 
-          <!-- Section 2: Active Engineering Quotations Ledger -->
+          <?php /* Section 2: Active Engineering Quotations Ledger */ ?>
           <div class="crm-card">
             <div class="card-header-row">
               <div>
@@ -490,7 +490,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
     </div>
   </div>
 
-  <!-- Modal: + Create New Quote -->
+  <?php /* Modal: + Create New Quote */ ?>
   <div id="modal-new-quote" class="modal-backdrop">
     <div class="modal-card">
       <div class="modal-header">

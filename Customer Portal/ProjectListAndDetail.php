@@ -82,7 +82,7 @@ $activeCount = count($projects);
                 </div>
             </div>
 
-            <!-- Top Bar Sign Out -->
+            <?php /* Top Bar Sign Out */ ?>
             <a href="./api/logout.php?redirect=../login.php" class="top-signout-btn" title="Sign Out of Customer Portal" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" ><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
         </div>
     </header>
@@ -192,7 +192,7 @@ $activeCount = count($projects);
     <div id="portal-main-wrapper" class="portal-content-wrapper pl-64">
         <main class="w-full min-h-screen pt-16 bg-surface px-4 sm:px-6 lg:px-8 py-6">
             <div class="portal-container flex flex-col gap-6">
-                <!-- Top Operational Breadcrumbs & Facility Scope -->
+                <?php /* Top Operational Breadcrumbs & Facility Scope */ ?>
                 <div class="flex items-center justify-between py-1">
                     <div
                         class="flex items-center gap-unit-xs font-technical-tag text-technical-tag text-on-surface-variant">
@@ -212,7 +212,7 @@ $activeCount = count($projects);
                         <div class="text-on-surface-variant">SYNC: 14:02:18 UTC</div>
                     </div>
                 </div>
-                <!-- Header & Primary Controls Panel -->
+                <?php /* Header & Primary Controls Panel */ ?>
                 <div class="flex flex-col xl:flex-row xl:items-end justify-between gap-unit-lg">
                     <div>
                         <div class="flex flex-wrap items-center gap-unit-sm mb-1">
@@ -236,7 +236,7 @@ $activeCount = count($projects);
                         <span class="">Request Project Scope Change / New RFQ</span>
                     </button>
                 </div>
-                <!-- Industrial Filter Toolbar -->
+                <?php /* Industrial Filter Toolbar */ ?>
                 <div
                     class="bg-surface-container-lowest rounded-xl p-unit-base shadow-sm flex flex-col lg:flex-row items-center justify-between gap-unit-md">
                     <div class="flex flex-1 w-full lg:w-auto items-center gap-unit-sm">
@@ -301,7 +301,7 @@ $activeCount = count($projects);
                         </button>
                     </div>
                 </div>
-                <!-- Projects Master Data Grid Container -->
+                <?php /* Projects Master Data Grid Container */ ?>
                 <div class="bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden mb-unit-xl">
                     <div class="overflow-x-auto">
                         <table class="w-full text-left border-collapse">
@@ -424,7 +424,7 @@ $activeCount = count($projects);
                                                     </div>
                                                 </div>
 
-                                                <!-- Milestones / Billing Gates -->
+                                                <?php /* Milestones / Billing Gates */ ?>
                                                 <div>
                                                     <h3 class="font-headline-sm text-sm font-bold text-primary uppercase tracking-wider mb-2">Gate Milestones &amp; Scheduled Phases</h3>
                                                     <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-unit-sm">
@@ -456,7 +456,7 @@ $activeCount = count($projects);
                                                     </div>
                                                 </div>
 
-                                                <!-- Linked Technical Documents -->
+                                                <?php /* Linked Technical Documents */ ?>
                                                 <div class="flex flex-col sm:flex-row items-center justify-between pt-unit-sm border-t border-outline/20 text-xs text-on-surface-variant">
                                                     <div class="flex items-center gap-2">
                                                         <span class="material-symbols-outlined text-base text-primary">description</span>
@@ -477,7 +477,7 @@ $activeCount = count($projects);
                             </tbody>
                         </table>
                     </div>
-                    <!-- Data Grid Footer / Pagination Metadata -->
+                    <?php /* Data Grid Footer / Pagination Metadata */ ?>
                     <div
                         class="px-unit-lg py-3 bg-surface-container-low/50 flex flex-col sm:flex-row items-center justify-between gap-unit-sm font-technical-tag text-technical-tag text-on-surface-variant">
                         <div class="flex items-center gap-unit-md">
@@ -503,7 +503,7 @@ $activeCount = count($projects);
                         </div>
                     </div>
                 </div>
-                <!-- Operational Health & Support Strip -->
+                <?php /* Operational Health & Support Strip */ ?>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-unit-md">
                     <div
                         class="bg-surface-container-lowest p-unit-base rounded-xl shadow-sm flex items-center gap-unit-md">

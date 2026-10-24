@@ -51,17 +51,17 @@ foreach ($serviceRequests as $sr) {
 </head>
 <body class="bg-background font-body-md text-body-md text-on-background">
 
-    <!-- Universal Dynamic Header -->
+    <?php /* Universal Dynamic Header */ ?>
     <?php renderCustomerHeader('Search technical service requests...'); ?>
 
-    <!-- Universal Dynamic Sidebar -->
+    <?php /* Universal Dynamic Sidebar */ ?>
     <?php renderCustomerSidebar('services'); ?>
 
     <div id="portal-main-wrapper" class="portal-content-wrapper pl-64">
         <main class="w-full min-h-screen pt-16 bg-surface px-4 sm:px-6 lg:px-8 py-6">
             <div class="portal-container flex flex-col gap-6">
 
-                <!-- Header Banner -->
+                <?php /* Header Banner */ ?>
                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-outline/20 pb-4">
                     <div>
                         <nav class="flex items-center gap-2 text-xs uppercase tracking-wider text-on-surface-variant font-mono mb-1">
@@ -83,7 +83,7 @@ foreach ($serviceRequests as $sr) {
                     </button>
                 </div>
 
-                <!-- KPI Overview Cards -->
+                <?php /* KPI Overview Cards */ ?>
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <div class="p-4 rounded-xl bg-surface-container-high/40 border border-outline/20 flex items-center justify-between">
                         <div>
@@ -114,7 +114,7 @@ foreach ($serviceRequests as $sr) {
                     </div>
                 </div>
 
-                <!-- Service Requests Table -->
+                <?php /* Service Requests Table */ ?>
                 <div class="bg-surface-container-high/20 border border-outline/20 rounded-xl overflow-hidden shadow-sm">
                     <div class="p-4 border-b border-outline/20 flex items-center justify-between bg-surface-container-high/40">
                         <div class="flex items-center gap-2">
@@ -218,7 +218,7 @@ foreach ($serviceRequests as $sr) {
         </main>
     </div>
 
-    <!-- Modal: Submit Service Request -->
+    <?php /* Modal: Submit Service Request */ ?>
     <div id="service-request-modal" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 hidden">
         <div class="bg-primary border border-outline/30 rounded-2xl max-w-lg w-full p-6 shadow-2xl relative">
             <div class="flex items-center justify-between border-b border-outline/20 pb-3 mb-4">

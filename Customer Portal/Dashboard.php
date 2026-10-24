@@ -94,7 +94,7 @@ $totalFeedEvents = count($finEvents) + count($prjEvents) + count($tktEvents);
                 </div>
             </div>
 
-            <!-- Top Bar Sign Out -->
+            <?php /* Top Bar Sign Out */ ?>
             <a href="./api/logout.php?redirect=../login.php" class="top-signout-btn" title="Sign Out of Customer Portal" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" ><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
         </div>
     </header>
@@ -197,7 +197,7 @@ $totalFeedEvents = count($finEvents) + count($prjEvents) + count($tktEvents);
                         <span class="text-[10px] uppercase tracking-wider text-on-primary-container/70">Direct:</span>
                         <span class="text-[9px] text-tertiary-fixed/80 font-normal">Encrypted SLA</span>
                     </div>
-                    <a href="mailto:v.morozov@vostokpribor.ru" class="text-tertiary-fixed text-[11px] truncate block hover:underline hover:text-on-primary transition-colors" title="v.morozov@vostokpribor.ru">v.morozov@vostokpribor.ru</a>
+                    <a href="mailto:v.morozov@vostokpribor.ru" class="customer-email-link text-tertiary-fixed text-[11px] truncate block hover:underline hover:text-on-primary transition-colors" title="v.morozov@vostokpribor.ru">v.morozov@vostokpribor.ru</a>
                 </div>
             </div>
         </div>
@@ -226,8 +226,7 @@ $totalFeedEvents = count($finEvents) + count($prjEvents) + count($tktEvents);
                             Client Account <span
                                 class="font-data-mono-md text-data-mono-md text-on-surface font-medium">#<?= htmlspecialchars($cusId) ?></span>
                             • Facility: <span class="font-medium text-on-surface"><?= htmlspecialchars($customer['company_name'] ?? 'Industrial Operations') ?></span> • Primary Contact: <span class="font-medium text-on-surface"><?= htmlspecialchars($customer['primary_contact_name'] ?? 'Engineering Team') ?></span> (<a
-                                class="text-secondary hover:underline"
-                                href="mailto:<?= htmlspecialchars($customer['primary_contact_email'] ?? 'direct.contact@vostokpribor.com') ?>"><?= htmlspecialchars($customer['primary_contact_email'] ?? 'direct.contact@vostokpribor.com') ?></a>)
+                                class="customer-email-link text-secondary hover:underline" href="mailto:<?= htmlspecialchars($customer['primary_contact_email'] ?? 'direct.contact@vostokpribor.com') ?>"><?= htmlspecialchars($customer['primary_contact_email'] ?? 'direct.contact@vostokpribor.com') ?></a>)
                         </p>
                     </div>
                     <div class="flex items-center gap-unit-sm shrink-0">

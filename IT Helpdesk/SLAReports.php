@@ -46,7 +46,7 @@ $slaPct = $sbStats['sla_pct'];
 <body>
 
   <div class="app-container">
-    <!-- TOP NAVIGATION BAR -->
+    <?php /* TOP NAVIGATION BAR */ ?>
     <header class="top-nav">
       <div class="top-nav__accent-stripe"></div>
       <div class="top-nav__content">
@@ -98,7 +98,7 @@ $slaPct = $sbStats['sla_pct'];
           </div>
         </div>
 
-        <!-- Top Bar Sign Out -->
+        <?php /* Top Bar Sign Out */ ?>
         <a href="../api/logout.php?system=IT%20Helpdesk&redirect=../IT%20Helpdesk/login.php" class="top-signout-btn" title="Sign Out of IT Helpdesk" onclick="(function(){sessionStorage.clear();localStorage.clear();})()"><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
       </div>
     </header>
@@ -233,7 +233,7 @@ $slaPct = $sbStats['sla_pct'];
         </div>
       </aside>
 
-      <!-- MAIN CONTENT -->
+      <?php /* MAIN CONTENT */ ?>
       <main class="content-wrapper">
         <div class="portal-container">
           <div class="page-header">
@@ -255,7 +255,7 @@ $slaPct = $sbStats['sla_pct'];
             </div>
           </div>
 
-          <!-- KPI Summary (Dynamic from DB) -->
+          <?php /* KPI Summary (Dynamic from DB) */ ?>
           <div class="kpi-grid">
             <div class="hd-card kpi-card">
               <div class="kpi-header">
@@ -314,7 +314,7 @@ $slaPct = $sbStats['sla_pct'];
             </div>
           </div>
 
-          <!-- SLA Policies Configuration Table (Dynamic from DB) -->
+          <?php /* SLA Policies Configuration Table (Dynamic from DB) */ ?>
           <div class="hd-card hd-panel-flush" style="margin-top: 24px;">
             <div class="hd-table-header-flex">
               <div>
@@ -378,7 +378,7 @@ $slaPct = $sbStats['sla_pct'];
     </div>
   </div>
 
-  <!-- Edit SLA Policy Modal -->
+  <?php /* Edit SLA Policy Modal */ ?>
   <div id="modal-edit-sla" class="hd-modal-overlay">
     <div class="hd-modal-dialog">
       <div class="hd-modal-header">

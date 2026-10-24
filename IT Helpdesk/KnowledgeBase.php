@@ -33,7 +33,7 @@ $slaPct = $sbStats['sla_pct'];
 <body>
 
   <div class="app-container">
-    <!-- TOP NAVIGATION BAR -->
+    <?php /* TOP NAVIGATION BAR */ ?>
     <header class="top-nav">
       <div class="top-nav__accent-stripe"></div>
       <div class="top-nav__content">
@@ -85,7 +85,7 @@ $slaPct = $sbStats['sla_pct'];
           </div>
         </div>
 
-        <!-- Top Bar Sign Out -->
+        <?php /* Top Bar Sign Out */ ?>
         <a href="../api/logout.php?system=IT%20Helpdesk&redirect=../IT%20Helpdesk/login.php" class="top-signout-btn" title="Sign Out of IT Helpdesk" onclick="(function(){sessionStorage.clear();localStorage.clear();})()"><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
       </div>
     </header>
@@ -220,7 +220,7 @@ $slaPct = $sbStats['sla_pct'];
         </div>
       </aside>
 
-      <!-- MAIN CONTENT -->
+      <?php /* MAIN CONTENT */ ?>
       <main class="content-wrapper">
         <div class="portal-container">
           <div class="page-header">
@@ -242,7 +242,7 @@ $slaPct = $sbStats['sla_pct'];
             </div>
           </div>
 
-          <!-- Knowledge Cards Grid (Dynamic from DB) -->
+          <?php /* Knowledge Cards Grid (Dynamic from DB) */ ?>
           <div class="hd-grid-kb">
             <?php if (empty($articles)): ?>
               <div style="grid-column: 1 / -1; padding: 32px; text-align: center; color: var(--hd-text-muted); background: var(--hd-navy-surface); border-radius: 8px;">
@@ -292,7 +292,7 @@ $slaPct = $sbStats['sla_pct'];
     </div>
   </div>
 
-  <!-- Create Article Modal -->
+  <?php /* Create Article Modal */ ?>
   <div id="modal-create-kb" class="hd-modal-overlay">
     <div class="hd-modal-dialog">
       <div class="hd-modal-header">
@@ -336,7 +336,7 @@ $slaPct = $sbStats['sla_pct'];
     </div>
   </div>
 
-  <!-- Edit Article Modal -->
+  <?php /* Edit Article Modal */ ?>
   <div id="modal-edit-kb" class="hd-modal-overlay">
     <div class="hd-modal-dialog">
       <div class="hd-modal-header">
@@ -381,7 +381,7 @@ $slaPct = $sbStats['sla_pct'];
     </div>
   </div>
 
-  <!-- Read SOP Runbook Modal -->
+  <?php /* Read SOP Runbook Modal */ ?>
   <div id="modal-view-kb" class="hd-modal-overlay">
     <div class="hd-modal-dialog" style="max-width: 680px;">
       <div class="hd-modal-header">

@@ -18,7 +18,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
 <body>
 
   <div class="app-container">
-    <!-- Top Navigation Bar -->
+    <?php /* Top Navigation Bar */ ?>
     <header class="top-nav">
       <div class="top-nav__accent-stripe"></div>
       <div class="top-nav__content">
@@ -73,13 +73,13 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
           </div>
         </div>
 
-        <!-- Top Bar Sign Out -->
+        <?php /* Top Bar Sign Out */ ?>
         <a href="./api/logout.php?redirect=../login.php" class="top-signout-btn" title="Sign Out of CRM" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" ><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
       </div>
     </header>
 
     <div class="main-layout">
-      <!-- Left Sidebar Navigation -->
+      <?php /* Left Sidebar Navigation */ ?>
       <aside class="sidebar">
         <div>
           <div class="sidebar-section-title">Sales Management</div>
@@ -98,7 +98,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
               </div>
             </a>
 
-            <!-- Leads (Active) -->
+            <?php /* Leads (Active) */ ?>
             <a href="Leads.php" class="sidebar-nav-item active">
               <div class="sidebar-item-left">
                 <span class="sidebar-icon">
@@ -187,7 +187,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
               <span class="sidebar-badge badge-green">+14%</span>
             </a>
           
-            <!-- Inter-System Integrations (SYS02) -->
+            <?php /* Inter-System Integrations (SYS02) */ ?>
             <a href="Integrations.php" class="sidebar-nav-item">
               <div class="sidebar-item-left">
                 <span class="sidebar-icon">
@@ -234,7 +234,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
             <span class="sidebar-badge crm-text-xs" >SYS 04</span>
           </a>
         </nav>
-        <!-- Log Out -->
+        <?php /* Log Out */ ?>
 
         <div class="sidebar-footer">
           <div class="quota-widget-card">
@@ -253,10 +253,10 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
         </div>
       </aside>
 
-      <!-- Main Content Area -->
+      <?php /* Main Content Area */ ?>
       <main class="content-wrapper">
         <div class="portal-container">
-          <!-- Page Header -->
+          <?php /* Page Header */ ?>
           <div class="page-header">
             <div class="page-header-info">
               <div class="breadcrumb-trail">
@@ -279,7 +279,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
             </div>
           </div>
 
-          <!-- KPI Summary Strip -->
+          <?php /* KPI Summary Strip */ ?>
           <div class="kpi-grid">
             <div class="crm-card kpi-card">
               <div class="kpi-header">
@@ -342,7 +342,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
             </div>
           </div>
 
-          <!-- Filter Toolbar -->
+          <?php /* Filter Toolbar */ ?>
           <div class="page-filter-bar">
             <div class="filter-pills-group">
               <button class="filter-pill-btn active">All Leads (28)</button>
@@ -360,7 +360,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
             </div>
           </div>
 
-          <!-- Leads Data Table with Amber-Orange Left Tag (#D9822B) -->
+          <?php /* Leads Data Table with Amber-Orange Left Tag (#D9822B) */ ?>
           <div class="crm-card">
             <div class="card-header-row">
               <div>
@@ -385,7 +385,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
                 </tr>
               </thead>
               <tbody id="leads-tbody">
-                <!-- Row 1 -->
+                <?php /* Row 1 */ ?>
                 <tr class="account-row account-row-tagged">
                   <td>
                     <div class="account-name-cell">
@@ -419,7 +419,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
                   </td>
                 </tr>
 
-                <!-- Row 2 -->
+                <?php /* Row 2 */ ?>
                 <tr class="account-row account-row-tagged">
                   <td>
                     <div class="account-name-cell">
@@ -453,7 +453,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
                   </td>
                 </tr>
 
-                <!-- Row 3 -->
+                <?php /* Row 3 */ ?>
                 <tr class="account-row account-row-tagged">
                   <td>
                     <div class="account-name-cell">
@@ -487,7 +487,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
                   </td>
                 </tr>
 
-                <!-- Row 4 -->
+                <?php /* Row 4 */ ?>
                 <tr class="account-row account-row-tagged">
                   <td>
                     <div class="account-name-cell">
@@ -528,7 +528,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
     </div>
   </div>
 
-  <!-- Modal: Convert to Customer -->
+  <?php /* Modal: Convert to Customer */ ?>
   <div id="modal-convert-customer" class="modal-backdrop">
     <div class="modal-card">
       <div class="modal-header">
@@ -568,7 +568,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
     </div>
   </div>
 
-  <!-- Modal: + Log New Lead -->
+  <?php /* Modal: + Log New Lead */ ?>
   <div id="modal-new-lead" class="modal-backdrop">
     <div class="modal-card">
       <div class="modal-header">

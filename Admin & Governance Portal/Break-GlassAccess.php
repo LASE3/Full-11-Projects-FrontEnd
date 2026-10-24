@@ -77,7 +77,7 @@ $sidebarBadges = gov_getSidebarBadges();
                 </div>
             </div>
 
-            <!-- Top Bar Sign Out -->
+            <?php /* Top Bar Sign Out */ ?>
             <a href="../api/logout.php?system=Admin%20%26%20Governance%20Portal&redirect=../Admin%20%26%20Governance%20Portal/login.php" class="top-signout-btn" title="Sign Out of Admin &amp; Governance Portal" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" ><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
         </div>
     </header>
@@ -86,7 +86,7 @@ $sidebarBadges = gov_getSidebarBadges();
         <main class="relative pt-[60px] w-full min-h-screen bg-surface px-gutter-desktop py-space-lg">
             <div class="flex flex-col w-full">
 
-                <!-- TOP EMERGENCY STATUS STRIP -->
+                <?php /* TOP EMERGENCY STATUS STRIP */ ?>
                 <div class="w-full bg-error text-on-error p-space-sm mb-space-md shadow-md">
                     <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-space-sm">
                         <div class="flex items-center gap-space-sm">
@@ -138,9 +138,9 @@ $sidebarBadges = gov_getSidebarBadges();
                         </div>
                     </div>
                 </div>
-                <!-- 4 HIGH-DENSITY QUORUM TELEMETRY METRIC CARDS -->
+                <?php /* 4 HIGH-DENSITY QUORUM TELEMETRY METRIC CARDS */ ?>
                 <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-space-md mb-space-md">
-                    <!-- Metric 1 -->
+                    <?php /* Metric 1 */ ?>
                     <div class="bg-surface-container-lowest p-space-md shadow-sm relative overflow-hidden">
                         <div class="absolute left-0 top-0 bottom-0 w-1 bg-error"></div>
                         <div class="flex items-center justify-between text-on-surface-variant mb-space-2xs">
@@ -159,7 +159,7 @@ $sidebarBadges = gov_getSidebarBadges();
                             <span class="font-bold text-on-surface">Leonid Volkov</span>
                         </div>
                     </div>
-                    <!-- Metric 2 -->
+                    <?php /* Metric 2 */ ?>
                     <div class="bg-surface-container-lowest p-space-md shadow-sm relative overflow-hidden">
                         <div class="absolute left-0 top-0 bottom-0 w-1 bg-secondary"></div>
                         <div class="flex items-center justify-between text-on-surface-variant mb-space-2xs">
@@ -178,7 +178,7 @@ $sidebarBadges = gov_getSidebarBadges();
                             <span class="font-bold text-on-surface">KZ-AST-01 // SYNC</span>
                         </div>
                     </div>
-                    <!-- Metric 3 -->
+                    <?php /* Metric 3 */ ?>
                     <div class="bg-surface-container-lowest p-space-md shadow-sm relative overflow-hidden">
                         <div class="absolute left-0 top-0 bottom-0 w-1 bg-tertiary-container"></div>
                         <div class="flex items-center justify-between text-on-surface-variant mb-space-2xs">
@@ -198,7 +198,7 @@ $sidebarBadges = gov_getSidebarBadges();
                             <span class="font-bold text-error">SYS-03 (98.4°C)</span>
                         </div>
                     </div>
-                    <!-- Metric 4 -->
+                    <?php /* Metric 4 */ ?>
                     <div class="bg-surface-container-lowest p-space-md shadow-sm relative overflow-hidden">
                         <div class="absolute left-0 top-0 bottom-0 w-1 bg-primary"></div>
                         <div class="flex items-center justify-between text-on-surface-variant mb-space-2xs">
@@ -218,7 +218,7 @@ $sidebarBadges = gov_getSidebarBadges();
                         </div>
                     </div>
                 </div>
-                <!-- DUAL CUSTODY HSM CHAMBER SECTION -->
+                <?php /* DUAL CUSTODY HSM CHAMBER SECTION */ ?>
                 <div class="bg-surface-container-lowest shadow-sm mb-space-md p-space-md">
                     <div
                         class="flex items-center justify-between pb-space-sm mb-space-sm bg-surface-container-low p-space-xs">
@@ -238,7 +238,7 @@ $sidebarBadges = gov_getSidebarBadges();
                         </div>
                     </div>
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-space-md">
-                        <!-- Custodian 01 (Latched) -->
+                        <?php /* Custodian 01 (Latched) */ ?>
                         <div class="bg-surface-container-low p-space-md relative overflow-hidden">
                             <div class="absolute left-0 top-0 bottom-0 w-1 bg-secondary"></div>
                             <div class="flex items-start justify-between mb-space-sm">
@@ -292,7 +292,7 @@ $sidebarBadges = gov_getSidebarBadges();
                                 <span class="text-secondary font-bold">STATUS: VERIFIED</span>
                             </div>
                         </div>
-                        <!-- Custodian 02 (Awaiting) -->
+                        <?php /* Custodian 02 (Awaiting) */ ?>
                         <div class="bg-surface-container-low p-space-md relative overflow-hidden" id="custodianCard02">
                             <div class="absolute left-0 top-0 bottom-0 w-1 bg-error" id="custodianStripe02"></div>
                             <div class="flex items-start justify-between mb-space-sm">
@@ -349,9 +349,9 @@ $sidebarBadges = gov_getSidebarBadges();
                         </div>
                     </div>
                 </div>
-                <!-- MAIN TWO-COLUMN SPLIT: MATRIX & INVOCATION -->
+                <?php /* MAIN TWO-COLUMN SPLIT: MATRIX & INVOCATION */ ?>
                 <div class="grid grid-cols-1 xl:grid-cols-12 gap-space-md mb-space-md">
-                    <!-- LEFT / CENTER: INDUSTRIAL FACILITIES & SUB-SYSTEM OVERRIDE SCOPE MATRIX (7 COLS) -->
+                    <?php /* LEFT / CENTER: INDUSTRIAL FACILITIES & SUB-SYSTEM OVERRIDE SCOPE MATRIX (7 COLS) */ ?>
                     <div
                         class="xl:col-span-7 bg-surface-container-lowest p-space-md shadow-sm flex flex-col justify-between">
                         <div>
@@ -373,12 +373,12 @@ $sidebarBadges = gov_getSidebarBadges();
                                     class="font-label-uppercase text-label-uppercase bg-surface-container-high text-on-surface px-space-xs py-space-2xs">5
                                     SECTORS MONITORED</span>
                             </div>
-                            <!-- MATRIX ROWS -->
+                            <?php /* MATRIX ROWS */ ?>
                             <div class="flex flex-col gap-space-xs font-telemetry-micro text-telemetry-micro">
-                                <!-- Row 1: SYS-01 -->
+                                <?php /* Row 1: SYS-01 */ ?>
                                 <div
                                     class="bg-surface-container-low p-space-xs flex items-center justify-between hover:bg-surface-container-high transition-colors">
-                                    <div class="flex items-center gap-space-sm">
+                                    <label for="sys01Check" class="flex items-center gap-space-sm cursor-pointer min-h-[44px] min-w-[44px] flex-1">
                                         <input class="w-4 h-4 text-primary rounded-none" id="sys01Check"
                                             onchange="toggleScope()" type="checkbox" />
                                         <div>
@@ -392,7 +392,7 @@ $sidebarBadges = gov_getSidebarBadges();
                                             <span class="text-on-surface-variant">Core Blast Furnaces #1 &amp; #2 //
                                                 Pyrometer: 1420°C // Flow Rate: Normal</span>
                                         </div>
-                                    </div>
+                                    </label>
                                     <div class="text-right">
                                         <span
                                             class="font-label-uppercase text-label-uppercase bg-surface-container text-on-surface-variant px-space-xs py-space-2xs">READ-ONLY
@@ -400,10 +400,10 @@ $sidebarBadges = gov_getSidebarBadges();
                                         <span class="block text-on-surface-variant text-[10px]">MAX LEASE: 15 MIN</span>
                                     </div>
                                 </div>
-                                <!-- Row 2: SYS-03 (FLAGGED ACTIVE) -->
+                                <?php /* Row 2: SYS-03 (FLAGGED ACTIVE) */ ?>
                                 <div
                                     class="bg-error-container text-on-error-container p-space-xs flex items-center justify-between">
-                                    <div class="flex items-center gap-space-sm">
+                                    <label for="sys03Check" class="flex items-center gap-space-sm cursor-pointer min-h-[44px] min-w-[44px] flex-1">
                                         <input checked="" class="w-4 h-4 rounded-none accent-error" id="sys03Check"
                                             onchange="toggleScope()" type="checkbox" />
                                         <div>
@@ -418,7 +418,7 @@ $sidebarBadges = gov_getSidebarBadges();
                                             <span class="text-on-error-container font-semibold">Thermal Runaway 98.4°C
                                                 // Kernel Lock // Emergency Coolant Flush Required</span>
                                         </div>
-                                    </div>
+                                    </label>
                                     <div class="text-right">
                                         <span
                                             class="font-label-uppercase text-label-uppercase bg-error text-on-error px-space-xs py-space-2xs font-bold">SUPERUSER
@@ -427,10 +427,10 @@ $sidebarBadges = gov_getSidebarBadges();
                                             LEASE: 30 MIN</span>
                                     </div>
                                 </div>
-                                <!-- Row 3: SYS-05 -->
+                                <?php /* Row 3: SYS-05 */ ?>
                                 <div
                                     class="bg-surface-container-low p-space-xs flex items-center justify-between hover:bg-surface-container-high transition-colors">
-                                    <div class="flex items-center gap-space-sm">
+                                    <label for="sys05Check" class="flex items-center gap-space-sm cursor-pointer min-h-[44px] min-w-[44px] flex-1">
                                         <input class="w-4 h-4 text-primary rounded-none" id="sys05Check"
                                             onchange="toggleScope()" type="checkbox" />
                                         <div>
@@ -444,7 +444,7 @@ $sidebarBadges = gov_getSidebarBadges();
                                             <span class="text-on-surface-variant">Phase Synchronization 50.02Hz //
                                                 Frequency Variance ±0.01Hz // Breaker Interlock Stable</span>
                                         </div>
-                                    </div>
+                                    </label>
                                     <div class="text-right">
                                         <span
                                             class="font-label-uppercase text-label-uppercase bg-surface-container text-on-surface-variant px-space-xs py-space-2xs">RELATCHING
@@ -452,10 +452,10 @@ $sidebarBadges = gov_getSidebarBadges();
                                         <span class="block text-on-surface-variant text-[10px]">MAX LEASE: 15 MIN</span>
                                     </div>
                                 </div>
-                                <!-- Row 4: SYS-07 (FLAGGED ACTIVE) -->
+                                <?php /* Row 4: SYS-07 (FLAGGED ACTIVE) */ ?>
                                 <div
                                     class="bg-tertiary-fixed text-on-tertiary-fixed p-space-xs flex items-center justify-between">
-                                    <div class="flex items-center gap-space-sm">
+                                    <label for="sys07Check" class="flex items-center gap-space-sm cursor-pointer min-h-[44px] min-w-[44px] flex-1">
                                         <input checked="" class="w-4 h-4 rounded-none accent-tertiary" id="sys07Check"
                                             onchange="toggleScope()" type="checkbox" />
                                         <div>
@@ -470,7 +470,7 @@ $sidebarBadges = gov_getSidebarBadges();
                                             <span class="text-on-tertiary-fixed">Crane Hoist Interlock Frozen @ Bay 14-B
                                                 // Safety Circuit Open // Manual Firmware Halt Needed</span>
                                         </div>
-                                    </div>
+                                    </label>
                                     <div class="text-right">
                                         <span
                                             class="font-label-uppercase text-label-uppercase bg-tertiary text-on-tertiary px-space-xs py-space-2xs font-bold">MANUAL
@@ -479,10 +479,10 @@ $sidebarBadges = gov_getSidebarBadges();
                                             LEASE: 30 MIN</span>
                                     </div>
                                 </div>
-                                <!-- Row 5: SYS-11 -->
+                                <?php /* Row 5: SYS-11 */ ?>
                                 <div
                                     class="bg-surface-container-low p-space-xs flex items-center justify-between hover:bg-surface-container-high transition-colors">
-                                    <div class="flex items-center gap-space-sm">
+                                    <label for="sys11Check" class="flex items-center gap-space-sm cursor-pointer min-h-[44px] min-w-[44px] flex-1">
                                         <input class="w-4 h-4 text-primary rounded-none" id="sys11Check"
                                             onchange="toggleScope()" type="checkbox" />
                                         <div>
@@ -496,7 +496,7 @@ $sidebarBadges = gov_getSidebarBadges();
                                             <span class="text-on-surface-variant">Microcode Enclave Sealed // Hardware
                                                 Root-of-Trust Attestation Stream Valid</span>
                                         </div>
-                                    </div>
+                                    </label>
                                     <div class="text-right">
                                         <span
                                             class="font-label-uppercase text-label-uppercase bg-surface-container text-on-surface-variant px-space-xs py-space-2xs">ROOT-STORE
@@ -506,7 +506,7 @@ $sidebarBadges = gov_getSidebarBadges();
                                 </div>
                             </div>
                         </div>
-                        <!-- IN-ROW VISUALIZATION: SYSTEM RUNAWAY TELEMETRY CHART (UST-KAMENOGORSK CNC) -->
+                        <?php /* IN-ROW VISUALIZATION: SYSTEM RUNAWAY TELEMETRY CHART (UST-KAMENOGORSK CNC) */ ?>
                         <div class="mt-space-md p-space-sm bg-surface-container-low">
                             <div
                                 class="flex items-center justify-between mb-space-2xs font-telemetry-micro text-telemetry-micro">
@@ -540,7 +540,7 @@ $sidebarBadges = gov_getSidebarBadges();
                             </div>
                         </div>
                     </div>
-                    <!-- RIGHT: INCIDENT ATTESTATION & CRYPTOGRAPHIC INVOCATION (5 COLS) -->
+                    <?php /* RIGHT: INCIDENT ATTESTATION & CRYPTOGRAPHIC INVOCATION (5 COLS) */ ?>
                     <div
                         class="xl:col-span-5 bg-surface-container-lowest p-space-md shadow-sm flex flex-col justify-between">
                         <div>
@@ -604,8 +604,7 @@ $sidebarBadges = gov_getSidebarBadges();
                                     class="bg-error-container p-space-xs text-on-error-container flex items-start gap-space-xs">
                                     <input checked="" class="w-4 h-4 mt-0.5 accent-error shrink-0"
                                         id="statutoryAffirmation" type="checkbox" />
-                                    <label class="font-telemetry-micro text-[11px] leading-tight"
-                                        for="statutoryAffirmation">
+                                    <label class="font-telemetry-micro text-[11px] leading-tight min-h-[44px] min-w-[44px] flex items-center cursor-pointer" for="statutoryAffirmation">
                                         <strong>STATUTORY AFFIRMATION:</strong> I hereby certify under direct personal
                                         and criminal liability under Republic of Kazakhstan Cyber-Security Framework
                                         Article 49-B that this Break-Glass override is strictly necessary for public and
@@ -614,7 +613,7 @@ $sidebarBadges = gov_getSidebarBadges();
                                 </div>
                             </div>
                         </div>
-                        <!-- EXECUTE BUTTON -->
+                        <?php /* EXECUTE BUTTON */ ?>
                         <div class="pt-space-md">
                             <button
                                 class="w-full h-12 bg-error hover:bg-error/90 text-on-error font-title-sm text-title-sm font-bold tracking-wider flex items-center justify-center gap-space-sm shadow-md transition-all"
@@ -630,9 +629,9 @@ $sidebarBadges = gov_getSidebarBadges();
                         </div>
                     </div>
                 </div>
-                <!-- BOTTOM TELEMETRY GRID & AUDIT LEDGER (3 PANELS) -->
+                <?php /* BOTTOM TELEMETRY GRID & AUDIT LEDGER (3 PANELS) */ ?>
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-space-md mb-space-md">
-                    <!-- LEFT: PAST 90 DAYS BREAK-GLASS AUDIT LEDGER (4 COLS) -->
+                    <?php /* LEFT: PAST 90 DAYS BREAK-GLASS AUDIT LEDGER (4 COLS) */ ?>
                     <div class="lg:col-span-4 bg-surface-container-lowest p-space-md shadow-sm">
                         <div
                             class="flex items-center justify-between pb-space-sm mb-space-sm bg-surface-container-low p-space-xs">
@@ -662,7 +661,7 @@ $sidebarBadges = gov_getSidebarBadges();
                             <?php endforeach; ?>
                         </div>
                     </div>
-                    <!-- CENTER: SOVEREIGN STATE NETWORK TELEMETRY LINK TOPOLOGY (4 COLS) -->
+                    <?php /* CENTER: SOVEREIGN STATE NETWORK TELEMETRY LINK TOPOLOGY (4 COLS) */ ?>
                     <div
                         class="lg:col-span-4 bg-surface-container-lowest p-space-md shadow-sm flex flex-col justify-between">
                         <div>
@@ -677,7 +676,7 @@ $sidebarBadges = gov_getSidebarBadges();
                                     class="font-label-uppercase text-label-uppercase bg-secondary-container text-on-secondary-container px-space-xs py-space-2xs font-bold">AIR-GAP
                                     SYNC</span>
                             </div>
-                            <!-- Topology Nodes List with ping metrics -->
+                            <?php /* Topology Nodes List with ping metrics */ ?>
                             <div class="space-y-space-xs font-telemetry-micro text-telemetry-micro">
                                 <div class="flex items-center justify-between bg-surface-container-low p-space-xs">
                                     <div class="flex items-center gap-space-xs">
@@ -709,14 +708,14 @@ $sidebarBadges = gov_getSidebarBadges();
                                 </div>
                             </div>
                         </div>
-                        <!-- Quick Hash Stamp at bottom -->
+                        <?php /* Quick Hash Stamp at bottom */ ?>
                         <div
                             class="pt-space-xs font-telemetry-micro text-[10px] text-on-surface-variant flex items-center justify-between">
                             <span>RELAY CYPHER: CHACHA20-POLY1305</span>
                             <span class="text-on-surface font-mono font-bold">SOV-NET-KZ-2026</span>
                         </div>
                     </div>
-                    <!-- RIGHT: LIVE HARDWARE HSM SERIAL LOG STREAM (4 COLS) -->
+                    <?php /* RIGHT: LIVE HARDWARE HSM SERIAL LOG STREAM (4 COLS) */ ?>
                     <div
                         class="lg:col-span-4 bg-surface-container-lowest p-space-md shadow-sm flex flex-col justify-between">
                         <div>
@@ -750,7 +749,7 @@ $sidebarBadges = gov_getSidebarBadges();
                         </div>
                     </div>
                 </div>
-                <!-- NOTIFICATION TOAST (HIDDEN BY DEFAULT) -->
+                <?php /* NOTIFICATION TOAST (HIDDEN BY DEFAULT) */ ?>
                 <div class="fixed bottom-6 right-6 z-50 bg-primary text-on-primary p-space-md shadow-xl flex items-center gap-space-sm transform translate-y-24 transition-transform duration-300 pointer-events-none"
                     id="actionToast">
                     <div class="w-8 h-8 bg-secondary text-on-secondary flex items-center justify-center font-bold"
@@ -764,7 +763,7 @@ $sidebarBadges = gov_getSidebarBadges();
                             id="toastMessage">Hardware latch verified.</div>
                     </div>
                 </div>
-                <!-- CLIENT-SIDE INTERACTIVITY LOGIC -->
+                <?php /* CLIENT-SIDE INTERACTIVITY LOGIC */ ?>
 
             </div>
         </main>

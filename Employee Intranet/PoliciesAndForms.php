@@ -14,21 +14,21 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Elena Morozova', 'role_
     <title>VOSTOKPRIBOR Intranet • Policies & Forms Library</title>
     <meta name="description" content="VOSTOKPRIBOR Enterprise Classified Policy & Operational Forms Repository">
 
-    <!-- Fonts: IBM Plex Sans & JetBrains Mono -->
+    <?php /* Fonts: IBM Plex Sans & JetBrains Mono */ ?>
                 
-    <!-- Unified Stylesheet -->
+    <?php /* Unified Stylesheet */ ?>
     <link rel="stylesheet" href="css/intranet.css">
 </head>
 
 <body>
 
-    <!-- ======================================================================
+    <?php /* ======================================================================
          TOP BAR: Deep Navy with 4px Slate Blue Accent Stripe
-         ====================================================================== -->
+         ====================================================================== */ ?>
     <header class="intranet-header" id="intranet-header">
         <div class="intra-height-100-display-flex-01f3" >
 
-            <!-- Left Brand & Sidebar Toggle -->
+            <?php /* Left Brand & Sidebar Toggle */ ?>
             <div class="intra-display-flex-align-items-ee8a" >
                 <button class="intra-background-rgba-255-255-928c" type="button" id="sidebar-toggle-btn"  title="Toggle Sidebar (Ctrl+B)">
                     <span class="material-symbols-outlined intra-text-xl">menu</span>
@@ -47,7 +47,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Elena Morozova', 'role_
                 </a>
             </div>
 
-            <!-- Center Search Bar (Command Palette Launcher Ctrl+K) -->
+            <?php /* Center Search Bar (Command Palette Launcher Ctrl+K) */ ?>
             <div class="intra-flex-1-max-width-5505" >
                 <div class="header-search-bar intra-display-flex-align-items-6d41">
                     <span class="material-symbols-outlined intra-color-939fa8-font-size-e00b">search</span>
@@ -56,16 +56,16 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Elena Morozova', 'role_
                 </div>
             </div>
 
-            <!-- Right Actions & Profile -->
+            <?php /* Right Actions & Profile */ ?>
             <div class="intra-flex-center-gap-md" >
-                <!-- Notifications Bell -->
+                <?php /* Notifications Bell */ ?>
                 <div class="intra-pos-relative" >
                     <button class="intra-background-rgba-255-255-87b8" type="button" id="notifications-toggle-btn" >
                         <span class="material-symbols-outlined intra-text-xl">notifications</span>
                         <span class="intra-position-absolute-top-3px-e466" id="notif-unread-count" >3</span>
                     </button>
 
-                    <!-- Notifications Dropdown Popover -->
+                    <?php /* Notifications Dropdown Popover */ ?>
                     <div class="notifications-popover" id="notifications-popover" >
                         <div class="intra-padding-0-75rem-1rem-82b8" >
                             <span class="intra-text-white-600-sm" >System Notifications</span>
@@ -84,13 +84,13 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Elena Morozova', 'role_
                     </div>
                 </div>
 
-                <!-- Ecosystem Switcher (11 Systems) -->
+                <?php /* Ecosystem Switcher (11 Systems) */ ?>
                 <div class="intra-pos-relative" >
                     <button class="intra-background-rgba-255-255-57e6" type="button" id="ecosystem-toggle-btn"  title="VOSTOKPRIBOR Ecosystem Switcher">
                         <span class="material-symbols-outlined intra-text-xl">apps</span>
                     </button>
 
-                    <!-- 11-System Ecosystem Dropdown Menu -->
+                    <?php /* 11-System Ecosystem Dropdown Menu */ ?>
                     <div class="ecosystem-dropdown" id="ecosystem-dropdown" >
                         <div class="intra-padding-0-75rem-1rem-4249" >
                             <div>
@@ -181,7 +181,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Elena Morozova', 'role_
                     </div>
                 </div>
 
-                <!-- Authenticated User Profile Avatar -->
+                <?php /* Authenticated User Profile Avatar */ ?>
                 <div class="intra-display-flex-align-items-f8dd"
                     >
                     <div class="avatar-circle intra-background-color-1a73e8-width-13e2">
@@ -197,14 +197,14 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Elena Morozova', 'role_
             </div>
 
 
-            <!-- Top Bar Sign Out -->
+            <?php /* Top Bar Sign Out */ ?>
             <a href="./api/logout.php?redirect=../login.php" class="top-signout-btn" title="Sign Out of Employee Intranet" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" ><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
         </div>
     </header>
 
-    <!-- ======================================================================
+    <?php /* ======================================================================
          LEFT SIDEBAR: Dark Navy with Slate Blue Accent (#5C7290)
-         ====================================================================== -->
+         ====================================================================== */ ?>
     <aside class="intranet-sidebar" id="intranet-sidebar">
 
         <div class="intra-padding-top-1rem-display-6c18" >
@@ -213,20 +213,20 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Elena Morozova', 'role_
                 COMMUNICATIONS & HUB
             </div>
 
-            <!-- News & Announcements -->
+            <?php /* News & Announcements */ ?>
             <a href="Dashboard.php" class="sidebar-link">
                 <span class="material-symbols-outlined intra-text-xl">campaign</span>
                 <span class="sidebar-label">News & Announcements</span>
             </a>
 
-            <!-- Employee Directory -->
+            <?php /* Employee Directory */ ?>
             <a href="EmployeeDirectory.php" class="sidebar-link">
                 <span class="material-symbols-outlined intra-text-xl">badge</span>
                 <span class="sidebar-label">Employee Directory</span>
                 <span class="sidebar-badge intra-margin-left-auto-background-8fba">95</span>
             </a>
 
-            <!-- Policies & Forms (Active) -->
+            <?php /* Policies & Forms (Active) */ ?>
             <a href="PoliciesAndForms.php" class="sidebar-link active">
                 <span class="material-symbols-outlined intra-text-xl">policy</span>
                 <span class="sidebar-label">Policies & Forms</span>
@@ -237,27 +237,27 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Elena Morozova', 'role_
                 EMPLOYEE SERVICES
             </div>
 
-            <!-- Helpdesk / IT Support -->
-            <a href="javascript:void(0)" class="sidebar-link" onclick="window.openQuickRequestModal('it')">
+            <?php /* Helpdesk / IT Support */ ?>
+            <button type="button" class="sidebar-link w-full text-left bg-transparent border-0 cursor-pointer" onclick="window.openQuickRequestModal('it')">
                 <span class="material-symbols-outlined intra-text-xl">support_agent</span>
                 <span class="sidebar-label">Helpdesk / IT Support</span>
-            </a>
+            </button>
 
-            <!-- Company Calendar -->
-            <a href="javascript:void(0)" class="sidebar-link" onclick="window.showIntranetToast('Calendar Sync Active', 'Connected to Almaty Exchange CalDAV server.', 'info')">
+            <?php /* Company Calendar */ ?>
+            <button type="button" class="sidebar-link w-full text-left bg-transparent border-0 cursor-pointer" onclick="window.showIntranetToast('Calendar Sync Active', 'Connected to Almaty Exchange CalDAV server.', 'info')">
                 <span class="material-symbols-outlined intra-text-xl">event</span>
                 <span class="sidebar-label">Company Calendar</span>
-            </a>
+            </button>
 
-            <!-- Room Booking -->
-            <a href="javascript:void(0)" class="sidebar-link" onclick="window.showIntranetToast('Resource Scheduler', 'Conference Rooms Alpha & Beta available today.', 'info')">
+            <?php /* Room Booking */ ?>
+            <button type="button" class="sidebar-link w-full text-left bg-transparent border-0 cursor-pointer" onclick="window.showIntranetToast('Resource Scheduler', 'Conference Rooms Alpha & Beta available today.', 'info')">
                 <span class="material-symbols-outlined intra-text-xl">meeting_room</span>
                 <span class="sidebar-label">Room Booking</span>
-            </a>
+            </button>
 
         </div>
 
-        <!-- Sidebar Footer: User Card -->
+        <?php /* Sidebar Footer: User Card */ ?>
         <div class="intra-padding-1rem-border-top-dd4e" >
             <div class="intra-flex-center-gap-md" >
                 <div class="avatar-circle intra-background-color-1a73e8-5fb8">
@@ -280,19 +280,19 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Elena Morozova', 'role_
         </div>
 
 
-        <!-- Log Out -->
+        <?php /* Log Out */ ?>
 
     </aside>
 
-    <!-- Left-edge hover detection strip for collapsed rail state -->
+    <?php /* Left-edge hover detection strip for collapsed rail state */ ?>
     <div id="sidebar-hover-trigger" title="Hover to expand menu"></div>
-    <!-- ======================================================================
+    <?php /* ======================================================================
          MAIN CONTENT WRAPPER
-         ====================================================================== -->
+         ====================================================================== */ ?>
     <main class="intranet-content-wrapper" id="intranet-content-wrapper">
         <div class="intra-padding-1-5rem-max-53c0" >
 
-            <!-- Page Header Breadcrumb -->
+            <?php /* Page Header Breadcrumb */ ?>
             <div class="intra-display-flex-align-items-feef" >
                 <div>
                     <div class="intra-display-flex-align-items-f015" >
@@ -306,7 +306,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Elena Morozova', 'role_
                 </div>
 
                 <div class="intra-flex-center-gap-md" >
-                    <!-- Authorized Role Upload Document Button (Signal Amber CTA) -->
+                    <?php /* Authorized Role Upload Document Button (Signal Amber CTA) */ ?>
                     <button type="button" class="btn btn-primary" onclick="window.showIntranetToast('Document Submission', 'Upload portal active for L3/L4 clearance holders.', 'info')" >
                         <span class="material-symbols-outlined intra-text-11">upload_file</span>
                         Upload New Policy
@@ -314,12 +314,12 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Elena Morozova', 'role_
                 </div>
             </div>
 
-            <!-- ==============================================================
+            <?php /* ==============================================================
                  TWO-COLUMN POLICY ARCHIVE: Categories (Left) + Table (Right)
-                 ============================================================== -->
+                 ============================================================== */ ?>
             <div class="policy-layout-grid intra-display-grid-grid-template-4561">
 
-                <!-- Left Category Filter Column -->
+                <?php /* Left Category Filter Column */ ?>
                 <div class="intranet-card intra-padding-1rem-d8d6">
                     <div class="intra-font-size-0-75rem-2356" >
                         DOCUMENT CATEGORIES
@@ -363,10 +363,10 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Elena Morozova', 'role_
                     </div>
                 </div>
 
-                <!-- Right Table Column -->
+                <?php /* Right Table Column */ ?>
                 <div class="intranet-card intra-p-125">
 
-                    <!-- Search & Counter Header -->
+                    <?php /* Search & Counter Header */ ?>
                     <div class="intra-display-flex-align-items-45d4" >
                         <div class="intra-position-relative-flex-1-c6bc" >
                             <span class="material-symbols-outlined intra-position-absolute-left-0-1c5c">search</span>
@@ -377,7 +377,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Elena Morozova', 'role_
                         </span>
                     </div>
 
-                    <!-- Classified Document Data Table -->
+                    <?php /* Classified Document Data Table */ ?>
                     <div class="intra-overflow-x-auto-b561" >
                         <table class="table-classified intra-width-100-border-collapse-fe41">
                             <thead>
@@ -392,7 +392,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Elena Morozova', 'role_
                                 </tr>
                             </thead>
                             <tbody id="policies-table-body">
-                                <!-- Populated dynamically by intranet.js -->
+                                <?php /* Populated dynamically by intranet.js */ ?>
                             </tbody>
                         </table>
                     </div>
@@ -404,9 +404,9 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Elena Morozova', 'role_
         </div>
     </main>
 
-    <!-- ======================================================================
+    <?php /* ======================================================================
          COMMAND PALETTE MODAL (Ctrl+K)
-         ====================================================================== -->
+         ====================================================================== */ ?>
     <div class="intranet-modal-backdrop" id="command-palette-modal">
         <div class="intranet-modal-container intra-max-width-42rem-border-7e8a">
             <div class="intra-background-color-var-brand-3290" >
@@ -424,10 +424,10 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Elena Morozova', 'role_
         </div>
     </div>
 
-    <!-- Toast Notification Anchor -->
+    <?php /* Toast Notification Anchor */ ?>
     <div id="intranet-toast-container"></div>
 
-    <!-- Single Consolidated JavaScript Engine -->
+    <?php /* Single Consolidated JavaScript Engine */ ?>
     <script src="js/intranet.js"></script>
     <link rel="stylesheet" href="../assets/css/api-ui.css">
     <script src="../assets/js/api-core.js"></script>

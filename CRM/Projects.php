@@ -18,7 +18,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
 <body>
 
   <div class="app-container">
-    <!-- Top Navigation Bar -->
+    <?php /* Top Navigation Bar */ ?>
     <header class="top-nav">
       <div class="top-nav__accent-stripe"></div>
       <div class="top-nav__content">
@@ -73,13 +73,13 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
           </div>
         </div>
 
-        <!-- Top Bar Sign Out -->
+        <?php /* Top Bar Sign Out */ ?>
         <a href="./api/logout.php?redirect=../login.php" class="top-signout-btn" title="Sign Out of CRM" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" ><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
       </div>
     </header>
 
     <div class="main-layout">
-      <!-- Sidebar Navigation -->
+      <?php /* Sidebar Navigation */ ?>
       <aside class="sidebar">
         <div>
           <div class="sidebar-section-title">Sales Management</div>
@@ -158,7 +158,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
               <span class="sidebar-badge">19</span>
             </a>
 
-            <!-- Projects (Active) -->
+            <?php /* Projects (Active) */ ?>
             <a href="Projects.php" class="sidebar-nav-item active">
               <div class="sidebar-item-left">
                 <span class="sidebar-icon">
@@ -187,7 +187,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
               <span class="sidebar-badge badge-green">+14%</span>
             </a>
           
-            <!-- Inter-System Integrations (SYS02) -->
+            <?php /* Inter-System Integrations (SYS02) */ ?>
             <a href="Integrations.php" class="sidebar-nav-item">
               <div class="sidebar-item-left">
                 <span class="sidebar-icon">
@@ -234,7 +234,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
             <span class="sidebar-badge crm-text-xs" >SYS 04</span>
           </a>
         </nav>
-        <!-- Log Out -->
+        <?php /* Log Out */ ?>
 
         <div class="sidebar-footer">
           <div class="quota-widget-card">
@@ -253,10 +253,10 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
         </div>
       </aside>
 
-      <!-- Main Content Area -->
+      <?php /* Main Content Area */ ?>
       <main class="content-wrapper">
         <div class="portal-container">
-          <!-- Page Header -->
+          <?php /* Page Header */ ?>
           <div class="page-header">
             <div class="page-header-info">
               <div class="breadcrumb-trail">
@@ -279,7 +279,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
             </div>
           </div>
 
-          <!-- KPI Strip -->
+          <?php /* KPI Strip */ ?>
           <div class="kpi-grid">
             <div class="crm-card kpi-card">
               <div class="kpi-header">
@@ -342,7 +342,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
             </div>
           </div>
 
-          <!-- Projects Matrix Table (Tagged with #D9822B) -->
+          <?php /* Projects Matrix Table (Tagged with #D9822B) */ ?>
           <div class="crm-card">
             <div class="card-header-row">
               <div>
@@ -366,7 +366,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
                 </tr>
               </thead>
               <tbody>
-                <!-- Project 1 -->
+                <?php /* Project 1 */ ?>
                 <tr class="account-row account-row-tagged">
                   <td>
                     <strong class="crm-mono-indigo-13" >PRJ-VP-7721</strong>
@@ -393,7 +393,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
                   </td>
                 </tr>
 
-                <!-- Project 2 -->
+                <?php /* Project 2 */ ?>
                 <tr class="account-row account-row-tagged">
                   <td>
                     <strong class="crm-mono-indigo-13" >PRJ-VP-7804</strong>
@@ -420,7 +420,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
                   </td>
                 </tr>
 
-                <!-- Project 3 -->
+                <?php /* Project 3 */ ?>
                 <tr class="account-row account-row-tagged">
                   <td>
                     <strong class="crm-mono-indigo-13" >PRJ-VP-6610</strong>
@@ -447,7 +447,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
                   </td>
                 </tr>
 
-                <!-- Project 4 -->
+                <?php /* Project 4 */ ?>
                 <tr class="account-row account-row-tagged">
                   <td>
                     <strong class="crm-mono-indigo-13" >PRJ-VP-8902</strong>

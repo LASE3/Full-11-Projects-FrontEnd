@@ -36,7 +36,7 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
 <body>
 
   <div class="app-container">
-    <!-- TOP NAVIGATION BAR -->
+    <?php /* TOP NAVIGATION BAR */ ?>
     <header class="top-nav">
       <div class="top-nav__accent-stripe"></div>
       <div class="top-nav__content">
@@ -136,10 +136,10 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
         </div>
       </aside>
 
-      <!-- MAIN CONTENT -->
+      <?php /* MAIN CONTENT */ ?>
       <main class="content-wrapper">
         <div class="portal-container hr-max-w-1200" >
-          <!-- Page Header -->
+          <?php /* Page Header */ ?>
           <div class="page-header">
             <div class="page-header-info">
               <div class="breadcrumb-trail">
@@ -157,7 +157,7 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
             </div>
           </div>
 
-          <!-- Leave KPI Strip -->
+          <?php /* Leave KPI Strip */ ?>
           <div class="kpi-grid hr-grid-3col" >
             <div class="hr-card kpi-card">
               <div class="kpi-header">
@@ -205,7 +205,7 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
             </div>
           </div>
 
-          <!-- Leave Request Approvals Queue Table -->
+          <?php /* Leave Request Approvals Queue Table */ ?>
           <div class="hr-card hr-panel-flush-mt-15" >
             <div class="hr-table-header-bar" >
               <div>
@@ -290,7 +290,7 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
     </div>
   </div>
 
-  <!-- MODAL: SUBMIT LEAVE REQUEST -->
+  <?php /* MODAL: SUBMIT LEAVE REQUEST */ ?>
   <div id="modal-create-leave" class="modal-backdrop">
     <div class="modal-dialog hr-modal-500" >
       <div class="modal-header hr-modal-header-plum" >

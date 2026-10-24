@@ -76,7 +76,7 @@ $metrics = gov_getGovernanceMetrics();
                 </div>
             </div>
 
-            <!-- Top Bar Sign Out -->
+            <?php /* Top Bar Sign Out */ ?>
             <a href="../api/logout.php?system=Admin%20%26%20Governance%20Portal&redirect=../Admin%20%26%20Governance%20Portal/login.php" class="top-signout-btn" title="Sign Out of Admin &amp; Governance Portal" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" ><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
         </div>
     </header>
@@ -84,9 +84,9 @@ $metrics = gov_getGovernanceMetrics();
     <div class="pl-[260px]">
         <main class="relative pt-[60px] w-full min-h-screen bg-surface px-gutter-desktop py-space-lg">
             <div class="flex flex-col w-full">
-                <!-- Interactive Script to Synchronize Shell Active Navigation Link -->
+                <?php /* Interactive Script to Synchronize Shell Active Navigation Link */ ?>
 
-                <!-- Top Operational Context & Breadcrumb Bar -->
+                <?php /* Top Operational Context & Breadcrumb Bar */ ?>
                 <div class="flex flex-col gap-space-xs mb-space-md">
                     <div class="flex flex-wrap items-center justify-between gap-space-sm">
                         <div
@@ -111,7 +111,7 @@ $metrics = gov_getGovernanceMetrics();
                             </div>
                         </div>
                     </div>
-                    <!-- Section Title & Authority Control Actions -->
+                    <?php /* Section Title & Authority Control Actions */ ?>
                     <div
                         class="flex flex-col lg:flex-row lg:items-center justify-between gap-space-md pt-space-xs pb-space-sm">
                         <div class="flex flex-col">
@@ -134,7 +134,7 @@ $metrics = gov_getGovernanceMetrics();
                                 GOV-SEC-44.
                             </p>
                         </div>
-                        <!-- Action Button Group -->
+                        <?php /* Action Button Group */ ?>
                             <button
                                 id="btnNewPolicy"
                                 onclick="openNewPolicyModal()"
@@ -164,9 +164,9 @@ $metrics = gov_getGovernanceMetrics();
                         </div>
                     </div>
                 </div>
-                <!-- Telemetry & Health Metrics Strip (4 Class-Stripe Cards) -->
+                <?php /* Telemetry & Health Metrics Strip (4 Class-Stripe Cards) */ ?>
                 <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-space-md mb-space-md">
-                    <!-- Metric 1: Highly Confidential (Alert Red 4px accent) -->
+                    <?php /* Metric 1: Highly Confidential (Alert Red 4px accent) */ ?>
                     <div
                         class="relative bg-surface-container-lowest p-space-md shadow-sm flex flex-col justify-between overflow-hidden border-l-[4px] border-error">
                         <div class="flex items-start justify-between">
@@ -189,7 +189,7 @@ $metrics = gov_getGovernanceMetrics();
                                 SYNC OK</span>
                         </div>
                     </div>
-                    <!-- Metric 2: Confidential (Signal Amber 4px accent) -->
+                    <?php /* Metric 2: Confidential (Signal Amber 4px accent) */ ?>
                     <div
                         class="relative bg-surface-container-lowest p-space-md shadow-sm flex flex-col justify-between overflow-hidden border-l-[4px] border-on-tertiary-container">
                         <div class="flex items-start justify-between">
@@ -210,7 +210,7 @@ $metrics = gov_getGovernanceMetrics();
                             <span class="font-telemetry-micro text-error font-semibold">DEADLINE: 14D</span>
                         </div>
                     </div>
-                    <!-- Metric 3: Internal (Cool Blue / Secondary 4px accent) -->
+                    <?php /* Metric 3: Internal (Cool Blue / Secondary 4px accent) */ ?>
                     <div
                         class="relative bg-surface-container-lowest p-space-md shadow-sm flex flex-col justify-between overflow-hidden border-l-[4px] border-secondary">
                         <div class="flex items-start justify-between">
@@ -231,7 +231,7 @@ $metrics = gov_getGovernanceMetrics();
                             <span class="font-label-uppercase text-[10px] text-primary">10 SCADA NODES</span>
                         </div>
                     </div>
-                    <!-- Metric 4: Internal Cryptographic Consensus (Deep Navy 4px accent) -->
+                    <?php /* Metric 4: Internal Cryptographic Consensus (Deep Navy 4px accent) */ ?>
                     <div
                         class="relative bg-surface-container-lowest p-space-md shadow-sm flex flex-col justify-between overflow-hidden border-l-[4px] border-primary">
                         <div class="flex items-start justify-between">
@@ -254,10 +254,10 @@ $metrics = gov_getGovernanceMetrics();
                         </div>
                     </div>
                 </div>
-                <!-- Operational Filter & Control Ribbon -->
+                <?php /* Operational Filter & Control Ribbon */ ?>
                 <div
                     class="bg-surface-container-lowest p-space-sm shadow-sm mb-space-md flex flex-col xl:flex-row items-stretch xl:items-center justify-between gap-space-sm">
-                    <!-- Search Query Bar -->
+                    <?php /* Search Query Bar */ ?>
                     <div class="relative flex-1 min-w-[280px]">
                         <span
                             class="material-symbols-outlined absolute left-space-sm top-1/2 -translate-y-1/2 text-[18px] text-outline">terminal</span>
@@ -266,7 +266,7 @@ $metrics = gov_getGovernanceMetrics();
                             placeholder="Query policy registry by code, domain, level..." type="text"
                             id="policySearchInput" value="" />
                     </div>
-                    <!-- Filter Category Pills -->
+                    <?php /* Filter Category Pills */ ?>
                     <div class="flex items-center gap-space-xs overflow-x-auto py-space-2xs text-telemetry-micro" id="policyCategoryPills">
                         <button
                             class="h-control-height-sm px-space-sm bg-primary text-on-primary font-security-stamp uppercase font-semibold whitespace-nowrap shadow-sm"
@@ -299,7 +299,7 @@ $metrics = gov_getGovernanceMetrics();
                             Pending Revision (3)
                         </button>
                     </div>
-                    <!-- Mode Toggle Switch -->
+                    <?php /* Mode Toggle Switch */ ?>
                     <div class="flex items-center bg-surface-container p-[2px] self-end xl:self-auto">
                         <button
                             class="h-control-height-sm px-space-sm bg-surface-container-lowest text-primary font-label-uppercase text-[10px] font-bold shadow-sm"
@@ -313,11 +313,11 @@ $metrics = gov_getGovernanceMetrics();
                         </button>
                     </div>
                 </div>
-                <!-- Primary 2-Column Split Console: Policy Registry (70%) + Policy Inspector & Simulator (30%) -->
+                <?php /* Primary 2-Column Split Console: Policy Registry (70%) + Policy Inspector & Simulator (30%) */ ?>
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-space-md items-start mb-space-md">
-                    <!-- Left 8 Columns (68% - 70%): High-Density Table -->
+                    <?php /* Left 8 Columns (68% - 70%): High-Density Table */ ?>
                     <div class="lg:col-span-8 flex flex-col bg-surface-container-lowest shadow-sm overflow-hidden">
-                        <!-- Panel Header Cell -->
+                        <?php /* Panel Header Cell */ ?>
                         <div
                             class="h-control-height-md px-space-md bg-surface-container flex items-center justify-between">
                             <div class="flex items-center gap-space-sm">
@@ -332,7 +332,7 @@ $metrics = gov_getGovernanceMetrics();
                                 <button id="btnRefreshPolicy" class="text-secondary font-semibold hover:text-secondary-fixed transition-colors cursor-pointer flex items-center gap-1" title="Synchronize Policy Engine"><span class="material-symbols-outlined text-[14px]">refresh</span><span id="refreshPolicyLabel">REFRESH: SYNCED</span></button>
                             </div>
                         </div>
-                        <!-- Scrollable High-Density Table -->
+                        <?php /* Scrollable High-Density Table */ ?>
                         <div class="w-full overflow-x-auto">
                             <table class="w-full text-left border-collapse">
                                 <thead>
@@ -411,7 +411,7 @@ $metrics = gov_getGovernanceMetrics();
                                 </tbody>
                             </table>
                         </div>
-                        <!-- Table Footer / Telemetry Pagination Info -->
+                        <?php /* Table Footer / Telemetry Pagination Info */ ?>
                         <div
                             class="h-control-height-sm px-space-md bg-surface-container flex items-center justify-between font-telemetry-micro text-telemetry-micro text-on-surface-variant">
                             <div class="flex items-center gap-space-sm">
@@ -432,9 +432,9 @@ $metrics = gov_getGovernanceMetrics();
                             </div>
                         </div>
                     </div>
-                    <!-- Right 4 Columns (30% - 32%): Active Policy Inspector & Rule Simulator -->
+                    <?php /* Right 4 Columns (30% - 32%): Active Policy Inspector & Rule Simulator */ ?>
                     <div class="lg:col-span-4 flex flex-col gap-space-md">
-                        <!-- Card: Inspector Pane for POL-SEC-44 -->
+                        <?php /* Card: Inspector Pane for POL-SEC-44 */ ?>
                         <div
                             class="bg-surface-container-lowest p-space-md shadow-sm border-l-[4px] border-error flex flex-col gap-space-sm">
                             <div
@@ -448,7 +448,7 @@ $metrics = gov_getGovernanceMetrics();
                                     class="px-space-2xs py-[1px] bg-error text-on-error font-security-stamp text-[9px] font-bold">REV
                                     6.2</span>
                             </div>
-                            <!-- Target & Scope Metadata -->
+                            <?php /* Target & Scope Metadata */ ?>
                             <div class="flex flex-col gap-space-2xs pt-space-xs">
                                 <div
                                     class="flex items-center justify-between text-telemetry-micro font-telemetry-micro">
@@ -466,7 +466,7 @@ $metrics = gov_getGovernanceMetrics();
                                     <span class="font-bold text-secondary">10/10 Industrial SCADA Synced</span>
                                 </div>
                             </div>
-                            <!-- Monospaced Logic Block -->
+                            <?php /* Monospaced Logic Block */ ?>
                             <div class="flex flex-col mt-space-2xs">
                                 <div
                                     class="flex items-center justify-between bg-inverse-surface text-inverse-on-surface px-space-sm py-[2px]">
@@ -485,7 +485,7 @@ $metrics = gov_getGovernanceMetrics();
 }</pre>
                                 </div>
                             </div>
-                            <!-- Visual Mini-Telemetry Diagram / Sparkline Node Sync -->
+                            <?php /* Visual Mini-Telemetry Diagram / Sparkline Node Sync */ ?>
                             <div class="bg-surface-container p-space-xs flex flex-col gap-space-2xs">
                                 <span
                                     class="font-label-uppercase text-[10px] text-on-surface-variant font-bold">INTERCEPT
@@ -507,7 +507,7 @@ $metrics = gov_getGovernanceMetrics();
                                     <span>Now</span>
                                 </div>
                             </div>
-                            <!-- Incident Correlation Reference Box -->
+                            <?php /* Incident Correlation Reference Box */ ?>
                             <div class="p-space-xs bg-surface-container-high flex flex-col gap-space-2xs">
                                 <div class="flex items-center gap-space-xs">
                                     <span
@@ -520,7 +520,7 @@ $metrics = gov_getGovernanceMetrics();
                                     demoted to Dry-Run for 15 mins.
                                 </span>
                             </div>
-                            <!-- Cryptographic Attestation Seal -->
+                            <?php /* Cryptographic Attestation Seal */ ?>
                             <div
                                 class="p-space-xs bg-surface-container-lowest flex flex-col gap-space-2xs border-t-2 border-primary">
                                 <div class="flex items-center justify-between font-security-stamp text-[10px]">
@@ -534,7 +534,7 @@ $metrics = gov_getGovernanceMetrics();
                                     Signer: Timur Akhmetov // Clearance Level 5 // Station Almaty
                                 </span>
                             </div>
-                            <!-- Action Trigger Group -->
+                            <?php /* Action Trigger Group */ ?>
                             <div class="flex flex-col gap-space-xs mt-space-xs">
                                 <button
                                     class="w-full h-control-height-md bg-secondary hover:bg-on-secondary-container text-on-secondary font-title-sm text-telemetry-data flex items-center justify-center gap-space-xs transition-colors shadow-sm"
@@ -558,7 +558,7 @@ $metrics = gov_getGovernanceMetrics();
                                 </div>
                             </div>
                         </div>
-                        <!-- Secondary Facility Status Box -->
+                        <?php /* Secondary Facility Status Box */ ?>
                         <div
                             class="bg-surface-container-lowest p-space-md shadow-sm border-l-[4px] border-secondary flex flex-col gap-space-xs">
                             <div class="flex items-center justify-between">
@@ -580,7 +580,7 @@ $metrics = gov_getGovernanceMetrics();
                         </div>
                     </div>
                 </div>
-                <!-- Bottom Anchor: Cryptographic Policy Anchor & Audit Hash Verification -->
+                <?php /* Bottom Anchor: Cryptographic Policy Anchor & Audit Hash Verification */ ?>
                 <div
                     class="bg-primary text-on-primary p-space-md shadow-md flex flex-col md:flex-row items-center justify-between gap-space-md">
                     <div class="flex items-center gap-space-md">
@@ -622,7 +622,7 @@ $metrics = gov_getGovernanceMetrics();
                     </div>
                 </div>
             </div>
-    <!-- MODAL: STATUTORY POLICY REGISTER / AMENDMENT -->
+    <?php /* MODAL: STATUTORY POLICY REGISTER / AMENDMENT */ ?>
     <div id="policyModal" class="fixed inset-0 bg-primary/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-surface-container-lowest border-l-4 border-primary p-space-md max-w-lg w-full shadow-2xl flex flex-col gap-space-sm">
             <div class="flex items-center justify-between pb-space-xs border-b border-surface-container-high">

@@ -98,7 +98,7 @@ try {
             }
             $nodeSnippet = trim($payload['node_snippet'] ?? '');
             if ($nodeSnippet === '') {
-                $nodeSnippet = "const fetch = require('node-fetch');\n\nasync function callApi() {\n  const res = await fetch('https://developer.vostokpribor.local{$path}', {\n    method: '{$httpMethod}',\n    headers: { 'Authorization': 'Bearer vk_live_9a41c2e8f10b' }\n  });\n  console.log(await res.json());\n}\ncallApi();";
+                $nodeSnippet = "const fetch = require('node-fetch');\n\nasync function callApi() {\n  const res = await fetch('https://developer.vostokpribor.local{$path}', {\n    method: '{$httpMethod}',\n    headers: { 'Authorization': 'Bearer vk_live_9a41c2e8f10b' }\n  });\n  const data = await res.json();\n  process.stdout.write(JSON.stringify(data) + '\\n');\n}\ncallApi();";
             }
             $goSnippet = trim($payload['go_snippet'] ?? '');
             if ($goSnippet === '') {

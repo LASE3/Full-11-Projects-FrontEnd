@@ -87,7 +87,7 @@ $avgBudgetBurn = (float)$pdo->query("SELECT AVG((spent_amount / NULLIF(allocated
 <body>
 
   <div class="app-container">
-    <!-- TOP NAVIGATION BAR -->
+    <?php /* TOP NAVIGATION BAR */ ?>
     <header class="top-nav">
       <div class="top-nav__accent-stripe"></div>
       <div class="top-nav__content">
@@ -141,7 +141,7 @@ $avgBudgetBurn = (float)$pdo->query("SELECT AVG((spent_amount / NULLIF(allocated
           </div>
         </div>
 
-        <!-- Top Bar Sign Out -->
+        <?php /* Top Bar Sign Out */ ?>
         <a href="../api/logout.php?system=Finance%20%26%20Billing&redirect=../Finance%20%26%20Billing/login.php" class="top-signout-btn" title="Sign Out of Finance &amp; Billing" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" >
           <span>Sign Out</span>
         </a>
@@ -271,7 +271,7 @@ $avgBudgetBurn = (float)$pdo->query("SELECT AVG((spent_amount / NULLIF(allocated
         </div>
       </aside>
 
-      <!-- MAIN CONTENT -->
+      <?php /* MAIN CONTENT */ ?>
       <main class="content-wrapper">
         <div class="portal-container">
           <div class="page-header">
@@ -294,7 +294,7 @@ $avgBudgetBurn = (float)$pdo->query("SELECT AVG((spent_amount / NULLIF(allocated
             </div>
           </div>
 
-          <!-- Unmatched Payments Desk -->
+          <?php /* Unmatched Payments Desk */ ?>
           <div class="fin-card fin-panel-flush-mb" >
             <div class="fin-table-header-bar" >
               <h3 class="card-title">Pending Unmatched Transactions Desk (<?= $unmatchedCount ?>)</h3>
@@ -358,7 +358,7 @@ $avgBudgetBurn = (float)$pdo->query("SELECT AVG((spent_amount / NULLIF(allocated
             </table>
           </div>
 
-          <!-- Reconciled Ledger Archive -->
+          <?php /* Reconciled Ledger Archive */ ?>
           <div class="fin-card fin-panel-flush" >
             <div class="fin-table-header-bar" >
               <div>

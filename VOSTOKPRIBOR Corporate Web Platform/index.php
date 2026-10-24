@@ -9,24 +9,24 @@
     <meta name="description"
         content="VOSTOKPRIBOR Global Logistics & Supply JSC — Industrial optical sensors, geodetic precision instruments, SCADA automation, and turnkey metrology lifecycle engineering." />
 
-    <!-- Google Fonts: IBM Plex Sans & JetBrains Mono -->
+    <?php /* Google Fonts: IBM Plex Sans & JetBrains Mono */ ?>
                 
-    <!-- Core Stylesheets: Unified Theme & Corporate Page Styling -->
+    <?php /* Core Stylesheets: Unified Theme & Corporate Page Styling */ ?>
     <link rel="stylesheet" href="css/theme.css" />
     <link rel="stylesheet" href="css/corporate.css" />
 
-    <!-- Tailwind CSS with Enterprise Design Tokens (Compiled) -->
+    <?php /* Tailwind CSS with Enterprise Design Tokens (Compiled) */ ?>
     <link rel="stylesheet" href="css/tailwind-compiled.css" />
 </head>
 
 <body class="bg-neutral-50 font-sans text-neutral-900 antialiased selection:bg-brand-secondary selection:text-white">
 
-    <!-- ==========================================================================
+    <?php /* ==========================================================================
        Top Navigation Bar (Deep Navy #0F2438 with 4px Steel Blue Accent Stripe)
-       ========================================================================== -->
+       ========================================================================== */ ?>
     <header class="corporate-header">
         <div class="max-w-[1440px] mx-auto h-full px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-4">
-            <!-- Brand Mark & Identity -->
+            <?php /* Brand Mark & Identity */ ?>
             <div class="flex items-center gap-3 shrink-0">
                 <a href="#hero" class="flex items-center gap-3 group">
                     <img alt="VOSTOKPRIBOR Official Mark"
@@ -48,7 +48,7 @@
                 </a>
             </div>
 
-            <!-- Desktop Navigation Menu -->
+            <?php /* Desktop Navigation Menu */ ?>
             <nav class="hidden lg:flex items-center gap-1 xl:gap-2 text-xs xl:text-sm font-medium shrink-0">
                 <a href="#solutions" class="nav-link">Solutions</a>
                 <a href="#sectors" class="nav-link">Sectors</a>
@@ -60,9 +60,9 @@
                 <a href="Integrations.php" class="nav-link nav-link-integrations">🔗 Integrations (SYS11)</a>
             </nav>
 
-            <!-- Actions & Ecosystem Switcher -->
+            <?php /* Actions & Ecosystem Switcher */ ?>
             <div class="flex items-center gap-2.5 sm:gap-3 shrink-0">
-                <!-- Ecosystem Dropdown Button -->
+                <?php /* Ecosystem Dropdown Button */ ?>
                 <div class="relative">
                     <button id="ecosystemSwitcherBtn"
                         class="flex items-center gap-1.5 px-2.5 py-1.5 rounded text-xs font-mono text-slate-300 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 transition-colors cursor-pointer whitespace-nowrap"
@@ -72,7 +72,7 @@
                         <span class="material-symbols-outlined text-xs">expand_more</span>
                     </button>
 
-                    <!-- Ecosystem Dropdown Menu -->
+                    <?php /* Ecosystem Dropdown Menu */ ?>
                     <div id="ecosystemDropdown" class="ecosystem-dropdown">
                         <div class="px-2 pb-2 mb-2 border-b border-white/10 flex items-center justify-between">
                             <span
@@ -185,7 +185,7 @@
                     </div>
                 </div>
 
-                <!-- Primary Action CTA Button -->
+                <?php /* Primary Action CTA Button */ ?>
                 <a href="#contact-rfq"
                     class="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded bg-brand-accent hover:bg-amber-500 text-neutral-900 font-bold text-xs transition-colors shadow-sm cursor-pointer whitespace-nowrap">
                     <span>Request RFQ</span>
@@ -194,7 +194,7 @@
 
 
 
-                <!-- Mobile Menu Button -->
+                <?php /* Mobile Menu Button */ ?>
                 <button id="mobileMenuToggleBtn"
                     class="p-1.5 rounded text-slate-300 hover:text-white hover:bg-white/10 lg:hidden cursor-pointer">
                     <span class="material-symbols-outlined text-2xl">menu</span>
@@ -202,7 +202,7 @@
             </div>
         </div>
 
-        <!-- Mobile Drawer -->
+        <?php /* Mobile Drawer */ ?>
         <div id="mobileMenuDrawer" class="hidden lg:hidden bg-brand-primary-dark border-b border-white/15 px-4 py-4">
             <div class="flex flex-col gap-2">
                 <a href="#solutions" class="nav-link py-2">Solutions & Products</a>
@@ -220,16 +220,16 @@
         </div>
     </header>
 
-    <!-- ==========================================================================
+    <?php /* ==========================================================================
        Hero Section & Operational Heritage
-       ========================================================================== -->
+       ========================================================================== */ ?>
     <section id="hero" class="hero-stage">
         <div class="hero-grid-pattern"></div>
         <div class="hero-radar-glow"></div>
 
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div class="max-w-3xl">
-                <!-- Operational Badge -->
+                <?php /* Operational Badge */ ?>
                 <div
                     class="inline-flex items-center gap-2 px-2.5 py-1 rounded bg-white/10 border border-white/20 text-xs font-mono text-teal-300 mb-6 backdrop-blur-sm">
                     <span class="w-2 h-2 rounded-full bg-teal-400 animate-pulse"></span>
@@ -238,18 +238,18 @@
                     <span class="text-slate-300">JSC REGISTRY 77401</span>
                 </div>
 
-                <!-- Main Hero Headline -->
+                <?php /* Main Hero Headline */ ?>
                 <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-white tracking-tight leading-[1.15] mb-6">
                     Precision Instrumentation, Industrial Automation & Lifecycle Engineering Since 1968.
                 </h1>
 
-                <!-- Subtitle -->
+                <?php /* Subtitle */ ?>
                 <p class="text-base sm:text-lg text-slate-300 leading-relaxed mb-8 max-w-2xl font-normal">
                     VOSTOKPRIBOR bridges advanced optical sensing, sub-millimeter geodetic precision, deterministic PLC
                     loop automation, and comprehensive turnkey supply chains across Central Asia and Europe.
                 </p>
 
-                <!-- Dual Action CTAs -->
+                <?php /* Dual Action CTAs */ ?>
                 <div class="flex flex-wrap items-center gap-3 sm:gap-4">
                     <a href="#solutions"
                         class="inline-flex items-center gap-2 px-5 py-2.5 rounded bg-brand-accent hover:bg-amber-500 text-neutral-900 font-semibold text-sm transition-all shadow-md">
@@ -267,9 +267,9 @@
         </div>
     </section>
 
-    <!-- ==========================================================================
+    <?php /* ==========================================================================
        Live Operational Telemetry Bar (4 Key Enterprise Counters)
-       ========================================================================== -->
+       ========================================================================== */ ?>
     <div class="telemetry-ticker-bar">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="grid grid-cols-2 md:grid-cols-4">
@@ -313,9 +313,9 @@
         </div>
     </div>
 
-    <!-- ==========================================================================
+    <?php /* ==========================================================================
        Data Classification Security Framework Showcase
-       ========================================================================== */ -->
+       ========================================================================== * / */ ?>
     <section class="py-10 bg-white border-b border-neutral-200">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
@@ -332,7 +332,7 @@
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                <!-- Public Tier -->
+                <?php /* Public Tier */ ?>
                 <div class="p-4 rounded-md border border-neutral-200 bg-neutral-50 flex flex-col justify-between">
                     <div>
                         <div class="flex items-center justify-between mb-2">
@@ -349,7 +349,7 @@
                         PROD-1001 Catalog Spec</div>
                 </div>
 
-                <!-- Internal Tier -->
+                <?php /* Internal Tier */ ?>
                 <div class="p-4 rounded-md border border-neutral-200 bg-neutral-50 flex flex-col justify-between">
                     <div>
                         <div class="flex items-center justify-between mb-2">
@@ -366,7 +366,7 @@
                         SOP-01 Lead Intake Process</div>
                 </div>
 
-                <!-- Confidential Tier -->
+                <?php /* Confidential Tier */ ?>
                 <div class="p-4 rounded-md border border-neutral-200 bg-neutral-50 flex flex-col justify-between">
                     <div>
                         <div class="flex items-center justify-between mb-2">
@@ -383,7 +383,7 @@
                         Invoices & Statements of Work</div>
                 </div>
 
-                <!-- Highly Confidential Tier -->
+                <?php /* Highly Confidential Tier */ ?>
                 <div class="p-4 rounded-md border border-neutral-200 bg-neutral-50 flex flex-col justify-between">
                     <div>
                         <div class="flex items-center justify-between mb-2">
@@ -403,9 +403,9 @@
         </div>
     </section>
 
-    <!-- ==========================================================================
+    <?php /* ==========================================================================
        Solutions & Equipment Showcase (PROD-1001 – PROD-1010)
-       ========================================================================== -->
+       ========================================================================== */ ?>
     <section id="solutions" class="py-16 bg-neutral-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
@@ -420,7 +420,7 @@
                     </p>
                 </div>
 
-                <!-- Category Filter Tabs -->
+                <?php /* Category Filter Tabs */ ?>
                 <div class="flex flex-wrap items-center gap-1.5 p-1 bg-neutral-200/70 rounded-md">
                     <button
                         class="product-filter-btn active px-3 py-1.5 rounded text-xs font-medium bg-brand-primary text-white transition-colors cursor-pointer"
@@ -440,16 +440,16 @@
                 </div>
             </div>
 
-            <!-- Equipment Dynamic Grid -->
+            <?php /* Equipment Dynamic Grid */ ?>
             <div id="equipmentGridContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                <!-- Dynamically populated via js/corporate.js -->
+                <?php /* Dynamically populated via js/corporate.js */ ?>
             </div>
         </div>
     </section>
 
-    <!-- ==========================================================================
+    <?php /* ==========================================================================
        Industrial Sectors & Turnkey Engineering
-       ========================================================================== -->
+       ========================================================================== */ ?>
     <section id="sectors" class="py-16 bg-white border-t border-b border-neutral-200">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center max-w-2xl mx-auto mb-12">
@@ -464,7 +464,7 @@
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <!-- Metallurgy & Heavy Foundry -->
+                <?php /* Metallurgy & Heavy Foundry */ ?>
                 <div class="enterprise-card p-6 flex flex-col justify-between">
                     <div>
                         <div
@@ -491,7 +491,7 @@
                     </div>
                 </div>
 
-                <!-- Mining & Mineral Extraction -->
+                <?php /* Mining & Mineral Extraction */ ?>
                 <div class="enterprise-card p-6 flex flex-col justify-between">
                     <div>
                         <div
@@ -518,7 +518,7 @@
                     </div>
                 </div>
 
-                <!-- Critical Infrastructure & Rail -->
+                <?php /* Critical Infrastructure & Rail */ ?>
                 <div class="enterprise-card p-6 flex flex-col justify-between">
                     <div>
                         <div
@@ -549,9 +549,9 @@
         </div>
     </section>
 
-    <!-- ==========================================================================
+    <?php /* ==========================================================================
        Projects & Case Studies Portfolio (PRJ-2026-001 – PRJ-2026-015)
-       ========================================================================== -->
+       ========================================================================== */ ?>
     <section id="projects" class="py-16 bg-neutral-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
@@ -570,7 +570,7 @@
                 </div>
             </div>
 
-            <!-- Classified Data Table -->
+            <?php /* Classified Data Table */ ?>
             <div class="enterprise-card overflow-hidden">
                 <div class="overflow-x-auto">
                     <table class="w-full text-left table-classified">
@@ -587,7 +587,7 @@
                             </tr>
                         </thead>
                         <tbody id="projectsTableBody">
-                            <!-- Populated via js/corporate.js -->
+                            <?php /* Populated via js/corporate.js */ ?>
                         </tbody>
                     </table>
                 </div>
@@ -595,9 +595,9 @@
         </div>
     </section>
 
-    <!-- ==========================================================================
+    <?php /* ==========================================================================
        Chronological Transformation Timeline (1968 to 2026)
-       ========================================================================== -->
+       ========================================================================== */ ?>
     <section id="timeline" class="py-16 bg-white border-t border-b border-neutral-200">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center max-w-2xl mx-auto mb-12">
@@ -612,7 +612,7 @@
             </div>
 
             <div class="timeline-track max-w-4xl mx-auto">
-                <!-- 1968 -->
+                <?php /* 1968 */ ?>
                 <div class="timeline-node md:grid md:grid-cols-2 md:gap-8 items-center">
                     <div class="timeline-dot"></div>
                     <div class="md:text-right pl-12 md:pl-0 pr-0 md:pr-8 mb-4 md:mb-0">
@@ -631,7 +631,7 @@
                     </div>
                 </div>
 
-                <!-- 1991 -->
+                <?php /* 1991 */ ?>
                 <div class="timeline-node md:grid md:grid-cols-2 md:gap-8 items-center">
                     <div class="timeline-dot"></div>
                     <div class="md:order-2 pl-12 md:pl-8 pr-0 mb-4 md:mb-0">
@@ -651,7 +651,7 @@
                     </div>
                 </div>
 
-                <!-- 2004 -->
+                <?php /* 2004 */ ?>
                 <div class="timeline-node md:grid md:grid-cols-2 md:gap-8 items-center">
                     <div class="timeline-dot"></div>
                     <div class="md:text-right pl-12 md:pl-0 pr-0 md:pr-8 mb-4 md:mb-0">
@@ -671,7 +671,7 @@
                     </div>
                 </div>
 
-                <!-- 2013 -->
+                <?php /* 2013 */ ?>
                 <div class="timeline-node md:grid md:grid-cols-2 md:gap-8 items-center">
                     <div class="timeline-dot"></div>
                     <div class="md:order-2 pl-12 md:pl-8 pr-0 mb-4 md:mb-0">
@@ -691,7 +691,7 @@
                     </div>
                 </div>
 
-                <!-- 2026 -->
+                <?php /* 2026 */ ?>
                 <div class="timeline-node md:grid md:grid-cols-2 md:gap-8 items-center">
                     <div class="timeline-dot"></div>
                     <div class="md:text-right pl-12 md:pl-0 pr-0 md:pr-8 mb-4 md:mb-0">
@@ -714,9 +714,9 @@
         </div>
     </section>
 
-    <!-- ==========================================================================
+    <?php /* ==========================================================================
        Executive Leadership & Governance Team
-       ========================================================================== -->
+       ========================================================================== */ ?>
     <section id="leadership" class="py-16 bg-neutral-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
@@ -736,7 +736,7 @@
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                <!-- Viktor Sokolov (CEO) -->
+                <?php /* Viktor Sokolov (CEO) */ ?>
                 <div class="enterprise-card p-5">
                     <div class="flex items-center gap-3.5 mb-3.5">
                         <div
@@ -755,7 +755,7 @@
                     </p>
                 </div>
 
-                <!-- Amina Karimova (COO) -->
+                <?php /* Amina Karimova (COO) */ ?>
                 <div class="enterprise-card p-5">
                     <div class="flex items-center gap-3.5 mb-3.5">
                         <div
@@ -774,7 +774,7 @@
                     </p>
                 </div>
 
-                <!-- Elena Morozova (CTO) -->
+                <?php /* Elena Morozova (CTO) */ ?>
                 <div class="enterprise-card p-5">
                     <div class="flex items-center gap-3.5 mb-3.5">
                         <div
@@ -793,7 +793,7 @@
                     </p>
                 </div>
 
-                <!-- Daniel Weber (CFO) -->
+                <?php /* Daniel Weber (CFO) */ ?>
                 <div class="enterprise-card p-5">
                     <div class="flex items-center gap-3.5 mb-3.5">
                         <div
@@ -812,7 +812,7 @@
                     </p>
                 </div>
 
-                <!-- Timur Akhmetov (Chief Governance Officer) -->
+                <?php /* Timur Akhmetov (Chief Governance Officer) */ ?>
                 <div class="enterprise-card p-5">
                     <div class="flex items-center gap-3.5 mb-3.5">
                         <div
@@ -831,7 +831,7 @@
                     </p>
                 </div>
 
-                <!-- Pavel Orlov (Sales Director) -->
+                <?php /* Pavel Orlov (Sales Director) */ ?>
                 <div class="enterprise-card p-5">
                     <div class="flex items-center gap-3.5 mb-3.5">
                         <div
@@ -853,9 +853,9 @@
         </div>
     </section>
 
-    <!-- ==========================================================================
+    <?php /* ==========================================================================
        Global Metrology & Logistics Network
-       ========================================================================== -->
+       ========================================================================== */ ?>
     <section id="network" class="py-16 bg-white border-t border-b border-neutral-200">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center max-w-2xl mx-auto mb-12">
@@ -916,9 +916,9 @@
         </div>
     </section>
 
-    <!-- ==========================================================================
+    <?php /* ==========================================================================
        Commercial RFQ & Lead Intake Cockpit (SOP-01)
-       ========================================================================== -->
+       ========================================================================== */ ?>
     <section id="contact-rfq" class="py-16 bg-neutral-50">
         <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="enterprise-card p-6 sm:p-10">
@@ -941,7 +941,7 @@
                     (EMP-1006) and the CRM engineering queue.
                 </p>
 
-                <!-- RFQ Intake Form -->
+                <?php /* RFQ Intake Form */ ?>
                 <form id="corporateRfqForm" class="space-y-4">
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
@@ -1028,9 +1028,9 @@
         </div>
     </section>
 
-    <!-- ==========================================================================
+    <?php /* ==========================================================================
        Technical Dossier Spec Modal (#specModalBackdrop)
-       ========================================================================== -->
+       ========================================================================== */ ?>
     <div id="specModalBackdrop" class="enterprise-modal-backdrop">
         <div class="enterprise-modal-container p-6 sm:p-8">
             <div class="flex items-start justify-between border-b border-neutral-200 pb-4 mb-4">
@@ -1056,7 +1056,7 @@
                     Parameters & Calibration Specs</div>
                 <table class="w-full text-left">
                     <tbody id="specModalSpecsTable">
-                        <!-- Filled dynamically -->
+                        <?php /* Filled dynamically */ ?>
                     </tbody>
                 </table>
             </div>
@@ -1076,9 +1076,9 @@
         </div>
     </div>
 
-    <!-- ==========================================================================
+    <?php /* ==========================================================================
        Commercial RFQ Confirmation Modal (#rfqConfirmationBackdrop)
-       ========================================================================== -->
+       ========================================================================== */ ?>
     <div id="rfqConfirmationBackdrop" class="enterprise-modal-backdrop">
         <div class="enterprise-modal-container max-w-lg p-6 sm:p-8 text-center">
             <div
@@ -1118,13 +1118,13 @@
         </div>
     </div>
 
-    <!-- ==========================================================================
+    <?php /* ==========================================================================
        Standardized Enterprise Corporate Footer (System 01 Specification)
-       ========================================================================== -->
+       ========================================================================== */ ?>
     <footer class="bg-brand-primary-dark text-slate-400 text-xs border-t border-white/10 pt-16 pb-12">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 pb-12 border-b border-white/10">
-                <!-- Col 1: Corporate Profile -->
+                <?php /* Col 1: Corporate Profile */ ?>
                 <div class="lg:col-span-2">
                     <div class="flex items-center gap-2 mb-3">
                         <img alt="VOSTOKPRIBOR Logo" class="h-7 w-auto object-contain"
@@ -1140,7 +1140,7 @@
                     </div>
                 </div>
 
-                <!-- Col 2: Solutions Matrix -->
+                <?php /* Col 2: Solutions Matrix */ ?>
                 <div>
                     <div class="text-xs font-mono font-bold text-white uppercase tracking-wider mb-4">Equipment &
                         Solutions</div>
@@ -1160,7 +1160,7 @@
                     </ul>
                 </div>
 
-                <!-- Col 3: Sectors & Projects -->
+                <?php /* Col 3: Sectors & Projects */ ?>
                 <div>
                     <div class="text-xs font-mono font-bold text-white uppercase tracking-wider mb-4">Industrial Sectors
                     </div>
@@ -1179,7 +1179,7 @@
                     </ul>
                 </div>
 
-                <!-- Col 4: Enterprise Ecosystem Portals -->
+                <?php /* Col 4: Enterprise Ecosystem Portals */ ?>
                 <div>
                     <div class="text-xs font-mono font-bold text-teal-400 uppercase tracking-wider mb-4">Ecosystem
                         Portals</div>
@@ -1206,7 +1206,7 @@
                 </div>
             </div>
 
-            <!-- Bottom Legal & Accreditation Strip -->
+            <?php /* Bottom Legal & Accreditation Strip */ ?>
             <div
                 class="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] font-mono text-slate-500">
                 <div class="flex flex-wrap items-center gap-3">
@@ -1225,10 +1225,10 @@
         </div>
     </footer>
 
-    <!-- Toast Notification Container -->
+    <?php /* Toast Notification Container */ ?>
     <div id="corporate-toast-container"></div>
 
-    <!-- Application Script -->
+    <?php /* Application Script */ ?>
     <script src="js/corporate.js"></script>
 </body>
 

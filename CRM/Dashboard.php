@@ -136,15 +136,15 @@ $recentActivities = $pdo->query("
 <body>
 
   <div class="app-container">
-    <!-- ========================================================================
+    <?php /* ========================================================================
          TOP NAVIGATION BAR (#0F2438 Deep Navy + #3B4C8C Indigo 4px Accent Stripe)
-         ======================================================================== -->
+         ======================================================================== */ ?>
     <header class="top-nav">
-      <!-- 4px System Identity Stripe -->
+      <?php /* 4px System Identity Stripe */ ?>
       <div class="top-nav__accent-stripe"></div>
 
       <div class="top-nav__content">
-        <!-- Brand & System Identifier -->
+        <?php /* Brand & System Identifier */ ?>
         <div class="brand-section">
           <button class="mobile-nav-toggle" id="crm-sidebar-toggle" onclick="document.body.classList.toggle('sidebar-open')" title="Toggle Menu"><span class="material-symbols-outlined">menu</span></button>
           <a href="Dashboard.php" class="brand-logo-container">
@@ -165,7 +165,7 @@ $recentActivities = $pdo->query("
           </a>
         </div>
 
-        <!-- Global Omni Search -->
+        <?php /* Global Omni Search */ ?>
         <div class="top-search-bar">
           <div class="search-input-wrapper">
             <span class="search-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span>
@@ -174,7 +174,7 @@ $recentActivities = $pdo->query("
           </div>
         </div>
 
-        <!-- Right System Metrics & Profile -->
+        <?php /* Right System Metrics & Profile */ ?>
         <div class="top-nav__actions">
           <div class="pipeline-sync-badge">
             <span class="crm-status-success" >●</span>
@@ -201,20 +201,20 @@ $recentActivities = $pdo->query("
           </div>
         </div>
 
-        <!-- Top Bar Sign Out -->
+        <?php /* Top Bar Sign Out */ ?>
         <a href="./api/logout.php?redirect=../login.php" class="top-signout-btn" title="Sign Out of CRM" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" ><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
       </div>
     </header>
 
     <div class="main-layout">
-      <!-- ========================================================================
+      <?php /* ========================================================================
            LEFT SIDEBAR NAVIGATION (#0F2438 Deep Navy + #3B4C8C Indigo Active & Hover)
-           ======================================================================== -->
+           ======================================================================== */ ?>
       <aside class="sidebar">
         <div>
           <div class="sidebar-section-title">Sales Management</div>
           <nav class="sidebar-nav">
-            <!-- Screen 1: Dashboard (Active) -->
+            <?php /* Screen 1: Dashboard (Active) */ ?>
             <a href="Dashboard.php" class="sidebar-nav-item active">
               <div class="sidebar-item-left">
                 <span class="sidebar-icon">
@@ -229,7 +229,7 @@ $recentActivities = $pdo->query("
               </div>
             </a>
 
-            <!-- Screen 2: Leads -->
+            <?php /* Screen 2: Leads */ ?>
             <a href="Leads.php" class="sidebar-nav-item">
               <div class="sidebar-item-left">
                 <span class="sidebar-icon">
@@ -245,7 +245,7 @@ $recentActivities = $pdo->query("
               <span class="sidebar-badge" id="dash-nav-leads"><?= $leadCount ?></span>
             </a>
 
-            <!-- Screen 3: Customers -->
+            <?php /* Screen 3: Customers */ ?>
             <a href="Customers.php" class="sidebar-nav-item">
               <div class="sidebar-item-left">
                 <span class="sidebar-icon">
@@ -263,7 +263,7 @@ $recentActivities = $pdo->query("
               <span class="sidebar-badge" id="dash-nav-customers"><?= $custCount ?></span>
             </a>
 
-            <!-- Screen 4: Opportunities -->
+            <?php /* Screen 4: Opportunities */ ?>
             <a href="Opportunities.php" class="sidebar-nav-item">
               <div class="sidebar-item-left">
                 <span class="sidebar-icon">
@@ -277,7 +277,7 @@ $recentActivities = $pdo->query("
               <span class="sidebar-badge" id="dash-nav-opps"><?= $oppCount ?></span>
             </a>
 
-            <!-- Screen 5: Quotes & Contracts -->
+            <?php /* Screen 5: Quotes & Contracts */ ?>
             <a href="QuotesAndContracts.php" class="sidebar-nav-item">
               <div class="sidebar-item-left">
                 <span class="sidebar-icon">
@@ -293,7 +293,7 @@ $recentActivities = $pdo->query("
               <span class="sidebar-badge" id="dash-nav-quotes"><?= $quotesAndContractsCount ?></span>
             </a>
 
-            <!-- Screen 6: Projects -->
+            <?php /* Screen 6: Projects */ ?>
             <a href="Projects.php" class="sidebar-nav-item">
               <div class="sidebar-item-left">
                 <span class="sidebar-icon">
@@ -308,7 +308,7 @@ $recentActivities = $pdo->query("
               <span class="sidebar-badge" id="dash-nav-projects"><?= $projCount ?></span>
             </a>
 
-            <!-- Screen 7: Sales Forecast -->
+            <?php /* Screen 7: Sales Forecast */ ?>
             <a href="SalesForecast.php" class="sidebar-nav-item">
               <div class="sidebar-item-left">
                 <span class="sidebar-icon">
@@ -323,7 +323,7 @@ $recentActivities = $pdo->query("
               <span class="sidebar-badge badge-green">+14%</span>
             </a>
 
-            <!-- Inter-System Integrations (SYS02) -->
+            <?php /* Inter-System Integrations (SYS02) */ ?>
             <a href="Integrations.php" class="sidebar-nav-item">
               <div class="sidebar-item-left">
                 <span class="sidebar-icon">
@@ -339,7 +339,7 @@ $recentActivities = $pdo->query("
           </nav>
         </div>
 
-        <!-- Sidebar Bottom Quota Progress Widget -->
+        <?php /* Sidebar Bottom Quota Progress Widget */ ?>
 
         <div class="sidebar-section-title crm-mt-4" >Unified Ecosystem</div>
         <nav class="sidebar-nav crm-mb-2" >
@@ -371,7 +371,7 @@ $recentActivities = $pdo->query("
             <span class="sidebar-badge crm-text-xs" >SYS 04</span>
           </a>
         </nav>
-        <!-- Log Out -->
+        <?php /* Log Out */ ?>
 
         <div class="sidebar-footer">
           <div class="quota-widget-card">
@@ -390,12 +390,12 @@ $recentActivities = $pdo->query("
         </div>
       </aside>
 
-      <!-- ========================================================================
+      <?php /* ========================================================================
            MAIN CONTENT AREA
-           ======================================================================== -->
+           ======================================================================== */ ?>
       <main class="content-wrapper">
         <div class="portal-container">
-          <!-- Page Header -->
+          <?php /* Page Header */ ?>
           <div class="page-header">
             <div class="page-header-info">
               <div class="breadcrumb-trail">
@@ -421,9 +421,9 @@ $recentActivities = $pdo->query("
             </div>
           </div>
 
-          <!-- Top Row 4 KPI Cards -->
+          <?php /* Top Row 4 KPI Cards */ ?>
           <div class="kpi-grid">
-            <!-- Card 1: New Leads -->
+            <?php /* Card 1: New Leads */ ?>
             <div class="crm-card kpi-card">
               <div class="kpi-header">
                 <span class="kpi-title">New Leads</span>
@@ -439,7 +439,7 @@ $recentActivities = $pdo->query("
               </div>
             </div>
 
-            <!-- Card 2: Open Opportunities -->
+            <?php /* Card 2: Open Opportunities */ ?>
             <div class="crm-card kpi-card">
               <div class="kpi-header">
                 <span class="kpi-title">Open Opportunities</span>
@@ -455,7 +455,7 @@ $recentActivities = $pdo->query("
               </div>
             </div>
 
-            <!-- Card 3: Pipeline Value -->
+            <?php /* Card 3: Pipeline Value */ ?>
             <div class="crm-card kpi-card">
               <div class="kpi-header">
                 <span class="kpi-title">Gross Pipeline Value</span>
@@ -471,7 +471,7 @@ $recentActivities = $pdo->query("
               </div>
             </div>
 
-            <!-- Card 4: Win Rate -->
+            <?php /* Card 4: Win Rate */ ?>
             <div class="crm-card kpi-card">
               <div class="kpi-header">
                 <span class="kpi-title">Win Rate (Trailing 12M)</span>
@@ -488,7 +488,7 @@ $recentActivities = $pdo->query("
             </div>
           </div>
 
-          <!-- Horizontal Funnel / Pipeline Visualization (5 Stages) -->
+          <?php /* Horizontal Funnel / Pipeline Visualization (5 Stages) */ ?>
           <div class="crm-card pipeline-funnel-card">
             <div class="card-header-row">
               <div>
@@ -522,9 +522,9 @@ $recentActivities = $pdo->query("
             </div>
           </div>
 
-          <!-- Two-Column Section: Left "My Accounts" / Right "Recent Activity" -->
+          <?php /* Two-Column Section: Left "My Accounts" / Right "Recent Activity" */ ?>
           <div class="split-grid-2col">
-            <!-- Left: My Accounts List Widget -->
+            <?php /* Left: My Accounts List Widget */ ?>
             <div class="crm-card">
               <div class="card-header-row">
                 <div>
@@ -573,7 +573,7 @@ $recentActivities = $pdo->query("
               </table>
             </div>
 
-            <!-- Right: Recent Activity Feed Widget -->
+            <?php /* Right: Recent Activity Feed Widget */ ?>
             <div class="crm-card">
               <div class="card-header-row">
                 <div>
@@ -619,8 +619,8 @@ $recentActivities = $pdo->query("
     </div>
   </div>
 
-  <!-- Modals -->
-  <!-- Modal 1: + New Opportunity -->
+  <?php /* Modals */ ?>
+  <?php /* Modal 1: + New Opportunity */ ?>
   <div id="modal-new-opportunity" class="modal-backdrop">
     <div class="modal-card">
       <div class="modal-header">
@@ -687,7 +687,7 @@ $recentActivities = $pdo->query("
     </div>
   </div>
 
-  <!-- Modal 2: Log Activity -->
+  <?php /* Modal 2: Log Activity */ ?>
   <div id="modal-log-activity" class="modal-backdrop">
     <div class="modal-card">
       <div class="modal-header">

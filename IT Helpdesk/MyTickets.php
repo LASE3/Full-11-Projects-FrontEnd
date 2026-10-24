@@ -76,7 +76,7 @@ $slaPct = $sbStats['sla_pct'];
 <body>
 
   <div class="app-container">
-    <!-- TOP NAVIGATION BAR -->
+    <?php /* TOP NAVIGATION BAR */ ?>
     <header class="top-nav">
       <div class="top-nav__accent-stripe"></div>
       <div class="top-nav__content">
@@ -128,7 +128,7 @@ $slaPct = $sbStats['sla_pct'];
           </div>
         </div>
 
-        <!-- Top Bar Sign Out -->
+        <?php /* Top Bar Sign Out */ ?>
         <a href="../api/logout.php?system=IT%20Helpdesk&redirect=../IT%20Helpdesk/login.php" class="top-signout-btn" title="Sign Out of IT Helpdesk" onclick="(function(){sessionStorage.clear();localStorage.clear();})()"><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
       </div>
     </header>
@@ -263,7 +263,7 @@ $slaPct = $sbStats['sla_pct'];
         </div>
       </aside>
 
-      <!-- MAIN CONTENT -->
+      <?php /* MAIN CONTENT */ ?>
       <main class="content-wrapper">
         <div class="portal-container">
           <div class="page-header">
@@ -370,7 +370,7 @@ $slaPct = $sbStats['sla_pct'];
     </div>
   </div>
 
-  <!-- Create Ticket Modal -->
+  <?php /* Create Ticket Modal */ ?>
   <div id="modal-create-ticket" class="hd-modal-overlay">
     <div class="hd-modal-dialog">
       <div class="hd-modal-header">
@@ -412,10 +412,10 @@ $slaPct = $sbStats['sla_pct'];
             <div class="hd-form-group">
               <label class="hd-form-label">Assigned Lead Tech</label>
               <select name="assigned_emp_id" class="hd-form-select">
-                <option value="Alexey Ivanov" selected>Alexey Ivanov (Tier 3)</option>
-                <option value="Dmitry Popov">Dmitry Popov (Tier 2)</option>
-                <option value="Sofia Volkova">Sofia Volkova (Tier 1)</option>
-                <option value="Unassigned">Unassigned (Pool Queue)</option>
+                <option value="EMP-1018" selected>Alexey Ivanov (Tier 3)</option>
+                <option value="EMP-1004">Dmitry Popov (Tier 2)</option>
+                <option value="EMP-1002">Sofia Volkova (Tier 1)</option>
+                <option value="">Unassigned (Pool Queue)</option>
               </select>
             </div>
             <div class="hd-form-group">
@@ -440,7 +440,7 @@ $slaPct = $sbStats['sla_pct'];
     </div>
   </div>
 
-  <!-- Edit Ticket Modal -->
+  <?php /* Edit Ticket Modal */ ?>
   <div id="modal-edit-ticket" class="hd-modal-overlay">
     <div class="hd-modal-dialog">
       <div class="hd-modal-header">

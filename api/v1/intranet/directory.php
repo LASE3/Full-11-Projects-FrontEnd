@@ -50,8 +50,12 @@ try {
     }
 
     if (!empty($searchQuery)) {
-        $sql .= " AND (e.full_name LIKE :q OR e.job_title LIKE :q OR e.emp_id LIKE :q OR e.email LIKE :q)";
-        $params[':q'] = "%{$searchQuery}%";
+        $sql .= " AND (e.full_name LIKE :q1 OR e.job_title LIKE :q2 OR e.emp_id LIKE :q3 OR e.email LIKE :q4)";
+        $qTerm = "%{$searchQuery}%";
+        $params[':q1'] = $qTerm;
+        $params[':q2'] = $qTerm;
+        $params[':q3'] = $qTerm;
+        $params[':q4'] = $qTerm;
     }
 
     $sql .= " ORDER BY d.dept_code ASC, e.clearance_level DESC, e.full_name ASC";

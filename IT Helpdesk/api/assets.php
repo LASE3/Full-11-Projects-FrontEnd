@@ -37,8 +37,13 @@ if ($method === 'GET') {
     $where = [];
 
     if ($search !== '') {
-        $where[] = "(asset_tag LIKE :s OR hostname LIKE :s OR ip_address LIKE :s OR device_model LIKE :s OR location LIKE :s)";
-        $params[':s'] = "%{$search}%";
+        $where[] = "(asset_tag LIKE :s1 OR hostname LIKE :s2 OR ip_address LIKE :s3 OR device_model LIKE :s4 OR location LIKE :s5)";
+        $term = "%{$search}%";
+        $params[':s1'] = $term;
+        $params[':s2'] = $term;
+        $params[':s3'] = $term;
+        $params[':s4'] = $term;
+        $params[':s5'] = $term;
     }
 
     $whereSql = !empty($where) ? "WHERE " . implode(" AND ", $where) : "";

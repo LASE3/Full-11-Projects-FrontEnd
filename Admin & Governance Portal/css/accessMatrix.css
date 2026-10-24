@@ -11,16 +11,6 @@
   background-color: rgba(0, 36, 68, 0.03);
 }
 
-.permission-pill {
-  transition:
-    transform 0.15s ease,
-    background-color 0.15s ease;
-}
-
-.permission-pill:hover {
-  transform: scale(1.05);
-}
-
 .tier-strip-l5 {
   border-left: 4px solid #b23a32;
 }

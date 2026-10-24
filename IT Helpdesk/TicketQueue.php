@@ -71,12 +71,12 @@ $slaPct = $sbStats['sla_pct'];
 <body>
 
   <div class="app-container">
-    <!-- TOP NAVIGATION BAR -->
+    <?php /* TOP NAVIGATION BAR */ ?>
     <header class="top-nav">
       <div class="top-nav__accent-stripe"></div>
 
       <div class="top-nav__content">
-        <!-- Brand & System Identifier -->
+        <?php /* Brand & System Identifier */ ?>
         <div class="brand-section">
           <button class="mobile-nav-toggle" id="hd-sidebar-toggle" onclick="document.body.classList.toggle('sidebar-open')" title="Toggle Menu"><span class="material-symbols-outlined">menu</span></button>
           <a href="Dashboard.php" class="brand-logo-container">
@@ -97,7 +97,7 @@ $slaPct = $sbStats['sla_pct'];
           </a>
         </div>
 
-        <!-- Global Omni Search -->
+        <?php /* Global Omni Search */ ?>
         <div class="top-search-bar">
           <div class="search-input-wrapper">
             <span class="search-icon">🔍</span>
@@ -106,7 +106,7 @@ $slaPct = $sbStats['sla_pct'];
           </div>
         </div>
 
-        <!-- Right System Metrics & Profile -->
+        <?php /* Right System Metrics & Profile */ ?>
         <div class="top-nav__actions">
           <div class="pipeline-sync-badge hd-badge-telemetry">
             <span class="hd-status-success">●</span>
@@ -129,13 +129,13 @@ $slaPct = $sbStats['sla_pct'];
           </div>
         </div>
 
-        <!-- Top Bar Sign Out -->
+        <?php /* Top Bar Sign Out */ ?>
         <a href="../api/logout.php?system=IT%20Helpdesk&redirect=../IT%20Helpdesk/login.php" class="top-signout-btn" title="Sign Out of IT Helpdesk" onclick="(function(){sessionStorage.clear();localStorage.clear();})()"><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
       </div>
     </header>
 
     <div class="main-layout">
-      <!-- LEFT SIDEBAR NAVIGATION -->
+      <?php /* LEFT SIDEBAR NAVIGATION */ ?>
       <aside class="sidebar">
         <div>
           <div class="sidebar-section-title">IT Support Operations</div>
@@ -282,10 +282,10 @@ $slaPct = $sbStats['sla_pct'];
         </div>
       </aside>
 
-      <!-- MAIN CONTENT AREA -->
+      <?php /* MAIN CONTENT AREA */ ?>
       <main class="content-wrapper">
         <div class="portal-container">
-          <!-- Page Header -->
+          <?php /* Page Header */ ?>
           <div class="page-header">
             <div class="page-header-info">
               <div class="breadcrumb-trail">
@@ -308,7 +308,7 @@ $slaPct = $sbStats['sla_pct'];
             </div>
           </div>
 
-          <!-- Queue Quick Stats Bar (Dynamic from Database) -->
+          <?php /* Queue Quick Stats Bar (Dynamic from Database) */ ?>
           <div class="hd-grid-4col-mb">
             <div class="hd-card hd-metric-card-crit">
               <div>
@@ -340,18 +340,18 @@ $slaPct = $sbStats['sla_pct'];
             </div>
           </div>
 
-          <!-- Main Table Card with Filter Bar -->
+          <?php /* Main Table Card with Filter Bar */ ?>
           <div class="hd-card hd-panel-flush">
-            <!-- Filter Bar -->
+            <?php /* Filter Bar */ ?>
             <div class="hd-toolbar-card">
               <div class="hd-toolbar-controls">
-                <!-- Search Input in Filter Bar -->
+                <?php /* Search Input in Filter Bar */ ?>
                 <div class="hd-search-box-wrap">
                   <span class="hd-search-box-icon">🔍</span>
                   <input class="hd-search-box-input" type="text" id="ticket-search" placeholder="Search ID, requester, title, system..." />
                 </div>
 
-                <!-- Priority Dropdown -->
+                <?php /* Priority Dropdown */ ?>
                 <div class="hd-flex-gap-xs">
                   <label class="hd-meta-semibold-115" for="filter-priority">Priority:</label>
                   <select class="hd-btn-filter-select" id="filter-priority">
@@ -363,7 +363,7 @@ $slaPct = $sbStats['sla_pct'];
                   </select>
                 </div>
 
-                <!-- System Affected Dropdown -->
+                <?php /* System Affected Dropdown */ ?>
                 <div class="hd-flex-gap-xs">
                   <label class="hd-meta-semibold-115" for="filter-system">System:</label>
                   <select class="hd-btn-filter-select" id="filter-system">
@@ -376,7 +376,7 @@ $slaPct = $sbStats['sla_pct'];
                   </select>
                 </div>
 
-                <!-- Status Dropdown -->
+                <?php /* Status Dropdown */ ?>
                 <div class="hd-flex-gap-xs">
                   <label class="hd-meta-semibold-115" for="filter-status">Status:</label>
                   <select class="hd-btn-filter-select" id="filter-status">
@@ -388,7 +388,7 @@ $slaPct = $sbStats['sla_pct'];
                   </select>
                 </div>
 
-                <!-- Assigned Tech Dropdown -->
+                <?php /* Assigned Tech Dropdown */ ?>
                 <div class="hd-flex-gap-xs">
                   <label class="hd-meta-semibold-115" for="filter-tech">Assigned Tech:</label>
                   <select class="hd-btn-filter-select" id="filter-tech">
@@ -401,7 +401,7 @@ $slaPct = $sbStats['sla_pct'];
                 </div>
               </div>
 
-              <!-- Bulk Assign Button & Queue Count -->
+              <?php /* Bulk Assign Button & Queue Count */ ?>
               <div class="hd-flex-gap-md">
                 <span class="hd-mono-muted-115">Total <strong><?= count($tickets) ?></strong> in Database</span>
                 <button class="btn btn-orange btn-sm" id="btn-bulk-assign" title="Assign pending unassigned tickets to active shift engineers">
@@ -410,7 +410,7 @@ $slaPct = $sbStats['sla_pct'];
               </div>
             </div>
 
-            <!-- Data Table (100% Dynamic from Database with CRUD) -->
+            <?php /* Data Table (100% Dynamic from Database with CRUD) */ ?>
             <div class="overflow-x-auto">
               <table class="hd-table">
                 <thead>
@@ -499,7 +499,7 @@ $slaPct = $sbStats['sla_pct'];
               </table>
             </div>
 
-            <!-- Table Pagination / Footer -->
+            <?php /* Table Pagination / Footer */ ?>
             <div class="hd-footer-pagination">
               <div class="hd-mono">
                 Total <strong><?= count($tickets) ?> Incidents</strong> Active in Database
@@ -514,7 +514,7 @@ $slaPct = $sbStats['sla_pct'];
     </div>
   </div>
 
-  <!-- CREATE / EDIT TICKET MODAL -->
+  <?php /* CREATE / EDIT TICKET MODAL */ ?>
   <div class="hd-modal-overlay" id="ticketModal">
     <div class="hd-modal-dialog">
       <div class="hd-modal-header">

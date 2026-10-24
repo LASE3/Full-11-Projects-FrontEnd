@@ -5,6 +5,10 @@ if (!function_exists('getCsrfToken')) {
     require_once __DIR__ . '/auth_guard.php';
 }
 
+if (function_exists('vp_send_security_headers')) {
+    vp_send_security_headers();
+}
+
 $csrfToken = getCsrfToken();
 
 // Compute relative asset prefix based on the current executing script

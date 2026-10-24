@@ -38,18 +38,18 @@ $currUser = $_SESSION['vostok_user'] ?? [
     <meta name="robots" content="noindex, nofollow">
     <title>VOSTOKPRIBOR Employee Intranet · Inter-System Integrations (SYS05)</title>
 
-    <!-- Favicon -->
+    <?php /* Favicon */ ?>
     <link rel="icon" type="image/svg+xml" href="../assets/logo.svg">
 
-    <!-- Fonts: IBM Plex Sans & JetBrains Mono -->
+    <?php /* Fonts: IBM Plex Sans & JetBrains Mono */ ?>
                 
-    <!-- Stylesheets -->
+    <?php /* Stylesheets */ ?>
     <link rel="stylesheet" href="../assets/css/integration-panel.css">
 </head>
 
 <body class="vostok-integrations-page">
 
-    <!-- Header Bar -->
+    <?php /* Header Bar */ ?>
     <header class="vostok-top-bar" role="banner">
         <a href="Dashboard.php" class="vostok-brand-link" title="Return to Intranet Dashboard">
             <img src="../assets/logo.svg" alt="VOSTOKPRIBOR Logo" width="28" height="28">
@@ -60,14 +60,14 @@ $currUser = $_SESSION['vostok_user'] ?? [
         </a>
 
         <div class="vostok-nav-actions">
-            <!-- User Status Context -->
+            <?php /* User Status Context */ ?>
             <div class="vostok-user-badge-header" title="Signed in as <?= htmlspecialchars($currUser['full_name'] ?? 'Authorized Staff', ENT_QUOTES, 'UTF-8') ?>">
                 <span class="material-symbols-outlined vostok-icon-sm">person</span>
                 <span class="vostok-user-name"><?= htmlspecialchars($currUser['full_name'] ?? 'Authorized Staff', ENT_QUOTES, 'UTF-8') ?></span>
                 <span class="vostok-clearance-pill"><?= htmlspecialchars($currUser['clearance_level'] ?? 'L2', ENT_QUOTES, 'UTF-8') ?></span>
             </div>
 
-            <!-- Navigation Actions -->
+            <?php /* Navigation Actions */ ?>
             <a href="Dashboard.php" class="vostok-btn-back" title="Back to Dashboard">
                 <span class="material-symbols-outlined vostok-icon-sm">arrow_back</span>
                 <span>Back to Dashboard</span>
@@ -79,7 +79,7 @@ $currUser = $_SESSION['vostok_user'] ?? [
         </div>
     </header>
 
-    <!-- Main Content Rendering Integration Matrix -->
+    <?php /* Main Content Rendering Integration Matrix */ ?>
     <main class="vostok-main-content" role="main">
         <?php renderSystemIntegrationView('SYS05', 'standalone'); ?>
     </main>

@@ -93,7 +93,7 @@ $documents = $docsStmt->fetchAll(PDO::FETCH_ASSOC);
 </head>
 
 <body>
-    <!-- TOP NAVIGATION BAR -->
+    <?php /* TOP NAVIGATION BAR */ ?>
     <header class="vk-top-navbar">
         <div class="fc-flex-center-gap-24">
             <button class="mobile-nav-toggle" id="fc-sidebar-toggle" onclick="document.body.classList.toggle('sidebar-open')" title="Toggle Menu"><span class="material-symbols-outlined">menu</span></button>
@@ -136,12 +136,12 @@ $documents = $docsStmt->fetchAll(PDO::FETCH_ASSOC);
                 </div>
             </div>
 
-            <!-- Top Bar Sign Out -->
+            <?php /* Top Bar Sign Out */ ?>
             <a href="../api/logout.php?system=File%20Center&redirect=../File%20Center/login.php" class="top-signout-btn" title="Sign Out of File Center" onclick="(function(){sessionStorage.clear();localStorage.clear();})()"><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
         </div>
     </header>
 
-    <!-- LEFT SIDEBAR -->
+    <?php /* LEFT SIDEBAR */ ?>
     <aside class="vk-sidebar" style="background-color: #0f2438 !important; border-right: 1px solid rgba(255, 255, 255, 0.1) !important;">
         <div class="vk-sidebar-nav">
             <div class="vk-sidebar-header">Document Vault</div>
@@ -227,9 +227,9 @@ $documents = $docsStmt->fetchAll(PDO::FETCH_ASSOC);
         </div>
     </aside>
 
-    <!-- MAIN CONTENT AREA -->
+    <?php /* MAIN CONTENT AREA */ ?>
     <main class="vk-main-layout">
-        <!-- HEADER BLOCK -->
+        <?php /* HEADER BLOCK */ ?>
         <div class="repo-header-toolbar">
             <div>
                 <div class="fc-display-flex-align-items-9bb7">
@@ -256,7 +256,7 @@ $documents = $docsStmt->fetchAll(PDO::FETCH_ASSOC);
             </div>
         </div>
 
-        <!-- 4 KPI REPOSITORY METRIC CARDS (Dynamic from Database) -->
+        <?php /* 4 KPI REPOSITORY METRIC CARDS (Dynamic from Database) */ ?>
         <div class="repo-stats-grid">
             <div class="repo-stat-card">
                 <div class="repo-stat-label">
@@ -297,7 +297,7 @@ $documents = $docsStmt->fetchAll(PDO::FETCH_ASSOC);
             </div>
         </div>
 
-        <!-- FILTER & SEARCH BAR -->
+        <?php /* FILTER & SEARCH BAR */ ?>
         <div class="repo-filter-bar">
             <div class="filter-pills-group">
                 <button class="filter-pill active" data-class-filter="all">
@@ -332,9 +332,9 @@ $documents = $docsStmt->fetchAll(PDO::FETCH_ASSOC);
             </div>
         </div>
 
-        <!-- REPOSITORY WORKSPACE: FOLDER TREE + DOCUMENT TABLE -->
+        <?php /* REPOSITORY WORKSPACE: FOLDER TREE + DOCUMENT TABLE */ ?>
         <div class="repo-workspace-grid">
-            <!-- LEFT: FOLDER TREE -->
+            <?php /* LEFT: FOLDER TREE */ ?>
             <div class="folder-tree-card">
                 <div class="folder-tree-title">
                     <span class="material-symbols-outlined text-[16px] fc-color-accent">account_tree</span>
@@ -402,7 +402,7 @@ $documents = $docsStmt->fetchAll(PDO::FETCH_ASSOC);
                 </div>
             </div>
 
-            <!-- RIGHT: MAIN DOCUMENT TABLE (Dynamic from Database) -->
+            <?php /* RIGHT: MAIN DOCUMENT TABLE (Dynamic from Database) */ ?>
             <div class="vk-table-container">
                 <div class="fc-padding-12px-16px-background-6c79">
                     <div class="fc-font-family-var-font-ecce">
@@ -494,7 +494,7 @@ $documents = $docsStmt->fetchAll(PDO::FETCH_ASSOC);
         </div>
     </main>
 
-    <!-- SLIDE-OVER DOCUMENT INSPECTION DRAWER -->
+    <?php /* SLIDE-OVER DOCUMENT INSPECTION DRAWER */ ?>
     <div class="doc-drawer-backdrop" id="doc-drawer-backdrop">
         <div class="doc-drawer" id="doc-drawer">
             <div class="doc-drawer-header">
@@ -577,7 +577,7 @@ $documents = $docsStmt->fetchAll(PDO::FETCH_ASSOC);
         </div>
     </div>
 
-    <!-- EDIT DOCUMENT MODAL -->
+    <?php /* EDIT DOCUMENT MODAL */ ?>
     <div class="crud-modal-backdrop" id="edit-doc-modal">
         <div class="crud-modal-box">
             <div class="crud-modal-header">
@@ -681,7 +681,7 @@ $documents = $docsStmt->fetchAll(PDO::FETCH_ASSOC);
         </div>
     </div>
 
-    <!-- DELETE CONFIRMATION MODAL -->
+    <?php /* DELETE CONFIRMATION MODAL */ ?>
     <div class="crud-modal-backdrop" id="delete-doc-modal">
         <div class="crud-modal-box danger-modal">
             <div class="crud-modal-header" style="background: #fef2f2; border-bottom-color: #fee2e2;">
@@ -710,7 +710,7 @@ $documents = $docsStmt->fetchAll(PDO::FETCH_ASSOC);
         </div>
     </div>
 
-    <!-- DOCKED ENTERPRISE STATUS BAR -->
+    <?php /* DOCKED ENTERPRISE STATUS BAR */ ?>
     <footer class="vk-status-bar">
         <div class="fc-flex-center-gap-16">
 
@@ -726,7 +726,7 @@ $documents = $docsStmt->fetchAll(PDO::FETCH_ASSOC);
         </div>
     </footer>
 
-    <!-- Universal Command Palette Modal (Ctrl + K) -->
+    <?php /* Universal Command Palette Modal (Ctrl + K) */ ?>
     <div class="cmd-palette-backdrop" id="cmd-palette-modal">
         <div class="cmd-palette-box">
             <div class="cmd-palette-header">
@@ -758,7 +758,7 @@ $documents = $docsStmt->fetchAll(PDO::FETCH_ASSOC);
         </div>
     </div>
 
-    <!-- Universal Toast Container -->
+    <?php /* Universal Toast Container */ ?>
     <div class="vk-toast-container"></div>
 
     <script src="js/fc-common.js"></script>

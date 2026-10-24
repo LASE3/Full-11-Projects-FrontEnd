@@ -1,24 +1,16 @@
+<?php require_once __DIR__ . '/../config/db.php'; ?>
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
+  <meta charset="utf-8">
   <?php require_once __DIR__ . '/../includes/head_security.php'; ?>
-  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description"
     content="VOSTOKPRIBOR B2B Online Shop - Register your company as an enterprise procurement partner.">
   <title>Enterprise Partner Registration · VOSTOKPRIBOR SYS-02</title>
-  <link rel="stylesheet" href="css/login.css?v=1790609011">
-  <style>
-  .vp-sim-bar, .theme-simulation-bar, [class*="vp-sim"], [class*="theme-sim"] {
-    display: none !important;
-    visibility: hidden !important;
-    opacity: 0 !important;
-    height: 0 !important;
-    pointer-events: none !important;
-  }
-</style>
-</head>
+  <link rel="stylesheet" href="../assets/css/auth.css">
+  </head>
 
 <body>
   <div class="auth-bg-grid" aria-hidden="true"></div>
@@ -37,7 +29,7 @@
       <span class="status-dot-pulse"></span>
       <span>PARTNER ONBOARDING · LIVE</span>
 
-      <!-- Top Bar Sign Out -->
+      <?php /* Top Bar Sign Out */ ?>
       <a href="./api/logout.php?redirect=../login.php" class="top-signout-btn" title="Sign Out of Online Shop B2B" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" ><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
     </div>
   </header>
@@ -217,7 +209,7 @@
           <div class="form-group">
             <label class="checkbox-label" for="agree-partner-terms">
               <input type="checkbox" id="agree-partner-terms" class="checkbox-input" required>
-              <span>I confirm I am authorized to register this company and agree to the <a href="javascript:void(0)" class="utility-link">VOSTOKPRIBOR B2B Partner Agreement</a></span>
+              <span>I confirm I am authorized to register this company and agree to the <a href="terms.php" class="utility-link" target="_blank" rel="noopener">VOSTOKPRIBOR B2B Partner Agreement</a></span>
             </label>
           </div>
 
@@ -233,13 +225,6 @@
       </div>
 
       <footer class="auth-card-footer">
-        <span class="security-badge">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-          </svg>
-          TLS 1.3 256-Bit Encrypted
-        </span>
         <span>ID: VP-SHOP-02</span>
       </footer>
     </section>
@@ -251,17 +236,6 @@
 
   <script src="../assets/js/dynamic-login-theme.js?v=1790609011"></script>
   <script src="js/register.js"></script>
-<script>
-  (function(){
-    function purge(){
-      var b = document.querySelectorAll('.vp-sim-bar, .theme-simulation-bar, [class*="vp-sim"], [class*="theme-sim"]');
-      b.forEach(function(el){ el.remove(); });
-    }
-    purge();
-    document.addEventListener('DOMContentLoaded', purge);
-    window.addEventListener('load', purge);
-  })();
-</script>
 </body>
 
 </html>

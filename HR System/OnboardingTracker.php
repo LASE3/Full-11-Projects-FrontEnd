@@ -44,7 +44,7 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
 <body>
 
   <div class="app-container">
-    <!-- TOP NAVIGATION BAR -->
+    <?php /* TOP NAVIGATION BAR */ ?>
     <header class="top-nav">
       <div class="top-nav__accent-stripe"></div>
 
@@ -145,10 +145,10 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
         </div>
       </aside>
 
-      <!-- MAIN CONTENT -->
+      <?php /* MAIN CONTENT */ ?>
       <main class="content-wrapper">
         <div class="portal-container hr-max-w-1200" >
-          <!-- Page Header -->
+          <?php /* Page Header */ ?>
           <div class="page-header">
             <div class="page-header-info">
               <div class="breadcrumb-trail">
@@ -168,7 +168,7 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
             </div>
           </div>
 
-          <!-- Dynamic Database Metrics Strip -->
+          <?php /* Dynamic Database Metrics Strip */ ?>
           <div class="kpi-grid">
             <div class="hr-card kpi-card hr-card-plum-top" >
               <div class="kpi-header">
@@ -240,7 +240,7 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
               <?php endif; ?>
             </div>
           <?php else: ?>
-            <!-- Candidate Switcher Tabs -->
+            <?php /* Candidate Switcher Tabs */ ?>
             <div class="hr-tab-bar-scrollable" >
               <?php foreach ($candidates as $cand):
                 $isActiveTab = ($cand['emp_id'] === $selectedEmpId);
@@ -253,7 +253,7 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
               <?php endforeach; ?>
             </div>
 
-            <!-- Candidate Header Component -->
+            <?php /* Candidate Header Component */ ?>
             <div class="onboarding-candidate-card hr-card-hero-banner" >
               <div class="hr-flex-gap-125" >
                 <div class="hr-avatar-64-plum" >
@@ -277,7 +277,7 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
                 </div>
               </div>
 
-              <!-- Progress Metric Box -->
+              <?php /* Progress Metric Box */ ?>
               <div class="hr-progress-summary-box" >
                 <div class="hr-caption-progress" >Onboarding Completion</div>
                 <div class="hr-mono-percent-plum" >
@@ -289,7 +289,7 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
               </div>
             </div>
 
-            <!-- Sequential Step Checklist -->
+            <?php /* Sequential Step Checklist */ ?>
             <div class="hr-card hr-card-body-padded" >
               <div class="card-header-row hr-mb-6" >
                 <div>
@@ -360,7 +360,7 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
     </div>
   </div>
 
-  <!-- ADD EMPLOYEE & INITIALIZE ONBOARDING MODAL -->
+  <?php /* ADD EMPLOYEE & INITIALIZE ONBOARDING MODAL */ ?>
   <div class="modal-backdrop" id="modal-add-onboarding">
     <div class="modal-card hr-modal-640" >
       <div class="modal-header">
@@ -374,7 +374,7 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
       </div>
 
       <div class="modal-body hr-p-6" >
-        <!-- Option Tabs -->
+        <?php /* Option Tabs */ ?>
         <div class="hr-modal-tab-bar" >
           <button type="button" id="tab-btn-new-hire" class="btn hr-tab-btn hr-tab-active" onclick="switchOnboardTab('new')">
             Add New Employee
@@ -384,7 +384,7 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
           </button>
         </div>
 
-        <!-- TAB 1: ADD NEW EMPLOYEE -->
+        <?php /* TAB 1: ADD NEW EMPLOYEE */ ?>
         <form id="form-add-onboard-employee" onsubmit="window.hrApp.submitAddEmployee(event)">
           <div class="hr-grid-2col-gap" >
             <div class="form-group hr-col-span-2" >
@@ -440,7 +440,7 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
           </div>
         </form>
 
-        <!-- TAB 2: ENROLL EXISTING EMPLOYEE -->
+        <?php /* TAB 2: ENROLL EXISTING EMPLOYEE */ ?>
         <div id="section-enroll-existing" class="hidden">
           <?php if (empty($unonboarded)): ?>
             <div class="hr-empty-state" >

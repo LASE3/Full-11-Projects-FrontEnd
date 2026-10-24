@@ -46,14 +46,14 @@ if (empty($attentionTickets)) {
 <body>
 
   <div class="app-container">
-    <!-- ========================================================================
+    <?php /* ========================================================================
          TOP NAVIGATION BAR (#0F2438 Deep Navy + #C97A3D Warm Orange Accent Stripe)
-         ======================================================================== -->
+         ======================================================================== */ ?>
     <header class="top-nav">
       <div class="top-nav__accent-stripe"></div>
 
       <div class="top-nav__content">
-        <!-- Brand & System Identifier -->
+        <?php /* Brand & System Identifier */ ?>
         <div class="brand-section">
           <button class="mobile-nav-toggle" id="hd-sidebar-toggle" onclick="document.body.classList.toggle('sidebar-open')" title="Toggle Menu"><span class="material-symbols-outlined">menu</span></button>
           <a href="Dashboard.php" class="brand-logo-container">
@@ -74,7 +74,7 @@ if (empty($attentionTickets)) {
           </a>
         </div>
 
-        <!-- Global Omni Search -->
+        <?php /* Global Omni Search */ ?>
         <div class="top-search-bar">
           <div class="search-input-wrapper">
             <span class="search-icon">🔍</span>
@@ -83,7 +83,7 @@ if (empty($attentionTickets)) {
           </div>
         </div>
 
-        <!-- Right System Metrics & Profile -->
+        <?php /* Right System Metrics & Profile */ ?>
         <div class="top-nav__actions">
           <div class="pipeline-sync-badge hd-badge-telemetry">
             <span class="hd-status-success">●</span>
@@ -106,20 +106,20 @@ if (empty($attentionTickets)) {
           </div>
         </div>
 
-        <!-- Top Bar Sign Out -->
+        <?php /* Top Bar Sign Out */ ?>
         <a href="../api/logout.php?system=IT%20Helpdesk&redirect=../IT%20Helpdesk/login.php" class="top-signout-btn" title="Sign Out of IT Helpdesk" onclick="(function(){sessionStorage.clear();localStorage.clear();})()"><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
       </div>
     </header>
 
     <div class="main-layout">
-      <!-- ========================================================================
+      <?php /* ========================================================================
            LEFT SIDEBAR NAVIGATION (#0F2438 Dark Navy + #C97A3D Warm Orange)
-           ======================================================================== -->
+           ======================================================================== */ ?>
       <aside class="sidebar">
         <div>
           <div class="sidebar-section-title">IT Support Operations</div>
           <nav class="sidebar-nav">
-            <!-- Screen 1: Dashboard (Active) -->
+            <?php /* Screen 1: Dashboard (Active) */ ?>
             <a href="Dashboard.php" class="sidebar-nav-item active">
               <div class="sidebar-item-left">
                 <span class="sidebar-icon">
@@ -134,7 +134,7 @@ if (empty($attentionTickets)) {
               </div>
             </a>
 
-            <!-- Screen 2: Ticket Queue -->
+            <?php /* Screen 2: Ticket Queue */ ?>
             <a href="TicketQueue.php" class="sidebar-nav-item">
               <div class="sidebar-item-left">
                 <span class="sidebar-icon">
@@ -150,7 +150,7 @@ if (empty($attentionTickets)) {
               <span class="sidebar-badge badge-orange"><?= $openCount ?></span>
             </a>
 
-            <!-- My Tickets -->
+            <?php /* My Tickets */ ?>
             <a href="MyTickets.php" class="sidebar-nav-item">
               <div class="sidebar-item-left">
                 <span class="sidebar-icon">
@@ -164,7 +164,7 @@ if (empty($attentionTickets)) {
               <span class="sidebar-badge badge-red"><?= $myTicketsCount ?></span>
             </a>
 
-            <!-- Knowledge Base -->
+            <?php /* Knowledge Base */ ?>
             <a href="KnowledgeBase.php" class="sidebar-nav-item">
               <div class="sidebar-item-left">
                 <span class="sidebar-icon">
@@ -178,7 +178,7 @@ if (empty($attentionTickets)) {
               <span class="sidebar-badge"><?= $kbCount ?></span>
             </a>
 
-            <!-- Asset Management -->
+            <?php /* Asset Management */ ?>
             <a href="AssetManagement.php" class="sidebar-nav-item">
               <div class="sidebar-item-left">
                 <span class="sidebar-icon">
@@ -194,7 +194,7 @@ if (empty($attentionTickets)) {
               <span class="sidebar-badge"><?= $assetCount ?></span>
             </a>
 
-            <!-- SLA Reports -->
+            <?php /* SLA Reports */ ?>
             <a href="SLAReports.php" class="sidebar-nav-item">
               <div class="sidebar-item-left">
                 <span class="sidebar-icon">
@@ -261,12 +261,12 @@ if (empty($attentionTickets)) {
         </div>
       </aside>
 
-      <!-- ========================================================================
+      <?php /* ========================================================================
            MAIN CONTENT AREA: SCREEN 1 DASHBOARD
-           ======================================================================== -->
+           ======================================================================== */ ?>
       <main class="content-wrapper">
         <div class="portal-container">
-          <!-- Page Header -->
+          <?php /* Page Header */ ?>
           <div class="page-header">
             <div class="page-header-info">
               <div class="breadcrumb-trail">
@@ -295,9 +295,9 @@ if (empty($attentionTickets)) {
             </div>
           </div>
 
-          <!-- Top Row 4 KPI Cards (Dynamic from DB) -->
+          <?php /* Top Row 4 KPI Cards (Dynamic from DB) */ ?>
           <div class="kpi-grid">
-            <!-- KPI 1: Open Tickets -->
+            <?php /* KPI 1: Open Tickets */ ?>
             <div class="hd-card kpi-card">
               <div class="kpi-header">
                 <span class="kpi-title">Open Tickets</span>
@@ -313,7 +313,7 @@ if (empty($attentionTickets)) {
               </div>
             </div>
 
-            <!-- KPI 2: Critical / Escalated -->
+            <?php /* KPI 2: Critical / Escalated */ ?>
             <div class="hd-card kpi-card">
               <div class="kpi-header">
                 <span class="kpi-title">Critical / High</span>
@@ -329,7 +329,7 @@ if (empty($attentionTickets)) {
               </div>
             </div>
 
-            <!-- KPI 3: Avg Resolution Pacing -->
+            <?php /* KPI 3: Avg Resolution Pacing */ ?>
             <div class="hd-card kpi-card">
               <div class="kpi-header">
                 <span class="kpi-title">Avg Resolution Time</span>
@@ -344,7 +344,7 @@ if (empty($attentionTickets)) {
               </div>
             </div>
 
-            <!-- KPI 4: SLA Compliance % -->
+            <?php /* KPI 4: SLA Compliance % */ ?>
             <div class="hd-card kpi-card">
               <div class="kpi-header">
                 <span class="kpi-title">SLA Compliance %</span>
@@ -360,7 +360,7 @@ if (empty($attentionTickets)) {
             </div>
           </div>
 
-          <!-- Stacked Bar Chart: Ticket Volume by Day Colored by Priority Tier -->
+          <?php /* Stacked Bar Chart: Ticket Volume by Day Colored by Priority Tier */ ?>
           <div class="hd-card hd-mb-6">
             <div class="card-header-row">
               <div>
@@ -369,7 +369,7 @@ if (empty($attentionTickets)) {
                   Weekly incident distribution classified by operational severity tiers
                 </p>
               </div>
-              <!-- Legend -->
+              <?php /* Legend */ ?>
               <div class="hd-legend-row">
                 <div class="hd-flex-gap-xs">
                   <span class="hd-legend-dot-crit"></span>
@@ -390,7 +390,7 @@ if (empty($attentionTickets)) {
               </div>
             </div>
 
-            <!-- Stacked Chart Days -->
+            <?php /* Stacked Chart Days */ ?>
             <div class="stacked-chart-container">
               <div class="stacked-days-grid">
                 <div class="stacked-col">
@@ -470,7 +470,7 @@ if (empty($attentionTickets)) {
             </div>
           </div>
 
-          <!-- "Needs Attention" List Widget (Tickets Nearing SLA Breach - Dynamic from DB) -->
+          <?php /* "Needs Attention" List Widget (Tickets Nearing SLA Breach - Dynamic from DB) */ ?>
           <div class="hd-card">
             <div class="card-header-row">
               <div>
@@ -544,7 +544,7 @@ if (empty($attentionTickets)) {
     </div>
   </div>
 
-  <!-- Create Ticket Modal -->
+  <?php /* Create Ticket Modal */ ?>
   <div id="modal-create-ticket" class="hd-modal-overlay">
     <div class="hd-modal-dialog">
       <div class="hd-modal-header">
@@ -586,10 +586,10 @@ if (empty($attentionTickets)) {
             <div class="hd-form-group">
               <label class="hd-form-label">Assigned Lead Tech</label>
               <select name="assigned_emp_id" class="hd-form-select">
-                <option value="Alexey Ivanov" selected>Alexey Ivanov (Tier 3)</option>
-                <option value="Dmitry Popov">Dmitry Popov (Tier 2)</option>
-                <option value="Sofia Volkova">Sofia Volkova (Tier 1)</option>
-                <option value="Unassigned">Unassigned (Pool Queue)</option>
+                <option value="EMP-1018" selected>Alexey Ivanov (Tier 3)</option>
+                <option value="EMP-1004">Dmitry Popov (Tier 2)</option>
+                <option value="EMP-1002">Sofia Volkova (Tier 1)</option>
+                <option value="">Unassigned (Pool Queue)</option>
               </select>
             </div>
             <div class="hd-form-group">
@@ -614,7 +614,7 @@ if (empty($attentionTickets)) {
     </div>
   </div>
 
-  <!-- Edit Ticket Modal -->
+  <?php /* Edit Ticket Modal */ ?>
   <div id="modal-edit-ticket" class="hd-modal-overlay">
     <div class="hd-modal-dialog">
       <div class="hd-modal-header">

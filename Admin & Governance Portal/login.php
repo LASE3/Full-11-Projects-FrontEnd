@@ -2,6 +2,7 @@
 header("Cache-Control: no-cache, no-store, must-revalidate");
 header("Pragma: no-cache");
 header("Expires: 0");
+require_once __DIR__ . '/../config/db.php';
 if (session_status() === PHP_SESSION_NONE) {
   session_start();
 }
@@ -11,29 +12,21 @@ $initError = $_GET['error'] ?? '';
 <html lang="en">
 
 <head>
+  <meta charset="utf-8">
   <?php require_once __DIR__ . '/../includes/head_security.php'; ?>
-  <meta charset="UTF-8">
+  
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description"
     content="VOSTOKPRIBOR Admin & Governance Portal - High-level authentication for system configuration and security oversight.">
   <title>Admin Control Login · VOSTOKPRIBOR SYS-01</title>
-  <link rel="stylesheet" href="css/login.css?v=1790609011">
-  <style>
-  .vp-sim-bar, .theme-simulation-bar, [class*="vp-sim"], [class*="theme-sim"] {
-    display: none !important;
-    visibility: hidden !important;
-    opacity: 0 !important;
-    height: 0 !important;
-    pointer-events: none !important;
-  }
-</style>
-</head>
+  <link rel="stylesheet" href="../assets/css/auth.css">
+  </head>
 
-<body>
-  <!-- Circuit Grid Background Overlay -->
+<body data-system="ADM">
+  <?php /* Circuit Grid Background Overlay */ ?>
   <div class="auth-bg-grid" aria-hidden="true"></div>
 
-  <!-- Top System Header Bar -->
+  <?php /* Top System Header Bar */ ?>
   <header class="auth-top-bar">
     <a href="index.php" class="auth-brand-link" title="Return to Portal">
       <img
@@ -44,30 +37,21 @@ $initError = $_GET['error'] ?? '';
       </div>
       <span class="auth-system-tag">SYS-01 // ADMIN</span>
     </a>
-    <div class="auth-status-beacon" title="Automated security telemetry active">
-      <span class="status-dot-pulse"></span>
-      <span>SECURE TERMINAL · GOST-R 50739</span>
-    </div>
+    <?php if (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off'): ?><div class="auth-status-beacon" title="Encrypted Connection"><span class="status-dot-pulse"></span><span>Secure connection</span></div><?php endif; ?>
   </header>
 
-  <!-- Main Viewport -->
+  <?php /* Main Viewport */ ?>
   <main class="auth-main">
     <section class="auth-card" aria-labelledby="login-heading">
       <div class="auth-card-stripe" aria-hidden="true"></div>
 
       <div class="auth-card-body">
         <header class="auth-card-header">
-          <div class="auth-class-badge">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-            </svg>
-            <span>Admin Class</span>
-          </div>
           <h1 id="login-heading" class="auth-card-title">Admin Control Login</h1>
           <p class="auth-card-subtitle">High-level authentication for system configuration and security oversight.</p>
         </header>
 
-        <!-- Dynamic Error/Success Notification Container -->
+        <?php /* Dynamic Error/Success Notification Container */ ?>
         <div id="auth-alert" class="auth-alert <?= !empty($initError) ? 'active-error' : '' ?>" role="alert" aria-live="polite">
           <svg id="alert-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
             stroke-width="2">
@@ -78,8 +62,8 @@ $initError = $_GET['error'] ?? '';
           <span id="alert-message"><?= !empty($initError) ? htmlspecialchars($initError) : 'Authentication failed. Please check credentials.' ?></span>
         </div>
 
-        <!-- Login Form -->
-        <form id="login-form" data-recovery-msg="Security Advisory: Contact VP-SecOps Root Authority (ext. 1001) for clearance recovery." class="auth-form" action="../api/auth.php" method="POST" novalidate>
+        <?php /* Login Form */ ?>
+        <form id="login-form"  class="auth-form" action="../api/auth.php" method="POST" novalidate>
           <input type="hidden" name="systemId" value="ADM">
           <input type="hidden" name="redirect" value="mainDashboard.php">
           <div class="form-group">
@@ -95,7 +79,7 @@ $initError = $_GET['error'] ?? '';
                 <line x1="15" y1="12" x2="17" y2="12"></line>
                 <line x1="7" y1="16" x2="17" y2="16"></line>
               </svg>
-              <input type="text" id="userId" name="userId" class="form-input" placeholder="ADM-VP-01"
+              <input type="text" id="userId" name="userId" class="form-input" placeholder="Username or employee ID"
                 autocomplete="username" autofocus>
             </div>
           </div>
@@ -123,11 +107,7 @@ $initError = $_GET['error'] ?? '';
           </div>
 
           <div class="form-utility-row">
-            <label class="checkbox-label" for="remember-session">
-              <input type="checkbox" id="remember-session" class="checkbox-input">
-              <span>Remember workstation</span>
-            </label>
-            <a href="javascript:void(0)" class="utility-link" onclick="handleForgotCredentials()">Forgot password?</a>
+            <a href="mailto:support@vostokpribor.ru" class="utility-link">Forgot password?</a>
           </div>
 
           <button type="submit" id="submit-btn" class="auth-submit-btn">
@@ -140,37 +120,19 @@ $initError = $_GET['error'] ?? '';
       </div>
 
       <footer class="auth-card-footer">
-        <span class="security-badge">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-          </svg>
-          TLS 1.3 256-Bit Encrypted
-        </span>
         <span>ID: VP-AUTH-01</span>
       </footer>
     </section>
   </main>
 
-  <!-- Page Footer -->
+  <?php /* Page Footer */ ?>
   <footer class="auth-page-footer">
     <p>&copy; 2026 VOSTOKPRIBOR Industrial Group · All Rights Reserved · System 01 Administration</p>
   </footer>
 
-  <!-- Interactive Logic -->
+  <?php /* Interactive Logic */ ?>
   <script src="../assets/js/dynamic-login-theme.js?v=1790609011"></script>
   <script src="../assets/js/auth-form.js"></script>
-<script>
-  (function(){
-    function purge(){
-      var b = document.querySelectorAll('.vp-sim-bar, .theme-simulation-bar, [class*="vp-sim"], [class*="theme-sim"]');
-      b.forEach(function(el){ el.remove(); });
-    }
-    purge();
-    document.addEventListener('DOMContentLoaded', purge);
-    window.addEventListener('load', purge);
-  })();
-</script>
 </body>
 
 </html>

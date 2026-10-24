@@ -117,7 +117,7 @@ function renderKanbanCardPhp($opp) {
 <body>
 
   <div class="app-container">
-    <!-- Top Navigation Bar -->
+    <?php /* Top Navigation Bar */ ?>
     <header class="top-nav">
       <div class="top-nav__accent-stripe"></div>
       <div class="top-nav__content">
@@ -172,13 +172,13 @@ function renderKanbanCardPhp($opp) {
           </div>
         </div>
 
-        <!-- Top Bar Sign Out -->
+        <?php /* Top Bar Sign Out */ ?>
         <a href="./api/logout.php?redirect=../login.php" class="top-signout-btn" title="Sign Out of CRM" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" ><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
       </div>
     </header>
 
     <div class="main-layout">
-      <!-- Sidebar Navigation -->
+      <?php /* Sidebar Navigation */ ?>
       <aside class="sidebar">
         <div>
           <div class="sidebar-section-title">Sales Management</div>
@@ -229,7 +229,7 @@ function renderKanbanCardPhp($opp) {
               <span class="sidebar-badge">14</span>
             </a>
 
-            <!-- Opportunities (Active) -->
+            <?php /* Opportunities (Active) */ ?>
             <a href="Opportunities.php" class="sidebar-nav-item active">
               <div class="sidebar-item-left">
                 <span class="sidebar-icon">
@@ -286,7 +286,7 @@ function renderKanbanCardPhp($opp) {
               <span class="sidebar-badge badge-green">+14%</span>
             </a>
           
-            <!-- Inter-System Integrations (SYS02) -->
+            <?php /* Inter-System Integrations (SYS02) */ ?>
             <a href="Integrations.php" class="sidebar-nav-item">
               <div class="sidebar-item-left">
                 <span class="sidebar-icon">
@@ -333,7 +333,7 @@ function renderKanbanCardPhp($opp) {
             <span class="sidebar-badge crm-text-xs" >SYS 04</span>
           </a>
         </nav>
-        <!-- Log Out -->
+        <?php /* Log Out */ ?>
 
         <div class="sidebar-footer">
           <div class="quota-widget-card">
@@ -352,10 +352,10 @@ function renderKanbanCardPhp($opp) {
         </div>
       </aside>
 
-      <!-- Main Content Area -->
+      <?php /* Main Content Area */ ?>
       <main class="content-wrapper">
         <div class="portal-container">
-          <!-- Page Header -->
+          <?php /* Page Header */ ?>
           <div class="page-header">
             <div class="page-header-info">
               <div class="breadcrumb-trail">
@@ -381,9 +381,9 @@ function renderKanbanCardPhp($opp) {
             </div>
           </div>
 
-          <!-- Opportunities 5-Column Kanban Board -->
+          <?php /* Opportunities 5-Column Kanban Board */ ?>
           <div class="kanban-board-container">
-            <!-- Column 1: Qualification -->
+            <?php /* Column 1: Qualification */ ?>
             <div class="kanban-column" id="kanban-col-qualification">
               <div class="kanban-col-header col-header-1">
                 <span class="kanban-col-title">1. Qualification</span>
@@ -401,7 +401,7 @@ function renderKanbanCardPhp($opp) {
               </div>
             </div>
 
-            <!-- Column 2: Proposal -->
+            <?php /* Column 2: Proposal */ ?>
             <div class="kanban-column" id="kanban-col-proposal">
               <div class="kanban-col-header col-header-2">
                 <span class="kanban-col-title">2. Proposal / Spec</span>
@@ -419,7 +419,7 @@ function renderKanbanCardPhp($opp) {
               </div>
             </div>
 
-            <!-- Column 3: Negotiation -->
+            <?php /* Column 3: Negotiation */ ?>
             <div class="kanban-column" id="kanban-col-negotiation">
               <div class="kanban-col-header col-header-3">
                 <span class="kanban-col-title">3. Negotiation</span>
@@ -437,7 +437,7 @@ function renderKanbanCardPhp($opp) {
               </div>
             </div>
 
-            <!-- Column 4: Contract -->
+            <?php /* Column 4: Contract */ ?>
             <div class="kanban-column" id="kanban-col-contract">
               <div class="kanban-col-header col-header-4">
                 <span class="kanban-col-title">4. Contract Review</span>
@@ -455,7 +455,7 @@ function renderKanbanCardPhp($opp) {
               </div>
             </div>
 
-            <!-- Column 5: Won/Lost -->
+            <?php /* Column 5: Won/Lost */ ?>
             <div class="kanban-column" id="kanban-col-won">
               <div class="kanban-col-header col-header-5">
                 <span class="kanban-col-title">5. Won / Finalized</span>
@@ -478,8 +478,8 @@ function renderKanbanCardPhp($opp) {
     </div>
   </div>
 
-  <!-- Modals -->
-  <!-- Modal 1: + New Opportunity -->
+  <?php /* Modals */ ?>
+  <?php /* Modal 1: + New Opportunity */ ?>
   <div id="modal-new-opportunity" class="modal-backdrop">
     <div class="modal-card">
       <div class="modal-header">
@@ -546,7 +546,7 @@ function renderKanbanCardPhp($opp) {
     </div>
   </div>
 
-  <!-- Modal 2: Opportunity Inspector Drawer -->
+  <?php /* Modal 2: Opportunity Inspector Drawer */ ?>
   <div id="modal-inspect-opportunity" class="modal-backdrop">
     <div class="modal-card">
       <div class="modal-header">

@@ -84,7 +84,6 @@
      * @param {object} [params]
      */
     async getShopOrders(params = {}) {
-      console.info(`[VostokCustomer] Inter-Module RPC -> Online Shop (SYS02): Querying shop orders`);
       return await bus.request("shop", "orders", params);
     },
 
@@ -93,7 +92,6 @@
      * @param {object} payload
      */
     async requestCatalogQuote(payload) {
-      console.info(`[VostokCustomer] Inter-Module RPC -> Online Shop (SYS02): Requesting quote`);
       return await bus.request("shop", "quotes", {}, { method: "POST", body: payload });
     },
 
@@ -102,7 +100,6 @@
      * @param {string} empId
      */
     async getSupportEngineerInfo(empId) {
-      console.info(`[VostokCustomer] Inter-Module RPC -> Intranet (SYS04): Fetching engineer info for ${empId}`);
       return await bus.request("intranet", "directory", { query: empId });
     },
 
@@ -111,7 +108,6 @@
      * @param {string} cusId
      */
     async getCRMAccountInfo(cusId) {
-      console.info(`[VostokCustomer] Inter-Module RPC -> CRM (SYS05): Fetching master account for ${cusId}`);
       return await bus.request("crm", "customer", { id: cusId });
     },
   };
@@ -123,5 +119,4 @@
 
   // Export isolated namespace
   global.VostokCustomer = customerApi;
-  console.info("[VostokCustomer] Isolated Customer Portal API module ready.");
 })(window);

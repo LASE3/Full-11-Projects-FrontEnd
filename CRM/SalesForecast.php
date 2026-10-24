@@ -18,7 +18,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
 <body>
 
   <div class="app-container">
-    <!-- Top Navigation Bar -->
+    <?php /* Top Navigation Bar */ ?>
     <header class="top-nav">
       <div class="top-nav__accent-stripe"></div>
       <div class="top-nav__content">
@@ -55,7 +55,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
             <span class="crm-status-success" >●</span>
             <span>Sync: <strong>Active 99.98%</strong></span>
           </div>
-          <button class="btn btn-primary-amber btn-sm" onclick="window.crmApp.showToast('Model Recalculated', 'Monte Carlo revenue simulation converged at $22.50M.')">
+          <button class="btn btn-primary-amber btn-sm" onclick="window.crmApp.showToast('Model Recalculated', 'Monte Carlo revenue forecast converged at $22.50M.')">
             <span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Run Forecast Model</span>
           </button>
           <button class="icon-button notifications-btn" id="notifications-toggle-btn" title="Live Sales Telemetry & Notifications">
@@ -73,13 +73,13 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
           </div>
         </div>
 
-        <!-- Top Bar Sign Out -->
+        <?php /* Top Bar Sign Out */ ?>
         <a href="./api/logout.php?redirect=../login.php" class="top-signout-btn" title="Sign Out of CRM" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" ><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
       </div>
     </header>
 
     <div class="main-layout">
-      <!-- Sidebar Navigation -->
+      <?php /* Sidebar Navigation */ ?>
       <aside class="sidebar">
         <div>
           <div class="sidebar-section-title">Sales Management</div>
@@ -172,7 +172,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
               <span class="sidebar-badge">14</span>
             </a>
 
-            <!-- Sales Forecast (Active) -->
+            <?php /* Sales Forecast (Active) */ ?>
             <a href="SalesForecast.php" class="sidebar-nav-item active">
               <div class="sidebar-item-left">
                 <span class="sidebar-icon">
@@ -187,7 +187,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
               <span class="sidebar-badge badge-green">+14%</span>
             </a>
           
-            <!-- Inter-System Integrations (SYS02) -->
+            <?php /* Inter-System Integrations (SYS02) */ ?>
             <a href="Integrations.php" class="sidebar-nav-item">
               <div class="sidebar-item-left">
                 <span class="sidebar-icon">
@@ -234,7 +234,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
             <span class="sidebar-badge crm-text-xs" >SYS 04</span>
           </a>
         </nav>
-        <!-- Log Out -->
+        <?php /* Log Out */ ?>
 
         <div class="sidebar-footer">
           <div class="quota-widget-card">
@@ -253,10 +253,10 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
         </div>
       </aside>
 
-      <!-- Main Content Area -->
+      <?php /* Main Content Area */ ?>
       <main class="content-wrapper">
         <div class="portal-container">
-          <!-- Page Header -->
+          <?php /* Page Header */ ?>
           <div class="page-header">
             <div class="page-header-info">
               <div class="breadcrumb-trail">
@@ -279,7 +279,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
             </div>
           </div>
 
-          <!-- KPI Strip -->
+          <?php /* KPI Strip */ ?>
           <div class="kpi-grid">
             <div class="crm-card kpi-card">
               <div class="kpi-header">
@@ -342,7 +342,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
             </div>
           </div>
 
-          <!-- Scenario Modeling & Quarterly Trajectory -->
+          <?php /* Scenario Modeling & Quarterly Trajectory */ ?>
           <div class="crm-card crm-mb-6" >
             <div class="card-header-row">
               <div>
@@ -358,37 +358,37 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
               </div>
             </div>
 
-            <!-- Visual Bar Comparison -->
+            <?php /* Visual Bar Comparison */ ?>
             <div class="crm-grid-5col" >
-              <!-- Q1 -->
+              <?php /* Q1 */ ?>
               <div class="crm-panel-steel" >
                 <div class="crm-caption-bold" >Q1 2024 Actual</div>
                 <div class="crm-mono-stat-xl" >$16.20M</div>
                 <div class="crm-text-success-11" >108% of Plan (Settled)</div>
               </div>
 
-              <!-- Q2 -->
+              <?php /* Q2 */ ?>
               <div class="crm-panel-steel" >
                 <div class="crm-caption-bold" >Q2 2024 Actual</div>
                 <div class="crm-mono-stat-xl" >$18.10M</div>
                 <div class="crm-text-success-11" >102% of Plan (Settled)</div>
               </div>
 
-              <!-- Q3 -->
+              <?php /* Q3 */ ?>
               <div class="crm-panel-steel" >
                 <div class="crm-caption-bold" >Q3 2024 Actual</div>
                 <div class="crm-mono-stat-xl" >$19.75M</div>
                 <div class="crm-text-success-11" >104% of Plan (Settled)</div>
               </div>
 
-              <!-- Q4 (Projected) -->
+              <?php /* Q4 (Projected) */ ?>
               <div class="crm-panel-amber" >
                 <div class="crm-caption-amber" >Q4 2024 (Forecast)</div>
                 <div class="crm-mono-stat-xl" >$22.50M</div>
                 <div class="crm-text-amber-11" >82% Gated ($18.45M)</div>
               </div>
 
-              <!-- Q1 2025 (Pipeline) -->
+              <?php /* Q1 2025 (Pipeline) */ ?>
               <div class="crm-panel-indigo" >
                 <div class="crm-caption-indigo" >Q1 2025 (Pipeline)</div>
                 <div class="crm-mono-stat-xl" >$25.10M</div>
@@ -397,7 +397,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Mikhail Sorokin', 'role
             </div>
           </div>
 
-          <!-- Sales Rep Quota Performance Leaderboard -->
+          <?php /* Sales Rep Quota Performance Leaderboard */ ?>
           <div class="crm-card">
             <div class="card-header-row">
               <div>

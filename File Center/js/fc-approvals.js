@@ -110,10 +110,10 @@
               );
             }
           } else {
-            alert("Signoff error: " + (res.message || "Failed to record signature"));
+            (window.vpToast ? window.vpToast("Signoff error: " + (res.message || "Failed to record signature"), "error") : alert("Signoff error: " + (res.message || "Failed to record signature")));
           }
         } catch (err) {
-          alert("Network or database error: " + err.message);
+          (window.vpToast ? window.vpToast("Network or database error: " + err.message, "error") : alert("Network or database error: " + err.message));
         } finally {
           submitBtn.disabled = false;
           submitBtn.innerHTML =

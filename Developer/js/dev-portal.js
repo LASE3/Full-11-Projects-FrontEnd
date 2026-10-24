@@ -205,7 +205,7 @@
           } else if (lang === "python") {
             codeBlock.textContent = ep.python_snippet || `import requests\n\nresp = requests.${ep.method.toLowerCase()}("https://developer.vostokpribor.local${ep.path}", headers={"Authorization": "Bearer vk_live_9a41c2e8f10b"})\nprint(resp.json())`;
           } else if (lang === "node") {
-            codeBlock.textContent = ep.node_snippet || `const fetch = require('node-fetch');\n\nfetch("https://developer.vostokpribor.local${ep.path}", { headers: { 'Authorization': 'Bearer vk_live_9a41c2e8f10b' } })\n  .then(res => res.json()).then(console.log);`;
+            codeBlock.textContent = ep.node_snippet || `const fetch = require('node-fetch');\n\nfetch("https://developer.vostokpribor.local${ep.path}", { headers: { 'Authorization': 'Bearer vk_live_9a41c2e8f10b' } })\n  .then(res => res.json()).then(data => process.stdout.write(JSON.stringify(data)));`;
           } else if (lang === "go") {
             codeBlock.textContent = ep.go_snippet || `// Go telemetry client for ${ep.path}\nreq, _ := http.NewRequest("${ep.method}", "https://developer.vostokpribor.local${ep.path}", nil)\nreq.Header.Set("Authorization", "Bearer vk_live_9a41c2e8f10b")`;
           }

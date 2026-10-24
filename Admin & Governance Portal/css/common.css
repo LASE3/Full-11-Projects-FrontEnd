@@ -58,20 +58,6 @@
   background: #73777f;
 }
 
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
-}
-
-.no-scrollbar {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-
-/* --- Telemetry & Security Font Utilites --- */
-.font-mono-telemetry {
-  font-family: "JetBrains Mono", monospace;
-}
-
 /* --- Keyframe Animations --- */
 @keyframes livePulse {
   0%,

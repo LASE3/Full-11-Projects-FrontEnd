@@ -39,7 +39,7 @@ $pendingApprovals = (int)$pdo->query("SELECT COUNT(*) FROM documents WHERE statu
 </head>
 
 <body>
-    <!-- TOP NAVIGATION BAR (System 09 Graphite 4px Accent Stripe) -->
+    <?php /* TOP NAVIGATION BAR (System 09 Graphite 4px Accent Stripe) */ ?>
     <header class="vk-top-navbar">
         <div class="fc-flex-center-gap-24" >
             <button class="mobile-nav-toggle" id="fc-sidebar-toggle" onclick="document.body.classList.toggle('sidebar-open')" title="Toggle Menu"><span class="material-symbols-outlined">menu</span></button>
@@ -82,12 +82,12 @@ $pendingApprovals = (int)$pdo->query("SELECT COUNT(*) FROM documents WHERE statu
                 </div>
             </div>
 
-            <!-- Top Bar Sign Out -->
+            <?php /* Top Bar Sign Out */ ?>
             <a href="../api/logout.php?system=File%20Center&redirect=../File%20Center/login.php" class="top-signout-btn" title="Sign Out of File Center" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" ><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
         </div>
     </header>
 
-    <!-- LEFT SIDEBAR -->
+    <?php /* LEFT SIDEBAR */ ?>
     <aside class="vk-sidebar" style="background-color: #0f2438 !important; border-right: 1px solid rgba(255, 255, 255, 0.1) !important;">
         <div class="vk-sidebar-nav">
             <div class="vk-sidebar-header">Document Vault</div>
@@ -174,10 +174,10 @@ $pendingApprovals = (int)$pdo->query("SELECT COUNT(*) FROM documents WHERE statu
         </div>
     </aside>
 
-    <!-- MAIN CONTENT AREA -->
+    <?php /* MAIN CONTENT AREA */ ?>
     <main class="vk-main-layout">
         <div class="upload-container">
-            <!-- HEADER BLOCK -->
+            <?php /* HEADER BLOCK */ ?>
             <div class="fc-display-flex-justify-content-f610" >
                 <div>
                     <div class="fc-display-flex-align-items-9bb7" >
@@ -200,7 +200,7 @@ $pendingApprovals = (int)$pdo->query("SELECT COUNT(*) FROM documents WHERE statu
                     </button>
                 </div>
             </div>
-            <!-- DROPZONE -->
+            <?php /* DROPZONE */ ?>
             <div class="dropzone-box" id="upload-dropzone">
                 <input class="fc-display-none-224b" type="file" id="file-input-hidden"  />
                 <span class="material-symbols-outlined dropzone-icon">cloud_upload</span>
@@ -213,7 +213,7 @@ $pendingApprovals = (int)$pdo->query("SELECT COUNT(*) FROM documents WHERE statu
                 <div class="fc-display-none-margin-top-6ce4" id="selected-file-name" ></div>
             </div>
 
-            <!-- METADATA FORM -->
+            <?php /* METADATA FORM */ ?>
             <form id="doc-upload-form" class="vk-card fc-mb-30">
                 <div class="vk-card-header">
                     <div>
@@ -228,7 +228,7 @@ $pendingApprovals = (int)$pdo->query("SELECT COUNT(*) FROM documents WHERE statu
                 <div class="vk-card-body">
                     <input type="hidden" id="meta-classification" value="internal" />
 
-                    <!-- ROW 1: TITLE & DEPT -->
+                    <?php /* ROW 1: TITLE & DEPT */ ?>
                     <div class="form-grid-2col">
                         <div class="form-group">
                             <label class="form-label" for="meta-doc-title">
@@ -252,7 +252,7 @@ $pendingApprovals = (int)$pdo->query("SELECT COUNT(*) FROM documents WHERE statu
                         </div>
                     </div>
 
-                    <!-- ROW 2: PROJECT & CUSTOMER -->
+                    <?php /* ROW 2: PROJECT & CUSTOMER */ ?>
                     <div class="form-grid-2col">
                         <div class="form-group">
                             <label class="form-label" for="meta-project-ref">
@@ -269,7 +269,7 @@ $pendingApprovals = (int)$pdo->query("SELECT COUNT(*) FROM documents WHERE statu
                         </div>
                     </div>
 
-                    <!-- CLASSIFICATION SELECTOR -->
+                    <?php /* CLASSIFICATION SELECTOR */ ?>
                     <div class="form-group">
                         <label class="form-label">
                             Data Classification Sensitivity Tier <span class="form-label-required">*</span>
@@ -301,7 +301,7 @@ $pendingApprovals = (int)$pdo->query("SELECT COUNT(*) FROM documents WHERE statu
                         </div>
                     </div>
 
-                    <!-- ROW 3: RETENTION & CUSTODIAN -->
+                    <?php /* ROW 3: RETENTION & CUSTODIAN */ ?>
                     <div class="form-grid-2col">
                         <div class="form-group">
                             <label class="form-label" for="meta-retention">
@@ -324,7 +324,7 @@ $pendingApprovals = (int)$pdo->query("SELECT COUNT(*) FROM documents WHERE statu
                         </div>
                     </div>
 
-                    <!-- DESCRIPTION -->
+                    <?php /* DESCRIPTION */ ?>
                     <div class="form-group">
                         <label class="form-label" for="meta-description">
                             Document Abstract / Scope Description
@@ -332,7 +332,7 @@ $pendingApprovals = (int)$pdo->query("SELECT COUNT(*) FROM documents WHERE statu
                         <textarea class="form-textarea" id="meta-description" rows="3" placeholder="Brief summary of document purpose and engineering context..."></textarea>
                     </div>
 
-                    <!-- UPLOAD PROGRESS -->
+                    <?php /* UPLOAD PROGRESS */ ?>
                     <div id="upload-progress-container" class="fc-mb-16" style="display: none;">
                         <div class="fc-display-flex-justify-content-ef47" style="margin-bottom: 6px;">
                             <span class="fc-mono-muted-11" id="upload-progress-text">Streaming document to encrypted vault: 0%</span>
@@ -343,7 +343,7 @@ $pendingApprovals = (int)$pdo->query("SELECT COUNT(*) FROM documents WHERE statu
                         </div>
                     </div>
 
-                    <!-- SUBMIT BUTTON -->
+                    <?php /* SUBMIT BUTTON */ ?>
                     <div class="fc-display-flex-justify-content-ef47" >
                         <button class="vk-btn vk-btn-outline" type="reset">Reset</button>
                         <button class="vk-btn vk-btn-primary" type="submit">
@@ -354,7 +354,7 @@ $pendingApprovals = (int)$pdo->query("SELECT COUNT(*) FROM documents WHERE statu
                 </div>
             </form>
 
-            <!-- INGESTION SUCCESS CARD -->
+            <?php /* INGESTION SUCCESS CARD */ ?>
             <div id="upload-success-card" class="vk-card fc-display-none-margin-bottom-366d">
                 <div class="vk-card-header fc-background-rgba-14-124-0a52">
                     <div class="fc-display-flex-align-items-1c20" >
@@ -407,7 +407,7 @@ $pendingApprovals = (int)$pdo->query("SELECT COUNT(*) FROM documents WHERE statu
         </div>
     </main>
 
-    <!-- DOCKED ENTERPRISE STATUS BAR -->
+    <?php /* DOCKED ENTERPRISE STATUS BAR */ ?>
     <footer class="vk-status-bar">
         <div class="fc-flex-center-gap-16" >
 
@@ -423,7 +423,7 @@ $pendingApprovals = (int)$pdo->query("SELECT COUNT(*) FROM documents WHERE statu
         </div>
     </footer>
 
-    <!-- Universal Command Palette Modal -->
+    <?php /* Universal Command Palette Modal */ ?>
     <div class="cmd-palette-backdrop" id="cmd-palette-modal">
         <div class="cmd-palette-box">
             <div class="cmd-palette-header">
@@ -455,7 +455,7 @@ $pendingApprovals = (int)$pdo->query("SELECT COUNT(*) FROM documents WHERE statu
         </div>
     </div>
 
-    <!-- Universal Toast Container -->
+    <?php /* Universal Toast Container */ ?>
     <div class="vk-toast-container"></div>
 
     <script src="js/fc-common.js"></script>

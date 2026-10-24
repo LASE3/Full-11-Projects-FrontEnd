@@ -169,7 +169,6 @@
      * @param {string} cusId
      */
     async requestCustomerOrders(cusId) {
-      console.info(`[VostokCRM] Inter-Module RPC -> Shop (SYS02): Fetching orders for ${cusId}`);
       return await bus.request("shop", "orders", { cus_id: cusId });
     },
 
@@ -178,7 +177,6 @@
      * @param {string} cusId
      */
     async requestCustomerTickets(cusId) {
-      console.info(`[VostokCRM] Inter-Module RPC -> Customer Portal (SYS03): Fetching tickets for ${cusId}`);
       return await bus.request("customer", "tickets", { cus_id: cusId });
     },
 
@@ -187,7 +185,6 @@
      * @param {string} empId
      */
     async requestStaffInfo(empId) {
-      console.info(`[VostokCRM] Inter-Module RPC -> Intranet (SYS04): Fetching staff info for ${empId}`);
       return await bus.request("intranet", "directory", { query: empId });
     },
   };
@@ -199,5 +196,4 @@
 
   // Export isolated namespace
   global.VostokCRM = crmApi;
-  console.info("[VostokCRM] Isolated CRM API module ready.");
 })(window);

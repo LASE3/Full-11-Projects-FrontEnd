@@ -115,7 +115,7 @@ $avgBudgetBurn = (float)$pdo->query("SELECT AVG((spent_amount / NULLIF(allocated
           </div>
         </div>
 
-        <!-- Top Bar Sign Out -->
+        <?php /* Top Bar Sign Out */ ?>
         <a href="../api/logout.php?system=Finance%20%26%20Billing&redirect=../Finance%20%26%20Billing/login.php" class="top-signout-btn" title="Sign Out of Finance &amp; Billing" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" >
           <span>Sign Out</span>
         </a>
@@ -245,7 +245,7 @@ $avgBudgetBurn = (float)$pdo->query("SELECT AVG((spent_amount / NULLIF(allocated
         </div>
       </aside>
 
-      <!-- MAIN CONTENT -->
+      <?php /* MAIN CONTENT */ ?>
       <main class="content-wrapper">
         <div class="portal-container">
           <div class="page-header">
@@ -265,7 +265,7 @@ $avgBudgetBurn = (float)$pdo->query("SELECT AVG((spent_amount / NULLIF(allocated
             </div>
           </div>
 
-          <!-- Live Ledger Calculation Metrics -->
+          <?php /* Live Ledger Calculation Metrics */ ?>
           <div class="kpi-grid fin-grid-4col-mb" >
             <div class="fin-card kpi-card">
               <div class="kpi-header"><span class="kpi-title">Gross Operating Revenues</span>
@@ -297,7 +297,7 @@ $avgBudgetBurn = (float)$pdo->query("SELECT AVG((spent_amount / NULLIF(allocated
             </div>
           </div>
 
-          <!-- Reports Grid Loaded from DB -->
+          <?php /* Reports Grid Loaded from DB */ ?>
           <div class="fin-grid-cards" >
             <?php foreach ($reports as $r):
               $borderCol = ($r['report_type'] === 'Statement of Operations') ? 'var(--fin-green)' : (($r['report_type'] === 'Balance Sheet') ? 'var(--fin-steel-blue)' : 'var(--fin-amber)');
@@ -329,7 +329,7 @@ $avgBudgetBurn = (float)$pdo->query("SELECT AVG((spent_amount / NULLIF(allocated
     </div>
   </div>
 
-  <!-- Modal: Report Dossier Statement -->
+  <?php /* Modal: Report Dossier Statement */ ?>
   <div id="modal-report-view" class="modal-backdrop">
     <div class="modal-dialog fin-modal-650" >
       <div class="modal-header">

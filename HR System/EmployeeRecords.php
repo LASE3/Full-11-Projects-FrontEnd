@@ -30,12 +30,12 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
 <body>
 
   <div class="app-container">
-    <!-- TOP NAVIGATION BAR -->
+    <?php /* TOP NAVIGATION BAR */ ?>
     <header class="top-nav">
       <div class="top-nav__accent-stripe"></div>
 
       <div class="top-nav__content">
-        <!-- Brand -->
+        <?php /* Brand */ ?>
         <div class="brand-section">
           <button class="mobile-nav-toggle" id="hr-sidebar-toggle" onclick="document.body.classList.toggle('sidebar-open')" title="Toggle Menu"><span class="material-symbols-outlined">menu</span></button>
           <a href="Dashboard.php" class="brand-logo-container">
@@ -56,7 +56,7 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
           </a>
         </div>
 
-        <!-- Global Omni Search -->
+        <?php /* Global Omni Search */ ?>
         <div class="top-search-bar">
           <div class="search-input-wrapper">
             <span class="search-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span>
@@ -65,14 +65,14 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
           </div>
         </div>
 
-        <!-- Right User Actions -->
+        <?php /* Right User Actions */ ?>
         <div class="top-nav__actions">
           <div class="confidential-system-pill" title="Restricted Personnel & Security Clearance System (GOST Class 1G)">
             <span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>
             <span>HIGHLY CONFIDENTIAL SYSTEM</span>
           </div>
 
-          <!-- Dynamic Active User Profile -->
+          <?php /* Dynamic Active User Profile */ ?>
           <button class="icon-button notifications-btn" id="notifications-toggle-btn" title="Live Enterprise Notifications">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
@@ -89,7 +89,7 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
             </div>
           </div>
 
-          <!-- Sign Out -->
+          <?php /* Sign Out */ ?>
           <a href="../api/logout.php?system=HR%20System&redirect=../HR%20System/login.php" class="top-signout-btn" title="Sign Out of HR System" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" >
             <span class="material-symbols-outlined">logout</span>
             <span>Sign Out</span>
@@ -169,7 +169,7 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
           <div class="security-widget-card">
             <div class="security-widget-header">
               <span>Security Clearance Registry</span>
-              <span class="security-badge-status">● GOST 1G</span>
+              <span class="security-badge-status">● Active</span>
             </div>
             <div class="hr-text-inverse-muted-sm" >
               Active Level 4 Clearances: <strong><?= $metrics['clearance_counts']['L4'] ?> Vetted</strong>
@@ -178,10 +178,10 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
         </div>
       </aside>
 
-      <!-- MAIN CONTENT AREA -->
+      <?php /* MAIN CONTENT AREA */ ?>
       <main class="content-wrapper">
         <div class="portal-container">
-          <!-- Page Header -->
+          <?php /* Page Header */ ?>
           <div class="page-header">
             <div class="page-header-info">
               <div class="breadcrumb-trail">
@@ -204,7 +204,7 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
             </div>
           </div>
 
-          <!-- 4-Tier Security Clearance Quick Summary Strip (LIVE SQL DATA) -->
+          <?php /* 4-Tier Security Clearance Quick Summary Strip (LIVE SQL DATA) */ ?>
           <div class="hr-grid-4col-mb" >
             <div class="hr-card hr-card-clearance-l4" >
               <div>
@@ -239,11 +239,11 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
             </div>
           </div>
 
-          <!-- Main Table Container -->
+          <?php /* Main Table Container */ ?>
           <div class="hr-card hr-panel-flush" >
-            <!-- Filter & Search Toolbar -->
+            <?php /* Filter & Search Toolbar */ ?>
             <div class="hr-table-header-bar-wrap" >
-              <!-- Search Bar -->
+              <?php /* Search Bar */ ?>
               <div class="hr-search-container" >
                 <span class="hr-search-icon" ><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span>
                 <input class="hr-search-input"
@@ -254,7 +254,7 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
                    />
               </div>
 
-              <!-- Filter Dropdowns -->
+              <?php /* Filter Dropdowns */ ?>
               <div class="hr-flex-gap-md" >
                 <div class="hr-flex-gap-4" >
                   <span class="hr-caption-muted-115" >Department:</span>
@@ -283,7 +283,7 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
               </div>
             </div>
 
-            <!-- Searchable / Filterable Table (LIVE DATABASE ROWS) -->
+            <?php /* Searchable / Filterable Table (LIVE DATABASE ROWS) */ ?>
             <table class="employee-table">
               <thead>
                 <tr>
@@ -370,7 +370,7 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
     </div>
   </div>
 
-  <!-- MODAL: EMPLOYEE RECORD DOSSIER (Detail View) -->
+  <?php /* MODAL: EMPLOYEE RECORD DOSSIER (Detail View) */ ?>
   <div id="modal-employee-detail" class="modal-backdrop">
     <div class="modal-dialog hr-modal-680" >
       <div class="modal-header hr-modal-header-plum" >
@@ -403,7 +403,7 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
           </div>
         </div>
 
-        <!-- Details Grid -->
+        <?php /* Details Grid */ ?>
         <div class="hr-grid-details" >
           <div><strong>Email:</strong> <span class="hr-mono" id="drawer-emp-email" >email@vostokpribor.local</span></div>
           <div><strong>Account Login:</strong> <span class="hr-mono-plum" id="drawer-emp-username" >username</span></div>
@@ -414,7 +414,7 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
         </div>
 
         <?php if ($canManage): ?>
-          <!-- Management Actions (Clearance Elevation & Offboarding) -->
+          <?php /* Management Actions (Clearance Elevation & Offboarding) */ ?>
           <div class="hr-card-white" >
             <div class="hr-title-uppercase" >
               Executive Personnel Actions
@@ -441,7 +441,7 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
   </div>
 
   <?php if ($canManage): ?>
-    <!-- MODAL: REGISTER NEW EMPLOYEE (LIVE DATABASE INSERT) -->
+    <?php /* MODAL: REGISTER NEW EMPLOYEE (LIVE DATABASE INSERT) */ ?>
     <div id="modal-add-employee" class="modal-backdrop">
       <div class="modal-dialog hr-modal-580" >
         <div class="modal-header hr-modal-header-plum" >

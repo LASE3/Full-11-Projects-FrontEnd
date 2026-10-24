@@ -272,8 +272,11 @@ function cus_getInvoices(?string $cusId = null, array $filters = []): array
     }
 
     if (!empty($filters['search'])) {
-        $where[] = "(i.inv_id LIKE :s OR i.prj_id LIKE :s OR p.project_name LIKE :s)";
-        $params[':s'] = '%' . $filters['search'] . '%';
+        $where[] = "(i.inv_id LIKE :s1 OR i.prj_id LIKE :s2 OR p.project_name LIKE :s3)";
+        $sTerm = '%' . $filters['search'] . '%';
+        $params[':s1'] = $sTerm;
+        $params[':s2'] = $sTerm;
+        $params[':s3'] = $sTerm;
     }
 
     $whereSql = "WHERE " . implode(" AND ", $where);
@@ -491,22 +494,6 @@ function cus_updateTicketStatus(string $tktId, string $cusId, string $newStatus)
 // ============================================================================
 // 5. DOCUMENTS & ACCOUNT SETTINGS
 // ============================================================================
-
-function cus_getDocuments(?string $cusId = null): array
-{
-    $pdo = getDbConnection();
-    $cusId = $cusId ?: cus_getCurrentCustomerId();
-
-    $stmt = $pdo->prepare("
-        SELECT d.*, p.project_name
-        FROM documents d
-        LEFT JOIN projects p ON d.related_prj_id = p.prj_id
-        WHERE d.related_cus_id = :cid OR d.project_ref IN (SELECT prj_id FROM projects WHERE cus_id = :cid2)
-        ORDER BY d.created_at DESC
-    ");
-    $stmt->execute([':cid' => $cusId, ':cid2' => $cusId]);
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
-}
 
 function cus_updateAccountSettings(string $cusId, array $data): bool
 {

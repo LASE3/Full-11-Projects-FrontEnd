@@ -2,6 +2,7 @@
 header("Cache-Control: no-cache, no-store, must-revalidate");
 header("Pragma: no-cache");
 header("Expires: 0");
+require_once __DIR__ . '/../config/db.php';
 if (session_status() === PHP_SESSION_NONE) {
   session_start();
 }
@@ -11,25 +12,17 @@ $initError = $_GET['error'] ?? '';
 <html lang="en">
 
 <head>
+  <meta charset="utf-8">
   <?php require_once __DIR__ . '/../includes/head_security.php'; ?>
-  <meta charset="UTF-8">
+  
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description"
     content="VOSTOKPRIBOR Finance & Billing - Financial control login, invoicing, transactions, and corporate fiscal oversight.">
   <title>Financial Control Login · VOSTOKPRIBOR SYS-04</title>
-  <link rel="stylesheet" href="css/login.css?v=1790609011">
-  <style>
-  .vp-sim-bar, .theme-simulation-bar, [class*="vp-sim"], [class*="theme-sim"] {
-    display: none !important;
-    visibility: hidden !important;
-    opacity: 0 !important;
-    height: 0 !important;
-    pointer-events: none !important;
-  }
-</style>
-</head>
+  <link rel="stylesheet" href="../assets/css/auth.css">
+  </head>
 
-<body>
+<body data-system="FIN">
   <div class="auth-bg-grid" aria-hidden="true"></div>
 
   <header class="auth-top-bar">
@@ -42,10 +35,7 @@ $initError = $_GET['error'] ?? '';
       </div>
       <span class="auth-system-tag">SYS-04 // FINANCE</span>
     </a>
-    <div class="auth-status-beacon" title="Treasury & Ledger Gateway Active">
-      <span class="status-dot-pulse"></span>
-      <span>FINANCIAL LEDGER SECURED · 256-BIT</span>
-    </div>
+    <?php if (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off'): ?><div class="auth-status-beacon" title="Encrypted Connection"><span class="status-dot-pulse"></span><span>Secure connection</span></div><?php endif; ?>
   </header>
 
   <main class="auth-main">
@@ -54,13 +44,6 @@ $initError = $_GET['error'] ?? '';
 
       <div class="auth-card-body">
         <header class="auth-card-header">
-          <div class="auth-class-badge">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-              <line x1="12" y1="1" x2="12" y2="23"></line>
-              <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
-            </svg>
-            <span>Finance &amp; Billing Class</span>
-          </div>
           <h1 id="login-heading" class="auth-card-title">Financial Control Login</h1>
           <p class="auth-card-subtitle">Invoicing, transactions, project budgets, and corporate financial oversight.</p>
         </header>
@@ -75,7 +58,7 @@ $initError = $_GET['error'] ?? '';
           <span id="alert-message"><?= !empty($initError) ? htmlspecialchars($initError) : 'Authentication failed. Please verify credentials.' ?></span>
         </div>
 
-        <form id="login-form" data-recovery-msg="Contact VP Corporate Treasury &amp; Controller for credential recovery." class="auth-form" action="../api/auth.php" method="POST" novalidate>
+        <form id="login-form"  class="auth-form" action="../api/auth.php" method="POST" novalidate>
           <input type="hidden" name="systemId" value="FIN">
           <input type="hidden" name="redirect" value="Dashboard.php">
           <div class="form-group">
@@ -91,7 +74,7 @@ $initError = $_GET['error'] ?? '';
                 <line x1="15" y1="12" x2="17" y2="12"></line>
                 <line x1="7" y1="16" x2="17" y2="16"></line>
               </svg>
-              <input type="text" id="userId" name="userId" class="form-input" placeholder="FIN-VP-502"
+              <input type="text" id="userId" name="userId" class="form-input" placeholder="Username or employee ID"
                 autocomplete="username" autofocus>
             </div>
           </div>
@@ -119,11 +102,7 @@ $initError = $_GET['error'] ?? '';
           </div>
 
           <div class="form-utility-row">
-            <label class="checkbox-label" for="remember-session">
-              <input type="checkbox" id="remember-session" class="checkbox-input">
-              <span>Remember workstation</span>
-            </label>
-            <a href="javascript:void(0)" class="utility-link" onclick="handleForgotCredentials()">Forgot password?</a>
+            <a href="mailto:support@vostokpribor.ru" class="utility-link">Forgot password?</a>
           </div>
 
           <button type="submit" id="submit-btn" class="auth-submit-btn">
@@ -136,13 +115,6 @@ $initError = $_GET['error'] ?? '';
       </div>
 
       <footer class="auth-card-footer">
-        <span class="security-badge">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-          </svg>
-          TLS 1.3 256-Bit Encrypted
-        </span>
         <span>ID: VP-FIN-04</span>
       </footer>
     </section>
@@ -154,17 +126,6 @@ $initError = $_GET['error'] ?? '';
 
   <script src="../assets/js/dynamic-login-theme.js?v=1790609011"></script>
   <script src="../assets/js/auth-form.js"></script>
-<script>
-  (function(){
-    function purge(){
-      var b = document.querySelectorAll('.vp-sim-bar, .theme-simulation-bar, [class*="vp-sim"], [class*="theme-sim"]');
-      b.forEach(function(el){ el.remove(); });
-    }
-    purge();
-    document.addEventListener('DOMContentLoaded', purge);
-    window.addEventListener('load', purge);
-  })();
-</script>
 </body>
 
 </html>

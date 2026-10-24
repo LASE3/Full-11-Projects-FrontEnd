@@ -23,7 +23,7 @@
             "info",
           );
         } else {
-          alert("Banking details copied!");
+          (window.vpToast ? window.vpToast("Banking details copied!", "success") : alert("Banking details copied!"));
         }
       })
       .catch(() => {
@@ -148,7 +148,7 @@
 
                 <div class="p-3 bg-primary/5 rounded border border-tertiary-fixed/30 flex items-start gap-2">
                     <input type="checkbox" id="cryptoTokenAuth" checked class="mt-0.5 rounded border-outline" />
-                    <label for="cryptoTokenAuth" class="text-xs text-on-surface cursor-pointer">
+                    <label for="cryptoTokenAuth" class="text-xs text-on-surface cursor-pointer min-h-[44px] flex items-center">
                         <span class="font-semibold text-on-surface">Crypto-Pro EDS Token Authentication:</span>
                         Attach qualified electronic digital signature of authorized procurement officer.
                     </label>
@@ -171,7 +171,7 @@
     if (window.openModal) {
       window.openModal(title, html);
     } else {
-      alert(title);
+      (window.vpToast ? window.vpToast(title, "info") : alert(title));
     }
   };
 

@@ -85,7 +85,7 @@ $avgBudgetBurn = (float)$pdo->query("SELECT AVG((spent_amount / NULLIF(allocated
 <body>
 
   <div class="app-container">
-    <!-- TOP NAVIGATION BAR -->
+    <?php /* TOP NAVIGATION BAR */ ?>
     <header class="top-nav">
       <div class="top-nav__accent-stripe"></div>
       <div class="top-nav__content">
@@ -139,7 +139,7 @@ $avgBudgetBurn = (float)$pdo->query("SELECT AVG((spent_amount / NULLIF(allocated
           </div>
         </div>
 
-        <!-- Top Bar Sign Out -->
+        <?php /* Top Bar Sign Out */ ?>
         <a href="../api/logout.php?system=Finance%20%26%20Billing&redirect=../Finance%20%26%20Billing/login.php" class="top-signout-btn" title="Sign Out of Finance &amp; Billing" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" >
           <span>Sign Out</span>
         </a>
@@ -269,12 +269,12 @@ $avgBudgetBurn = (float)$pdo->query("SELECT AVG((spent_amount / NULLIF(allocated
         </div>
       </aside>
 
-      <!-- ========================================================================
+      <?php /* ========================================================================
            MAIN CONTENT AREA: SCREEN 3 PROJECT BILLING OVERVIEW
-           ======================================================================== -->
+           ======================================================================== */ ?>
       <main class="content-wrapper">
         <div class="portal-container">
-          <!-- Page Header -->
+          <?php /* Page Header */ ?>
           <div class="page-header">
             <div class="page-header-info">
               <div class="breadcrumb-trail">
@@ -295,7 +295,7 @@ $avgBudgetBurn = (float)$pdo->query("SELECT AVG((spent_amount / NULLIF(allocated
             </div>
           </div>
 
-          <!-- Project Billing Summary KPI Cards -->
+          <?php /* Project Billing Summary KPI Cards */ ?>
           <div class="kpi-grid fin-grid-3col-mb" >
             <div class="fin-card kpi-card">
               <div class="kpi-header">
@@ -340,7 +340,7 @@ $avgBudgetBurn = (float)$pdo->query("SELECT AVG((spent_amount / NULLIF(allocated
             </div>
           </div>
 
-          <!-- Project Billing Table Matrix -->
+          <?php /* Project Billing Table Matrix */ ?>
           <div class="fin-card fin-panel-flush" >
             <div class="fin-table-header-bar" >
               <div>
@@ -449,7 +449,7 @@ $avgBudgetBurn = (float)$pdo->query("SELECT AVG((spent_amount / NULLIF(allocated
     </div>
   </div>
 
-  <!-- Modal: Bill Project Milestone (Inserts into DB) -->
+  <?php /* Modal: Bill Project Milestone (Inserts into DB) */ ?>
   <div id="modal-bill-milestone" class="modal-backdrop">
     <div class="modal-dialog fin-modal-550" >
       <div class="modal-header">

@@ -2,6 +2,7 @@
 header("Cache-Control: no-cache, no-store, must-revalidate");
 header("Pragma: no-cache");
 header("Expires: 0");
+require_once __DIR__ . '/../config/db.php';
 if (session_status() === PHP_SESSION_NONE) {
   session_start();
 }
@@ -11,80 +12,42 @@ $initError = $_GET['error'] ?? '';
 <html lang="en">
 
 <head>
+  <meta charset="utf-8">
   <?php require_once __DIR__ . '/../includes/head_security.php'; ?>
-  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description"
     content="VOSTOKPRIBOR Corporate Web Platform - Content management and corporate administration authentication.">
-  <title>Corporate Platform Login · VOSTOKPRIBOR WEB</title>
-  <link rel="stylesheet" href="../Admin%20%26%20Governance%20Portal/css/login.css">
+  <title>Corporate Platform Login · VOSTOKPRIBOR</title>
+  <link rel="stylesheet" href="../assets/css/auth.css">
   <link rel="stylesheet" href="../assets/css/responsive-core.css">
-  <style>
-  @media (pointer: coarse), (max-width: 768px) {
-    .auth-brand-link,
-    .auth-top-bar a,
-    .auth-back-link,
-    .auth-submit-btn,
-    .form-input,
-    .input-container input {
-      min-height: 44px !important;
-      box-sizing: border-box !important;
-    }
-    .auth-brand-link,
-    .auth-back-link,
-    .auth-submit-btn {
-      min-width: 44px !important;
-      display: inline-flex !important;
-      align-items: center !important;
-    }
-  }
-  .vp-sim-bar, .theme-simulation-bar, [class*="vp-sim"], [class*="theme-sim"] {
-    display: none !important;
-    visibility: hidden !important;
-    opacity: 0 !important;
-    height: 0 !important;
-    pointer-events: none !important;
-  }
-</style>
 </head>
 
-<body>
-  <!-- Circuit Grid Background Overlay -->
+<body data-system="WEB">
+  <?php /* Circuit Grid Background Overlay */ ?>
   <div class="auth-bg-grid" aria-hidden="true"></div>
 
-  <!-- Top System Header Bar -->
+  <?php /* Top System Header Bar */ ?>
   <header class="auth-top-bar">
     <a href="index.php" class="auth-brand-link" title="Return to Website">
-      <img src="../assets/logo.svg" alt="VOSTOKPRIBOR Logo" class="auth-brand-logo" onerror="this.style.display='none'">
+      <img src="../assets/logo.svg" alt="VOSTOKPRIBOR Logo" class="auth-brand-logo">
       <div>
         <div class="auth-brand-name">VOSTOKPRIBOR</div>
       </div>
-      <span class="auth-system-tag">SYS-01 // WEB</span>
     </a>
-    <div class="auth-status-beacon" title="Automated security telemetry active">
-      <span class="status-dot-pulse"></span>
-      <span>SECURE TERMINAL · GOST-R 50739</span>
-    </div>
   </header>
 
-  <!-- Main Viewport -->
+  <?php /* Main Viewport */ ?>
   <main class="auth-main">
     <section class="auth-card" aria-labelledby="login-heading">
       <div class="auth-card-stripe" aria-hidden="true"></div>
 
       <div class="auth-card-body">
         <header class="auth-card-header">
-          <div class="auth-class-badge">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-            </svg>
-            <span>Corporate Class</span>
-          </div>
           <h1 id="login-heading" class="auth-card-title">Corporate Portal Login</h1>
           <p class="auth-card-subtitle">Staff authentication for corporate announcements, catalog, and job postings.</p>
         </header>
 
-        <!-- Dynamic Error/Success Notification Container -->
+        <?php /* Dynamic Error/Success Notification Container */ ?>
         <div id="auth-alert" class="auth-alert <?= !empty($initError) ? 'active-error' : '' ?>" role="alert" aria-live="polite">
           <svg id="alert-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="12" cy="12" r="10"></circle>
@@ -94,13 +57,14 @@ $initError = $_GET['error'] ?? '';
           <span id="alert-message"><?= !empty($initError) ? htmlspecialchars($initError) : 'Authentication failed. Please check credentials.' ?></span>
         </div>
 
-        <!-- Login Form -->
+        <?php /* Login Form */ ?>
         <form id="login-form" class="auth-form" action="../api/auth.php" method="POST" novalidate>
           <input type="hidden" name="systemId" value="WEB">
           <input type="hidden" name="redirect" value="admin.php">
+
           <div class="form-group">
             <label for="userId" class="form-label">
-              <span>Employee / Admin ID</span>
+              <span>Username or employee ID</span>
               <span class="req-star">*</span>
             </label>
             <div class="input-container">
@@ -111,7 +75,7 @@ $initError = $_GET['error'] ?? '';
                 <line x1="15" y1="12" x2="17" y2="12"></line>
                 <line x1="7" y1="16" x2="17" y2="16"></line>
               </svg>
-              <input type="text" id="userId" name="userId" class="form-input" placeholder="admin@gmail.com / EMP-1001" autocomplete="username" autofocus>
+              <input type="text" id="userId" name="userId" class="form-input" placeholder="Username or employee ID" autocomplete="username" autofocus>
             </div>
           </div>
 

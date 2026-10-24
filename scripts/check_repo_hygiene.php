@@ -215,7 +215,7 @@ $allowedRoots = [
     'VOSTOKPRIBOR Corporate Web Platform'
 ];
 $allowedRootFiles = [
-    '.env.example', '.gitignore', '.gitattributes', '.htaccess', 'index.php', 'package.json',
+    '.env.example', '.env.production.example', '.gitignore', '.gitattributes', '.htaccess', 'index.php', 'package.json',
     'package-lock.json', 'README.md', 'SECURITY.md', 'LICENSE'
 ];
 $allTracked = explode("\n", trim((string)shell_exec('git ls-files')));

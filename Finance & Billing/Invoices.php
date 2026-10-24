@@ -100,7 +100,7 @@ $avgBudgetBurn = (float)$pdo->query("SELECT AVG((spent_amount / NULLIF(allocated
 <body>
 
   <div class="app-container">
-    <!-- TOP NAVIGATION BAR -->
+    <?php /* TOP NAVIGATION BAR */ ?>
     <header class="top-nav">
       <div class="top-nav__accent-stripe"></div>
       <div class="top-nav__content">
@@ -154,7 +154,7 @@ $avgBudgetBurn = (float)$pdo->query("SELECT AVG((spent_amount / NULLIF(allocated
           </div>
         </div>
 
-        <!-- Top Bar Sign Out -->
+        <?php /* Top Bar Sign Out */ ?>
         <a href="../api/logout.php?system=Finance%20%26%20Billing&redirect=../Finance%20%26%20Billing/login.php" class="top-signout-btn" title="Sign Out of Finance &amp; Billing" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" >
           <span>Sign Out</span>
         </a>
@@ -284,12 +284,12 @@ $avgBudgetBurn = (float)$pdo->query("SELECT AVG((spent_amount / NULLIF(allocated
         </div>
       </aside>
 
-      <!-- ========================================================================
+      <?php /* ========================================================================
            MAIN CONTENT AREA: SCREEN 2 INVOICES TABLE + DETAIL DRAWER
-           ======================================================================== -->
+           ======================================================================== */ ?>
       <main class="content-wrapper">
         <div class="portal-container">
-          <!-- Page Header -->
+          <?php /* Page Header */ ?>
           <div class="page-header">
             <div class="page-header-info">
               <div class="breadcrumb-trail">
@@ -315,11 +315,11 @@ $avgBudgetBurn = (float)$pdo->query("SELECT AVG((spent_amount / NULLIF(allocated
             </div>
           </div>
 
-          <!-- Invoices Table Container -->
+          <?php /* Invoices Table Container */ ?>
           <div class="fin-card fin-panel-flush" >
-            <!-- Filter Toolbar -->
+            <?php /* Filter Toolbar */ ?>
             <div class="fin-table-header-bar-wrap" >
-              <!-- Search Box -->
+              <?php /* Search Box */ ?>
               <div class="fin-search-container" >
                 <span class="fin-search-icon" >🔍</span>
                 <input class="fin-search-input"
@@ -331,7 +331,7 @@ $avgBudgetBurn = (float)$pdo->query("SELECT AVG((spent_amount / NULLIF(allocated
                    />
               </div>
 
-              <!-- Status Dropdown Filter -->
+              <?php /* Status Dropdown Filter */ ?>
               <div class="fin-flex-gap-md" >
                 <div class="fin-flex-gap-4" >
                   <span class="fin-text-muted-bold-115" >Status:</span>
@@ -439,7 +439,7 @@ $avgBudgetBurn = (float)$pdo->query("SELECT AVG((spent_amount / NULLIF(allocated
               </tbody>
             </table>
 
-            <!-- Table Footer -->
+            <?php /* Table Footer */ ?>
             <div class="fin-footer-pagination" >
               <div>
                 Showing <strong id="invoice-visible-count"><?= $totalCount ?></strong> of <strong><?= $totalCount ?></strong> database receivables records
@@ -454,9 +454,9 @@ $avgBudgetBurn = (float)$pdo->query("SELECT AVG((spent_amount / NULLIF(allocated
     </div>
   </div>
 
-  <!-- ========================================================================
+  <?php /* ========================================================================
        MODAL: INVOICE DOSSIER & LINE ITEMS (POPULATED LIVE FROM DB)
-       ======================================================================== -->
+       ======================================================================== */ ?>
   <div id="modal-invoice-detail" class="modal-backdrop">
     <div class="modal-dialog fin-modal-720" >
       <div class="modal-header">
@@ -468,7 +468,7 @@ $avgBudgetBurn = (float)$pdo->query("SELECT AVG((spent_amount / NULLIF(allocated
       </div>
 
       <div class="modal-body">
-        <!-- Invoice Metadata Header -->
+        <?php /* Invoice Metadata Header */ ?>
         <div class="fin-banner-invoice" >
           <div>
             <div class="fin-flex-gap-6-mb" >
@@ -487,7 +487,7 @@ $avgBudgetBurn = (float)$pdo->query("SELECT AVG((spent_amount / NULLIF(allocated
           </div>
         </div>
 
-        <!-- Line Items Table Loaded from DB -->
+        <?php /* Line Items Table Loaded from DB */ ?>
         <div class="fin-mb-6" >
           <div class="fin-section-title-sm" >
             Billed Sensor Hardware &amp; Commissioning Line Items (From Database)
@@ -502,23 +502,23 @@ $avgBudgetBurn = (float)$pdo->query("SELECT AVG((spent_amount / NULLIF(allocated
               </tr>
             </thead>
             <tbody id="modal-inv-items-body">
-              <!-- Dynamically populated from DB -->
+              <?php /* Dynamically populated from DB */ ?>
             </tbody>
           </table>
         </div>
 
-        <!-- Payment History Timeline Loaded from DB -->
+        <?php /* Payment History Timeline Loaded from DB */ ?>
         <div>
           <div class="fin-section-title-sm" >
             Payment Settlement &amp; Clearing History (vostokpribor.payments)
           </div>
           <div class="fin-flex-col-gap-sm" id="modal-inv-timeline-body" >
-            <!-- Dynamically populated from DB -->
+            <?php /* Dynamically populated from DB */ ?>
           </div>
         </div>
       </div>
 
-      <!-- Action Buttons -->
+      <?php /* Action Buttons */ ?>
       <div class="modal-footer">
         <button class="btn btn-outline" onclick="window.finApp.closeModal('modal-invoice-detail')">Close</button>
         <div class="fin-gap-md" >
@@ -536,9 +536,9 @@ $avgBudgetBurn = (float)$pdo->query("SELECT AVG((spent_amount / NULLIF(allocated
     </div>
   </div>
 
-  <!-- ========================================================================
+  <?php /* ========================================================================
        MODAL: CREATE NEW INVOICE (SENDS LIVE TO MYSQL DATABASE)
-       ======================================================================== -->
+       ======================================================================== */ ?>
   <div id="modal-create-invoice" class="modal-backdrop">
     <div class="modal-dialog fin-modal-580" >
       <div class="modal-header">
@@ -548,7 +548,7 @@ $avgBudgetBurn = (float)$pdo->query("SELECT AVG((spent_amount / NULLIF(allocated
       <div class="modal-body">
         <form onsubmit="event.preventDefault(); window.finApp.handleCreateInvoiceSubmit(this);">
           <div class="fin-flex-col-gap-md" >
-            <!-- Customer Selector -->
+            <?php /* Customer Selector */ ?>
             <div>
               <label class="fin-field-label" >Customer Account (vostokpribor.customers) *</label>
               <select class="fin-form-control" name="cus_id" required >
@@ -561,7 +561,7 @@ $avgBudgetBurn = (float)$pdo->query("SELECT AVG((spent_amount / NULLIF(allocated
               </select>
             </div>
 
-            <!-- Project Selector -->
+            <?php /* Project Selector */ ?>
             <div>
               <label class="fin-field-label" >Project Association (vostokpribor.projects) *</label>
               <select class="fin-form-control" name="prj_id" required >
@@ -574,13 +574,13 @@ $avgBudgetBurn = (float)$pdo->query("SELECT AVG((spent_amount / NULLIF(allocated
               </select>
             </div>
 
-            <!-- Line Item Description -->
+            <?php /* Line Item Description */ ?>
             <div>
               <label class="fin-field-label" >Line Item Description (invoice_items) *</label>
               <input class="fin-form-control" type="text" name="line_description" required placeholder="e.g. Optical IR Pyrometer Probe Array & Commissioning"  />
             </div>
 
-            <!-- Amount and Currency Grid -->
+            <?php /* Amount and Currency Grid */ ?>
             <div class="fin-grid-2-1col-sm" >
               <div>
                 <label class="fin-field-label" >Invoice Total Value *</label>
@@ -596,7 +596,7 @@ $avgBudgetBurn = (float)$pdo->query("SELECT AVG((spent_amount / NULLIF(allocated
               </div>
             </div>
 
-            <!-- Payment Terms & Due Date -->
+            <?php /* Payment Terms & Due Date */ ?>
             <div class="fin-grid-2col-sm" >
               <div>
                 <label class="fin-field-label" >Payment Terms *</label>
@@ -613,7 +613,7 @@ $avgBudgetBurn = (float)$pdo->query("SELECT AVG((spent_amount / NULLIF(allocated
               </div>
             </div>
 
-            <!-- Notes -->
+            <?php /* Notes */ ?>
             <div>
               <label class="fin-field-label" >Ledger Reference / Remittance Memo</label>
               <input class="fin-form-control" type="text" name="notes" placeholder="e.g. Contract Milestones PO-2026-VP"  />

@@ -236,57 +236,7 @@ $mustChange = (bool)($account['must_change_password'] ?? false);
     <link rel="stylesheet" href="../assets/css/responsive-core.css">
     <title>Change Password — VOSTOKPRIBOR</title>
     <meta name="description" content="Secure account password update for VOSTOKPRIBOR enterprise users"/>
-    <style>
-        :root {
-            --bg: #090d16; --bg2: #131b2e; --accent: #3b82f6; --accent2: #60a5fa;
-            --danger: #ef4444; --ok: #10b981; --text: #e2e8f0; --muted: #94a3b8;
-            --border: #1e293b; --radius: 8px;
-        }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body {
-            background: var(--bg); color: var(--text); font-family: 'Segoe UI', system-ui, sans-serif;
-            display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 20px;
-        }
-        .card {
-            background: var(--bg2); border: 1px solid var(--border); border-radius: 12px;
-            padding: 36px 40px; width: 100%; max-width: 480px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.5);
-        }
-        .logo-row { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; }
-        .logo-row img { width: 32px; height: 32px; }
-        .logo-title { font-size: 14px; font-weight: 700; letter-spacing: 0.05em; color: var(--accent2); text-transform: uppercase; }
-        h1 { font-size: 20px; font-weight: 700; color: #fff; margin-bottom: 6px; }
-        .sub { color: var(--muted); font-size: 13px; margin-bottom: 24px; }
-        .warn-banner {
-            background: rgba(239,68,68,.12); border: 1px solid rgba(239,68,68,.4);
-            color: #fca5a5; padding: 12px 16px; border-radius: var(--radius);
-            margin-bottom: 20px; font-size: 13px;
-        }
-        label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 6px; font-weight: 500; }
-        input[type=password] {
-            width: 100%; background: #0c1220; color: var(--text); border: 1px solid var(--border);
-            padding: 11px 14px; border-radius: var(--radius); font-size: 14px; margin-bottom: 16px;
-            min-height: 44px; box-sizing: border-box;
-            transition: border-color 0.15s;
-        }
-        input[type=password]:focus { outline: none; border-color: var(--accent); }
-        .btn {
-            width: 100%; background: var(--accent); color: #fff; border: none;
-            padding: 12px; border-radius: var(--radius); font-size: 15px; font-weight: 600;
-            min-height: 44px; min-width: 44px; box-sizing: border-box;
-            cursor: pointer; transition: background 0.15s; margin-top: 8px;
-        }
-        .btn:hover { background: var(--accent2); }
-        .error { background: rgba(239,68,68,.1); border: 1px solid rgba(239,68,68,.3); color: var(--danger);
-                 padding: 10px 14px; border-radius: var(--radius); font-size: 13px; margin-bottom: 16px; }
-        .success { background: rgba(16,185,129,.1); border: 1px solid rgba(16,185,129,.3); color: var(--ok);
-                   padding: 10px 14px; border-radius: var(--radius); font-size: 13px; margin-bottom: 16px; }
-        .rules { color: var(--muted); font-size: 12px; margin-top: 20px; border-top: 1px solid var(--border); padding-top: 16px; }
-        .rules li { margin: 4px 0 4px 18px; }
-        .back { display: inline-flex; align-items: center; min-height: 44px; min-width: 44px; margin-top: 20px; color: var(--accent2); text-decoration: none; font-size: 13px; }
-        .back:hover { text-decoration: underline; }
-        .strength { height: 4px; border-radius: 2px; margin-top: -10px; margin-bottom: 16px; background: #0c1220; overflow: hidden; }
-        .strength-bar { height: 100%; border-radius: 2px; transition: width 0.3s, background 0.3s; width: 0; }
-    </style>
+    <link rel="stylesheet" href="../assets/css/change-password.css">
 </head>
 <body>
 <div class="card">

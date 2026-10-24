@@ -138,7 +138,7 @@ window.CURRENT_USER = <?= json_encode($currUser, JSON_HEX_TAG | JSON_HEX_APOS | 
                 </div>
             </div>
 
-            <!-- Top Bar Sign Out -->
+            <?php /* Top Bar Sign Out */ ?>
             <a href="./api/logout.php?redirect=../login.php" class="top-signout-btn" title="Sign Out of Customer Portal" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" ><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
         </div>
     </header>
@@ -244,7 +244,7 @@ window.CURRENT_USER = <?= json_encode($currUser, JSON_HEX_TAG | JSON_HEX_APOS | 
     <div id="portal-main-wrapper" class="portal-content-wrapper pl-64">
         <main class="w-full min-h-screen pt-16 bg-surface px-4 sm:px-6 lg:px-8 py-6">
             <div class="portal-container flex flex-col gap-6">
-                <!-- Top Operational Breadcrumb & Context Bar -->
+                <?php /* Top Operational Breadcrumb & Context Bar */ ?>
                 <div class="flex flex-col md:flex-row md:items-center justify-between pb-1 gap-unit-sm">
                     <div
                         class="flex items-center gap-unit-xs font-technical-tag text-technical-tag text-on-surface-variant">
@@ -270,7 +270,7 @@ window.CURRENT_USER = <?= json_encode($currUser, JSON_HEX_TAG | JSON_HEX_APOS | 
                         </div>
                     </div>
                 </div>
-                <!-- Page Header & Action Section -->
+                <?php /* Page Header & Action Section */ ?>
                 <div class="flex flex-col xl:flex-row xl:items-end justify-between pb-unit-lg gap-unit-base">
                     <div class="flex flex-col max-w-3xl">
                         <div class="flex flex-wrap items-center gap-unit-sm">
@@ -288,7 +288,7 @@ window.CURRENT_USER = <?= json_encode($currUser, JSON_HEX_TAG | JSON_HEX_APOS | 
                             Escalation Desk
                         </p>
                     </div>
-                    <!-- Actions & Ticket Trigger -->
+                    <?php /* Actions & Ticket Trigger */ ?>
                     <div class="flex items-center gap-unit-sm flex-wrap">
                         <button onclick="exportTicketAudit()"
                             class="inline-flex items-center justify-center gap-1.5 px-3 py-2 h-9 rounded bg-surface-container-lowest text-primary font-headline-sm text-headline-sm border border-outline-variant/60 shadow-sm hover:bg-surface-container-low transition-colors">
@@ -302,7 +302,7 @@ window.CURRENT_USER = <?= json_encode($currUser, JSON_HEX_TAG | JSON_HEX_APOS | 
                         </button>
                     </div>
                 </div>
-                <!-- Real-time SLA & System Health Metric Bar -->
+                <?php /* Real-time SLA & System Health Metric Bar */ ?>
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-unit-base">
                     <div
                         class="p-unit-base rounded-xl bg-surface-container-lowest border border-outline-variant/40 shadow-sm flex flex-col justify-between relative overflow-hidden">
@@ -368,7 +368,7 @@ window.CURRENT_USER = <?= json_encode($currUser, JSON_HEX_TAG | JSON_HEX_APOS | 
                             connected</span>
                     </div>
                 </div>
-                <!-- Operational Filter & Control Bar -->
+                <?php /* Operational Filter & Control Bar */ ?>
                 <div
                     class="bg-surface-container-lowest p-unit-base rounded-lg border border-outline-variant/50 shadow-sm flex flex-col lg:flex-row gap-unit-md items-stretch lg:items-center justify-between">
                     <div class="flex-1 flex flex-col sm:flex-row items-stretch sm:items-center gap-unit-sm">
@@ -432,7 +432,7 @@ window.CURRENT_USER = <?= json_encode($currUser, JSON_HEX_TAG | JSON_HEX_APOS | 
                         </button>
                     </div>
                 </div>
-                <!-- Ticket Master Table -->
+                <?php /* Ticket Master Table */ ?>
                 <div
                     class="w-full bg-surface-container-lowest rounded-lg border border-outline-variant/50 shadow-sm overflow-hidden">
                     <div class="overflow-x-auto">
@@ -537,9 +537,9 @@ window.CURRENT_USER = <?= json_encode($currUser, JSON_HEX_TAG | JSON_HEX_APOS | 
                         </table>
                     </div>
                 </div>
-                <!-- EXPANDED DETAIL VIEW: TCK-9482 -->
+                <?php /* EXPANDED DETAIL VIEW: TCK-9482 */ ?>
                 <div class="w-full flex flex-col gap-unit-base" id="ticketDetailSection">
-                    <!-- Active Incident Header Banner -->
+                    <?php /* Active Incident Header Banner */ ?>
                     <div id="incidentBannerCard"
                         class="w-full rounded-lg border-2 border-tertiary-fixed-dim bg-surface-container-lowest shadow-md overflow-hidden">
                         <div
@@ -577,7 +577,7 @@ window.CURRENT_USER = <?= json_encode($currUser, JSON_HEX_TAG | JSON_HEX_APOS | 
                                 </button>
                             </div>
                         </div>
-                        <!-- Critical Incident Telemetry Bar -->
+                        <?php /* Critical Incident Telemetry Bar */ ?>
                         <div
                             class="px-unit-base py-unit-sm bg-surface-container border-t border-outline-variant/30 flex flex-wrap items-center justify-between gap-unit-base text-body-sm">
                             <div
@@ -606,9 +606,9 @@ window.CURRENT_USER = <?= json_encode($currUser, JSON_HEX_TAG | JSON_HEX_APOS | 
                             </div>
                         </div>
                     </div>
-                    <!-- Incident Cockpit Split Layout -->
+                    <?php /* Incident Cockpit Split Layout */ ?>
                     <div class="grid grid-cols-1 lg:grid-cols-12 gap-unit-lg">
-                        <!-- Left Diagnostic & Conversation Thread (68% -> 8 of 12 cols) -->
+                        <?php /* Left Diagnostic & Conversation Thread (68% -> 8 of 12 cols) */ ?>
                         <div class="lg:col-span-8 flex flex-col gap-unit-base">
                             <div
                                 class="bg-surface-container-lowest rounded-lg border border-outline-variant/50 p-unit-base shadow-sm">
@@ -622,7 +622,7 @@ window.CURRENT_USER = <?= json_encode($currUser, JSON_HEX_TAG | JSON_HEX_APOS | 
                                     <span id="messageCountLabel" class="font-technical-tag text-technical-tag text-secondary"><?= count($firstTicket['messages'] ?? []) ?> MESSAGES • LIVE
                                         STREAM REFRESH: AUTO</span>
                                 </div>
-                                <!-- Message Stream -->
+                                <?php /* Message Stream */ ?>
                                 <div id="ticketMessageStream" class="flex flex-col gap-unit-base">
                                     <?php 
                                     $initialMsgs = $firstTicket['messages'] ?? [];
@@ -685,7 +685,7 @@ window.CURRENT_USER = <?= json_encode($currUser, JSON_HEX_TAG | JSON_HEX_APOS | 
                                         <?php endforeach; ?>
                                     <?php endif; ?>
                                 </div>
-                                <!-- Interactive Engineer Response Composer -->
+                                <?php /* Interactive Engineer Response Composer */ ?>
                                 <div
                                     class="mt-unit-lg pt-unit-base border-t border-outline-variant/40 flex flex-col gap-unit-sm">
                                     <div class="flex items-center justify-between">
@@ -729,9 +729,9 @@ window.CURRENT_USER = <?= json_encode($currUser, JSON_HEX_TAG | JSON_HEX_APOS | 
                                 </div>
                             </div>
                         </div>
-                        <!-- Right Metadata & Hardware Spec Rail (32% -> 4 of 12 cols) -->
+                        <?php /* Right Metadata & Hardware Spec Rail (32% -> 4 of 12 cols) */ ?>
                         <div class="lg:col-span-4 flex flex-col gap-unit-base">
-                            <!-- Hardware Specification & Telemetry Blueprint -->
+                            <?php /* Hardware Specification & Telemetry Blueprint */ ?>
                             <div
                                 class="bg-surface-container-lowest rounded-lg border border-outline-variant/50 p-unit-base shadow-sm">
                                 <div
@@ -790,14 +790,14 @@ window.CURRENT_USER = <?= json_encode($currUser, JSON_HEX_TAG | JSON_HEX_APOS | 
                                     </button>
                                 </div>
                             </div>
-                            <!-- Tier-1 Escalation Path & Emergency Contact Card -->
+                            <?php /* Tier-1 Escalation Path & Emergency Contact Card */ ?>
                             <div
                                 class="bg-surface-container-lowest rounded-lg border border-outline-variant/50 p-unit-base shadow-sm flex flex-col gap-unit-sm">
                                 <span
                                     class="font-label-caps text-label-caps text-secondary uppercase tracking-wider">Escalation
                                     Protocol &amp; Hierarchy</span>
                                 <div class="space-y-unit-sm text-body-sm">
-                                    <!-- Step 1 -->
+                                    <?php /* Step 1 */ ?>
                                     <div class="flex items-center gap-unit-sm">
                                         <div
                                             class="w-6 h-6 rounded-full bg-tertiary-fixed text-on-tertiary-fixed flex items-center justify-center font-technical-tag text-technical-tag font-bold">
@@ -810,7 +810,7 @@ window.CURRENT_USER = <?= json_encode($currUser, JSON_HEX_TAG | JSON_HEX_APOS | 
                                         <span
                                             class="px-1.5 py-0.2 rounded bg-tertiary-fixed text-on-tertiary-fixed font-technical-tag text-technical-tag">ENGAGED</span>
                                     </div>
-                                    <!-- Step 2 -->
+                                    <?php /* Step 2 */ ?>
                                     <div class="flex items-center gap-unit-sm">
                                         <div
                                             class="w-6 h-6 rounded-full bg-surface-container-high text-secondary flex items-center justify-center font-technical-tag text-technical-tag font-bold">
@@ -823,7 +823,7 @@ window.CURRENT_USER = <?= json_encode($currUser, JSON_HEX_TAG | JSON_HEX_APOS | 
                                         <span
                                             class="font-technical-tag text-technical-tag text-on-surface-variant">STANDBY</span>
                                     </div>
-                                    <!-- Step 3 -->
+                                    <?php /* Step 3 */ ?>
                                     <div class="flex items-center gap-unit-sm">
                                         <div
                                             class="w-6 h-6 rounded-full bg-surface-container-high text-secondary flex items-center justify-center font-technical-tag text-technical-tag font-bold">
@@ -855,7 +855,7 @@ window.CURRENT_USER = <?= json_encode($currUser, JSON_HEX_TAG | JSON_HEX_APOS | 
                                     </div>
                                 </div>
                             </div>
-                            <!-- Live Diagnostics Signal Chart Micro-Widget -->
+                            <?php /* Live Diagnostics Signal Chart Micro-Widget */ ?>
                             <div
                                 class="bg-surface-container-lowest rounded-lg border border-outline-variant/50 p-unit-base shadow-sm">
                                 <div class="flex items-center justify-between mb-2">
@@ -864,16 +864,16 @@ window.CURRENT_USER = <?= json_encode($currUser, JSON_HEX_TAG | JSON_HEX_APOS | 
                                     <span class="font-data-mono-md text-data-mono-md text-error font-bold">0.00 mA
                                         (OPEN)</span>
                                 </div>
-                                <!-- Micro Sparkline SVG Display -->
+                                <?php /* Micro Sparkline SVG Display */ ?>
                                 <div class="h-20 w-full bg-surface-container-low rounded p-2 flex items-end">
                                     <svg class="w-full h-full text-secondary" preserveaspectratio="none"
                                         viewbox="0 0 300 60">
-                                        <!-- Gridlines -->
+                                        <?php /* Gridlines */ ?>
                                         <line stroke="currentColor" stroke-dasharray="2,2" stroke-opacity="0.1" x1="0"
                                             x2="300" y1="15" y2="15"></line>
                                         <line stroke="currentColor" stroke-dasharray="2,2" stroke-opacity="0.1" x1="0"
                                             x2="300" y1="35" y2="35"></line>
-                                        <!-- Normal Baseline -->
+                                        <?php /* Normal Baseline */ ?>
                                         <path
                                             d="M0,35 Q30,34 60,35 T120,36 T180,34 T220,35 L230,10 L235,55 L240,58 L300,58"
                                             fill="none" stroke="#ba1a1a" stroke-width="2"></path>

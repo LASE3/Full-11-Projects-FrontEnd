@@ -54,7 +54,7 @@ $coldTb = round(1.2 + ($totalDocs * 0.005), 2);
 </head>
 
 <body>
-    <!-- TOP NAVIGATION BAR -->
+    <?php /* TOP NAVIGATION BAR */ ?>
     <header class="vk-top-navbar">
         <div class="fc-flex-center-gap-24">
             <button class="mobile-nav-toggle" id="fc-sidebar-toggle" onclick="document.body.classList.toggle('sidebar-open')" title="Toggle Menu"><span class="material-symbols-outlined">menu</span></button>
@@ -97,12 +97,12 @@ $coldTb = round(1.2 + ($totalDocs * 0.005), 2);
                 </div>
             </div>
 
-            <!-- Top Bar Sign Out -->
+            <?php /* Top Bar Sign Out */ ?>
             <a href="../api/logout.php?system=File%20Center&redirect=../File%20Center/login.php" class="top-signout-btn" title="Sign Out of File Center" onclick="(function(){sessionStorage.clear();localStorage.clear();})()"><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
         </div>
     </header>
 
-    <!-- LEFT SIDEBAR -->
+    <?php /* LEFT SIDEBAR */ ?>
     <aside class="vk-sidebar" style="background-color: #0f2438 !important; border-right: 1px solid rgba(255, 255, 255, 0.1) !important;">
         <div class="vk-sidebar-nav">
             <div class="vk-sidebar-header">Document Vault</div>
@@ -189,9 +189,9 @@ $coldTb = round(1.2 + ($totalDocs * 0.005), 2);
         </div>
     </aside>
 
-    <!-- MAIN CONTENT AREA -->
+    <?php /* MAIN CONTENT AREA */ ?>
     <main class="vk-main-layout">
-        <!-- HEADER BLOCK -->
+        <?php /* HEADER BLOCK */ ?>
         <div class="fc-display-flex-justify-content-f610" style="margin-bottom: 24px;">
             <div>
                 <div class="fc-display-flex-align-items-9bb7">
@@ -213,7 +213,7 @@ $coldTb = round(1.2 + ($totalDocs * 0.005), 2);
             </div>
         </div>
 
-        <!-- 3 STORAGE VOLUME ALLOCATION GAUGES (Dynamic from Database) -->
+        <?php /* 3 STORAGE VOLUME ALLOCATION GAUGES (Dynamic from Database) */ ?>
         <div class="retention-meter-grid">
             <div class="retention-meter-card">
                 <div class="fc-flex-between-center">
@@ -258,7 +258,7 @@ $coldTb = round(1.2 + ($totalDocs * 0.005), 2);
             </div>
         </div>
 
-        <!-- STATUTORY RETENTION POLICIES TABLE (Dynamic from Database) -->
+        <?php /* STATUTORY RETENTION POLICIES TABLE (Dynamic from Database) */ ?>
         <div class="vk-card fc-margin-bottom-24px-dc2c">
             <div class="vk-card-header">
                 <div>
@@ -304,7 +304,7 @@ $coldTb = round(1.2 + ($totalDocs * 0.005), 2);
             </div>
         </div>
 
-        <!-- ACTIVE LEGAL HOLDS & PRESERVATION ORDERS (Dynamic from Database) -->
+        <?php /* ACTIVE LEGAL HOLDS & PRESERVATION ORDERS (Dynamic from Database) */ ?>
         <div class="vk-card fc-mb-30">
             <div class="vk-card-header">
                 <div>
@@ -358,7 +358,7 @@ $coldTb = round(1.2 + ($totalDocs * 0.005), 2);
         </div>
     </main>
 
-    <!-- DOCKED ENTERPRISE STATUS BAR -->
+    <?php /* DOCKED ENTERPRISE STATUS BAR */ ?>
     <footer class="vk-status-bar">
         <div class="fc-flex-center-gap-16">
 
@@ -374,7 +374,7 @@ $coldTb = round(1.2 + ($totalDocs * 0.005), 2);
         </div>
     </footer>
 
-    <!-- Universal Command Palette Modal -->
+    <?php /* Universal Command Palette Modal */ ?>
     <div class="cmd-palette-backdrop" id="cmd-palette-modal">
         <div class="cmd-palette-box">
             <div class="cmd-palette-header">
@@ -406,7 +406,7 @@ $coldTb = round(1.2 + ($totalDocs * 0.005), 2);
         </div>
     </div>
 
-    <!-- Universal Toast Container -->
+    <?php /* Universal Toast Container */ ?>
     <div class="vk-toast-container"></div>
 
     <script src="js/fc-common.js"></script>

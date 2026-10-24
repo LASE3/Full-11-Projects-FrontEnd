@@ -17,6 +17,7 @@ class AuditLogger
         if (empty($empId) || !is_string($empId)) {
             return null;
         }
+        $empId = substr(trim($empId), 0, 10);
         try {
             $stmt = $pdo->prepare("SELECT 1 FROM employees WHERE emp_id = ? LIMIT 1");
             $stmt->execute([$empId]);
@@ -31,6 +32,7 @@ class AuditLogger
         if (empty($cusId) || !is_string($cusId)) {
             return null;
         }
+        $cusId = substr(trim($cusId), 0, 10);
         try {
             $stmt = $pdo->prepare("SELECT 1 FROM customers WHERE cus_id = ? LIMIT 1");
             $stmt->execute([$cusId]);

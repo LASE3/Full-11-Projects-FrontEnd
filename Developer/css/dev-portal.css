@@ -150,23 +150,6 @@
   color: #cbd5e1;
 }
 
-.code-token-keyword {
-  color: #f472b6;
-}
-.code-token-string {
-  color: #a5f3fc;
-}
-.code-token-comment {
-  color: #64748b;
-  font-style: italic;
-}
-.code-token-function {
-  color: #fbbf24;
-}
-.code-token-number {
-  color: #c084fc;
-}
-
 .param-table {
   width: 100%;
   border-collapse: collapse;

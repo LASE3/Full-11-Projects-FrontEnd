@@ -698,11 +698,11 @@
             /* in-place deletion */ document.querySelectorAll("tr").forEach(r => { if (r.textContent.includes(cusId)) r.remove(); });
           }
         } else {
-          alert(data.message || "Failed to delete customer.");
+          (window.vpToast ? window.vpToast(data.message || "Failed to delete customer.", "error") : alert(data.message || "Failed to delete customer."));
         }
       })
       .catch(err => {
-        alert("Error deleting customer: " + err.message);
+        (window.vpToast ? window.vpToast("Error deleting customer: " + err.message, "error") : alert("Error deleting customer: " + err.message));
       });
     },
 

@@ -77,7 +77,7 @@ $sidebarBadges = gov_getSidebarBadges();
                 </div>
             </div>
 
-            <!-- Top Bar Sign Out -->
+            <?php /* Top Bar Sign Out */ ?>
             <a href="../api/logout.php?system=Admin%20%26%20Governance%20Portal&redirect=../Admin%20%26%20Governance%20Portal/login.php" class="top-signout-btn" title="Sign Out of Admin &amp; Governance Portal" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" ><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
         </div>
     </header>
@@ -85,7 +85,7 @@ $sidebarBadges = gov_getSidebarBadges();
     <div class="pl-[260px]">
         <main class="relative pt-[60px] w-full min-h-screen bg-surface px-gutter-desktop py-space-lg">
             <div class="flex flex-col w-full">
-                <!-- Breadcrumb and Security Status Bar -->
+                <?php /* Breadcrumb and Security Status Bar */ ?>
                 <div
                     class="flex flex-col md:flex-row md:items-center justify-between gap-space-xs pb-space-sm mb-space-sm bg-surface-container-low px-space-md py-space-xs rounded border border-outline-variant/30">
                     <div
@@ -110,7 +110,7 @@ $sidebarBadges = gov_getSidebarBadges();
                             class="font-security-stamp text-[10px] px-space-xs py-[1px] bg-primary text-on-primary rounded uppercase">ZERO-STANDING-PRIVILEGE</span>
                     </div>
                 </div>
-                <!-- Main Header & Emergency Action Toolbar -->
+                <?php /* Main Header & Emergency Action Toolbar */ ?>
                 <div
                     class="flex flex-col lg:flex-row lg:items-center justify-between gap-space-md mb-space-base bg-surface-container-lowest p-space-base rounded border border-outline-variant/40">
                     <div class="flex flex-col gap-space-2xs">
@@ -135,7 +135,7 @@ $sidebarBadges = gov_getSidebarBadges();
                             <span>LEASE REVOCATION LATENCY: &lt;140ms</span>
                         </div>
                     </div>
-                    <!-- Actions -->
+                    <?php /* Actions */ ?>
                     <div class="flex items-center gap-space-sm flex-wrap"><button
                             class="h-control-height-md px-space-base bg-secondary-fixed hover:bg-secondary-fixed-dim text-on-secondary-fixed font-title-sm text-[13px] font-bold rounded flex items-center gap-space-xs transition-all shadow border border-secondary-fixed shadow-[0_0_12px_rgba(152,240,251,0.4)] hover:shadow-[0_0_16px_rgba(152,240,251,0.6)] cursor-pointer"
                             id="btn-request-cred"><span
@@ -151,9 +151,9 @@ $sidebarBadges = gov_getSidebarBadges();
                                 class="material-symbols-outlined text-[16px]">power_off</span><span>Emergency Session
                                 Sever (Lockout)</span></button></div>
                 </div>
-                <!-- KPI Metrics Banner with Exact 4px Left Classification Strips -->
+                <?php /* KPI Metrics Banner with Exact 4px Left Classification Strips */ ?>
                 <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-space-md mb-space-base">
-                    <!-- Metric 1: Active Leases (Red strip: Highly Confidential #B23A32) -->
+                    <?php /* Metric 1: Active Leases (Red strip: Highly Confidential #B23A32) */ ?>
                     <div
                         class="bg-surface-container-lowest p-space-md rounded border-t border-r border-b border-outline-variant/40 border-l-4 border-l-[#B23A32] shadow-sm flex flex-col justify-between">
                         <div class="flex items-center justify-between mb-space-xs">
@@ -182,7 +182,7 @@ $sidebarBadges = gov_getSidebarBadges();
                             </div>
                         </div>
                     </div>
-                    <!-- Metric 2: Pending Dual-Custody (Amber strip: Confidential #D9822B) -->
+                    <?php /* Metric 2: Pending Dual-Custody (Amber strip: Confidential #D9822B) */ ?>
                     <div
                         class="bg-surface-container-lowest p-space-md rounded border-t border-r border-b border-outline-variant/40 border-l-4 border-l-[#D9822B] shadow-sm flex flex-col justify-between">
                         <div class="flex items-center justify-between mb-space-xs">
@@ -209,7 +209,7 @@ $sidebarBadges = gov_getSidebarBadges();
                             </div>
                         </div>
                     </div>
-                    <!-- Metric 3: Automated Password/Key Rotation (Blue strip: Internal #3E7CB1) -->
+                    <?php /* Metric 3: Automated Password/Key Rotation (Blue strip: Internal #3E7CB1) */ ?>
                     <div
                         class="bg-surface-container-lowest p-space-md rounded border-t border-r border-b border-outline-variant/40 border-l-4 border-l-[#3E7CB1] shadow-sm flex flex-col justify-between">
                         <div class="flex items-center justify-between mb-space-xs">
@@ -237,7 +237,7 @@ $sidebarBadges = gov_getSidebarBadges();
                             </div>
                         </div>
                     </div>
-                    <!-- Metric 4: Risk & Threat Posture (Slate strip: Public/Operational #8A94A0) -->
+                    <?php /* Metric 4: Risk & Threat Posture (Slate strip: Public/Operational #8A94A0) */ ?>
                     <div
                         class="bg-surface-container-lowest p-space-md rounded border-t border-r border-b border-outline-variant/40 border-l-4 border-l-[#8A94A0] shadow-sm flex flex-col justify-between">
                         <div class="flex items-center justify-between mb-space-xs">
@@ -265,15 +265,15 @@ $sidebarBadges = gov_getSidebarBadges();
                         </div>
                     </div>
                 </div>
-                <!-- Master / Detail Grid -->
+                <?php /* Master / Detail Grid */ ?>
                 <div class="grid grid-cols-1 xl:grid-cols-12 gap-space-base items-start">
-                    <!-- LEFT COLUMN: Privileged Identity Registry & Vault Inventory (65% -> col-span-8) -->
+                    <?php /* LEFT COLUMN: Privileged Identity Registry & Vault Inventory (65% -> col-span-8) */ ?>
                     <div class="xl:col-span-8 flex flex-col gap-space-md">
-                        <!-- Filter Bar & Search Chassis -->
+                        <?php /* Filter Bar & Search Chassis */ ?>
                         <div
                             class="bg-surface-container-lowest p-space-md rounded border border-outline-variant/40 shadow-sm flex flex-col gap-space-sm">
                             <div class="flex flex-col md:flex-row md:items-center justify-between gap-space-sm">
-                                <!-- Segmented Filter Tabs -->
+                                <?php /* Segmented Filter Tabs */ ?>
                                 <?php
 $activeLeaseCount = count(array_filter($privilegedAccounts, fn($p) => !empty($p['session_id'])));
 $pendingSignoffCount = count(array_filter($privilegedAccounts, fn($p) => empty($p['session_id']) && $p['account_status'] === 'Active'));
@@ -298,7 +298,7 @@ $vaultedCount = count(array_filter($privilegedAccounts, fn($p) => $p['clearance_
                                         Vaulted Services (<?= $vaultedCount ?>)
                                     </button>
                                 </div>
-                                <!-- Quick Refresh / Density Toggle -->
+                                <?php /* Quick Refresh / Density Toggle */ ?>
                                 <div
                                     class="flex items-center gap-space-xs font-telemetry-micro text-telemetry-micro text-on-surface-variant">
                                     <span class="font-bold text-primary">POLLING:</span>
@@ -311,7 +311,7 @@ $vaultedCount = count(array_filter($privilegedAccounts, fn($p) => $p['clearance_
                                     </button>
                                 </div>
                             </div>
-                            <!-- Monospaced Search Input with Parameter Helper -->
+                            <?php /* Monospaced Search Input with Parameter Helper */ ?>
                             <div class="flex flex-col md:flex-row items-center gap-space-sm">
                                 <div class="relative flex-1 w-full">
                                     <span
@@ -325,7 +325,7 @@ $vaultedCount = count(array_filter($privilegedAccounts, fn($p) => $p['clearance_
                                 </div>
                             </div>
                         </div>
-                        <!-- High-Density Privileged Identity Registry Table -->
+                        <?php /* High-Density Privileged Identity Registry Table */ ?>
                         <div
                             class="bg-surface-container-lowest rounded border border-outline-variant/40 shadow-sm overflow-hidden">
                             <div
@@ -339,7 +339,7 @@ $vaultedCount = count(array_filter($privilegedAccounts, fn($p) => $p['clearance_
                                 </div>
                                 <div
                                     class="flex items-center gap-space-md font-telemetry-micro text-telemetry-micro text-on-surface-variant">
-                                    <span>EXPORT: <a id="pamExportCsvBtn" class="text-secondary font-bold underline cursor-pointer" href="javascript:void(0)">CSV</a> / <a id="pamExportJsonBtn" class="text-secondary font-bold underline cursor-pointer" href="javascript:void(0)">JSON-SIG</a></span>
+                                    <span>EXPORT: <button type="button" id="pamExportCsvBtn" class="text-secondary font-bold underline cursor-pointer bg-transparent border-0 p-0 inline">CSV</button> / <button type="button" id="pamExportJsonBtn" class="text-secondary font-bold underline cursor-pointer bg-transparent border-0 p-0 inline">JSON-SIG</button></span>
                                 </div>
                             </div>
                             <div class="overflow-x-auto">
@@ -439,7 +439,7 @@ $vaultedCount = count(array_filter($privilegedAccounts, fn($p) => $p['clearance_
                                     </tbody>
                                 </table>
                             </div>
-                            <!-- Table Footer / Telemetry Summary -->
+                            <?php /* Table Footer / Telemetry Summary */ ?>
                             <div
                                 class="p-space-xs px-space-base bg-surface-container-low border-t border-outline-variant/40 flex flex-col sm:flex-row items-center justify-between text-telemetry-micro font-telemetry-micro text-on-surface-variant">
                                 <div class="flex items-center gap-space-sm">
@@ -453,7 +453,7 @@ $vaultedCount = count(array_filter($privilegedAccounts, fn($p) => $p['clearance_
                                 </div>
                             </div>
                         </div>
-                        <!-- Historical Session Telemetry & Keystroke Distribution Sparkline Card -->
+                        <?php /* Historical Session Telemetry & Keystroke Distribution Sparkline Card */ ?>
                         <div
                             class="bg-surface-container-lowest p-space-md rounded border border-outline-variant/40 shadow-sm flex flex-col gap-space-sm">
                             <div class="flex items-center justify-between">
@@ -465,7 +465,7 @@ $vaultedCount = count(array_filter($privilegedAccounts, fn($p) => $p['clearance_
                                 <span class="font-telemetry-micro text-telemetry-micro text-on-surface-variant">HOURLY
                                     AGGREGATE // BASTIONS 01-04</span>
                             </div>
-                            <!-- Inline SVG Sparkline / Activity Graph -->
+                            <?php /* Inline SVG Sparkline / Activity Graph */ ?>
                             <div
                                 class="w-full h-20 bg-surface-container-low p-space-xs rounded border border-outline-variant/30 relative flex items-end">
                                 <svg class="w-full h-full text-secondary" fill="none" preserveaspectratio="none"
@@ -477,7 +477,7 @@ $vaultedCount = count(array_filter($privilegedAccounts, fn($p) => $p['clearance_
                                     <path
                                         d="M0,65 L25,60 L50,70 L75,45 L100,55 L125,30 L150,50 L175,20 L200,40 L225,15 L250,35 L275,10 L300,25 L325,45 L350,20 L375,15 L400,30 L425,18 L450,22 L475,8 L500,24 L500,80 L0,80 Z"
                                         fill="currentColor" fill-opacity="0.08"></path>
-                                    <!-- Overlay warning marker -->
+                                    <?php /* Overlay warning marker */ ?>
                                     <line stroke="#B23A32" stroke-dasharray="3 3" stroke-width="1.5" x1="275" x2="275"
                                         y1="0" y2="80"></line>
                                 </svg>
@@ -506,9 +506,9 @@ $vaultedCount = count(array_filter($privilegedAccounts, fn($p) => $p['clearance_
                             </div>
                         </div>
                     </div>
-                    <!-- RIGHT COLUMN: Session Inspector, Approval Desk & Receipts (35% -> col-span-4) -->
+                    <?php /* RIGHT COLUMN: Session Inspector, Approval Desk & Receipts (35% -> col-span-4) */ ?>
                     <div class="xl:col-span-4 flex flex-col gap-space-base">
-                        <!-- Panel 1: Live Bastion Keystream Inspector (Red Left Border) -->
+                        <?php /* Panel 1: Live Bastion Keystream Inspector (Red Left Border) */ ?>
                         <div
                             class="bg-surface-container-lowest rounded border-t border-r border-b border-outline-variant/40 border-l-4 border-l-[#B23A32] shadow-sm overflow-hidden">
                                                         <div
@@ -523,7 +523,7 @@ $vaultedCount = count(array_filter($privilegedAccounts, fn($p) => $p['clearance_
                                     class="font-security-stamp text-[10px] text-error bg-error-container/40 px-space-xs py-[1px] font-bold rounded">#PAM-9082</span>
                             </div>
                             <div class="p-space-md flex flex-col gap-space-sm">
-                                <!-- Identity Meta -->
+                                <?php /* Identity Meta */ ?>
                                 <div
                                     class="flex items-center justify-between text-telemetry-micro font-telemetry-micro bg-surface-container-low p-space-xs rounded border border-outline-variant/30">
                                     <div>
@@ -537,7 +537,7 @@ $vaultedCount = count(array_filter($privilegedAccounts, fn($p) => $p['clearance_
                                         <span class="text-error font-bold block">RECORDING OCR</span>
                                     </div>
                                 </div>
-                                <!-- Terminal Preview Box (Dark Neobrutalist Console) -->
+                                <?php /* Terminal Preview Box (Dark Neobrutalist Console) */ ?>
                                 <div id="bastionTerminalStream" class="bg-[#0F2438] text-[#96EEF9] font-telemetry-micro p-space-sm rounded border border-primary text-[11px] leading-[17px] flex flex-col gap-1 font-mono shadow-inner">
                                     <div
                                         class="flex items-center justify-between border-b border-outline-variant/20 pb-1 text-on-primary-container text-[10px]">
@@ -568,7 +568,7 @@ $vaultedCount = count(array_filter($privilegedAccounts, fn($p) => $p['clearance_
                                         <span class="w-2 h-3.5 bg-secondary-fixed animate-pulse inline-block"></span>
                                     </div>
                                 </div>
-                                <!-- Real-time Operator Controls -->
+                                <?php /* Real-time Operator Controls */ ?>
                                 <div class="flex flex-col gap-space-xs pt-space-xs">
                                     <div class="grid grid-cols-2 gap-space-xs">
                                         <button
@@ -593,7 +593,7 @@ $vaultedCount = count(array_filter($privilegedAccounts, fn($p) => $p['clearance_
                                 </div>
                             </div>
                         </div>
-                        <!-- Panel 2: Rapid Dual-Custody Approval Desk (Amber Left Border) -->
+                        <?php /* Panel 2: Rapid Dual-Custody Approval Desk (Amber Left Border) */ ?>
                         <div
                             class="bg-surface-container-lowest rounded border-t border-r border-b border-outline-variant/40 border-l-4 border-l-[#D9822B] shadow-sm overflow-hidden">
                                                         <div
@@ -609,7 +609,7 @@ $vaultedCount = count(array_filter($privilegedAccounts, fn($p) => $p['clearance_
                                     OF 3 QUEUED</span>
                             </div>
                             <div class="p-space-md flex flex-col gap-space-sm">
-                                <!-- Elevation Context -->
+                                <?php /* Elevation Context */ ?>
                                 <div
                                     class="border border-outline-variant/30 rounded p-space-sm bg-surface-container-lowest flex flex-col gap-space-xs">
                                     <div class="flex items-center justify-between">
@@ -634,11 +634,11 @@ $vaultedCount = count(array_filter($privilegedAccounts, fn($p) => $p['clearance_
                                         <div><strong class="text-on-surface-variant font-telemetry-micro">TICKET
                                                 LINK:</strong> <a
                                                 class="text-secondary font-telemetry-data underline font-bold"
-                                                href="#">INC-2026-4412</a></div>
+                                                href="AuditLogs.php?search=INC-2026-4412">INC-2026-4412</a></div>
                                         <div><strong class="text-on-surface-variant font-telemetry-micro">REQUESTED
                                                 LEASE:</strong> 60 Minutes (Single-Use)</div>
                                     </div>
-                                    <!-- Sign-off Quorum Tracker -->
+                                    <?php /* Sign-off Quorum Tracker */ ?>
                                     <div
                                         class="bg-surface-container-low p-space-xs rounded border border-outline-variant/30 flex flex-col gap-1 mt-1">
                                         <div
@@ -658,7 +658,7 @@ $vaultedCount = count(array_filter($privilegedAccounts, fn($p) => $p['clearance_
                                         </div>
                                     </div>
                                 </div>
-                                <!-- Dual Custody Interactive Actions -->
+                                <?php /* Dual Custody Interactive Actions */ ?>
                                 <div class="flex flex-col gap-space-xs">
                                     <button
                                         class="h-control-height-md w-full bg-[#0E7C86] hover:bg-secondary text-white rounded font-title-sm text-[13px] font-semibold flex items-center justify-center gap-space-xs shadow-sm"
@@ -681,7 +681,7 @@ $vaultedCount = count(array_filter($privilegedAccounts, fn($p) => $p['clearance_
                                 </div>
                             </div>
                         </div>
-                        <!-- Panel 3: Tamper-Evident Cryptographic Ledger Receipt -->
+                        <?php /* Panel 3: Tamper-Evident Cryptographic Ledger Receipt */ ?>
                         <div
                             class="bg-surface-container-lowest p-space-md rounded border border-outline-variant/40 shadow-sm flex flex-col gap-space-xs">
                             <div class="flex items-center justify-between">

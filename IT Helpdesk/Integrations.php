@@ -36,7 +36,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
 
 <body class="vostok-integrations-page">
 
-    <!-- Header Bar -->
+    <?php /* Header Bar */ ?>
     <header class="vostok-top-bar">
         <a href="Dashboard.php" class="vostok-brand-link">
             <img src="../assets/logo.svg" alt="VOSTOKPRIBOR" onerror="this.src='../assets/images/logo.png'">
@@ -58,7 +58,7 @@ $currUser = $_SESSION['vostok_user'] ?? ['full_name' => 'Authorized User', 'clea
         </div>
     </header>
 
-    <!-- Main Content Rendering Integration Matrix -->
+    <?php /* Main Content Rendering Integration Matrix */ ?>
     <main class="vostok-main-content">
         <?php renderSystemIntegrationView('SYS09', 'standalone'); ?>
     </main>

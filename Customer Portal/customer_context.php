@@ -224,7 +224,7 @@ function renderCustomerHeader(string $activeSearchPlaceholder = 'Search projects
                 </div>
             </div>
 
-            <!-- Top Bar Sign Out -->
+            <?php /* Top Bar Sign Out */ ?>
             <a href="./api/logout.php?redirect=../login.php" class="top-signout-btn" title="Sign Out of Customer Portal" onclick="(function(){sessionStorage.clear();localStorage.clear();})()">
                 <span class="material-symbols-outlined">logout</span>
                 <span>Sign Out</span>
@@ -250,7 +250,7 @@ function renderCustomerSidebar(string $currentPage): void {
                 </button>
             </div>
             <nav class="flex flex-col gap-0.5" id="portal-nav-list">
-                <!-- Dashboard -->
+                <?php /* Dashboard */ ?>
                 <a data-path="dashboard" href="Dashboard.php"
                    class="flex items-center gap-unit-sm px-unit-base py-unit-sm transition-colors font-headline-sm text-headline-sm <?= $currentPage === 'dashboard' ? 'active bg-surface-container-high/10 text-on-primary font-semibold border-l-4 border-on-tertiary-container' : 'text-on-primary-container hover:bg-surface-container-high/5 hover:text-on-primary font-normal' ?>"
                    <?= $currentPage === 'dashboard' ? 'aria-current="page"' : '' ?>>
@@ -263,7 +263,7 @@ function renderCustomerSidebar(string $currentPage): void {
                     <span>Dashboard</span>
                 </a>
 
-                <!-- Orders -->
+                <?php /* Orders */ ?>
                 <a data-path="orders" href="Orders.php"
                    class="flex items-center gap-unit-sm px-unit-base py-unit-sm transition-colors font-headline-sm text-headline-sm <?= $currentPage === 'orders' ? 'active bg-surface-container-high/10 text-on-primary font-semibold border-l-4 border-on-tertiary-container' : 'text-on-primary-container hover:bg-surface-container-high/5 hover:text-on-primary font-normal' ?>"
                    <?= $currentPage === 'orders' ? 'aria-current="page"' : '' ?>>
@@ -276,7 +276,7 @@ function renderCustomerSidebar(string $currentPage): void {
                     <span id="nav-badge-orders" class="ml-auto px-2 py-0.5 text-xs font-mono font-bold rounded-full bg-surface-container-high/30 text-on-primary-container"><?= $badgeOrders ?></span>
                 </a>
 
-                <!-- Projects -->
+                <?php /* Projects */ ?>
                 <a data-path="projects" href="ProjectListAndDetail.php"
                    class="flex items-center gap-unit-sm px-unit-base py-unit-sm transition-colors font-headline-sm text-headline-sm <?= $currentPage === 'projects' ? 'active bg-surface-container-high/10 text-on-primary font-semibold border-l-4 border-on-tertiary-container' : 'text-on-primary-container hover:bg-surface-container-high/5 hover:text-on-primary font-normal' ?>"
                    <?= $currentPage === 'projects' ? 'aria-current="page"' : '' ?>>
@@ -289,7 +289,7 @@ function renderCustomerSidebar(string $currentPage): void {
                     <span id="nav-badge-projects" class="ml-auto px-2 py-0.5 text-xs font-mono font-bold rounded-full bg-surface-container-high/30 text-on-primary-container"><?= $badgeProjects ?></span>
                 </a>
 
-                <!-- Invoices -->
+                <?php /* Invoices */ ?>
                 <a data-path="invoices" href="Invoices.php"
                    class="flex items-center gap-unit-sm px-unit-base py-unit-sm transition-colors font-headline-sm text-headline-sm <?= $currentPage === 'invoices' ? 'active bg-surface-container-high/10 text-on-primary font-semibold border-l-4 border-on-tertiary-container' : 'text-on-primary-container hover:bg-surface-container-high/5 hover:text-on-primary font-normal' ?>"
                    <?= $currentPage === 'invoices' ? 'aria-current="page"' : '' ?>>
@@ -303,7 +303,7 @@ function renderCustomerSidebar(string $currentPage): void {
                     <span id="nav-badge-invoices" class="ml-auto px-2 py-0.5 text-xs font-mono font-bold rounded-full bg-surface-container-high/30 text-on-primary-container"><?= $badgeInvoices ?></span>
                 </a>
 
-                <!-- Documents -->
+                <?php /* Documents */ ?>
                 <a data-path="documents" href="Documents.php"
                    class="flex items-center gap-unit-sm px-unit-base py-unit-sm transition-colors font-headline-sm text-headline-sm <?= $currentPage === 'documents' ? 'active bg-surface-container-high/10 text-on-primary font-semibold border-l-4 border-on-tertiary-container' : 'text-on-primary-container hover:bg-surface-container-high/5 hover:text-on-primary font-normal' ?>"
                    <?= $currentPage === 'documents' ? 'aria-current="page"' : '' ?>>
@@ -314,7 +314,7 @@ function renderCustomerSidebar(string $currentPage): void {
                     <span id="nav-badge-documents" class="ml-auto px-2 py-0.5 text-xs font-mono font-bold rounded-full bg-surface-container-high/30 text-on-primary-container"><?= $badgeDocs ?></span>
                 </a>
 
-                <!-- Support -->
+                <?php /* Support */ ?>
                 <a data-path="support" href="SupportTicketView.php"
                    class="flex items-center gap-unit-sm px-unit-base py-unit-sm transition-colors font-headline-sm text-headline-sm <?= $currentPage === 'support' ? 'active bg-surface-container-high/10 text-on-primary font-semibold border-l-4 border-on-tertiary-container' : 'text-on-primary-container hover:bg-surface-container-high/5 hover:text-on-primary font-normal' ?>"
                    <?= $currentPage === 'support' ? 'aria-current="page"' : '' ?>>
@@ -326,7 +326,7 @@ function renderCustomerSidebar(string $currentPage): void {
                     <span id="nav-badge-support" class="ml-auto px-2 py-0.5 text-xs font-mono font-bold rounded-full bg-surface-container-high/30 text-on-primary-container"><?= $badgeTickets ?></span>
                 </a>
 
-                <!-- Service Requests (Integrated with HR System) -->
+                <?php /* Service Requests (Integrated with HR System) */ ?>
                 <a data-path="services" href="ServiceRequests.php"
                    class="flex items-center gap-unit-sm px-unit-base py-unit-sm transition-colors font-headline-sm text-headline-sm <?= $currentPage === 'services' ? 'active bg-surface-container-high/10 text-on-primary font-semibold border-l-4 border-on-tertiary-container' : 'text-on-primary-container hover:bg-surface-container-high/5 hover:text-on-primary font-normal' ?>"
                    <?= $currentPage === 'services' ? 'aria-current="page"' : '' ?>>
@@ -337,7 +337,7 @@ function renderCustomerSidebar(string $currentPage): void {
                     <span id="nav-badge-services" class="ml-auto px-2 py-0.5 text-xs font-mono font-bold rounded-full bg-surface-container-high/30 text-tertiary-fixed"><?= $badgeServices ?></span>
                 </a>
 
-                <!-- Careers & Job Postings (Live from HR System) -->
+                <?php /* Careers & Job Postings (Live from HR System) */ ?>
                 <a data-path="careers" href="Careers.php"
                    class="flex items-center gap-unit-sm px-unit-base py-unit-sm transition-colors font-headline-sm text-headline-sm <?= $currentPage === 'careers' ? 'active bg-surface-container-high/10 text-on-primary font-semibold border-l-4 border-on-tertiary-container' : 'text-on-primary-container hover:bg-surface-container-high/5 hover:text-on-primary font-normal' ?>"
                    <?= $currentPage === 'careers' ? 'aria-current="page"' : '' ?>>
@@ -349,7 +349,7 @@ function renderCustomerSidebar(string $currentPage): void {
                     <span id="nav-badge-careers" class="ml-auto px-2 py-0.5 text-xs font-mono font-bold rounded-full bg-surface-container-high/30 text-on-primary-container"><?= $badgeCareers ?></span>
                 </a>
 
-                <!-- Account Settings -->
+                <?php /* Account Settings */ ?>
                 <a data-path="account-settings" href="AccountSettings.php"
                    class="flex items-center gap-unit-sm px-unit-base py-unit-sm transition-colors font-headline-sm text-headline-sm <?= $currentPage === 'account-settings' ? 'active bg-surface-container-high/10 text-on-primary font-semibold border-l-4 border-on-tertiary-container' : 'text-on-primary-container hover:bg-surface-container-high/5 hover:text-on-primary font-normal' ?>"
                    <?= $currentPage === 'account-settings' ? 'aria-current="page"' : '' ?>>
@@ -360,7 +360,7 @@ function renderCustomerSidebar(string $currentPage): void {
                     <span>Account Settings</span>
                 </a>
 
-                <!-- Inter-System Bus -->
+                <?php /* Inter-System Bus */ ?>
                 <a data-path="integrations" href="Integrations.php"
                    class="flex items-center gap-unit-sm px-unit-base py-unit-sm text-secondary-fixed hover:bg-surface-container-high/5 hover:text-on-primary transition-colors font-headline-sm text-headline-sm font-semibold <?= $currentPage === 'integrations' ? 'active bg-surface-container-high/10 text-on-primary font-semibold border-l-4 border-on-tertiary-container' : '' ?>"
                    <?= $currentPage === 'integrations' ? 'aria-current="page"' : '' ?>>
@@ -396,28 +396,6 @@ function renderCustomerSidebar(string $currentPage): void {
             </div>
         </div>
     </aside>
-    <?php
-}
-
-/**
- * Injects user identity and live database statistics into client JavaScript
- */
-function renderVostokScripts(): void {
-    global $currUser, $badgeOrders, $badgeProjects, $badgeInvoices, $badgeDocs, $badgeTickets;
-    ?>
-    <script>
-    window.VOSTOK_USER = <?= json_encode($currUser, JSON_UNESCAPED_UNICODE) ?>;
-    window.CURRENT_USER = window.VOSTOK_USER;
-    window.VOSTOK_CSRF_TOKEN = <?= json_encode(getCsrfToken()) ?>;
-    window.__CSRF_TOKEN__ = window.VOSTOK_CSRF_TOKEN;
-    window.VOSTOK_STATS = {
-        orders: <?= (int)$badgeOrders ?>,
-        projects: <?= (int)$badgeProjects ?>,
-        invoices: <?= (int)$badgeInvoices ?>,
-        documents: <?= (int)$badgeDocs ?>,
-        tickets: <?= (int)$badgeTickets ?>
-    };
-    </script>
     <?php
 }
 

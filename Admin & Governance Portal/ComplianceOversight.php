@@ -94,7 +94,7 @@ $remediationReviews = max(0, $totalReviews - $compliantReviews - $deviationRevie
                 </div>
             </div>
 
-            <!-- Top Bar Sign Out -->
+            <?php /* Top Bar Sign Out */ ?>
             <a href="../api/logout.php?system=Admin%20%26%20Governance%20Portal&redirect=../Admin%20%26%20Governance%20Portal/login.php" class="top-signout-btn" title="Sign Out of Admin &amp; Governance Portal" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" ><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
         </div>
     </header>
@@ -103,7 +103,7 @@ $remediationReviews = max(0, $totalReviews - $compliantReviews - $deviationRevie
         <main class="relative pt-[60px] w-full min-h-screen bg-surface px-gutter-desktop py-space-lg">
             <div class="flex flex-col w-full">
 
-                <!-- BREADCRUMBS & CONSOLE RUNBAR -->
+                <?php /* BREADCRUMBS & CONSOLE RUNBAR */ ?>
                 <div
                     class="flex flex-col md:flex-row md:items-center justify-between gap-space-sm pb-space-sm mb-space-base border-b border-surface-variant">
                     <div
@@ -129,7 +129,7 @@ $remediationReviews = max(0, $totalReviews - $compliantReviews - $deviationRevie
                         </div>
                     </div>
                 </div>
-                <!-- TITLE BAR & TOP-LEVEL ACTIONS -->
+                <?php /* TITLE BAR & TOP-LEVEL ACTIONS */ ?>
                 <div class="flex flex-col xl:flex-row xl:items-end justify-between gap-space-md mb-space-lg">
                     <div class="flex flex-col gap-space-xs max-w-4xl">
                         <div class="flex flex-wrap items-center gap-space-xs">
@@ -156,7 +156,7 @@ $remediationReviews = max(0, $totalReviews - $compliantReviews - $deviationRevie
                             Cyber-Shield directives.
                         </p>
                     </div>
-                    <!-- ACTION BUTTON GROUP -->
+                    <?php /* ACTION BUTTON GROUP */ ?>
                     <div class="flex flex-wrap items-center gap-space-xs self-start xl:self-end">
                         <button
                             class="h-control-height-md px-space-base bg-primary hover:bg-primary-container text-on-primary text-body-compact font-semibold flex items-center gap-space-xs transition-colors shadow-sm cursor-pointer"
@@ -177,9 +177,9 @@ $remediationReviews = max(0, $totalReviews - $compliantReviews - $deviationRevie
                         </button>
                     </div>
                 </div>
-                <!-- STATUTORY POSTURE SUMMARY KPI ROW (4-CARD GRID WITH CLASSIFICATION STRIPS) -->
+                <?php /* STATUTORY POSTURE SUMMARY KPI ROW (4-CARD GRID WITH CLASSIFICATION STRIPS) */ ?>
                 <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-space-md mb-space-lg">
-                    <!-- Card 1: Internal (#3E7CB1) -->
+                    <?php /* Card 1: Internal (#3E7CB1) */ ?>
                     <div
                         class="bg-surface-container-lowest border border-outline-variant/60 relative p-space-md flex flex-col justify-between shadow-sm overflow-hidden before:content-[''] before:absolute before:left-0 before:top-0 before:bottom-0 before:w-1 before:bg-[#3E7CB1]">
                         <div class="flex items-start justify-between pl-space-xs">
@@ -206,7 +206,7 @@ $remediationReviews = max(0, $totalReviews - $compliantReviews - $deviationRevie
                             <span>28/29 Mandated Compliant</span><span class="text-tertiary font-semibold ml-2 px-1.5 py-0.5 bg-tertiary-fixed/20 rounded">1 In Remediation</span>
                         </div>
                     </div>
-                    <!-- Card 2: Confidential (#D9822B) -->
+                    <?php /* Card 2: Confidential (#D9822B) */ ?>
                     <div
                         class="bg-surface-container-lowest border border-outline-variant/60 relative p-space-md flex flex-col justify-between shadow-sm overflow-hidden before:content-[''] before:absolute before:left-0 before:top-0 before:bottom-0 before:w-1 before:bg-[#D9822B]">
                         <div class="flex items-start justify-between pl-space-xs">
@@ -235,7 +235,7 @@ $remediationReviews = max(0, $totalReviews - $compliantReviews - $deviationRevie
                             <span class="font-bold text-on-surface">SYNCD</span>
                         </div>
                     </div>
-                    <!-- Card 3: Highly Confidential (#B23A32) -->
+                    <?php /* Card 3: Highly Confidential (#B23A32) */ ?>
                     <div
                         class="bg-surface-container-lowest border border-outline-variant/60 relative p-space-md flex flex-col justify-between shadow-sm overflow-hidden before:content-[''] before:absolute before:left-0 before:top-0 before:bottom-0 before:w-1 before:bg-[#B23A32]">
                         <div class="flex items-start justify-between pl-space-xs">
@@ -264,7 +264,7 @@ $remediationReviews = max(0, $totalReviews - $compliantReviews - $deviationRevie
                             <span>SLA &lt; 24h</span>
                         </div>
                     </div>
-                    <!-- Card 4: Public/Slate (#8A94A0) -->
+                    <?php /* Card 4: Public/Slate (#8A94A0) */ ?>
                     <div
                         class="bg-surface-container-lowest border border-outline-variant/60 relative p-space-md flex flex-col justify-between shadow-sm overflow-hidden before:content-[''] before:absolute before:left-0 before:top-0 before:bottom-0 before:w-1 before:bg-[#8A94A0]">
                         <div class="flex items-start justify-between pl-space-xs">
@@ -294,16 +294,16 @@ $remediationReviews = max(0, $totalReviews - $compliantReviews - $deviationRevie
                         </div>
                     </div>
                 </div>
-                <!-- MAIN TWO-COLUMN SPLIT WORKBENCH -->
+                <?php /* MAIN TWO-COLUMN SPLIT WORKBENCH */ ?>
                 <div class="grid grid-cols-1 xl:grid-cols-12 gap-space-md mb-space-base items-start">
-                    <!-- LEFT 2/3 COLUMN: REGULATORY CONTROLS MATRIX TABLE & CADENCE -->
+                    <?php /* LEFT 2/3 COLUMN: REGULATORY CONTROLS MATRIX TABLE & CADENCE */ ?>
                     <div class="xl:col-span-8 flex flex-col gap-space-md">
-                        <!-- CONTROLS CONTAINER -->
+                        <?php /* CONTROLS CONTAINER */ ?>
                         <div class="bg-surface-container-lowest border border-outline-variant shadow-sm flex flex-col">
-                            <!-- FRAMEWORK TABS & CONTROLS HEADER -->
+                            <?php /* FRAMEWORK TABS & CONTROLS HEADER */ ?>
                             <div
                                 class="p-space-md bg-surface-container-low border-b border-outline-variant flex flex-col lg:flex-row lg:items-center justify-between gap-space-md">
-                                <!-- TABS -->
+                                <?php /* TABS */ ?>
                                 <div class="flex items-center gap-space-2xs overflow-x-auto select-none" id="frameworkTabs">
                                     <button onclick="filterFramework('all')" data-tab="all"
                                         class="tab-btn px-space-md py-space-xs bg-primary text-on-primary font-telemetry-micro text-telemetry-micro font-bold uppercase rounded-none border border-primary transition-colors flex items-center gap-space-xs whitespace-nowrap cursor-pointer">
@@ -326,7 +326,7 @@ $remediationReviews = max(0, $totalReviews - $compliantReviews - $deviationRevie
                                         <span class="text-outline text-[10px]"><?= $scadaCount ?></span>
                                     </button>
                                 </div>
-                                <!-- SEARCH & SEVERITY DROPDOWN & NEW CONTROL BUTTON -->
+                                <?php /* SEARCH & SEVERITY DROPDOWN & NEW CONTROL BUTTON */ ?>
                                 <div class="flex items-center gap-space-xs flex-wrap">
                                     <div class="relative">
                                         <span
@@ -349,7 +349,7 @@ $remediationReviews = max(0, $totalReviews - $compliantReviews - $deviationRevie
                                     </button>
                                 </div>
                             </div>
-                            <!-- HIGH DENSITY DATA TABLE -->
+                            <?php /* HIGH DENSITY DATA TABLE */ ?>
                             <div class="overflow-x-auto w-full">
                                 <table class="w-full text-left border-collapse min-w-[780px]">
                                     <thead>
@@ -444,7 +444,7 @@ $remediationReviews = max(0, $totalReviews - $compliantReviews - $deviationRevie
                                     </tbody>
                                 </table>
                             </div>
-                            <!-- TABLE FOOTER PAGINATION & TELEMETRY SYNC -->
+                            <?php /* TABLE FOOTER PAGINATION & TELEMETRY SYNC */ ?>
                             <div class="p-space-sm bg-surface-container-low border-t border-outline-variant flex items-center justify-between text-telemetry-micro font-telemetry-micro text-on-surface-variant flex-wrap gap-2">
                                 <div class="flex items-center gap-space-sm flex-wrap">
                                     <span id="footerCountSpan">SHOWING <?= $totalControls ?> OF <?= $totalControls ?> REGULATORY CONTROLS</span>
@@ -462,7 +462,7 @@ $remediationReviews = max(0, $totalReviews - $compliantReviews - $deviationRevie
                             </div>
                             </div>
                         </div>
-                        <!-- LIVE COMPLIANCE STREAM TICKER -->
+                        <?php /* LIVE COMPLIANCE STREAM TICKER */ ?>
                         <div
                             class="bg-primary text-on-primary p-space-sm border border-primary-container shadow-sm flex items-center gap-space-md">
                             <div
@@ -483,9 +483,9 @@ $remediationReviews = max(0, $totalReviews - $compliantReviews - $deviationRevie
                             </div>
                         </div>
                     </div>
-                    <!-- RIGHT 1/3 COLUMN: AUDIT TIMELINES, DEVIATION CARDS & CRYPTO SEAL -->
+                    <?php /* RIGHT 1/3 COLUMN: AUDIT TIMELINES, DEVIATION CARDS & CRYPTO SEAL */ ?>
                     <div class="xl:col-span-4 flex flex-col gap-space-md">
-                        <!-- STATUTORY AUDIT SCHEDULE & DEADLINES PANEL -->
+                        <?php /* STATUTORY AUDIT SCHEDULE & DEADLINES PANEL */ ?>
                         <div class="bg-surface-container-lowest border border-outline-variant shadow-sm flex flex-col">
                             <div
                                 class="p-space-md bg-surface-container-low border-b border-outline-variant flex items-center justify-between">
@@ -500,7 +500,7 @@ $remediationReviews = max(0, $totalReviews - $compliantReviews - $deviationRevie
                                     class="px-space-xs py-[1px] bg-surface-container text-on-surface-variant font-security-stamp text-[10px]">Q2-2026</span>
                             </div>
                             <div class="p-space-md flex flex-col gap-space-sm">
-                                <!-- Event 1 -->
+                                <?php /* Event 1 */ ?>
                                 <div
                                     class="p-space-sm bg-surface-container-low border-l-4 border-error flex flex-col gap-space-2xs">
                                     <div class="flex items-center justify-between">
@@ -525,7 +525,7 @@ $remediationReviews = max(0, $totalReviews - $compliantReviews - $deviationRevie
                                             Dossier →</span>
                                     </div>
                                 </div>
-                                <!-- Event 2 -->
+                                <?php /* Event 2 */ ?>
                                 <div
                                     class="p-space-sm bg-surface-container-low border-l-4 border-tertiary flex flex-col gap-space-2xs">
                                     <div class="flex items-center justify-between">
@@ -550,7 +550,7 @@ $remediationReviews = max(0, $totalReviews - $compliantReviews - $deviationRevie
                                             Checklist →</span>
                                     </div>
                                 </div>
-                                <!-- Event 3 -->
+                                <?php /* Event 3 */ ?>
                                 <div
                                     class="p-space-sm bg-surface-container-low border-l-4 border-secondary flex flex-col gap-space-2xs">
                                     <div class="flex items-center justify-between">
@@ -576,7 +576,7 @@ $remediationReviews = max(0, $totalReviews - $compliantReviews - $deviationRevie
                                 </div>
                             </div>
                         </div>
-                        <!-- ACTIVE REMEDIATION DESK / CRITICAL DEVIATIONS -->
+                        <?php /* ACTIVE REMEDIATION DESK / CRITICAL DEVIATIONS */ ?>
                         <div class="bg-surface-container-lowest border border-outline-variant shadow-sm flex flex-col">
                             <div class="p-space-md bg-surface-container-low border-b border-outline-variant flex items-center justify-between">
                                 <div class="flex items-center gap-space-xs">
@@ -638,10 +638,10 @@ $remediationReviews = max(0, $totalReviews - $compliantReviews - $deviationRevie
                                 <?php endforeach; endif; ?>
                             </div>
                         </div>
-                        <!-- AUDITOR VERIFICATION CERTIFICATE BADGE & DIGITAL STAMP -->
+                        <?php /* AUDITOR VERIFICATION CERTIFICATE BADGE & DIGITAL STAMP */ ?>
                         <div
                             class="bg-surface-container-lowest border-2 border-primary shadow-md p-space-md flex flex-col gap-space-sm relative overflow-hidden">
-                            <!-- WATERMARK STAMP -->
+                            <?php /* WATERMARK STAMP */ ?>
                             <div class="absolute -right-6 -bottom-6 select-none pointer-events-none opacity-5">
                                 <span class="material-symbols-outlined text-[160px] text-primary">security</span>
                             </div>
@@ -698,7 +698,7 @@ $remediationReviews = max(0, $totalReviews - $compliantReviews - $deviationRevie
                         </div>
                     </div>
                 </div>
-                <!-- INTERACTIVE CLIENT MICRO-LOGIC -->
+                <?php /* INTERACTIVE CLIENT MICRO-LOGIC */ ?>
 
             </div>
         </main>
@@ -706,7 +706,7 @@ $remediationReviews = max(0, $totalReviews - $compliantReviews - $deviationRevie
     <script src="js/common.js"></script>
     <script src="js/complianceOversight.js"></script>
 
-    <!-- MODAL: REGISTER / EDIT STATUTORY CONTROL -->
+    <?php /* MODAL: REGISTER / EDIT STATUTORY CONTROL */ ?>
     <div id="controlModal" class="fixed inset-0 z-50 hidden bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="bg-surface-container-lowest border-2 border-primary w-full max-w-xl shadow-2xl overflow-hidden flex flex-col">
             <div class="p-space-md bg-surface-container-low border-b border-outline-variant flex items-center justify-between">
@@ -772,7 +772,7 @@ $remediationReviews = max(0, $totalReviews - $compliantReviews - $deviationRevie
         </div>
     </div>
 
-    <!-- MODAL: REPORT INCIDENT / DEVIATION -->
+    <?php /* MODAL: REPORT INCIDENT / DEVIATION */ ?>
     <div id="incidentModal" class="fixed inset-0 z-50 hidden bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="bg-surface-container-lowest border-2 border-error w-full max-w-xl shadow-2xl overflow-hidden flex flex-col">
             <div class="p-space-md bg-surface-container-low border-b border-outline-variant flex items-center justify-between">

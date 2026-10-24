@@ -103,17 +103,17 @@ document.addEventListener("DOMContentLoaded", () => {
           showAlert(data.message || "Authentication failed: Invalid credentials or insufficient clearance.", true);
         }
       })
-      .catch((err) => {
+      .catch(() => {
         if (submitBtn) {
           submitBtn.classList.remove("is-loading");
           submitBtn.disabled = false;
         }
-        showAlert("Database connection error: " + err.message, true);
+        showAlert("Service temporarily unavailable. Please try again.", true);
       });
   });
 
   window.handleForgotCredentials = function () {
     const customMsg = loginForm.getAttribute("data-recovery-msg");
-    showAlert(customMsg || "Security Advisory: Contact VP-SecOps Root Authority (ext. 1001) for clearance recovery.", true);
+    showAlert(customMsg || "Security Advisory: Contact IT support for credential recovery.", true);
   };
 });

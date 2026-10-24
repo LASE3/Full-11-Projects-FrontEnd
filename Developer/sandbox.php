@@ -25,7 +25,7 @@ $recentLogs = $pdo->query("SELECT * FROM `developer_sandbox_logs` ORDER BY `id` 
 </head>
 
 <body>
-    <!-- TOP NAVIGATION BAR -->
+    <?php /* TOP NAVIGATION BAR */ ?>
     <header class="vk-top-navbar">
         <div class="dev-flex-center-gap-24" >
             <button class="mobile-nav-toggle" id="dev-sidebar-toggle" onclick="document.body.classList.toggle('sidebar-open')" title="Toggle Menu"><span class="material-symbols-outlined">menu</span></button>
@@ -68,12 +68,12 @@ $recentLogs = $pdo->query("SELECT * FROM `developer_sandbox_logs` ORDER BY `id` 
                 </div>
             </div>
 
-            <!-- Top Bar Sign Out -->
+            <?php /* Top Bar Sign Out */ ?>
             <a href="../api/logout.php?system=Developer&redirect=../Developer/login.php" class="top-signout-btn" title="Sign Out of Developer" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" ><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
         </div>
     </header>
 
-    <!-- LEFT SIDEBAR -->
+    <?php /* LEFT SIDEBAR */ ?>
     <aside class="vk-sidebar" style="background-color: #0f2438 !important; border-right: 1px solid rgba(255, 255, 255, 0.1) !important; scrollbar-width: none !important; -ms-overflow-style: none !important;">
         <div class="vk-sidebar-nav">
             <div class="vk-sidebar-header">Core Documentation</div>
@@ -165,7 +165,7 @@ $recentLogs = $pdo->query("SELECT * FROM `developer_sandbox_logs` ORDER BY `id` 
         </div>
     </aside>
 
-    <!-- MAIN CONTENT -->
+    <?php /* MAIN CONTENT */ ?>
     <main class="vk-app-body">
         <div class="dev-mb-20" >
             <div class="dev-display-flex-align-items-81c3" >
@@ -180,7 +180,7 @@ $recentLogs = $pdo->query("SELECT * FROM `developer_sandbox_logs` ORDER BY `id` 
             </p>
         </div>
 
-        <!-- Quick Endpoint Presets (100% Dynamic from Database) -->
+        <?php /* Quick Endpoint Presets (100% Dynamic from Database) */ ?>
         <div class="dev-display-flex-align-items-7bb4" style="flex-wrap: wrap; gap: 8px;">
             <span class="dev-font-family-var-font-0e94" >Quick Presets:</span>
             <?php foreach ($presets as $preset): 
@@ -205,16 +205,16 @@ $recentLogs = $pdo->query("SELECT * FROM `developer_sandbox_logs` ORDER BY `id` 
             </button>
         </div>
 
-        <!-- Sandbox Layout Grid -->
+        <?php /* Sandbox Layout Grid */ ?>
         <div class="sandbox-container">
-            <!-- Left: Request Builder -->
+            <?php /* Left: Request Builder */ ?>
             <div class="vk-card tag-internal">
                 <div class="vk-card-header">
                     <div class="dev-font-weight-700-font-2e8f" >HTTP Request Builder</div>
                     <span class="badge-classification badge-internal">Database-Connected Live Sandbox</span>
                 </div>
                 <div class="vk-card-body dev-display-flex-flex-direction-269e">
-                    <!-- URL Bar -->
+                    <?php /* URL Bar */ ?>
                     <div class="request-bar">
                         <select class="method-select" id="sandboxMethod">
                             <option value="GET">GET</option>
@@ -228,7 +228,7 @@ $recentLogs = $pdo->query("SELECT * FROM `developer_sandbox_logs` ORDER BY `id` 
                         </button>
                     </div>
 
-                    <!-- Authorization Token Preview -->
+                    <?php /* Authorization Token Preview */ ?>
                     <div>
                         <label class="dev-font-size-11px-font-a64a" >Headers (Auto-injected by Gateway)</label>
                         <div class="dev-background-f8fafc-border-1px-0d68" >
@@ -238,7 +238,7 @@ $recentLogs = $pdo->query("SELECT * FROM `developer_sandbox_logs` ORDER BY `id` 
                         </div>
                     </div>
 
-                    <!-- JSON Body Builder -->
+                    <?php /* JSON Body Builder */ ?>
                     <div>
                         <div class="dev-display-flex-justify-content-2127" >
                             <label class="dev-font-size-11px-font-a64a" >Request Body (JSON)</label>
@@ -249,7 +249,7 @@ $recentLogs = $pdo->query("SELECT * FROM `developer_sandbox_logs` ORDER BY `id` 
                 </div>
             </div>
 
-            <!-- Right: Response Inspector -->
+            <?php /* Right: Response Inspector */ ?>
             <div class="response-pane">
                 <div class="response-header">
                     <div class="dev-flex-center-gap-10" >
@@ -281,7 +281,7 @@ $recentLogs = $pdo->query("SELECT * FROM `developer_sandbox_logs` ORDER BY `id` 
             </div>
         </div>
 
-        <!-- RECENT EXECUTION HISTORY (From database table developer_sandbox_logs) -->
+        <?php /* RECENT EXECUTION HISTORY (From database table developer_sandbox_logs) */ ?>
         <div class="vk-card" style="margin-top: 24px;">
             <div class="vk-card-header" style="display: flex; justify-content: space-between; align-items: center;">
                 <div style="display: flex; align-items: center; gap: 8px;">
@@ -337,7 +337,7 @@ $recentLogs = $pdo->query("SELECT * FROM `developer_sandbox_logs` ORDER BY `id` 
         </div>
     </main>
 
-    <!-- SAVE PRESET MODAL DIALOG -->
+    <?php /* SAVE PRESET MODAL DIALOG */ ?>
     <div class="vk-modal-overlay" id="savePresetModal">
         <div class="vk-modal-dialog" style="max-width: 500px;">
             <div class="vk-modal-header">

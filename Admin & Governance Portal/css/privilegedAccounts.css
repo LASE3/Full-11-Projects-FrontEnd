@@ -20,7 +20,3 @@
   transition: all 0.15s ease;
   cursor: pointer;
 }
-
-.active-lease-badge {
-  animation: livePulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-}

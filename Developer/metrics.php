@@ -38,7 +38,7 @@ $keyQuotas = $pdo->query("SELECT * FROM `developer_api_keys` ORDER BY `id` ASC L
 </head>
 
 <body>
-    <!-- TOP NAVIGATION BAR (System 10 Cyan 4px stripe) -->
+    <?php /* TOP NAVIGATION BAR (System 10 Cyan 4px stripe) */ ?>
     <header class="vk-top-navbar">
         <div class="dev-flex-center-gap-24" >
             <button class="mobile-nav-toggle" id="dev-sidebar-toggle" onclick="document.body.classList.toggle('sidebar-open')" title="Toggle Menu"><span class="material-symbols-outlined">menu</span></button>
@@ -81,12 +81,12 @@ $keyQuotas = $pdo->query("SELECT * FROM `developer_api_keys` ORDER BY `id` ASC L
                 </div>
             </div>
 
-            <!-- Top Bar Sign Out -->
+            <?php /* Top Bar Sign Out */ ?>
             <a href="../api/logout.php?system=Developer&redirect=../Developer/login.php" class="top-signout-btn" title="Sign Out of Developer" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" ><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
         </div>
     </header>
 
-    <!-- LEFT SIDEBAR -->
+    <?php /* LEFT SIDEBAR */ ?>
     <aside class="vk-sidebar" style="background-color: #0f2438 !important; border-right: 1px solid rgba(255, 255, 255, 0.1) !important; scrollbar-width: none !important; -ms-overflow-style: none !important;">
         <div class="vk-sidebar-nav">
             <div class="vk-sidebar-header">Core Documentation</div>
@@ -178,9 +178,9 @@ $keyQuotas = $pdo->query("SELECT * FROM `developer_api_keys` ORDER BY `id` ASC L
         </div>
     </aside>
 
-    <!-- MAIN CONTENT AREA -->
+    <?php /* MAIN CONTENT AREA */ ?>
     <main class="vk-main-layout">
-        <!-- HEADER BLOCK -->
+        <?php /* HEADER BLOCK */ ?>
         <div class="dev-display-flex-justify-content-f610" >
             <div>
                 <div class="dev-display-flex-align-items-9bb7" >
@@ -204,7 +204,7 @@ $keyQuotas = $pdo->query("SELECT * FROM `developer_api_keys` ORDER BY `id` ASC L
             </div>
         </div>
 
-        <!-- 4 KPI HUD CARDS (Dynamic from Database) -->
+        <?php /* 4 KPI HUD CARDS (Dynamic from Database) */ ?>
         <div class="metrics-kpi-grid">
             <div class="kpi-metric-card">
                 <div class="kpi-title">
@@ -245,9 +245,9 @@ $keyQuotas = $pdo->query("SELECT * FROM `developer_api_keys` ORDER BY `id` ASC L
             </div>
         </div>
 
-        <!-- TWO COLUMN LAYOUT: INGESTION TRAFFIC HOURLY SPIKES + QUOTA CONSUMPTION -->
+        <?php /* TWO COLUMN LAYOUT: INGESTION TRAFFIC HOURLY SPIKES + QUOTA CONSUMPTION */ ?>
         <div class="dev-display-grid-grid-template-27b0" >
-            <!-- INGESTION CHART -->
+            <?php /* INGESTION CHART */ ?>
             <div class="vk-card">
                 <div class="vk-card-header">
                     <div>
@@ -295,7 +295,7 @@ $keyQuotas = $pdo->query("SELECT * FROM `developer_api_keys` ORDER BY `id` ASC L
                 </div>
             </div>
 
-            <!-- QUOTA GAUGES (Dynamic from Database) -->
+            <?php /* QUOTA GAUGES (Dynamic from Database) */ ?>
             <div class="vk-card">
                 <div class="vk-card-header">
                     <div>
@@ -326,7 +326,7 @@ $keyQuotas = $pdo->query("SELECT * FROM `developer_api_keys` ORDER BY `id` ASC L
             </div>
         </div>
 
-        <!-- OUTBOUND WEBHOOK DISPATCH LEDGER (Dynamic from Database with CRUD) -->
+        <?php /* OUTBOUND WEBHOOK DISPATCH LEDGER (Dynamic from Database with CRUD) */ ?>
         <div class="vk-card dev-margin-bottom-30px-9550">
             <div class="vk-card-header" style="display: flex; justify-content: space-between; align-items: center;">
                 <div>
@@ -403,7 +403,7 @@ $keyQuotas = $pdo->query("SELECT * FROM `developer_api_keys` ORDER BY `id` ASC L
         </div>
     </main>
 
-    <!-- CREATE / EDIT WEBHOOK MODAL -->
+    <?php /* CREATE / EDIT WEBHOOK MODAL */ ?>
     <div class="vk-modal-overlay" id="webhookModal">
         <div class="vk-modal-dialog" style="max-width: 550px;">
             <div class="vk-modal-header">
@@ -453,7 +453,7 @@ $keyQuotas = $pdo->query("SELECT * FROM `developer_api_keys` ORDER BY `id` ASC L
         </div>
     </div>
 
-    <!-- PUBLIC-FACING / DEVELOPER FOOTER -->
+    <?php /* PUBLIC-FACING / DEVELOPER FOOTER */ ?>
     <footer class="vk-footer">
         <div class="vk-footer-grid">
             <div>
@@ -505,7 +505,7 @@ $keyQuotas = $pdo->query("SELECT * FROM `developer_api_keys` ORDER BY `id` ASC L
         </div>
     </footer>
 
-    <!-- Universal Command Palette Modal -->
+    <?php /* Universal Command Palette Modal */ ?>
     <div class="cmd-palette-backdrop" id="cmd-palette-modal">
         <div class="cmd-palette-box">
             <div class="cmd-palette-header">
@@ -541,7 +541,7 @@ $keyQuotas = $pdo->query("SELECT * FROM `developer_api_keys` ORDER BY `id` ASC L
         </div>
     </div>
 
-    <!-- Universal Toast Container -->
+    <?php /* Universal Toast Container */ ?>
     <div class="vk-toast-container"></div>
 
     <script src="js/dev-common.js"></script>

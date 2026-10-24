@@ -50,7 +50,7 @@ foreach ($keys as $k) {
 </head>
 
 <body>
-    <!-- TOP NAVIGATION BAR -->
+    <?php /* TOP NAVIGATION BAR */ ?>
     <header class="vk-top-navbar">
         <div class="dev-flex-center-gap-24" >
             <button class="mobile-nav-toggle" id="dev-sidebar-toggle" onclick="document.body.classList.toggle('sidebar-open')" title="Toggle Menu"><span class="material-symbols-outlined">menu</span></button>
@@ -93,12 +93,12 @@ foreach ($keys as $k) {
                 </div>
             </div>
 
-            <!-- Top Bar Sign Out -->
+            <?php /* Top Bar Sign Out */ ?>
             <a href="../api/logout.php?system=Developer&redirect=../Developer/login.php" class="top-signout-btn" title="Sign Out of Developer" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" ><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
         </div>
     </header>
 
-    <!-- LEFT SIDEBAR -->
+    <?php /* LEFT SIDEBAR */ ?>
     <aside class="vk-sidebar" style="background-color: #0f2438 !important; border-right: 1px solid rgba(255, 255, 255, 0.1) !important; scrollbar-width: none !important; -ms-overflow-style: none !important;">
         <div class="vk-sidebar-nav">
             <div class="vk-sidebar-header">Core Documentation</div>
@@ -189,11 +189,11 @@ foreach ($keys as $k) {
             <div class="dev-color-var-vk-neutral-1ba7" >90-day automated expiry enforced</div>
         </div>
 
-        <!-- Log Out -->
+        <?php /* Log Out */ ?>
 
     </aside>
 
-    <!-- MAIN CONTENT -->
+    <?php /* MAIN CONTENT */ ?>
     <main class="vk-app-body">
         <div class="dev-display-flex-justify-content-387e" >
             <div>
@@ -213,7 +213,7 @@ foreach ($keys as $k) {
             </button>
         </div>
 
-        <!-- Quota Overview Strip (Dynamic from Database) -->
+        <?php /* Quota Overview Strip (Dynamic from Database) */ ?>
         <div class="vk-card tag-confidential dev-margin-bottom-24px-dc2c">
             <div class="vk-card-body dev-display-grid-grid-template-590a">
                 <div>
@@ -234,7 +234,7 @@ foreach ($keys as $k) {
             </div>
         </div>
 
-        <!-- KEYS DATA TABLE (100% Dynamic from Database) -->
+        <?php /* KEYS DATA TABLE (100% Dynamic from Database) */ ?>
         <div class="vk-table-container">
             <table class="vk-table">
                 <thead>
@@ -327,7 +327,7 @@ foreach ($keys as $k) {
         </div>
     </main>
 
-    <!-- GENERATE KEY MODAL DIALOG -->
+    <?php /* GENERATE KEY MODAL DIALOG */ ?>
     <div class="vk-modal-overlay" id="genKeyModal" >
         <div class="vk-modal-dialog">
             <div class="vk-modal-header" >
@@ -366,13 +366,13 @@ foreach ($keys as $k) {
                 <div class="crud-form-group">
                     <label class="crud-form-label">Permission Scopes</label>
                     <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 4px;">
-                        <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer;">
+                        <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer; min-height: 44px; min-width: 44px;">
                             <input type="checkbox" id="scopeTelemetry" checked /> <code>telemetry:read</code> (Optical &amp; Geodetic sensors)
                         </label>
-                        <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer;">
+                        <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer; min-height: 44px; min-width: 44px;">
                             <input type="checkbox" id="scopeScada" checked /> <code>scada:ingest</code> (PLC high-speed frames)
                         </label>
-                        <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer;">
+                        <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer; min-height: 44px; min-width: 44px;">
                             <input type="checkbox" id="scopeOrders" /> <code>orders:write</code> (B2B procurement pipeline)
                         </label>
                     </div>
@@ -387,7 +387,7 @@ foreach ($keys as $k) {
         </div>
     </div>
 
-    <!-- EDIT KEY MODAL DIALOG -->
+    <?php /* EDIT KEY MODAL DIALOG */ ?>
     <div class="vk-modal-overlay" id="editKeyModal" >
         <div class="vk-modal-dialog">
             <div class="vk-modal-header" >
@@ -456,7 +456,7 @@ foreach ($keys as $k) {
     <script src="js/dev-common.js"></script>
     <script src="js/dev-credentials.js"></script>
   <script src="../assets/js/notifications-hub.js" defer></script>
-    <!-- SECRET KEY DISPLAY MODAL DIALOG (SHOWN ONCE) -->
+    <?php /* SECRET KEY DISPLAY MODAL DIALOG (SHOWN ONCE) */ ?>
     <div class="vk-modal-overlay" id="secretKeyModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:9999; align-items:center; justify-content:center;">
         <div class="vk-modal-dialog" style="max-width:550px; background:#0f2438; border:1px solid rgba(255,255,255,0.15); border-radius:8px; padding:24px; color:#fff;">
             <div class="vk-modal-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">

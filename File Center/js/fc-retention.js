@@ -73,10 +73,10 @@
           // Update active holds counter
           updateHoldsCount();
         } else {
-          alert("Hold toggle error: " + (res.message || "Failed to update legal hold"));
+          (window.vpToast ? window.vpToast("Hold toggle error: " + (res.message || "Failed to update legal hold"), "error") : alert("Hold toggle error: " + (res.message || "Failed to update legal hold")));
         }
       } catch (err) {
-        alert("Network or database error: " + err.message);
+        (window.vpToast ? window.vpToast("Network or database error: " + err.message, "error") : alert("Network or database error: " + err.message));
       } finally {
         btn.disabled = false;
       }

@@ -171,13 +171,27 @@ $totalCalls = 0;
 $passedCalls = 0;
 
 $fatalPatterns = [
-    'Fatal error'                => 'PHP Fatal Error',
+    'PHP Fatal error:'           => 'PHP Fatal Error',
+    '<b>Fatal error</b>:'        => 'PHP Fatal Error',
+    'Fatal error:'               => 'PHP Fatal Error',
     'Uncaught Error'             => 'Uncaught PHP Error',
     'Uncaught Exception'         => 'Uncaught Exception',
     'Call to undefined function' => 'Call to undefined function',
     'Stack trace:'               => 'Stack trace exposed to client',
+    'PHP Notice:'                => 'PHP Notice',
+    '<b>Notice</b>:'             => 'PHP Notice',
     'Notice: Undefined'          => 'PHP Notice: Undefined variable/index',
+    'PHP Warning:'               => 'PHP Warning',
+    '<b>Warning</b>:'            => 'PHP Warning',
     'Warning: Undefined'         => 'PHP Warning: Undefined variable/index',
+    'PHP Deprecated:'            => 'PHP Deprecated',
+    '<b>Deprecated</b>:'         => 'PHP Deprecated',
+    'SQLSTATE['                  => 'Exposed SQLSTATE Error',
+];
+
+$queryMatrix = [
+    'standard'      => '',
+    'parameterized' => '?search=test&q=test&page=1&per_page=10&sort=created_at&dir=desc&status=active&type=general&filter=all&category=all&priority=medium&department=ENG&id=1',
 ];
 
 foreach ($personas as $personaName => $userId) {
@@ -185,50 +199,52 @@ foreach ($personas as $personaName => $userId) {
     $token = $tokens[$personaName];
 
     foreach ($apiFiles as $relPath) {
-        $totalCalls++;
-        // Construct URL
         $urlParts = explode('/', $relPath);
         $encodedParts = array_map('rawurlencode', $urlParts);
-        $url = $baseUrl . '/' . implode('/', $encodedParts);
+        $baseEpUrl = $baseUrl . '/' . implode('/', $encodedParts);
 
-        // Call with GET
-        $res = callApi($url, $token, 'GET');
-        $code = $res['code'];
-        $body = $res['body'];
+        foreach ($queryMatrix as $qLabel => $qString) {
+            $totalCalls++;
+            $url = $baseEpUrl . $qString;
 
-        $failed = false;
-        $reason = '';
+            // Call with GET
+            $res = callApi($url, $token, 'GET');
+            $code = $res['code'];
+            $body = $res['body'];
 
-        if (!empty($res['curl_error'])) {
-            $failed = true;
-            $reason = "cURL error: " . $res['curl_error'];
-        } elseif ($code >= 500) {
-            $failed = true;
-            $reason = "HTTP {$code} Internal Server Error";
-        } else {
-            // Check body for fatal error strings
-            foreach ($fatalPatterns as $needle => $label) {
-                if (stripos($body, $needle) !== false) {
-                    $failed = true;
-                    // Extract snippet
-                    $snip = substr(strip_tags($body), 0, 150);
-                    $reason = "{$label}: {$snip}";
-                    break;
+            $failed = false;
+            $reason = '';
+
+            if (!empty($res['curl_error'])) {
+                $failed = true;
+                $reason = "cURL error: " . $res['curl_error'];
+            } elseif ($code >= 500) {
+                $failed = true;
+                $reason = "HTTP {$code} Internal Server Error";
+            } else {
+                // Check body for fatal error strings and warnings
+                foreach ($fatalPatterns as $needle => $label) {
+                    if (stripos($body, $needle) !== false) {
+                        $failed = true;
+                        $snip = substr(strip_tags($body), 0, 150);
+                        $reason = "{$label}: {$snip}";
+                        break;
+                    }
                 }
             }
-        }
 
-        if ($failed) {
-            $failures[] = [
-                'persona'  => $personaName,
-                'endpoint' => $relPath,
-                'method'   => 'GET',
-                'code'     => $code,
-                'reason'   => $reason,
-            ];
-            echo "  [FAIL] [{$personaName}] GET {$relPath} (HTTP {$code}): {$reason}\n";
-        } else {
-            $passedCalls++;
+            if ($failed) {
+                $failures[] = [
+                    'persona'  => $personaName,
+                    'endpoint' => $relPath . ($qString ? " ({$qLabel})" : ""),
+                    'method'   => 'GET',
+                    'code'     => $code,
+                    'reason'   => $reason,
+                ];
+                echo "  [FAIL] [{$personaName}] GET {$relPath}{$qString} (HTTP {$code}): {$reason}\n";
+            } else {
+                $passedCalls++;
+            }
         }
     }
 }

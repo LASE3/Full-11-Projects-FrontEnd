@@ -208,8 +208,13 @@ All test suites and scripts support Windows, Linux, and macOS by detecting `PHP_
 
 | Command | Entry Point | Scope & Description |
 | :--- | :--- | :--- |
-| `npm test` | `php tests/test_all_acceptance.php` | Full master acceptance suite (22 acceptance & regression sub-suites) |
-| `npm run test:sweep` | `php scripts/api_smoke.php` | Runtime HTTP sweep of 448 endpoints across 3 roles (CEO, Employee, Customer) with zero 5xx/fatals |
+| `npm test` | `php tests/run_all_tests.php` | Full test suite runner executing acceptance, input validation, isolation, and security regressions |
+| `npm run test:acceptance` | `php tests/test_all_acceptance.php` | Full master acceptance suite (22 acceptance sub-suites) |
+| `npm run test:sweep` | `php scripts/api_smoke.php` | Runtime HTTP sweep of 896 endpoints with parameter matrix across 3 roles with zero 5xx/fatals |
+| `npm run test:placeholders` | `php scripts/scan_repeated_placeholders.php` | Scans all SQL queries across codebase for repeated named PDO placeholders |
+| `npm run test:dead-code` | `php scripts/find_dead_code.php` | Scans codebase for unused PHP functions, unused CSS, console.log, and simulation-bar remnants |
+| `npm run test:security-headers` | `php tests/test_security_headers_cookies.php` | Verifies CSP, security headers, cookie flags (HttpOnly/SameSite/Secure), and production config |
+| `npm run test:input-length` | `php tests/test_input_length_validation.php` | Verifies Validator maximum input lengths and 422 responses on overlong strings |
 | `npm run test:e2e` | `node tests/e2e/clickthrough.spec.js` | Headless Playwright click-through test monitoring UI actions & background `/api/` calls |
 | `npm run test:responsive` | `node tests/e2e/responsive.spec.js` | 279-test responsive layout & zero horizontal overflow verification |
 | `npm run test:maker-checker` | `php tests/test_maker_checker.php` | Verification of Phase 2 dual-control invoice creator != approver != payer rules |

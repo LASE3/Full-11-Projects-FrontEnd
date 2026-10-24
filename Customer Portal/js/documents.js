@@ -136,7 +136,7 @@
       if (window.showToast) {
         window.showToast("NO SELECTION", "Please select a document row to download.", "warning");
       } else {
-        alert("Please select a document to download.");
+        (window.vpToast ? window.vpToast("Please select a document to download.", "warning") : alert("Please select a document to download."));
       }
       return;
     }
@@ -263,7 +263,7 @@
         if (window.showToast) {
           window.showToast("Verification Link Copied", `Permalink ready for ${docId}`, "info");
         } else {
-          alert(`Permalink copied: ${url}`);
+          (window.vpToast ? window.vpToast(`Permalink copied: ${url}`, "success") : alert(`Permalink copied: ${url}`));
         }
       })
       .catch(() => {
@@ -390,10 +390,10 @@
               }
               /* in-place upload complete */ if (data.data) { const tbody = document.querySelector("table tbody"); if (tbody) { const tr = document.createElement("tr"); tr.className = "hover:bg-neutral-50 transition-colors border-b border-neutral-100 cursor-pointer"; tr.innerHTML = `<td class="p-3 font-mono text-xs font-semibold text-primary-dark">${data.data.doc_id || ""}</td><td class="p-3 text-xs font-medium text-neutral-800">${data.data.title || "Uploaded"}</td><td class="p-3 text-xs text-neutral-500 font-mono">${data.data.classification || "CONFIDENTIAL"}</td><td class="p-3 text-xs font-mono text-neutral-500">Just now</td><td class="p-3"><span class="px-2 py-0.5 rounded text-[10px] font-mono bg-emerald-100 text-emerald-800">Verified</span></td>`; tbody.prepend(tr); } }
             } else {
-              alert("Upload failed: " + (data.message || data.error || "Server error"));
+              (window.vpToast ? window.vpToast("Upload failed: " + (data.message || data.error || "Server error"), "error") : alert("Upload failed"));
             }
           } catch (err) {
-            alert("Upload error: " + err.message);
+            (window.vpToast ? window.vpToast("Upload error: " + err.message, "error") : alert("Upload error: " + err.message));
           } finally {
             if (btn) {
               btn.disabled = false;

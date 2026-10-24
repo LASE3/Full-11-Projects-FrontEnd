@@ -145,7 +145,7 @@ if ($isSuperAdmin || $cusId) {
                     <?= htmlspecialchars(strtoupper(substr($currUser['full_name'] ?? 'U', 0, 2))) ?>
                 </div>
             </div>
-            <!-- Top Bar Sign Out -->
+            <?php /* Top Bar Sign Out */ ?>
             <a href="./api/logout.php?redirect=../login.php" class="top-signout-btn" title="Sign Out of Customer Portal" onclick="(function(){sessionStorage.clear();localStorage.clear();})()"><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
         </div>
     </header>
@@ -222,7 +222,7 @@ if ($isSuperAdmin || $cusId) {
     <div id="portal-main-wrapper" class="portal-content-wrapper pl-64">
         <main class="w-full min-h-screen pt-16 bg-surface px-4 sm:px-6 lg:px-8 py-6">
             <div class="portal-container flex flex-col gap-6">
-                <!-- Breadcrumbs & Status Bar -->
+                <?php /* Breadcrumbs & Status Bar */ ?>
                 <div class="flex flex-wrap items-center justify-between gap-unit-sm">
                     <nav
                         class="flex items-center gap-unit-xs text-on-surface-variant font-data-mono-md text-data-mono-md">
@@ -246,7 +246,7 @@ if ($isSuperAdmin || $cusId) {
                         <span class="text-on-surface font-semibold">USD / EQUIV RUB</span>
                     </div>
                 </div>
-                <!-- Page Header & Action Bar -->
+                <?php /* Page Header & Action Bar */ ?>
                 <div
                     class="flex flex-col lg:flex-row lg:items-end justify-between gap-unit-base bg-surface-container-lowest p-unit-lg rounded-lg shadow-sm">
                     <div class="flex flex-col gap-unit-xs">
@@ -278,9 +278,9 @@ if ($isSuperAdmin || $cusId) {
                     </div>
                 </div>
 
-                <!-- KPI Metrics Bento Grid -->
+                <?php /* KPI Metrics Bento Grid */ ?>
                 <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-unit-base">
-                    <!-- KPI 1 -->
+                    <?php /* KPI 1 */ ?>
                     <div
                         class="relative overflow-hidden bg-surface-container-lowest p-unit-base rounded-lg shadow-sm flex flex-col justify-between">
                         <div class="absolute left-0 top-0 bottom-0 w-1 bg-on-tertiary-container"></div>
@@ -304,7 +304,7 @@ if ($isSuperAdmin || $cusId) {
                                 class="font-technical-tag text-technical-tag font-semibold text-on-tertiary-container">Active Ledger</span>
                         </div>
                     </div>
-                    <!-- KPI 2 -->
+                    <?php /* KPI 2 */ ?>
                     <div
                         class="relative overflow-hidden bg-surface-container-lowest p-unit-base rounded-lg shadow-sm flex flex-col justify-between">
                         <div class="absolute left-0 top-0 bottom-0 w-1 bg-on-tertiary-container"></div>
@@ -327,7 +327,7 @@ if ($isSuperAdmin || $cusId) {
                                 SLA Compliance</span>
                         </div>
                     </div>
-                    <!-- KPI 3 -->
+                    <?php /* KPI 3 */ ?>
                     <div
                         class="relative overflow-hidden bg-surface-container-lowest p-unit-base rounded-lg shadow-sm flex flex-col justify-between">
                         <div class="absolute left-0 top-0 bottom-0 w-1 bg-on-tertiary-container"></div>
@@ -350,7 +350,7 @@ if ($isSuperAdmin || $cusId) {
                                 Stage-3 Audit</span>
                         </div>
                     </div>
-                    <!-- KPI 4 -->
+                    <?php /* KPI 4 */ ?>
                     <div
                         class="relative overflow-hidden bg-surface-container-lowest p-unit-base rounded-lg shadow-sm flex flex-col justify-between">
                         <div class="absolute left-0 top-0 bottom-0 w-1 bg-on-tertiary-container"></div>
@@ -378,9 +378,9 @@ if ($isSuperAdmin || $cusId) {
                     </div>
                 </div>
 
-                <!-- Active Financial Context Panel: Ledger Visualizer & Progress -->
+                <?php /* Active Financial Context Panel: Ledger Visualizer & Progress */ ?>
                 <div class="grid grid-cols-1 xl:grid-cols-3 gap-unit-base">
-                    <!-- SVG Disbursement Streamline -->
+                    <?php /* SVG Disbursement Streamline */ ?>
                     <div
                         class="xl:col-span-2 bg-surface-container-lowest p-unit-base rounded-lg shadow-sm flex flex-col justify-between">
                         <div class="flex items-center justify-between mb-unit-sm">
@@ -396,34 +396,34 @@ if ($isSuperAdmin || $cusId) {
                                         class="w-2 h-2 rounded bg-tertiary-fixed-dim"></span> Pending Release</span>
                             </div>
                         </div>
-                        <!-- Inline Vector Chart for Milestone Capital Flow -->
+                        <?php /* Inline Vector Chart for Milestone Capital Flow */ ?>
                         <div class="w-full bg-surface-container-low/40 rounded p-unit-sm">
                             <svg class="w-full h-28" fill="none" preserveAspectRatio="none" viewBox="0 0 680 110">
-                                <!-- Grid Lines -->
+                                <?php /* Grid Lines */ ?>
                                 <line class="text-surface-container-highest" stroke="currentColor"
                                     stroke-dasharray="2 4" x1="0" x2="680" y1="20" y2="20"></line>
                                 <line class="text-surface-container-highest" stroke="currentColor"
                                     stroke-dasharray="2 4" x1="0" x2="680" y1="55" y2="55"></line>
                                 <line class="text-surface-container-highest" stroke="currentColor"
                                     stroke-dasharray="2 4" x1="0" x2="680" y1="90" y2="90"></line>
-                                <!-- Area Gradients -->
+                                <?php /* Area Gradients */ ?>
                                 <defs>
                                     <linearGradient id="areaPaid" x1="0" x2="0" y1="0" y2="1">
                                         <stop offset="0%" stop-color="#436084" stop-opacity="0.25"></stop>
                                         <stop offset="100%" stop-color="#436084" stop-opacity="0"></stop>
                                     </linearGradient>
                                 </defs>
-                                <!-- Cumulative Curve -->
+                                <?php /* Cumulative Curve */ ?>
                                 <path
                                     d="M0,95 L60,88 L140,80 L220,70 L300,58 L380,45 L460,35 L540,24 L600,20 L680,18 L680,110 L0,110 Z"
                                     fill="url(#areaPaid)"></path>
                                 <path
                                     d="M0,95 L60,88 L140,80 L220,70 L300,58 L380,45 L460,35 L540,24 L600,20 L680,18"
                                     stroke="#436084" stroke-linecap="round" stroke-width="2.5"></path>
-                                <!-- Projected Pending Line -->
+                                <?php /* Projected Pending Line */ ?>
                                 <path d="M540,24 L610,12 L680,8" stroke="#bb7d16" stroke-dasharray="4 3"
                                     stroke-width="2"></path>
-                                <!-- Milestone Nodes -->
+                                <?php /* Milestone Nodes */ ?>
                                 <circle cx="140" cy="80" fill="#436084" r="3.5"></circle>
                                 <circle cx="300" cy="58" fill="#436084" r="3.5"></circle>
                                 <circle cx="460" cy="35" fill="#436084" r="3.5"></circle>
@@ -439,7 +439,7 @@ if ($isSuperAdmin || $cusId) {
                             </div>
                         </div>
                     </div>
-                    <!-- Compliance & Tax Digest -->
+                    <?php /* Compliance & Tax Digest */ ?>
                     <div
                         class="bg-surface-container-lowest p-unit-base rounded-lg shadow-sm flex flex-col justify-between">
                         <div class="flex items-center justify-between">
@@ -478,10 +478,10 @@ if ($isSuperAdmin || $cusId) {
                     </div>
                 </div>
 
-                <!-- Filters, Tabs & Search Controls -->
+                <?php /* Filters, Tabs & Search Controls */ ?>
                 <div class="flex flex-col gap-unit-sm bg-surface-container-lowest p-unit-base rounded-lg shadow-sm">
                     <div class="flex flex-wrap items-center justify-between gap-unit-base">
-                        <!-- Status Filter Tabs -->
+                        <?php /* Status Filter Tabs */ ?>
                         <div class="flex flex-wrap items-center gap-1 bg-surface-container p-1 rounded">
                             <button onclick="filterInvoiceStatus(this, 'all')"
                                 class="invoice-filter-tab px-unit-base py-1 rounded bg-surface-container-lowest text-on-surface font-headline-sm text-body-md font-semibold shadow-sm">
@@ -504,7 +504,7 @@ if ($isSuperAdmin || $cusId) {
                                     class="ml-1 font-technical-tag text-technical-tag text-on-surface-variant">0</span>
                             </button>
                         </div>
-                        <!-- Right Tool Controls -->
+                        <?php /* Right Tool Controls */ ?>
                         <div class="flex items-center gap-unit-sm">
                             <div
                                 class="flex items-center bg-surface-container-low px-unit-sm py-1 rounded text-on-surface-variant">
@@ -518,7 +518,7 @@ if ($isSuperAdmin || $cusId) {
                             </button>
                         </div>
                     </div>
-                    <!-- Advanced Filter Search Bar -->
+                    <?php /* Advanced Filter Search Bar */ ?>
                     <div class="grid grid-cols-1 md:grid-cols-12 gap-unit-sm pt-unit-xs">
                         <div
                             class="md:col-span-5 flex items-center bg-surface-container-low px-unit-md py-1.5 rounded">
@@ -558,7 +558,7 @@ if ($isSuperAdmin || $cusId) {
                     </div>
                 </div>
 
-                <!-- Main High-Density Financial Data Table -->
+                <?php /* Main High-Density Financial Data Table */ ?>
                 <div class="bg-surface-container-lowest rounded-lg shadow-sm overflow-hidden flex flex-col">
                     <div class="overflow-x-auto">
                         <table class="w-full border-collapse text-left">
@@ -566,7 +566,7 @@ if ($isSuperAdmin || $cusId) {
                                 <tr
                                     class="bg-surface-container-low text-on-surface-variant font-label-caps text-label-caps uppercase tracking-wider">
                                     <th class="py-2.5 px-unit-base w-10 text-center">
-                                        <input class="w-4 h-4 rounded bg-surface-container-lowest" type="checkbox">
+                                        <label class="invoice-checkbox-label inline-flex items-center justify-center cursor-pointer" style="min-width: 44px; min-height: 44px; display: inline-flex; align-items: center; justify-content: center;"><input class="w-4 h-4 rounded bg-surface-container-lowest" type="checkbox"></label>
                                     </th>
                                     <th class="py-2.5 px-unit-base">Invoice Ref #</th>
                                     <th class="py-2.5 px-unit-base">Linked Project &amp; Milestone Scope</th>
@@ -588,7 +588,7 @@ if ($isSuperAdmin || $cusId) {
                                             class="invoice-row relative bg-surface-container-lowest hover:bg-surface-container-low transition-colors group">
                                             <td class="relative py-3 px-unit-base text-center">
                                                 <div class="absolute left-0 top-0 bottom-0 w-1 bg-on-tertiary-container"></div>
-                                                <input class="w-4 h-4 rounded bg-surface-container-lowest" type="checkbox">
+                                                <label class="invoice-checkbox-label inline-flex items-center justify-center cursor-pointer" style="min-width: 44px; min-height: 44px; display: inline-flex; align-items: center; justify-content: center;"><input class="w-4 h-4 rounded bg-surface-container-lowest" type="checkbox"></label>
                                             </td>
                                             <td class="py-3 px-unit-base">
                                                 <div class="flex flex-col">
@@ -636,13 +636,13 @@ if ($isSuperAdmin || $cusId) {
                                             </td>
                                             <td class="py-3 px-unit-base">
                                                 <div class="flex items-center gap-unit-xs">
-                                                    <a class="flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-surface-container font-technical-tag text-technical-tag text-on-surface hover:bg-surface-container-high cursor-pointer"
-                                                        onclick="event.preventDefault(); window.previewDocument('INV-<?= htmlspecialchars($inv['invoice_id']) ?>', 'Commercial VAT Invoice', 'PDF Commercial Invoice')" href="#">
+                                                    <button type="button" class="border-0 flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-surface-container font-technical-tag text-technical-tag text-on-surface hover:bg-surface-container-high cursor-pointer"
+                                                        onclick="window.previewDocument('INV-<?= htmlspecialchars($inv['invoice_id']) ?>', 'Commercial VAT Invoice', 'PDF Commercial Invoice')">
                                                         <span class="material-symbols-outlined text-xs">picture_as_pdf</span>
                                                         <span class="">PDF</span>
                                                     </a>
-                                                    <a class="flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-surface-container font-technical-tag text-technical-tag text-on-surface hover:bg-surface-container-high cursor-pointer"
-                                                        onclick="event.preventDefault(); window.previewDocument('TORG-<?= htmlspecialchars($inv['invoice_id']) ?>', 'TORG-12 Certificate', 'TORG-12 Legal Act')" href="#">
+                                                    <button type="button" class="border-0 flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-surface-container font-technical-tag text-technical-tag text-on-surface hover:bg-surface-container-high cursor-pointer"
+                                                        onclick="window.previewDocument('TORG-<?= htmlspecialchars($inv['invoice_id']) ?>', 'TORG-12 Certificate', 'TORG-12 Legal Act')">
                                                         <span class="material-symbols-outlined text-xs">code</span>
                                                         <span class="">TORG-12</span>
                                                     </a>
@@ -674,7 +674,7 @@ if ($isSuperAdmin || $cusId) {
                             </tbody>
                         </table>
                     </div>
-                    <!-- Pagination & Record Count -->
+                    <?php /* Pagination & Record Count */ ?>
                     <div
                         class="flex flex-wrap items-center justify-between p-unit-base bg-surface-container-low text-on-surface-variant font-body-sm">
                         <div class="flex items-center gap-unit-sm">
@@ -708,7 +708,7 @@ if ($isSuperAdmin || $cusId) {
                         </div>
                     </div>
                 </div>
-                <!-- Bottom Bank Wire & Payment Routing Card -->
+                <?php /* Bottom Bank Wire & Payment Routing Card */ ?>
                 <div class="bg-surface-container-lowest rounded-lg p-unit-lg shadow-sm flex flex-col gap-unit-md">
                     <div class="flex flex-wrap items-center justify-between gap-unit-sm pb-unit-xs">
                         <div class="flex items-center gap-unit-sm">
@@ -730,9 +730,9 @@ if ($isSuperAdmin || $cusId) {
                             <span class="">AUTHORIZED PAYEE: VOSTOKPRIBOR INDUSTRIAL NPO</span>
                         </div>
                     </div>
-                    <!-- Banking Details Grid -->
+                    <?php /* Banking Details Grid */ ?>
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-unit-base">
-                        <!-- Bank & Routing -->
+                        <?php /* Bank & Routing */ ?>
                         <div class="bg-surface-container-low p-unit-base rounded flex flex-col gap-unit-xs">
                             <span
                                 class="font-label-caps text-label-caps text-on-surface-variant uppercase">Settlement
@@ -745,7 +745,7 @@ if ($isSuperAdmin || $cusId) {
                             <div class="font-data-mono-md text-data-mono-md text-on-surface-variant">SWIFT: <span
                                     class="text-on-surface font-semibold">SABRRUMM</span></div>
                         </div>
-                        <!-- Accounts -->
+                        <?php /* Accounts */ ?>
                         <div class="bg-surface-container-low p-unit-base rounded flex flex-col gap-unit-xs">
                             <span class="font-label-caps text-label-caps text-on-surface-variant uppercase">Primary
                                 Clearing Account</span>
@@ -756,7 +756,7 @@ if ($isSuperAdmin || $cusId) {
                             <div class="font-data-mono-md text-data-mono-md text-on-surface break-all">
                                 30101810400000000225</div>
                         </div>
-                        <!-- Tax Registration & Legal -->
+                        <?php /* Tax Registration & Legal */ ?>
                         <div class="bg-surface-container-low p-unit-base rounded flex flex-col gap-unit-xs">
                             <span class="font-label-caps text-label-caps text-on-surface-variant uppercase">Tax
                                 Registration &amp; Legal Identifiers</span>
@@ -776,7 +776,7 @@ if ($isSuperAdmin || $cusId) {
                                     class="font-data-mono-md text-data-mono-md font-semibold text-on-surface">1027801569420</span>
                             </div>
                         </div>
-                        <!-- Direct Contact Officer -->
+                        <?php /* Direct Contact Officer */ ?>
                         <div class="bg-surface-container-low p-unit-base rounded flex flex-col justify-between">
                             <div class="flex flex-col gap-unit-2xs">
                                 <span
@@ -798,7 +798,7 @@ if ($isSuperAdmin || $cusId) {
                             </div>
                         </div>
                     </div>
-                    <!-- Instruction Note Footer -->
+                    <?php /* Instruction Note Footer */ ?>
                     <div
                         class="flex flex-wrap items-center justify-between gap-unit-sm pt-unit-xs bg-surface-container px-unit-base py-unit-sm rounded text-body-sm text-on-surface-variant">
                         <div class="flex items-center gap-unit-xs">

@@ -49,6 +49,7 @@ storage/credentials/
 storage/credentials/*
 storage/documents/*
 !storage/documents/.gitkeep
+storage/screenshots*/
 
 # Archived mock files
 _trash/

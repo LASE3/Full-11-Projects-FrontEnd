@@ -350,6 +350,21 @@ input[type="submit"],
     box-sizing: border-box !important;
   }
 
+  /* Item 6: Checkbox labels, text links, and customer email links touch sizing */
+  .checkbox-label,
+  .scope-card-option,
+  .customer-email-link,
+  .invoice-checkbox-label,
+  #invoices-tbody label,
+  a[href^="mailto:"],
+  .auth-footer-text a {
+    min-width: 44px !important;
+    min-height: 44px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
   /* Checkboxes and radios touch container protection */
   input[type="checkbox"],
   input[type="radio"] {

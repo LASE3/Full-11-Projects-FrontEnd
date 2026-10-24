@@ -145,8 +145,12 @@ function crm_getLeads(array $filters = []): array
     }
 
     if (!empty($filters['search'])) {
-        $where[] = "(l.full_name LIKE :s OR l.company_name LIKE :s OR l.email LIKE :s OR l.message LIKE :s)";
-        $params[':s'] = '%' . $filters['search'] . '%';
+        $where[] = "(l.full_name LIKE :s1 OR l.company_name LIKE :s2 OR l.email LIKE :s3 OR l.message LIKE :s4)";
+        $searchVal = '%' . $filters['search'] . '%';
+        $params[':s1'] = $searchVal;
+        $params[':s2'] = $searchVal;
+        $params[':s3'] = $searchVal;
+        $params[':s4'] = $searchVal;
     }
 
     $whereSql = !empty($where) ? "WHERE " . implode(" AND ", $where) : "";
@@ -444,8 +448,11 @@ function crm_getOpportunities(array $filters = []): array
     }
 
     if (!empty($filters['search'])) {
-        $where[] = "(c.company_name LIKE :s OR c.sector LIKE :s OR e.full_name LIKE :s)";
-        $params[':s'] = '%' . $filters['search'] . '%';
+        $where[] = "(c.company_name LIKE :s1 OR c.sector LIKE :s2 OR e.full_name LIKE :s3)";
+        $searchVal = '%' . $filters['search'] . '%';
+        $params[':s1'] = $searchVal;
+        $params[':s2'] = $searchVal;
+        $params[':s3'] = $searchVal;
     }
 
     $whereSql = !empty($where) ? "WHERE " . implode(" AND ", $where) : "";
@@ -466,27 +473,6 @@ function crm_getOpportunities(array $filters = []): array
     ");
     $stmt->execute($params);
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
-}
-
-function crm_getOpportunity(int $oppId): ?array
-{
-    $pdo = getDbConnection();
-    $stmt = $pdo->prepare("
-        SELECT 
-            o.*,
-            c.company_name,
-            c.sector,
-            c.primary_contact_name,
-            c.primary_contact_email,
-            e.full_name AS sales_representative
-        FROM opportunities o
-        LEFT JOIN customers c ON o.cus_id = c.cus_id
-        LEFT JOIN employees e ON o.sales_emp_id = e.emp_id
-        WHERE o.opp_id = ?
-    ");
-    $stmt->execute([$oppId]);
-    $opp = $stmt->fetch(PDO::FETCH_ASSOC);
-    return $opp ?: null;
 }
 
 function crm_createOpportunity(array $data, ?string $salesRep = null): int
@@ -668,36 +654,6 @@ function crm_updateOpportunityStage(int $oppId, string $newStage, ?string $empId
     return $res;
 }
 
-function crm_updateOpportunity(int $oppId, array $data): bool
-{
-    $pdo = getDbConnection();
-    $fields = [];
-    $params = [':id' => $oppId];
-
-    $allowed = ['stage', 'estimated_value', 'expected_close_date', 'cus_id', 'sales_emp_id'];
-    foreach ($allowed as $col) {
-        if (array_key_exists($col, $data)) {
-            $fields[] = "`$col` = :$col";
-            $params[":$col"] = $data[$col];
-        }
-    }
-
-    if (empty($fields)) {
-        return false;
-    }
-
-    $sql = "UPDATE opportunities SET " . implode(", ", $fields) . " WHERE opp_id = :id";
-    $stmt = $pdo->prepare($sql);
-    return $stmt->execute($params);
-}
-
-function crm_deleteOpportunity(int $oppId): bool
-{
-    $pdo = getDbConnection();
-    $stmt = $pdo->prepare("DELETE FROM opportunities WHERE opp_id = ?");
-    return $stmt->execute([$oppId]);
-}
-
 // ============================================================================
 // 4. CUSTOMERS 360 & DIRECTORY
 // ============================================================================
@@ -714,8 +670,12 @@ function crm_getCustomers(array $filters = []): array
     }
 
     if (!empty($filters['search'])) {
-        $where[] = "(c.company_name LIKE :s OR c.cus_id LIKE :s OR c.primary_contact_name LIKE :s OR c.sector LIKE :s)";
-        $params[':s'] = '%' . $filters['search'] . '%';
+        $where[] = "(c.company_name LIKE :s1 OR c.cus_id LIKE :s2 OR c.primary_contact_name LIKE :s3 OR c.sector LIKE :s4)";
+        $searchVal = '%' . $filters['search'] . '%';
+        $params[':s1'] = $searchVal;
+        $params[':s2'] = $searchVal;
+        $params[':s3'] = $searchVal;
+        $params[':s4'] = $searchVal;
     }
 
     $whereSql = !empty($where) ? "WHERE " . implode(" AND ", $where) : "";
@@ -839,61 +799,9 @@ function crm_createCustomer(array $data): string
     return $newCusId;
 }
 
-function crm_updateCustomer(string $cusId, array $data): bool
-{
-    $pdo = getDbConnection();
-    $fields = [];
-    $params = [':id' => $cusId];
-
-    $allowed = ['company_name', 'sector', 'primary_contact_name', 'primary_contact_email', 'account_manager_emp_id'];
-    foreach ($allowed as $col) {
-        if (array_key_exists($col, $data)) {
-            $fields[] = "`$col` = :$col";
-            $params[":$col"] = $data[$col];
-        }
-    }
-
-    if (empty($fields)) {
-        return false;
-    }
-
-    $sql = "UPDATE customers SET " . implode(", ", $fields) . " WHERE cus_id = :id";
-    $stmt = $pdo->prepare($sql);
-    return $stmt->execute($params);
-}
-
-function crm_deleteCustomer(string $cusId): bool
-{
-    $pdo = getDbConnection();
-    $stmt = $pdo->prepare("DELETE FROM customers WHERE cus_id = ?");
-    return $stmt->execute([$cusId]);
-}
-
 // ============================================================================
 // 5. SALES FORECASTS & CONTRACTS
 // ============================================================================
-
-function crm_getSalesForecasts(?string $period = null): array
-{
-    $pdo = getDbConnection();
-    $where = $period ? "WHERE sf.period = :prd" : "";
-    $stmt = $pdo->prepare("
-        SELECT 
-            sf.*,
-            e.full_name AS sales_representative,
-            e.job_title AS sales_rep_role
-        FROM sales_forecasts sf
-        LEFT JOIN employees e ON sf.sales_emp_id = e.emp_id
-        {$where}
-        ORDER BY sf.period ASC, sf.forecast_id ASC
-    ");
-    if ($period) {
-        $stmt->execute([':prd' => $period]);
-    } else {
-        $stmt->execute();
-    }
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
-}
 
 function crm_upsertSalesForecast(array $data): int
 {
@@ -931,42 +839,6 @@ function crm_upsertSalesForecast(array $data): int
         ':act' => $actual
     ]);
     return (int)$pdo->lastInsertId();
-}
-
-function crm_getQuotes(array $filters = []): array
-{
-    $pdo = getDbConnection();
-    $stmt = $pdo->query("
-        SELECT 
-            q.*,
-            c.company_name,
-            p.product_name,
-            p.billing_model,
-            e.full_name AS prepared_by_name
-        FROM quotes q
-        JOIN customers c ON q.cus_id = c.cus_id
-        JOIN products p ON q.prod_id = p.prod_id
-        LEFT JOIN employees e ON q.created_by_emp_id = e.emp_id
-        ORDER BY q.created_at DESC
-    ");
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
-}
-
-function crm_getContracts(array $filters = []): array
-{
-    $pdo = getDbConnection();
-    $stmt = $pdo->query("
-        SELECT 
-            con.*,
-            c.company_name,
-            c.sector,
-            p.project_name
-        FROM contracts con
-        JOIN customers c ON con.cus_id = c.cus_id
-        LEFT JOIN projects p ON con.prj_id = p.prj_id
-        ORDER BY con.contract_id DESC
-    ");
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
 // ============================================================================

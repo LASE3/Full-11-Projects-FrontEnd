@@ -388,10 +388,10 @@
           closeModal();
           refreshStats();
         } else {
-          alert("Update error: " + (res.message || "Failed to update"));
+          (window.vpToast ? window.vpToast("Update error: " + (res.message || "Failed to update"), "error") : alert("Update error: " + (res.message || "Failed to update")));
         }
       } catch (err) {
-        alert("Network or database error: " + err.message);
+        (window.vpToast ? window.vpToast("Network or database error: " + err.message, "error") : alert("Network or database error: " + err.message));
       } finally {
         submitBtn.disabled = false;
         submitBtn.innerHTML = '<span class="material-symbols-outlined text-[16px]">save</span> Save Changes to Database';
@@ -481,10 +481,10 @@
             refreshStats();
             if (window.triggerRepoFilter) window.triggerRepoFilter();
           } else {
-            alert("Deletion blocked: " + (res.message || "Failed to delete document"));
+            (window.vpToast ? window.vpToast("Deletion blocked: " + (res.message || "Failed to delete document"), "error") : alert("Deletion blocked: " + (res.message || "Failed to delete document")));
           }
         } catch (err) {
-          alert("Network or database error: " + err.message);
+          (window.vpToast ? window.vpToast("Network or database error: " + err.message, "error") : alert("Network or database error: " + err.message));
         } finally {
           btnConfirm.disabled = false;
           btnConfirm.innerHTML = '<span class="material-symbols-outlined text-[16px]">delete_forever</span> Confirm Permanent Deletion';

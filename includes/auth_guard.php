@@ -19,7 +19,6 @@ if (!function_exists('vp_next_id')) {
     require_once __DIR__ . '/id_generator.php';
 }
 
-
 if (session_status() === PHP_SESSION_NONE) {
     if (!headers_sent()) {
         $isSecure = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || (isset($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] == 443);
@@ -143,6 +142,22 @@ function requireAuth(string $systemId = '', string $loginPath = 'login.php'): vo
 function requireApiAuth(?string $requiredSystem = null): array
 {
     global $currentUser, $isAuthenticated;
+
+    // Enforce input length limits across all API endpoints to prevent DB strict mode truncation errors
+    require_once __DIR__ . '/helpers/Validator.php';
+    if (!empty($_GET)) {
+        Validator::validateLengthsOrExit($_GET);
+    }
+    if (!empty($_POST)) {
+        Validator::validateLengthsOrExit($_POST);
+    }
+    $rawInput = file_get_contents('php://input');
+    if ($rawInput !== false && trim($rawInput) !== '' && str_starts_with(trim($rawInput), '{')) {
+        $decoded = json_decode($rawInput, true);
+        if (is_array($decoded)) {
+            Validator::validateLengthsOrExit($decoded);
+        }
+    }
 
     if ((!$isAuthenticated || empty($currentUser)) && !empty($_SESSION['vostok_authenticated']) && !empty($_SESSION['vostok_user'])) {
         $isAuthenticated = true;
@@ -376,29 +391,9 @@ function requireSuperAdmin(string $systemId = 'ADM', string $loginPath = 'login.
     }
 }
 
-/**
- * Enforce tenant isolation for customer accounts (alias for enforceCustomerTenant).
- * Throws a RuntimeException if the requested cus_id does not match the authenticated customer.
- *
- * @param string $requestedCusId   The cus_id being requested
- * @param array<string,mixed> $user The authenticated user
- */
-function enforceTenantIsolation(string $requestedCusId, array $user): void
-{
-    if (($user['account_type'] ?? '') === 'Customer') {
-        $ownCusId = $user['cus_id'] ?? $user['user_id'] ?? '';
-        if ($requestedCusId !== '' && $requestedCusId !== $ownCusId) {
-            throw new \RuntimeException(
-                "Tenant isolation violation: {$user['account_type']} {$ownCusId} attempted to access {$requestedCusId}"
-            );
-        }
-    }
-}
+
 
 // Note: verifyUserPassword() is defined in config/db.php and available globally.
-
-
-
 
 /**
  * Generate a dynamic initials SVG avatar as a data URI.

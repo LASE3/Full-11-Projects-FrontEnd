@@ -29,7 +29,7 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
 <body>
 
   <div class="app-container">
-    <!-- TOP NAVIGATION BAR -->
+    <?php /* TOP NAVIGATION BAR */ ?>
     <header class="top-nav">
       <div class="top-nav__accent-stripe"></div>
       <div class="top-nav__content">
@@ -129,10 +129,10 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
         </div>
       </aside>
 
-      <!-- MAIN CONTENT -->
+      <?php /* MAIN CONTENT */ ?>
       <main class="content-wrapper">
         <div class="portal-container hr-max-w-1200" >
-          <!-- Page Header -->
+          <?php /* Page Header */ ?>
           <div class="page-header">
             <div class="page-header-info">
               <div class="breadcrumb-trail">
@@ -152,7 +152,7 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
             </div>
           </div>
 
-          <!-- Training Records Table -->
+          <?php /* Training Records Table */ ?>
           <div class="hr-card hr-panel-flush-mt-15" >
             <div class="hr-table-header-simple" >
               <h3 class="card-title">Live Technical Training &amp; Protocol Certifications</h3>
@@ -212,7 +212,7 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
   </div>
 
   <?php if ($canManage): ?>
-    <!-- MODAL: LOG TRAINING ACCREDITATION -->
+    <?php /* MODAL: LOG TRAINING ACCREDITATION */ ?>
     <div id="modal-create-training" class="modal-backdrop">
       <div class="modal-dialog hr-modal-500" >
         <div class="modal-header hr-modal-header-plum" >

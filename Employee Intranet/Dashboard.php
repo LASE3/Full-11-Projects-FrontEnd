@@ -33,22 +33,22 @@ $opsTasks = intra_getOpsTasks();
     <title>VOSTOKPRIBOR Intranet • Home Feed</title>
     <meta name="description" content="VOSTOKPRIBOR Enterprise Employee Communications & Operational Hub">
 
-    <!-- Fonts: IBM Plex Sans & JetBrains Mono -->
+    <?php /* Fonts: IBM Plex Sans & JetBrains Mono */ ?>
                 
-    <!-- Unified Stylesheet -->
+    <?php /* Unified Stylesheet */ ?>
     <link rel="stylesheet" href="css/intranet.css">
 </head>
 
 <body>
 
-    <!-- ======================================================================
+    <?php /* ======================================================================
          TOP BAR: Deep Navy with 4px Slate Blue Accent Stripe
-         ====================================================================== -->
+         ====================================================================== */ ?>
     <header class="intranet-header" id="intranet-header">
         <div class="intra-height-100-display-flex-01f3"
             >
 
-            <!-- Left Brand & Sidebar Toggle -->
+            <?php /* Left Brand & Sidebar Toggle */ ?>
             <div class="intra-display-flex-align-items-ee8a" >
                 <button class="intra-background-rgba-255-255-928c" type="button" id="sidebar-toggle-btn"
                     
@@ -75,7 +75,7 @@ $opsTasks = intra_getOpsTasks();
                 </a>
             </div>
 
-            <!-- Center Search Bar (Command Palette Launcher Ctrl+K) -->
+            <?php /* Center Search Bar (Command Palette Launcher Ctrl+K) */ ?>
             <div class="intra-flex-1-max-width-5505" >
                 <div class="header-search-bar intra-display-flex-align-items-6d41">
                     <span class="material-symbols-outlined intra-color-939fa8-font-size-e00b">search</span>
@@ -88,17 +88,17 @@ $opsTasks = intra_getOpsTasks();
                 </div>
             </div>
 
-            <!-- Right Actions & Profile -->
+            <?php /* Right Actions & Profile */ ?>
             <div class="intra-flex-center-gap-md" >
 
-                <!-- Quick Submit Action -->
+                <?php /* Quick Submit Action */ ?>
                 <button type="button" class="btn btn-primary" onclick="window.openQuickRequestModal('leave')"
                     >
                     <span class="material-symbols-outlined intra-font-size-1rem-margin-6a85">add</span>
                     Request Leave
                 </button>
 
-                <!-- Notifications Bell -->
+                <?php /* Notifications Bell */ ?>
                 <div class="intra-pos-relative" >
                     <button class="intra-background-rgba-255-255-87b8" type="button" id="notifications-toggle-btn"
                         >
@@ -106,7 +106,7 @@ $opsTasks = intra_getOpsTasks();
                         <span class="intra-position-absolute-top-3px-e466" id="notif-unread-count" style="display:none;">0</span>
                     </button>
 
-                    <!-- Notifications Dropdown Popover -->
+                    <?php /* Notifications Dropdown Popover */ ?>
                     <div class="notifications-popover" id="notifications-popover" >
                         <div class="intra-padding-0-75rem-1rem-82b8"
                             >
@@ -122,7 +122,7 @@ $opsTasks = intra_getOpsTasks();
                     </div>
                 </div>
 
-                <!-- Ecosystem Switcher (11 Systems) -->
+                <?php /* Ecosystem Switcher (11 Systems) */ ?>
                 <div class="intra-pos-relative" >
                     <button class="intra-background-rgba-255-255-57e6" type="button" id="ecosystem-toggle-btn"
                         
@@ -130,7 +130,7 @@ $opsTasks = intra_getOpsTasks();
                         <span class="material-symbols-outlined intra-text-xl">apps</span>
                     </button>
 
-                    <!-- 11-System Ecosystem Dropdown Menu -->
+                    <?php /* 11-System Ecosystem Dropdown Menu */ ?>
                     <div class="ecosystem-dropdown" id="ecosystem-dropdown" >
                         <div class="intra-padding-0-75rem-1rem-4249"
                             >
@@ -226,7 +226,7 @@ $opsTasks = intra_getOpsTasks();
                     </div>
                 </div>
 
-                <!-- Authenticated User Profile Avatar -->
+                <?php /* Authenticated User Profile Avatar */ ?>
                 <div class="intra-display-flex-align-items-f8dd"
                     >
                     <div class="avatar-circle intra-background-color-1a73e8-width-13e2">
@@ -242,37 +242,37 @@ $opsTasks = intra_getOpsTasks();
             </div>
 
 
-            <!-- Top Bar Sign Out -->
+            <?php /* Top Bar Sign Out */ ?>
             <a href="./api/logout.php?redirect=../login.php" class="top-signout-btn" title="Sign Out of Employee Intranet" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" ><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
         </div>
     </header>
 
-    <!-- ======================================================================
+    <?php /* ======================================================================
          LEFT SIDEBAR: Dark Navy with Slate Blue Accent (#5C7290)
-         ====================================================================== -->
+         ====================================================================== */ ?>
     <aside class="intranet-sidebar" id="intranet-sidebar">
 
-        <!-- Navigation Menu -->
+        <?php /* Navigation Menu */ ?>
         <div class="intra-padding-top-1rem-display-6c18" >
 
             <div class="sidebar-section-title intra-padding-0-1rem-0-35ef">
                 COMMUNICATIONS & HUB
             </div>
 
-            <!-- News & Announcements (Active) -->
+            <?php /* News & Announcements (Active) */ ?>
             <a href="Dashboard.php" class="sidebar-link active">
                 <span class="material-symbols-outlined intra-text-xl">campaign</span>
                 <span class="sidebar-label">News & Announcements</span>
             </a>
 
-            <!-- Employee Directory -->
+            <?php /* Employee Directory */ ?>
             <a href="EmployeeDirectory.php" class="sidebar-link">
                 <span class="material-symbols-outlined intra-text-xl">badge</span>
                 <span class="sidebar-label">Employee Directory</span>
                 <span class="sidebar-badge intra-margin-left-auto-background-8fba" id="intra-nav-dir-count">—</span>
             </a>
 
-            <!-- Policies & Forms -->
+            <?php /* Policies & Forms */ ?>
             <a href="PoliciesAndForms.php" class="sidebar-link">
                 <span class="material-symbols-outlined intra-text-xl">policy</span>
                 <span class="sidebar-label">Policies & Forms</span>
@@ -283,29 +283,29 @@ $opsTasks = intra_getOpsTasks();
                 EMPLOYEE SERVICES
             </div>
 
-            <!-- Helpdesk / IT Support -->
-            <a href="javascript:void(0)" class="sidebar-link" onclick="window.openQuickRequestModal('it')">
+            <?php /* Helpdesk / IT Support */ ?>
+            <button type="button" class="sidebar-link w-full text-left bg-transparent border-0 cursor-pointer" onclick="window.openQuickRequestModal('it')">
                 <span class="material-symbols-outlined intra-text-xl">support_agent</span>
                 <span class="sidebar-label">Helpdesk / IT Support</span>
-            </a>
+            </button>
 
-            <!-- Company Calendar -->
-            <a href="javascript:void(0)" class="sidebar-link"
+            <?php /* Company Calendar */ ?>
+            <button type="button" class="sidebar-link w-full text-left bg-transparent border-0 cursor-pointer"
                 onclick="window.showIntranetToast('Calendar Sync Active', 'Connected to Almaty Exchange CalDAV server.', 'info')">
                 <span class="material-symbols-outlined intra-text-xl">event</span>
                 <span class="sidebar-label">Company Calendar</span>
-            </a>
+            </button>
 
-            <!-- Room & Asset Booking -->
-            <a href="javascript:void(0)" class="sidebar-link"
+            <?php /* Room & Asset Booking */ ?>
+            <button type="button" class="sidebar-link w-full text-left bg-transparent border-0 cursor-pointer"
                 onclick="window.showIntranetToast('Resource Scheduler', 'Conference Rooms Alpha & Beta available today.', 'info')">
                 <span class="material-symbols-outlined intra-text-xl">meeting_room</span>
                 <span class="sidebar-label">Room Booking</span>
-            </a>
+            </button>
 
         </div>
 
-        <!-- Sidebar Footer: User Card -->
+        <?php /* Sidebar Footer: User Card */ ?>
         <div class="intra-padding-1rem-border-top-dd4e" >
             <div class="intra-flex-center-gap-md" >
                 <div class="avatar-circle intra-background-color-1a73e8-5fb8">
@@ -327,16 +327,16 @@ $opsTasks = intra_getOpsTasks();
         </div>
     </aside>
 
-    <!-- Left-edge hover detection strip for collapsed rail state -->
+    <?php /* Left-edge hover detection strip for collapsed rail state */ ?>
     <div id="sidebar-hover-trigger" title="Hover to expand menu"></div>
 
-    <!-- ======================================================================
+    <?php /* ======================================================================
          MAIN CONTENT WRAPPER
-         ====================================================================== -->
+         ====================================================================== */ ?>
     <main class="intranet-content-wrapper" id="intranet-content-wrapper">
         <div class="intra-padding-1-5rem-max-53c0" >
 
-            <!-- Page Header Breadcrumb -->
+            <?php /* Page Header Breadcrumb */ ?>
             <div class="intra-display-flex-align-items-3241" >
                 <div>
                     <div class="intra-display-flex-align-items-f015"
@@ -365,9 +365,9 @@ $opsTasks = intra_getOpsTasks();
                 </div>
             </div>
 
-            <!-- ==============================================================
+            <?php /* ==============================================================
                  FEATURED WIDE ANNOUNCEMENT CAROUSEL
-                 ============================================================== -->
+                 ============================================================== */ ?>
             <section class="announcement-carousel-card" id="home-announcement-carousel"
                 >
                 <div class="intra-position-relative-z-index-4d0f" >
@@ -406,10 +406,10 @@ $opsTasks = intra_getOpsTasks();
 
                 </div>
 
-                <!-- Carousel Controls & Dots -->
+                <?php /* Carousel Controls & Dots */ ?>
                 <div class="intra-position-absolute-bottom-1-19e7"
                     >
-                    <!-- Dots -->
+                    <?php /* Dots */ ?>
                     <div class="intra-display-flex-align-items-1649" >
                         <button type="button" class="carousel-dot intra-width-24px-height-8px-3a74"
                             title="Slide 1"></button>
@@ -418,7 +418,7 @@ $opsTasks = intra_getOpsTasks();
                         <button type="button" class="carousel-dot intra-width-8px-height-8px-6638"
                             title="Slide 3"></button>
                     </div>
-                    <!-- Arrows -->
+                    <?php /* Arrows */ ?>
                     <div class="intra-display-flex-gap-0-b7c2" >
                         <button class="intra-width-32px-height-32px-3020" type="button" id="carousel-prev-btn"
                             
@@ -434,17 +434,17 @@ $opsTasks = intra_getOpsTasks();
                 </div>
             </section>
 
-            <!-- ==============================================================
+            <?php /* ==============================================================
                  TWO-COLUMN LAYOUT: Feed (Left) & Widgets (Right)
-                 ============================================================== -->
+                 ============================================================== */ ?>
             <div class="intranet-grid-layout intra-display-grid-grid-template-4a9e">
 
-                <!-- ==========================================================
+                <?php /* ==========================================================
                      LEFT COLUMN: ANNOUNCEMENT FEED
-                     ========================================================== -->
+                     ========================================================== */ ?>
                 <div class="intra-display-flex-flex-direction-f48b" style="min-width: 0;">
 
-                    <!-- Feed Filter Tabs -->
+                    <?php /* Feed Filter Tabs */ ?>
                     <div class="intra-display-flex-align-items-29ed">
                         <div class="intra-display-flex-gap-0-5fa1">
                             <span class="intra-font-weight-600-font-bc25">All Updates</span>
@@ -455,18 +455,18 @@ $opsTasks = intra_getOpsTasks();
                         </span>
                     </div>
 
-                    <!-- Live Dynamic Announcements Feed Container -->
+                    <?php /* Live Dynamic Announcements Feed Container */ ?>
                     <div class="intra-display-flex-flex-direction-f48b" id="announcements-feed">
-                        <!-- Dynamically populated from MySQL database by intranet-data.js -->
+                        <?php /* Dynamically populated from MySQL database by intranet-data.js */ ?>
                     </div>
                 </div>
 
-                <!-- ==========================================================
+                <?php /* ==========================================================
                      RIGHT COLUMN: STACKED WIDGETS
-                     ========================================================== -->
+                     ========================================================== */ ?>
                 <div class="intra-display-flex-flex-direction-a81b" >
 
-                    <!-- WIDGET 0: OPS FULFILLMENT QUEUE (DEPARTMENT BOARD FOR EMP-1011..1015) -->
+                    <?php /* WIDGET 0: OPS FULFILLMENT QUEUE (DEPARTMENT BOARD FOR EMP-1011..1015) */ ?>
                     <div class="intranet-card intra-p-125" id="ops-queue-panel">
                         <div class="intra-display-flex-align-items-4177" style="margin-bottom: 0.75rem;">
                             <div class="intra-flex-center-gap-sm">
@@ -516,7 +516,7 @@ $opsTasks = intra_getOpsTasks();
                         <?php endif; ?>
                     </div>
 
-                    <!-- WIDGET 1: TODAY'S CALENDAR -->
+                    <?php /* WIDGET 1: TODAY'S CALENDAR */ ?>
                     <div class="intranet-card intra-p-125">
                         <div class="intra-display-flex-align-items-4177"
                             >
@@ -533,7 +533,7 @@ $opsTasks = intra_getOpsTasks();
 
                         <div class="intra-display-flex-flex-direction-84df" >
 
-                            <!-- Event 1 -->
+                            <?php /* Event 1 */ ?>
                             <div class="intra-padding-0-75rem-background-14c0"
                                 >
                                 <div class="intra-display-flex-align-items-6d7a"
@@ -561,7 +561,7 @@ $opsTasks = intra_getOpsTasks();
                                 </div>
                             </div>
 
-                            <!-- Event 2 -->
+                            <?php /* Event 2 */ ?>
                             <div class="intra-padding-0-75rem-background-9e63"
                                 >
                                 <div class="intra-display-flex-align-items-6d7a"
@@ -587,7 +587,7 @@ $opsTasks = intra_getOpsTasks();
                                 </div>
                             </div>
 
-                            <!-- Event 3 -->
+                            <?php /* Event 3 */ ?>
                             <div class="intra-padding-0-75rem-background-c8d3"
                                 >
                                 <div class="intra-display-flex-align-items-6d7a"
@@ -616,7 +616,7 @@ $opsTasks = intra_getOpsTasks();
                         </div>
                     </div>
 
-                    <!-- WIDGET 2: QUICK LINKS -->
+                    <?php /* WIDGET 2: QUICK LINKS */ ?>
                     <div class="intranet-card intra-p-125">
                         <div class="intra-display-flex-align-items-4177"
                             >
@@ -673,7 +673,7 @@ $opsTasks = intra_getOpsTasks();
                         </div>
                     </div>
 
-                    <!-- WIDGET 3: BIRTHDAYS & ANNIVERSARIES -->
+                    <?php /* WIDGET 3: BIRTHDAYS & ANNIVERSARIES */ ?>
                     <div class="intranet-card intra-p-125">
                         <div class="intra-display-flex-align-items-4177"
                             >
@@ -690,7 +690,7 @@ $opsTasks = intra_getOpsTasks();
 
                         <div class="intra-display-flex-flex-direction-84df" >
 
-                            <!-- Milestone 1 -->
+                            <?php /* Milestone 1 */ ?>
                             <div class="intra-display-flex-align-items-f1c5"
                                 >
                                 <div class="avatar-circle intra-background-color-0e7c86-width-3efb">AK
@@ -709,7 +709,7 @@ $opsTasks = intra_getOpsTasks();
                                     12</span>
                             </div>
 
-                            <!-- Milestone 2 -->
+                            <?php /* Milestone 2 */ ?>
                             <div class="intra-display-flex-align-items-f1c5"
                                 >
                                 <div class="avatar-circle intra-background-color-137333-width-b959">JR
@@ -728,7 +728,7 @@ $opsTasks = intra_getOpsTasks();
                                     15</span>
                             </div>
 
-                            <!-- Milestone 3 -->
+                            <?php /* Milestone 3 */ ?>
                             <div class="intra-display-flex-align-items-f1c5"
                                 >
                                 <div class="avatar-circle intra-background-color-137333-width-b959">OV
@@ -757,9 +757,9 @@ $opsTasks = intra_getOpsTasks();
         </div>
     </main>
 
-    <!-- ======================================================================
+    <?php /* ======================================================================
          COMMAND PALETTE MODAL (Ctrl+K)
-         ====================================================================== -->
+         ====================================================================== */ ?>
     <div class="intranet-modal-backdrop" id="command-palette-modal">
         <div class="intranet-modal-container intra-max-width-42rem-border-7e8a">
             <div class="intra-background-color-var-brand-3290"
@@ -781,10 +781,10 @@ $opsTasks = intra_getOpsTasks();
         </div>
     </div>
 
-    <!-- Toast Notification Anchor -->
+    <?php /* Toast Notification Anchor */ ?>
     <div id="intranet-toast-container"></div>
 
-    <!-- Single Consolidated JavaScript Engine -->
+    <?php /* Single Consolidated JavaScript Engine */ ?>
     <script src="js/intranet.js"></script>
     <link rel="stylesheet" href="../assets/css/api-ui.css">
     <script src="../assets/js/api-core.js"></script>

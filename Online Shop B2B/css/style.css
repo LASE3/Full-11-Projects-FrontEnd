@@ -243,13 +243,6 @@ textarea {
   }
 }
 
-/* Nav Navigation Links */
-.main-navigation {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
 .nav-link {
   display: flex;
   align-items: center;
@@ -1141,12 +1134,6 @@ input[type="checkbox"]:checked + .custom-checkbox::after {
   font-size: 18px;
   font-weight: 800;
   color: #f59e0b;
-}
-
-.price-currency {
-  font-size: 13px;
-  color: #f59e0b;
-  font-weight: 600;
 }
 
 /* Primary Amber Button */
@@ -3016,42 +3003,9 @@ input[type="checkbox"]:checked + .custom-checkbox::after {
     "opsz" 20 !important;
 }
 
-/* Customer Selector Dropdown in Shop Topbar */
-.shop-customer-company {
-  font-size: 12px;
-  color: var(--text-primary);
-  display: block;
-}
-
-.shop-customer-id {
-  font-family: var(--font-mono);
-  font-size: 10.5px;
-  color: var(--text-secondary);
-}
-
-.shop-customer-tier {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  color: var(--accent-teal);
-  font-weight: 600;
-}
-
-/* Nav & Header Utilities */
-.shop-nav-integrations {
-  color: #00e5ff;
-  border: 1px solid rgba(0, 229, 255, 0.3);
-  border-radius: 4px;
-  padding: 0.35rem 0.6rem;
-  margin-left: 0.5rem;
-}
-
 .shop-nav-integrations .nav-badge-count {
   background: rgba(0, 229, 255, 0.2);
   color: #00e5ff;
-}
-
-.shop-nav-integrations-label {
-  font-weight: 600;
 }
 
 .shop-text-muted-dark {

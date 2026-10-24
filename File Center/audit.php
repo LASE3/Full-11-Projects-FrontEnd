@@ -50,7 +50,7 @@ $pendingApprovals = (int)$pdo->query("SELECT COUNT(*) FROM documents WHERE statu
 </head>
 
 <body>
-    <!-- TOP NAVIGATION BAR -->
+    <?php /* TOP NAVIGATION BAR */ ?>
     <header class="vk-top-navbar">
         <div class="fc-flex-center-gap-24">
             <button class="mobile-nav-toggle" id="fc-sidebar-toggle" onclick="document.body.classList.toggle('sidebar-open')" title="Toggle Menu"><span class="material-symbols-outlined">menu</span></button>
@@ -93,12 +93,12 @@ $pendingApprovals = (int)$pdo->query("SELECT COUNT(*) FROM documents WHERE statu
                 </div>
             </div>
 
-            <!-- Top Bar Sign Out -->
+            <?php /* Top Bar Sign Out */ ?>
             <a href="../api/logout.php?system=File%20Center&redirect=../File%20Center/login.php" class="top-signout-btn" title="Sign Out of File Center" onclick="(function(){sessionStorage.clear();localStorage.clear();})()"><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
         </div>
     </header>
 
-    <!-- LEFT SIDEBAR -->
+    <?php /* LEFT SIDEBAR */ ?>
     <aside class="vk-sidebar" style="background-color: #0f2438 !important; border-right: 1px solid rgba(255, 255, 255, 0.1) !important;">
         <div class="vk-sidebar-nav">
             <div class="vk-sidebar-header">Document Vault</div>
@@ -185,9 +185,9 @@ $pendingApprovals = (int)$pdo->query("SELECT COUNT(*) FROM documents WHERE statu
         </div>
     </aside>
 
-    <!-- MAIN CONTENT AREA -->
+    <?php /* MAIN CONTENT AREA */ ?>
     <main class="vk-main-layout">
-        <!-- HEADER BLOCK -->
+        <?php /* HEADER BLOCK */ ?>
         <div class="fc-display-flex-justify-content-f610" style="margin-bottom: 24px;">
             <div>
                 <div class="fc-display-flex-align-items-9bb7">
@@ -206,9 +206,9 @@ $pendingApprovals = (int)$pdo->query("SELECT COUNT(*) FROM documents WHERE statu
             </div>
         </div>
 
-        <!-- TWO COLUMN LAYOUT: CRYPTOGRAPHIC VERIFIER + ACCESS LEDGER -->
+        <?php /* TWO COLUMN LAYOUT: CRYPTOGRAPHIC VERIFIER + ACCESS LEDGER */ ?>
         <div class="fc-display-grid-grid-template-687b">
-            <!-- SHA-256 VERIFIER TOOL (Dynamic from Database) -->
+            <?php /* SHA-256 VERIFIER TOOL (Dynamic from Database) */ ?>
             <div class="vk-card">
                 <div class="vk-card-header">
                     <div>
@@ -249,7 +249,7 @@ $pendingApprovals = (int)$pdo->query("SELECT COUNT(*) FROM documents WHERE statu
                             </button>
                         </div>
 
-                        <!-- VERIFICATION RESULT (Initially hidden) -->
+                        <?php /* VERIFICATION RESULT (Initially hidden) */ ?>
                         <div class="fc-display-none-padding-14px-1e95" id="verify-result-box" style="margin-top: 16px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: var(--radius-sm);">
                             <div class="fc-display-flex-align-items-3b8a" style="color: #166534; font-weight: 700; gap: 8px;">
                                 <span class="material-symbols-outlined text-[18px]">verified</span>
@@ -266,7 +266,7 @@ $pendingApprovals = (int)$pdo->query("SELECT COUNT(*) FROM documents WHERE statu
                 </div>
             </div>
 
-            <!-- SECURITY ASSURANCE METRICS -->
+            <?php /* SECURITY ASSURANCE METRICS */ ?>
             <div class="vk-card">
                 <div class="vk-card-header">
                     <div>
@@ -303,7 +303,7 @@ $pendingApprovals = (int)$pdo->query("SELECT COUNT(*) FROM documents WHERE statu
             </div>
         </div>
 
-        <!-- CUSTODIAL AUDIT LOG TABLE (Dynamic from Database) -->
+        <?php /* CUSTODIAL AUDIT LOG TABLE (Dynamic from Database) */ ?>
         <div class="vk-card fc-mb-30" style="margin-top: 24px;">
             <div class="vk-card-header">
                 <div>
@@ -358,7 +358,7 @@ $pendingApprovals = (int)$pdo->query("SELECT COUNT(*) FROM documents WHERE statu
         </div>
     </main>
 
-    <!-- DOCKED ENTERPRISE STATUS BAR -->
+    <?php /* DOCKED ENTERPRISE STATUS BAR */ ?>
     <footer class="vk-status-bar">
         <div class="fc-flex-center-gap-16">
 
@@ -374,7 +374,7 @@ $pendingApprovals = (int)$pdo->query("SELECT COUNT(*) FROM documents WHERE statu
         </div>
     </footer>
 
-    <!-- Universal Command Palette Modal -->
+    <?php /* Universal Command Palette Modal */ ?>
     <div class="cmd-palette-backdrop" id="cmd-palette-modal">
         <div class="cmd-palette-box">
             <div class="cmd-palette-header">
@@ -406,7 +406,7 @@ $pendingApprovals = (int)$pdo->query("SELECT COUNT(*) FROM documents WHERE statu
         </div>
     </div>
 
-    <!-- Universal Toast Container -->
+    <?php /* Universal Toast Container */ ?>
     <div class="vk-toast-container"></div>
 
     <script src="js/fc-common.js"></script>

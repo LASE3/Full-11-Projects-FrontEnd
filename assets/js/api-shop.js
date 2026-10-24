@@ -80,7 +80,6 @@
      * @param {string} [cusId]
      */
     async requestCustomerDossier(cusId) {
-      console.info(`[VostokShop] Inter-Module RPC -> Customer Portal (SYS03): Fetching dossier for ${cusId || "current user"}`);
       return await bus.request("customer", "dashboard", cusId ? { cus_id: cusId } : {});
     },
 
@@ -89,7 +88,6 @@
      * @param {string} cusId
      */
     async requestCRMContracts(cusId) {
-      console.info(`[VostokShop] Inter-Module RPC -> CRM (SYS05): Fetching master contract terms for ${cusId}`);
       return await bus.request("crm", "customer", { id: cusId });
     },
 
@@ -98,7 +96,6 @@
      * @param {string} empId
      */
     async requestSalesRep(empId) {
-      console.info(`[VostokShop] Inter-Module RPC -> Intranet (SYS04): Fetching sales engineer profile for ${empId}`);
       return await bus.request("intranet", "directory", { query: empId });
     },
   };
@@ -110,5 +107,4 @@
 
   // Export isolated namespace
   global.VostokShop = shopApi;
-  console.info("[VostokShop] Isolated B2B Shop API module ready.");
 })(window);

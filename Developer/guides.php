@@ -41,7 +41,7 @@ foreach ($guides as $g) {
 </head>
 
 <body>
-    <!-- TOP NAVIGATION BAR -->
+    <?php /* TOP NAVIGATION BAR */ ?>
     <header class="vk-top-navbar">
         <div class="dev-flex-center-gap-24" >
             <button class="mobile-nav-toggle" id="dev-sidebar-toggle" onclick="document.body.classList.toggle('sidebar-open')" title="Toggle Menu"><span class="material-symbols-outlined">menu</span></button>
@@ -83,12 +83,12 @@ foreach ($guides as $g) {
                 </div>
             </div>
 
-            <!-- Top Bar Sign Out -->
+            <?php /* Top Bar Sign Out */ ?>
             <a href="../api/logout.php?system=Developer&redirect=../Developer/login.php" class="top-signout-btn" title="Sign Out of Developer" onclick="(function(){sessionStorage.clear();localStorage.clear();})()"><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
         </div>
     </header>
 
-    <!-- LEFT SIDEBAR -->
+    <?php /* LEFT SIDEBAR */ ?>
     <aside class="vk-sidebar" style="background-color: #0f2438 !important; border-right: 1px solid rgba(255, 255, 255, 0.1) !important; scrollbar-width: none !important; -ms-overflow-style: none !important;">
         <div class="vk-sidebar-nav">
             <div class="vk-sidebar-header">Core Documentation</div>
@@ -182,7 +182,7 @@ foreach ($guides as $g) {
         </div>
     </aside>
 
-    <!-- MAIN CONTENT -->
+    <?php /* MAIN CONTENT */ ?>
     <main class="vk-app-body">
         <div class="dev-margin-bottom-24px-dc2c" style="display: flex; justify-content: space-between; align-items: flex-start;">
             <div>
@@ -204,7 +204,7 @@ foreach ($guides as $g) {
             </div>
         </div>
 
-        <!-- STATUTORY DOCUMENT HERO CARD (DOC-2026-010) -->
+        <?php /* STATUTORY DOCUMENT HERO CARD (DOC-2026-010) */ ?>
         <?php if ($statutoryDoc): 
             $statJson = htmlspecialchars(json_encode($statutoryDoc), ENT_QUOTES, 'UTF-8');
         ?>
@@ -245,7 +245,7 @@ foreach ($guides as $g) {
         </div>
         <?php endif; ?>
 
-        <!-- SECTION GUIDES (Dynamic from Database with CRUD) -->
+        <?php /* SECTION GUIDES (Dynamic from Database with CRUD) */ ?>
         <div class="dev-display-flex-flex-direction-e9a4" id="guidesContainer">
             <?php if (empty($sectionGuides)): ?>
             <div class="vk-card dev-padding-24px dev-text-center dev-text-muted">
@@ -306,7 +306,7 @@ foreach ($guides as $g) {
         </div>
     </main>
 
-    <!-- CREATE / EDIT GUIDE MODAL -->
+    <?php /* CREATE / EDIT GUIDE MODAL */ ?>
     <div class="vk-modal-overlay" id="guideModal">
         <div class="vk-modal-dialog" style="max-width: 600px;">
             <div class="vk-modal-header">
@@ -374,7 +374,7 @@ foreach ($guides as $g) {
         </div>
     </div>
 
-    <!-- PUBLIC-FACING / DEVELOPER FOOTER -->
+    <?php /* PUBLIC-FACING / DEVELOPER FOOTER */ ?>
     <footer class="vk-footer">
         <div class="vk-footer-bottom dev-border-top-none-padding-efbd">
             <div>&copy; 2026 VOSTOKPRIBOR Global Logistics &amp; Supply JSC. System 10: Developer &amp; API Portal.</div>
@@ -382,7 +382,7 @@ foreach ($guides as $g) {
         </div>
     </footer>
 
-    <!-- Universal Command Palette Modal -->
+    <?php /* Universal Command Palette Modal */ ?>
     <div class="cmd-palette-backdrop" id="cmd-palette-modal">
         <div class="cmd-palette-box">
             <div class="cmd-palette-header">
@@ -424,7 +424,7 @@ foreach ($guides as $g) {
         </div>
     </div>
 
-    <!-- Universal Toast Container -->
+    <?php /* Universal Toast Container */ ?>
     <div class="vk-toast-container"></div>
 
     <script src="js/dev-common.js"></script>

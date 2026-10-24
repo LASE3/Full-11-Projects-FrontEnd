@@ -47,8 +47,12 @@ if ($method === 'GET') {
     }
 
     if ($search !== '') {
-        $where[] = "(title LIKE :s OR content LIKE :s OR summary LIKE :s OR article_code LIKE :s)";
-        $params[':s'] = "%{$search}%";
+        $where[] = "(title LIKE :s1 OR content LIKE :s2 OR summary LIKE :s3 OR article_code LIKE :s4)";
+        $term = "%{$search}%";
+        $params[':s1'] = $term;
+        $params[':s2'] = $term;
+        $params[':s3'] = $term;
+        $params[':s4'] = $term;
     }
 
     $whereSql = !empty($where) ? "WHERE " . implode(" AND ", $where) : "";

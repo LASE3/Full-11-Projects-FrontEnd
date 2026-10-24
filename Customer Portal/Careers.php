@@ -32,17 +32,17 @@ $jobs = $stmtJobs->fetchAll(PDO::FETCH_ASSOC);
 </head>
 <body class="bg-background font-body-md text-body-md text-on-background">
 
-    <!-- Universal Dynamic Header -->
+    <?php /* Universal Dynamic Header */ ?>
     <?php renderCustomerHeader('Search career opportunities, specs...'); ?>
 
-    <!-- Universal Dynamic Sidebar -->
+    <?php /* Universal Dynamic Sidebar */ ?>
     <?php renderCustomerSidebar('careers'); ?>
 
     <div id="portal-main-wrapper" class="portal-content-wrapper pl-64">
         <main class="w-full min-h-screen pt-16 bg-surface px-4 sm:px-6 lg:px-8 py-6">
             <div class="portal-container flex flex-col gap-6">
 
-                <!-- Header Banner -->
+                <?php /* Header Banner */ ?>
                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-outline/20 pb-4">
                     <div>
                         <nav class="flex items-center gap-2 text-xs uppercase tracking-wider text-on-surface-variant font-mono mb-1">
@@ -63,7 +63,7 @@ $jobs = $stmtJobs->fetchAll(PDO::FETCH_ASSOC);
                     </div>
                 </div>
 
-                <!-- Job Postings Grid -->
+                <?php /* Job Postings Grid */ ?>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <?php if (empty($jobs)): ?>
                         <div class="col-span-2 p-12 text-center text-on-surface-variant bg-surface-container-high/20 rounded-xl border border-outline/20">
@@ -122,7 +122,7 @@ $jobs = $stmtJobs->fetchAll(PDO::FETCH_ASSOC);
         </main>
     </div>
 
-    <!-- Modal: Express Interest / Quick Application -->
+    <?php /* Modal: Express Interest / Quick Application */ ?>
     <div id="apply-modal" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 hidden">
         <div class="bg-primary border border-outline/30 rounded-2xl max-w-md w-full p-6 shadow-2xl relative">
             <div class="flex items-center justify-between border-b border-outline/20 pb-3 mb-4">

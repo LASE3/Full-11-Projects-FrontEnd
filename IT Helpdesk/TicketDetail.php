@@ -89,7 +89,7 @@ $currUser = getItCurrentUser();
 <body>
 
   <div class="app-container">
-    <!-- TOP NAVIGATION BAR -->
+    <?php /* TOP NAVIGATION BAR */ ?>
     <header class="top-nav">
       <div class="top-nav__accent-stripe"></div>
 
@@ -144,13 +144,13 @@ $currUser = getItCurrentUser();
           </div>
         </div>
 
-        <!-- Top Bar Sign Out -->
+        <?php /* Top Bar Sign Out */ ?>
         <a href="../api/logout.php?system=IT%20Helpdesk&redirect=../IT%20Helpdesk/login.php" class="top-signout-btn" title="Sign Out of IT Helpdesk" onclick="(function(){sessionStorage.clear();localStorage.clear();})()"><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
       </div>
     </header>
 
     <div class="main-layout">
-      <!-- LEFT SIDEBAR NAVIGATION -->
+      <?php /* LEFT SIDEBAR NAVIGATION */ ?>
       <aside class="sidebar">
         <div>
           <div class="sidebar-section-title">IT Support Operations</div>
@@ -297,10 +297,10 @@ $currUser = getItCurrentUser();
         </div>
       </aside>
 
-      <!-- MAIN CONTENT AREA -->
+      <?php /* MAIN CONTENT AREA */ ?>
       <main class="content-wrapper">
         <div class="portal-container">
-          <!-- Page Header & Contextual Back Navigation -->
+          <?php /* Page Header & Contextual Back Navigation */ ?>
           <div class="page-header">
             <div class="page-header-info">
               <div class="breadcrumb-trail">
@@ -330,11 +330,11 @@ $currUser = getItCurrentUser();
             </div>
           </div>
 
-          <!-- Two-Column Layout (70% Left / 30% Right) -->
+          <?php /* Two-Column Layout (70% Left / 30% Right) */ ?>
           <div class="detail-layout-grid">
-            <!-- LEFT 70%: TICKET HEADER & CONVERSATION THREAD -->
+            <?php /* LEFT 70%: TICKET HEADER & CONVERSATION THREAD */ ?>
             <div class="hd-flex-col-gap-15">
-              <!-- Ticket Header Metadata Card -->
+              <?php /* Ticket Header Metadata Card */ ?>
               <div class="hd-card <?= ($prio === 'Critical') ? 'hd-card-ticket-critical' : '' ?>">
                 <div class="hd-ticket-header">
                   <div class="hd-flex-gap-1">
@@ -350,7 +350,7 @@ $currUser = getItCurrentUser();
                     </div>
                   </div>
 
-                  <!-- Priority & Status Badges -->
+                  <?php /* Priority & Status Badges */ ?>
                   <div class="hd-flex-end-col">
                     <div class="hd-flex-gap-sm">
                       <span class="priority-badge <?= $prioClass ?>"><?= strtoupper(htmlspecialchars($prio)) ?></span>
@@ -360,7 +360,7 @@ $currUser = getItCurrentUser();
                   </div>
                 </div>
 
-                <!-- System Affected & Diagnostic Overview -->
+                <?php /* System Affected & Diagnostic Overview */ ?>
                 <div class="hd-grid-meta-box">
                   <div>
                     <div class="hd-caption-bold-105">System Affected</div>
@@ -379,7 +379,7 @@ $currUser = getItCurrentUser();
                   </div>
                 </div>
 
-                <!-- Problem Description -->
+                <?php /* Problem Description */ ?>
                 <div>
                   <h4 class="hd-title-125-navy">Incident Summary &amp; Impact Analysis</h4>
                   <p class="hd-body-text-13">
@@ -388,7 +388,7 @@ $currUser = getItCurrentUser();
                 </div>
               </div>
 
-              <!-- Conversation Thread with Message Bubbles (Dynamic from Database) -->
+              <?php /* Conversation Thread with Message Bubbles (Dynamic from Database) */ ?>
               <div class="hd-card conversation-card">
                 <div class="card-header-row hd-divider-subtle-mb">
                   <div class="hd-flex-gap-sm">
@@ -398,7 +398,7 @@ $currUser = getItCurrentUser();
                   <span class="hd-audit-notice">Encrypted Channel &bull; Database: `ticket_comments`</span>
                 </div>
 
-                <!-- Chat Bubble Thread Container -->
+                <?php /* Chat Bubble Thread Container */ ?>
                 <div class="chat-bubble-thread" id="chat-conversation-thread">
                   <?php if (empty($comments)): ?>
                     <div style="text-align: center; color: var(--hd-text-muted); padding: 20px;">No communication logs in this thread yet. Send a message below.</div>
@@ -423,7 +423,7 @@ $currUser = getItCurrentUser();
                   <?php endif; ?>
                 </div>
 
-                <!-- Interactive Reply Box -->
+                <?php /* Interactive Reply Box */ ?>
                 <div class="hd-reply-box-wrap">
                   <textarea class="hd-form-control-textarea" id="chat-reply-input" placeholder="Type technical response, diagnostic command output, or resolution steps to requester..." rows="3"></textarea>
                   <div class="hd-flex-between-center">
@@ -443,9 +443,9 @@ $currUser = getItCurrentUser();
               </div>
             </div>
 
-            <!-- RIGHT 30%: SLA COUNTDOWN & RESOLUTION CONTROLS -->
+            <?php /* RIGHT 30%: SLA COUNTDOWN & RESOLUTION CONTROLS */ ?>
             <div class="hd-flex-col-gap-125">
-              <!-- SLA Countdown Timer Widget -->
+              <?php /* SLA Countdown Timer Widget */ ?>
               <div class="sla-timer-card">
                 <div class="hd-flex-between-center">
                   <span class="hd-heading-orange-sm">
@@ -472,18 +472,18 @@ $currUser = getItCurrentUser();
                 </div>
               </div>
 
-              <!-- Escalation & Resolution Actions Card -->
+              <?php /* Escalation & Resolution Actions Card */ ?>
               <div class="hd-card hd-flex-col-gap-md">
                 <h3 class="card-title hd-text-135">Incident Actions &amp; Governance</h3>
 
-                <!-- Red-Outlined Escalate to Governance Button -->
+                <?php /* Red-Outlined Escalate to Governance Button */ ?>
                 <button class="btn btn-outline-red w-full" id="btn-escalate-ticket" data-tid="<?= htmlspecialchars($ticket['tkt_id']) ?>">
                   <span>🚨 Escalate to Governance</span>
                 </button>
 
                 <div class="hd-divider-line"></div>
 
-                <!-- Resolution Notes Textarea -->
+                <?php /* Resolution Notes Textarea */ ?>
                 <div>
                   <label class="hd-field-label-12" for="resolution-notes">
                     Resolution &amp; Root Cause Notes:
@@ -491,13 +491,13 @@ $currUser = getItCurrentUser();
                   <textarea class="hd-form-control-full" id="resolution-notes" placeholder="Enter root cause analysis, corrective action applied, and verification steps before closing..." rows="4"><?= htmlspecialchars($ticket['resolution_notes'] ?: 'Switched RS-485 Modbus bus link from primary copper pair to optically-isolated Channel B2. Validated 0 frame drop during 1,480°C furnace test.') ?></textarea>
                 </div>
 
-                <!-- Green Mark Resolved Button -->
+                <?php /* Green Mark Resolved Button */ ?>
                 <button class="btn btn-green hd-p-75-full" id="btn-resolve-ticket" data-tid="<?= htmlspecialchars($ticket['tkt_id']) ?>">
                   <span>✓ Mark Resolved &amp; Close Ticket</span>
                 </button>
               </div>
 
-              <!-- Infrastructure Context Card -->
+              <?php /* Infrastructure Context Card */ ?>
               <div class="hd-card">
                 <h3 class="card-title hd-text-13-mb">Node &amp; Asset Hardware Context</h3>
                 <div class="hd-meta-field-list">
@@ -530,7 +530,7 @@ $currUser = getItCurrentUser();
     </div>
   </div>
 
-  <!-- EDIT TICKET MODAL -->
+  <?php /* EDIT TICKET MODAL */ ?>
   <div class="hd-modal-overlay" id="editTicketModal">
     <div class="hd-modal-dialog">
       <div class="hd-modal-header">

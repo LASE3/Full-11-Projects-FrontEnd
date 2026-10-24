@@ -71,13 +71,13 @@ function recordAuditEntry($pdo, $action, $targetType, $targetId, $result = 'SUCC
             ) VALUES (?, 'ADM', ?, ?, ?, ?, ?, ?, ?, NOW())
         ");
         $stmt->execute([
-            $actorId,
-            $systemId,
-            $action,
-            $targetType,
-            $targetId,
-            $ip,
-            $result,
+            $actorId !== null ? substr((string)$actorId, 0, 10) : null,
+            substr((string)$systemId, 0, 10),
+            substr((string)$action, 0, 200),
+            substr((string)$targetType, 0, 50),
+            $targetId !== null ? substr((string)$targetId, 0, 20) : null,
+            substr((string)$ip, 0, 45),
+            substr((string)$result, 0, 20),
             $vals
         ]);
         return true;

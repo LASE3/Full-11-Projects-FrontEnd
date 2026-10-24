@@ -32,7 +32,7 @@ $slaPct = $sbStats['sla_pct'];
 <body>
 
   <div class="app-container">
-    <!-- TOP NAVIGATION BAR -->
+    <?php /* TOP NAVIGATION BAR */ ?>
     <header class="top-nav">
       <div class="top-nav__accent-stripe"></div>
       <div class="top-nav__content">
@@ -84,7 +84,7 @@ $slaPct = $sbStats['sla_pct'];
           </div>
         </div>
 
-        <!-- Top Bar Sign Out -->
+        <?php /* Top Bar Sign Out */ ?>
         <a href="../api/logout.php?system=IT%20Helpdesk&redirect=../IT%20Helpdesk/login.php" class="top-signout-btn" title="Sign Out of IT Helpdesk" onclick="(function(){sessionStorage.clear();localStorage.clear();})()"><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
       </div>
     </header>
@@ -219,7 +219,7 @@ $slaPct = $sbStats['sla_pct'];
         </div>
       </aside>
 
-      <!-- MAIN CONTENT -->
+      <?php /* MAIN CONTENT */ ?>
       <main class="content-wrapper">
         <div class="portal-container">
           <div class="page-header">
@@ -307,7 +307,7 @@ $slaPct = $sbStats['sla_pct'];
     </div>
   </div>
 
-  <!-- Register Device Modal -->
+  <?php /* Register Device Modal */ ?>
   <div id="modal-create-asset" class="hd-modal-overlay">
     <div class="hd-modal-dialog">
       <div class="hd-modal-header">
@@ -378,7 +378,7 @@ $slaPct = $sbStats['sla_pct'];
     </div>
   </div>
 
-  <!-- Edit Asset Modal -->
+  <?php /* Edit Asset Modal */ ?>
   <div id="modal-edit-asset" class="hd-modal-overlay">
     <div class="hd-modal-dialog">
       <div class="hd-modal-header">
@@ -451,7 +451,7 @@ $slaPct = $sbStats['sla_pct'];
   </div>
 
 
-  <!-- Inspect Asset Modal -->
+  <?php /* Inspect Asset Modal */ ?>
   <div id="modal-inspect-asset" class="hd-modal-overlay">
     <div class="hd-modal-dialog" style="max-width:680px;">
       <div class="hd-modal-header">

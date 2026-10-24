@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/config/db.php';
 
 /**
  * VOSTOKPRIBOR Central Ecosystem Launchpad
@@ -132,8 +133,8 @@ $systems = [
 <html lang="en">
 
 <head>
+  <meta charset="utf-8">
   <?php require_once __DIR__ . '/includes/head_security.php'; ?>
-    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VOSTOKPRIBOR Ecosystem · 11 Enterprise Systems Launchpad</title>
     <meta name="description" content="Central Launchpad for the 11 VOSTOKPRIBOR Frontend Systems.">
@@ -143,7 +144,7 @@ $systems = [
 
 <body class="vostok-launchpad text-slate-200 font-sans min-h-screen flex flex-col antialiased">
 
-    <!-- Top Command Header -->
+    <?php /* Top Command Header */ ?>
     <header class="border-b border-brand-border/60 bg-brand-panel/90 backdrop-blur-md sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
             <div class="flex items-center gap-3">
@@ -165,7 +166,7 @@ $systems = [
         </div>
     </header>
 
-    <!-- Hero Title & Instructions -->
+    <?php /* Hero Title & Instructions */ ?>
     <main class="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
         <div class="mb-8">
             <div class="flex items-center gap-2 mb-2">
@@ -180,11 +181,11 @@ $systems = [
             </p>
         </div>
 
-        <!-- System Grid -->
+        <?php /* System Grid */ ?>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             <?php foreach ($systems as $sys): ?>
                 <div class="system-card bg-brand-card rounded-lg border border-brand-border flex flex-col justify-between overflow-hidden">
-                    <!-- Card Header Accent -->
+                    <?php /* Card Header Accent */ ?>
                     <div class="h-1 w-full" style="background-color: <?= $sys['accent'] ?>; min-height: 44px; min-width: 44px;"></div>
 
                     <div class="p-5 flex-1 flex flex-col">
@@ -212,7 +213,7 @@ $systems = [
                             <span class="text-slate-200 truncate ml-2"><?= htmlspecialchars($sys['dir']) ?>/</span>
                         </div>
 
-                        <!-- Action Buttons -->
+                        <?php /* Action Buttons */ ?>
                         <div class="flex items-center gap-2 pt-2 border-t border-brand-border/40">
                             <?php
                             $isPublicCorp = ($sys['code'] === 'WEB');

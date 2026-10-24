@@ -2338,7 +2338,6 @@ body.sidebar-open .sidebar-backdrop {
 .crm-badge-confidential { background: var(--crm-tag-confidential-bg); color: var(--crm-tag-confidential); }
 .crm-badge-danger-soft { background-color: rgba(186, 26, 26, 0.1); color: #BA1A1A; }
 .crm-text-right { text-align: right; }
-.crm-flex-gap-xs { display: flex; align-items: center; gap: 0.25rem; }
 .crm-flex-gap-sm { display: flex; align-items: center; gap: 0.5rem; }
 .crm-flex-gap-md { display: flex; align-items: center; gap: 0.75rem; }
 .crm-flex-col-gap-md { display: flex; flex-direction: column; gap: 1rem; }

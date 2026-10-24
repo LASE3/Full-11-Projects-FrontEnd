@@ -112,7 +112,7 @@ $totalProjectsCount = (int)$pdo->query("SELECT COUNT(*) FROM projects WHERE stat
           </div>
         </div>
 
-        <!-- Top Bar Sign Out -->
+        <?php /* Top Bar Sign Out */ ?>
         <a href="../api/logout.php?system=Finance%20%26%20Billing&redirect=../Finance%20%26%20Billing/login.php" class="top-signout-btn" title="Sign Out of Finance &amp; Billing" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" >
           <span>Sign Out</span>
         </a>
@@ -242,7 +242,7 @@ $totalProjectsCount = (int)$pdo->query("SELECT COUNT(*) FROM projects WHERE stat
         </div>
       </aside>
 
-      <!-- MAIN CONTENT -->
+      <?php /* MAIN CONTENT */ ?>
       <main class="content-wrapper">
         <div class="portal-container">
           <div class="page-header">
@@ -262,7 +262,7 @@ $totalProjectsCount = (int)$pdo->query("SELECT COUNT(*) FROM projects WHERE stat
             </div>
           </div>
 
-          <!-- Top KPI Cards -->
+          <?php /* Top KPI Cards */ ?>
           <div class="kpi-grid fin-grid-3col-mb" >
             <div class="fin-card kpi-card">
               <div class="kpi-header">
@@ -307,7 +307,7 @@ $totalProjectsCount = (int)$pdo->query("SELECT COUNT(*) FROM projects WHERE stat
             </div>
           </div>
 
-          <!-- Budget Allocation Table -->
+          <?php /* Budget Allocation Table */ ?>
           <div class="fin-card fin-panel-flush" >
             <div class="fin-table-header-bar" >
               <h3 class="card-title">Cost Center Allocations across <?= count($budgets) ?> Company Divisions (vostokpribor.budgets)</h3>
@@ -386,7 +386,7 @@ $totalProjectsCount = (int)$pdo->query("SELECT COUNT(*) FROM projects WHERE stat
     </div>
   </div>
 
-  <!-- Modal: Allocate / Revise Budget in DB -->
+  <?php /* Modal: Allocate / Revise Budget in DB */ ?>
   <div id="modal-update-budget" class="modal-backdrop">
     <div class="modal-dialog fin-modal-500" >
       <div class="modal-header">

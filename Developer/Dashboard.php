@@ -26,7 +26,7 @@ $endpoints = $stmt->fetchAll(PDO::FETCH_ASSOC);
 </head>
 
 <body>
-    <!-- TOP NAVIGATION BAR (Deep Navy + 4px Cyan Identity Stripe) -->
+    <?php /* TOP NAVIGATION BAR (Deep Navy + 4px Cyan Identity Stripe) */ ?>
     <header class="vk-top-navbar">
         <div class="dev-flex-center-gap-24" >
             <button class="mobile-nav-toggle" id="dev-sidebar-toggle" onclick="document.body.classList.toggle('sidebar-open')" title="Toggle Menu"><span class="material-symbols-outlined">menu</span></button>
@@ -55,7 +55,7 @@ $endpoints = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <button class="icon-button notifications-btn" id="notifications-toggle-btn" title="Live Enterprise Notifications" style="background:transparent;border:none;color:#bdc6cf;cursor:pointer;padding:6px;display:flex;align-items:center;justify-content:center;position:relative;">
                 <span class="material-symbols-outlined text-[20px]">notifications</span>
             </button>
-            <!-- Search Bar Trigger (Ctrl + K) -->
+            <?php /* Search Bar Trigger (Ctrl + K) */ ?>
             <div class="dev-search-box-wrap" >
                 <span class="material-symbols-outlined text-[16px] dev-position-absolute-left-10px-d4a8">search</span>
                 <input class="search-trigger-input" type="text" placeholder="Search API docs, schemas (Ctrl + K)"
@@ -63,14 +63,14 @@ $endpoints = $stmt->fetchAll(PDO::FETCH_ASSOC);
                      />
             </div>
 
-            <!-- Almaty Live Station Time -->
+            <?php /* Almaty Live Station Time */ ?>
             <div class="dev-display-flex-align-items-9eca"
                 >
                 <span class="material-symbols-outlined text-[14px] dev-color-secondary">schedule</span>
                 <span class="station-live-clock">17:15:00 UTC+6</span>
             </div>
 
-            <!-- Partner Session Persona (CUS-1002 BaltNord) -->
+            <?php /* Partner Session Persona (CUS-1002 BaltNord) */ ?>
             <div class="dev-display-flex-align-items-20f3"
                 >
                 <div class="dev-text-right" >
@@ -83,12 +83,12 @@ $endpoints = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 </div>
             </div>
 
-            <!-- Top Bar Sign Out -->
+            <?php /* Top Bar Sign Out */ ?>
             <a href="../api/logout.php?system=Developer&redirect=../Developer/login.php" class="top-signout-btn" title="Sign Out of Developer" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" ><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
         </div>
     </header>
 
-    <!-- LEFT SIDEBAR -->
+    <?php /* LEFT SIDEBAR */ ?>
     <aside class="vk-sidebar" style="background-color: #0f2438 !important; border-right: 1px solid rgba(255, 255, 255, 0.1) !important; scrollbar-width: none !important; -ms-overflow-style: none !important;">
         <div class="vk-sidebar-nav">
             <div class="vk-sidebar-header">Core Documentation</div>
@@ -174,7 +174,7 @@ $endpoints = $stmt->fetchAll(PDO::FETCH_ASSOC);
             </a>
         </div>
 
-        <!-- Technical Lead Contacts (PDF Grounded: EMP-1020 & EMP-1017) -->
+        <?php /* Technical Lead Contacts (PDF Grounded: EMP-1020 & EMP-1017) */ ?>
         <div class="dev-padding-16px-border-top-156b"
             >
             <div class="dev-font-family-var-font-6447"
@@ -186,13 +186,13 @@ $endpoints = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <div class="dev-color-var-vk-neutral-19bc" >Integration Engineer • ENG</div>
         </div>
 
-        <!-- Log Out -->
+        <?php /* Log Out */ ?>
 
     </aside>
 
-    <!-- MAIN APP BODY -->
+    <?php /* MAIN APP BODY */ ?>
     <main class="vk-app-body">
-        <!-- Page Header & Classification Bar -->
+        <?php /* Page Header & Classification Bar */ ?>
         <div class="dev-display-flex-justify-content-387e" >
             <div>
                 <div class="dev-display-flex-align-items-81c3" >
@@ -221,7 +221,7 @@ $endpoints = $stmt->fetchAll(PDO::FETCH_ASSOC);
             </div>
         </div>
 
-        <!-- System Baseline Specs Banner (PDF Cross-Reference) -->
+        <?php /* System Baseline Specs Banner (PDF Cross-Reference) */ ?>
         <div class="vk-card tag-internal dev-margin-bottom-28px-background-8be5">
             <div class="vk-card-body dev-display-flex-align-items-8ee2">
                 <div class="dev-flex-center-gap-16" >
@@ -249,7 +249,7 @@ $endpoints = $stmt->fetchAll(PDO::FETCH_ASSOC);
             </div>
         </div>
 
-        <!-- ENDPOINTS SECTION (100% Dynamic from Database) -->
+        <?php /* ENDPOINTS SECTION (100% Dynamic from Database) */ ?>
         <div class="endpoint-container" id="endpointCardsContainer">
             <?php if (empty($endpoints)): ?>
                 <div class="vk-card tag-internal" style="padding: 40px; text-align: center;">
@@ -359,7 +359,7 @@ $endpoints = $stmt->fetchAll(PDO::FETCH_ASSOC);
         </div>
     </main>
 
-    <!-- REGISTER / EDIT ENDPOINT MODAL (Universal Database CRUD) -->
+    <?php /* REGISTER / EDIT ENDPOINT MODAL (Universal Database CRUD) */ ?>
     <div class="vk-modal-overlay" id="endpointModal">
         <div class="vk-modal-dialog" style="max-width: 680px;">
             <div class="vk-modal-header">
@@ -440,7 +440,7 @@ $endpoints = $stmt->fetchAll(PDO::FETCH_ASSOC);
         </div>
     </div>
 
-    <!-- PUBLIC/PARTNER ENTERPRISE FOOTER -->
+    <?php /* PUBLIC/PARTNER ENTERPRISE FOOTER */ ?>
     <footer class="vk-footer">
         <div class="vk-footer-grid">
             <div>
@@ -496,7 +496,7 @@ $endpoints = $stmt->fetchAll(PDO::FETCH_ASSOC);
         </div>
     </footer>
 
-    <!-- SHARED JS SCRIPTS -->
+    <?php /* SHARED JS SCRIPTS */ ?>
     <script src="js/dev-common.js"></script>
     <script src="js/dev-portal.js"></script>
   <script src="../assets/js/notifications-hub.js" defer></script>

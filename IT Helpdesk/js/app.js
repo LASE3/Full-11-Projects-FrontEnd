@@ -157,11 +157,13 @@
       const fd = new FormData(form);
       const payload = Object.fromEntries(fd.entries());
       payload.action = "create";
+      const csrfToken = (typeof getCsrfToken === 'function' ? getCsrfToken() : '') || window.__CSRF_TOKEN__ || (document.querySelector('meta[name="csrf-token"]')?.content) || '';
+      payload.csrf_token = csrfToken;
 
       try {
         const res = await fetch("api/tickets.php?action=create", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: { "Content-Type": "application/json", "X-CSRF-Token": csrfToken },
           body: JSON.stringify(payload)
         });
         const data = await res.json();

@@ -84,8 +84,13 @@ if ($method === 'GET') {
             }
 
             if (!empty($query)) {
-                $sql .= " AND (d.doc_id LIKE :q OR d.file_name LIKE :q OR d.description LIKE :q OR d.folder LIKE :q OR d.department LIKE :q)";
-                $params[':q'] = "%{$query}%";
+                $sql .= " AND (d.doc_id LIKE :q1 OR d.file_name LIKE :q2 OR d.description LIKE :q3 OR d.folder LIKE :q4 OR d.department LIKE :q5)";
+                $qTerm = "%{$query}%";
+                $params[':q1'] = $qTerm;
+                $params[':q2'] = $qTerm;
+                $params[':q3'] = $qTerm;
+                $params[':q4'] = $qTerm;
+                $params[':q5'] = $qTerm;
             }
         }
 

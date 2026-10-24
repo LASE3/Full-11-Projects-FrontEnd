@@ -192,7 +192,7 @@ $firstDoc = $documents[0] ?? null;
                     <?= htmlspecialchars(strtoupper(substr($currUser['full_name'] ?? 'U', 0, 2))) ?>
                 </div>
             </div>
-            <!-- Top Bar Sign Out -->
+            <?php /* Top Bar Sign Out */ ?>
             <a href="./api/logout.php?redirect=../login.php" class="top-signout-btn" title="Sign Out of Customer Portal" onclick="(function(){sessionStorage.clear();localStorage.clear();})()"><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
         </div>
     </header>
@@ -269,7 +269,7 @@ $firstDoc = $documents[0] ?? null;
     <div id="portal-main-wrapper" class="portal-content-wrapper pl-64">
         <main class="w-full min-h-screen pt-16 bg-surface px-4 sm:px-6 lg:px-8 py-6">
             <div class="portal-container flex flex-col gap-6">
-                <!-- Breadcrumbs & Document Status Bar -->
+                <?php /* Breadcrumbs & Document Status Bar */ ?>
                 <div class="flex flex-wrap items-center justify-between gap-unit-sm">
                     <nav
                         class="flex items-center gap-unit-xs text-on-surface-variant font-data-mono-md text-data-mono-md">
@@ -291,7 +291,7 @@ $firstDoc = $documents[0] ?? null;
                     </div>
                 </div>
 
-                <!-- Page Header & Main Actions -->
+                <?php /* Page Header & Main Actions */ ?>
                 <div
                     class="flex flex-col lg:flex-row lg:items-end justify-between gap-unit-base bg-surface-container-lowest p-unit-lg rounded-lg shadow-sm">
                     <div class="flex flex-col gap-unit-xs">
@@ -322,7 +322,7 @@ $firstDoc = $documents[0] ?? null;
                     </div>
                 </div>
 
-                <!-- Banner Node Security Notification -->
+                <?php /* Banner Node Security Notification */ ?>
                 <div
                     class="bg-primary-container text-on-primary-container p-unit-md rounded-lg shadow-sm flex items-center justify-between">
                     <div class="flex items-center gap-unit-md">
@@ -354,10 +354,10 @@ $firstDoc = $documents[0] ?? null;
                     </div>
                 </div>
 
-                <!-- Tabs & Filters Bar -->
+                <?php /* Tabs & Filters Bar */ ?>
                 <div class="flex flex-col gap-unit-sm bg-surface-container-lowest p-unit-base rounded-lg shadow-sm">
                     <div class="flex flex-wrap items-center justify-between gap-unit-base">
-                        <!-- Category Filter Tabs -->
+                        <?php /* Category Filter Tabs */ ?>
                         <div class="flex flex-wrap items-center gap-1 bg-surface-container p-1 rounded">
                             <button onclick="filterDocsCategory(this, 'all')"
                                 class="doc-filter-tab px-unit-base py-1 rounded bg-surface-container-lowest text-on-surface font-headline-sm text-body-md font-semibold shadow-sm">
@@ -386,7 +386,7 @@ $firstDoc = $documents[0] ?? null;
                             </button>
                         </div>
                     </div>
-                    <!-- Search & Secondary Dropdowns -->
+                    <?php /* Search & Secondary Dropdowns */ ?>
                     <div class="grid grid-cols-1 md:grid-cols-12 gap-unit-sm pt-unit-xs">
                         <div
                             class="md:col-span-5 flex items-center bg-surface-container-low px-unit-md py-1.5 rounded">
@@ -428,11 +428,11 @@ $firstDoc = $documents[0] ?? null;
                     </div>
                 </div>
 
-                <!-- Main Layout Grid: Document List + Active Inspector Panel -->
+                <?php /* Main Layout Grid: Document List + Active Inspector Panel */ ?>
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-unit-base">
-                    <!-- Left Column: High-Density Document List -->
+                    <?php /* Left Column: High-Density Document List */ ?>
                     <div class="lg:col-span-7 xl:col-span-8 flex flex-col gap-unit-sm">
-                        <!-- Table Wrapper -->
+                        <?php /* Table Wrapper */ ?>
                         <div class="bg-surface-container-lowest rounded-lg shadow-sm overflow-hidden">
                             <table class="w-full border-collapse text-left">
                                 <thead>
@@ -512,7 +512,7 @@ $firstDoc = $documents[0] ?? null;
                             </table>
                         </div>
 
-                        <!-- Secondary Summary Cards Bar -->
+                        <?php /* Secondary Summary Cards Bar */ ?>
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-unit-base">
                             <div class="bg-surface-container-lowest p-unit-base rounded-lg shadow-sm flex flex-col justify-between">
                                 <span class="font-label-caps text-label-caps text-on-surface-variant uppercase">Calibration Expiry Watch</span>
@@ -538,10 +538,10 @@ $firstDoc = $documents[0] ?? null;
                         </div>
                     </div>
 
-                    <!-- Right Column: Interactive Dossier Inspector Panel -->
+                    <?php /* Right Column: Interactive Dossier Inspector Panel */ ?>
                     <div class="lg:col-span-5 xl:col-span-4 flex flex-col gap-unit-base">
                         <div class="bg-surface-container-lowest p-unit-base rounded-lg shadow-sm flex flex-col gap-unit-base sticky top-20">
-                            <!-- Inspector Header -->
+                            <?php /* Inspector Header */ ?>
                             <div class="flex items-center justify-between pb-unit-xs border-b border-surface-container-high">
                                 <div class="flex items-center gap-unit-xs">
                                     <span class="material-symbols-outlined text-base text-on-surface-variant">find_in_page</span>
@@ -550,7 +550,7 @@ $firstDoc = $documents[0] ?? null;
                                 <span class="font-technical-tag text-technical-tag px-1.5 py-0.5 rounded bg-surface-container text-on-surface font-semibold">ACTIVE SELECTION</span>
                             </div>
 
-                            <!-- Document Metadata Block -->
+                            <?php /* Document Metadata Block */ ?>
                             <div class="flex flex-col gap-unit-xs">
                                 <div class="flex items-center justify-between font-data-mono-md text-technical-tag text-on-surface-variant">
                                     <span id="inspect-doc-id"><?= htmlspecialchars($firstDoc['doc_id'] ?? 'CERT-2024-HPF-0994') ?></span>
@@ -564,7 +564,7 @@ $firstDoc = $documents[0] ?? null;
                                 </p>
                             </div>
 
-                            <!-- High-Res Certificate Preview Schematic Image Placeholder -->
+                            <?php /* High-Res Certificate Preview Schematic Image Placeholder */ ?>
                             <div class="relative w-full h-44 bg-surface-container-low rounded border border-surface-container-high overflow-hidden flex items-center justify-center group">
                                 <svg class="w-full h-full opacity-60" fill="none" viewBox="0 0 300 150">
                                     <rect fill="#f2f4f7" height="150" width="300"></rect>
@@ -585,7 +585,7 @@ $firstDoc = $documents[0] ?? null;
                                 </div>
                             </div>
 
-                            <!-- Cryptographic Audit Chain -->
+                            <?php /* Cryptographic Audit Chain */ ?>
                             <div class="flex flex-col gap-unit-xs bg-surface-container-low p-unit-sm rounded">
                                 <span class="font-label-caps text-label-caps text-on-surface-variant uppercase">Cryptographic Audit Chain</span>
                                 <div class="flex flex-col gap-1 font-data-mono-md text-technical-tag">
@@ -607,7 +607,7 @@ $firstDoc = $documents[0] ?? null;
                                 </div>
                             </div>
 
-                            <!-- Document Revision History -->
+                            <?php /* Document Revision History */ ?>
                             <div class="flex flex-col gap-unit-xs">
                                 <span class="font-label-caps text-label-caps text-on-surface-variant uppercase">Document Revision Timeline</span>
                                 <div class="flex flex-col gap-unit-xs border-l-2 border-surface-container-high pl-unit-sm">
@@ -626,7 +626,7 @@ $firstDoc = $documents[0] ?? null;
                                 </div>
                             </div>
 
-                            <!-- Action Buttons -->
+                            <?php /* Action Buttons */ ?>
                             <div class="flex items-center gap-unit-xs pt-unit-xs">
                                 <button onclick="downloadCurrentInspectedDoc()"
                                     class="w-full flex items-center justify-center gap-unit-xs px-unit-base py-2 rounded bg-primary text-on-primary font-headline-sm text-headline-sm font-semibold hover:bg-primary/90 transition-colors shadow-sm">

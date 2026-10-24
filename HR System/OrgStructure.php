@@ -42,7 +42,7 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
 <body>
 
   <div class="app-container">
-    <!-- TOP NAVIGATION BAR -->
+    <?php /* TOP NAVIGATION BAR */ ?>
     <header class="top-nav">
       <div class="top-nav__accent-stripe"></div>
       <div class="top-nav__content">
@@ -142,10 +142,10 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
         </div>
       </aside>
 
-      <!-- MAIN CONTENT -->
+      <?php /* MAIN CONTENT */ ?>
       <main class="content-wrapper">
         <div class="portal-container hr-max-w-1200" >
-          <!-- Page Header -->
+          <?php /* Page Header */ ?>
           <div class="page-header">
             <div class="page-header-info">
               <div class="breadcrumb-trail">
@@ -163,7 +163,7 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
             </div>
           </div>
 
-          <!-- Department Division Cards Grid -->
+          <?php /* Department Division Cards Grid */ ?>
           <div class="hr-grid-org-cards" >
             <?php
             $deptBadges = [
@@ -202,7 +202,7 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
                   <?= htmlspecialchars($d['main_function'] ?? 'Operational Division of VOSTOKPRIBOR Group') ?>
                 </div>
 
-                <!-- Staff in this Department -->
+                <?php /* Staff in this Department */ ?>
                 <div class="hr-border-t-divided" >
                   <div class="hr-caption-bold-navy" >
                     Assigned Personnel

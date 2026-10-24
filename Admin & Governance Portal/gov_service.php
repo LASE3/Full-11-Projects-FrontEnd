@@ -397,20 +397,6 @@ function gov_getComplianceControls()
 }
 
 /**
- * Get Re-Certification Windows
- */
-function gov_getRecertificationWindows()
-{
-    $pdo = getDbConnection();
-    return $pdo->query("
-        SELECT rw.*, e.full_name AS creator_name
-        FROM recertification_windows rw
-        LEFT JOIN employees e ON rw.created_by_emp_id = e.emp_id
-        ORDER BY rw.window_id DESC
-    ")->fetchAll(PDO::FETCH_ASSOC);
-}
-
-/**
  * Get dynamic sidebar navigation badge indicators for System 11 views
  */
 function gov_getSidebarBadges()
@@ -766,6 +752,4 @@ function gov_getSecurityEventsPerSystem(PDO $pdo, int $limit = 15): array
     $stmt->execute();
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
-
-
 

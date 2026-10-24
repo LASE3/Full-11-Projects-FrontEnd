@@ -82,6 +82,14 @@ jobs:
         run: |
           php tests/test_touch_target_css.php
 
+      - name: Run Repeated SQL Named Placeholders Scanner
+        run: |
+          php scripts/scan_repeated_placeholders.php
+
+      - name: Run Dead Code & Clutter CI Gate
+        run: |
+          php scripts/find_dead_code.php
+
       - name: Create least-privilege app database user
         env:
           DB_ROOT_PASS: rootpassword
@@ -142,6 +150,36 @@ jobs:
         run: |
           php -S 127.0.0.1:8080 -t . &
           sleep 2
+
+      - name: Run Security Headers & Cookie Hardening Gate
+        env:
+          BASE_URL: http://127.0.0.1:8080/
+        run: |
+          php tests/test_security_headers_cookies.php
+
+      - name: Run Input Length Validation Regression Test
+        env:
+          DB_HOST: 127.0.0.1
+          DB_PORT: ${{ matrix.db.port }}
+          DB_NAME: vostokpribor
+          DB_USER: vostok_app
+          DB_PASS: ${{ secrets.DB_APP_PASS || 'VostokApp2026!Secure' }}
+          APP_ENV: test
+          BASE_URL: http://127.0.0.1:8080/
+        run: |
+          php tests/test_input_length_validation.php
+
+      - name: Run SQL Injection Regression Test
+        env:
+          DB_HOST: 127.0.0.1
+          DB_PORT: ${{ matrix.db.port }}
+          DB_NAME: vostokpribor
+          DB_USER: vostok_app
+          DB_PASS: ${{ secrets.DB_APP_PASS || 'VostokApp2026!Secure' }}
+          APP_ENV: test
+          BASE_URL: http://127.0.0.1:8080/
+        run: |
+          php tests/test_sqli_regression.php
 
       - name: Run Migration 016 Portability & Idempotency Test
         env:

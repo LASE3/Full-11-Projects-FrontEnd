@@ -257,10 +257,6 @@ body {
   border-left: 4px solid var(--vk-class-confidential) !important;
 }
 
-.tag-high-confidential {
-  border-left: 4px solid var(--vk-class-high-confidential) !important;
-}
-
 /* --- Data Classification Badges --- */
 .badge-classification {
   font-family: var(--font-mono);
@@ -362,15 +358,6 @@ body {
 
 .vk-btn-accent:hover {
   background-color: var(--vk-sys-accent-dark);
-}
-
-.vk-btn-cta {
-  background-color: var(--vk-accent-cta);
-  color: var(--vk-primary-dark);
-}
-
-.vk-btn-cta:hover {
-  background-color: #d6902b;
 }
 
 .vk-btn-outline {
@@ -1939,6 +1926,8 @@ code {
   font-size: 13px;
   color: var(--vk-neutral-900);
   cursor: pointer;
+  min-height: 44px;
+  min-width: 44px;
 }
 .dev-display-flex-justify-content-ef47 {
   display: flex;

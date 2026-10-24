@@ -31,7 +31,7 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
 <body>
 
   <div class="app-container">
-    <!-- TOP NAVIGATION BAR -->
+    <?php /* TOP NAVIGATION BAR */ ?>
     <header class="top-nav">
       <div class="top-nav__accent-stripe"></div>
 
@@ -132,10 +132,10 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
         </div>
       </aside>
 
-      <!-- MAIN CONTENT -->
+      <?php /* MAIN CONTENT */ ?>
       <main class="content-wrapper">
         <div class="portal-container hr-max-w-1200" >
-          <!-- Page Header -->
+          <?php /* Page Header */ ?>
           <div class="page-header">
             <div class="page-header-info">
               <div class="breadcrumb-trail">
@@ -155,7 +155,7 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
             </div>
           </div>
 
-          <!-- Top Row KPI Cards - 100% Database Driven -->
+          <?php /* Top Row KPI Cards - 100% Database Driven */ ?>
           <div class="kpi-grid">
             <div class="hr-card kpi-card hr-card-confidential-top" >
               <div class="kpi-header">
@@ -227,11 +227,11 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
               <?php endif; ?>
             </div>
           <?php else: ?>
-            <!-- Offboarding Cases List -->
+            <?php /* Offboarding Cases List */ ?>
             <div class="hr-flex-col-gap-15" >
               <?php foreach ($offboardingCases as $case): ?>
                 <div class="hr-card hr-p-6" >
-                  <!-- Case Header -->
+                  <?php /* Case Header */ ?>
                   <div class="hr-offboarding-hero-row" >
                     <div class="hr-flex-gap-1" >
                       <div class="hr-avatar-48-red" >
@@ -277,7 +277,7 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
                     </div>
                   </div>
 
-                  <!-- 10 Step Checklist Grid -->
+                  <?php /* 10 Step Checklist Grid */ ?>
                   <div class="hr-grid-offboarding-cards" >
                     <?php
                     $stepTitles = [
@@ -322,7 +322,7 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
             </div>
           <?php endif; ?>
 
-          <!-- Terminated & Suspended Personnel History -->
+          <?php /* Terminated & Suspended Personnel History */ ?>
           <div class="hr-card hr-panel-flush-mt" >
             <div class="hr-table-header-bar" >
               <div>
@@ -400,7 +400,7 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
   </div>
 
   <?php if ($canManage): ?>
-    <!-- MODAL: INITIATE OFFBOARDING / REMOVE PERSONNEL -->
+    <?php /* MODAL: INITIATE OFFBOARDING / REMOVE PERSONNEL */ ?>
     <div id="modal-initiate-offboarding" class="modal-backdrop">
       <div class="modal-card hr-modal-560" >
         <div class="modal-header hr-modal-header-confidential" >

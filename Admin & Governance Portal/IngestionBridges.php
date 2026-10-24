@@ -76,7 +76,7 @@ $metrics = gov_getGovernanceMetrics();
                 </div>
             </div>
 
-            <!-- Top Bar Sign Out -->
+            <?php /* Top Bar Sign Out */ ?>
             <a href="../api/logout.php?system=Admin%20%26%20Governance%20Portal&redirect=../Admin%20%26%20Governance%20Portal/login.php" class="top-signout-btn" title="Sign Out of Admin &amp; Governance Portal" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" ><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
         </div>
     </header>
@@ -84,7 +84,7 @@ $metrics = gov_getGovernanceMetrics();
     <div class="pl-[260px]">
         <main class="relative pt-[60px] w-full min-h-screen bg-surface px-gutter-desktop py-space-lg">
             <div class="flex flex-col w-full">
-                <!-- BREADCRUMBS & COMPLIANCE HUD -->
+                <?php /* BREADCRUMBS & COMPLIANCE HUD */ ?>
                 <div
                     class="flex flex-wrap items-center justify-between gap-space-sm bg-surface-container-low px-space-base py-space-sm rounded-none mb-space-base shadow-sm">
                     <div class="flex items-center gap-space-xs font-telemetry-micro text-telemetry-micro">
@@ -110,9 +110,9 @@ $metrics = gov_getGovernanceMetrics();
                         </div>
                     </div>
                 </div>
-                <!-- PIPELINE STATS & AGGREGATE TELEMETRY PODS -->
+                <?php /* PIPELINE STATS & AGGREGATE TELEMETRY PODS */ ?>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-space-md mb-space-base">
-                    <!-- Stat 1: Throughput -->
+                    <?php /* Stat 1: Throughput */ ?>
                     <div class="bg-surface-container-lowest p-space-md shadow-sm relative overflow-hidden">
                         <div class="flex items-center justify-between mb-space-xs">
                             <span class="font-label-uppercase text-label-uppercase text-on-surface-variant">TOTAL
@@ -133,7 +133,7 @@ $metrics = gov_getGovernanceMetrics();
                             <div class="bg-secondary h-1 w-[74%]"></div>
                         </div>
                     </div>
-                    <!-- Stat 2: Fleet Health -->
+                    <?php /* Stat 2: Fleet Health */ ?>
                     <div class="bg-surface-container-lowest p-space-md shadow-sm relative">
                         <div class="flex items-center justify-between mb-space-xs">
                             <span class="font-label-uppercase text-label-uppercase text-on-surface-variant">BRIDGE FLEET
@@ -158,7 +158,7 @@ $metrics = gov_getGovernanceMetrics();
                             <div class="bg-tertiary-fixed-dim h-1 w-[10%]"></div>
                         </div>
                     </div>
-                    <!-- Stat 3: Crypto Tunnel & WireGuard -->
+                    <?php /* Stat 3: Crypto Tunnel & WireGuard */ ?>
                     <div class="bg-surface-container-lowest p-space-md shadow-sm relative">
                         <div class="flex items-center justify-between mb-space-xs">
                             <span class="font-label-uppercase text-label-uppercase text-on-surface-variant">DUAL-CRYPTO
@@ -179,7 +179,7 @@ $metrics = gov_getGovernanceMetrics();
                             <div class="bg-primary-container h-1 w-full"></div>
                         </div>
                     </div>
-                    <!-- Stat 4: Fast Action Controls -->
+                    <?php /* Stat 4: Fast Action Controls */ ?>
                     <div class="bg-surface-container-lowest p-space-md shadow-sm flex flex-col justify-between">
                         <div class="flex items-center justify-between mb-space-xs">
                             <span class="font-label-uppercase text-label-uppercase text-on-surface-variant">INTERLOCK
@@ -214,11 +214,11 @@ $metrics = gov_getGovernanceMetrics();
                         </div>
                     </div>
                 </div>
-                <!-- MAIN OPERATIONAL WORKSPACE: 10-NODE FLEET & INSPECTION DRAWER -->
+                <?php /* MAIN OPERATIONAL WORKSPACE: 10-NODE FLEET & INSPECTION DRAWER */ ?>
                 <div class="grid grid-cols-1 xl:grid-cols-12 gap-space-md mb-space-base items-start">
-                    <!-- LEFT PANE: 10-BRIDGE NODE FLEET (8 COLUMNS) -->
+                    <?php /* LEFT PANE: 10-BRIDGE NODE FLEET (8 COLUMNS) */ ?>
                     <div class="xl:col-span-8 flex flex-col gap-space-md">
-                        <!-- Toolbar & Ingestion Metrics Banner -->
+                        <?php /* Toolbar & Ingestion Metrics Banner */ ?>
                         <div class="bg-surface-container-lowest p-space-md shadow-sm">
                             <div
                                 class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-space-sm mb-space-md">
@@ -247,7 +247,7 @@ $metrics = gov_getGovernanceMetrics();
                                     </button>
                                 </div>
                             </div>
-                            <!-- Density Table of 10 Nodes -->
+                            <?php /* Density Table of 10 Nodes */ ?>
                             <div class="overflow-x-auto">
                                 <table class="w-full text-left font-body-compact text-body-compact">
                                     <thead>
@@ -311,7 +311,7 @@ $metrics = gov_getGovernanceMetrics();
                                 </table>
                             </div>
                         </div>
-                        <!-- Fleet Protocol Topology Diagram & Physical Ingestion Visualizer -->
+                        <?php /* Fleet Protocol Topology Diagram & Physical Ingestion Visualizer */ ?>
                         <div class="bg-surface-container-lowest p-space-md shadow-sm">
                             <div class="flex items-center justify-between mb-space-sm">
                                 <div class="flex items-center gap-space-xs">
@@ -323,7 +323,7 @@ $metrics = gov_getGovernanceMetrics();
                                     v11.4</span>
                             </div>
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-space-sm pt-space-xs">
-                                <!-- Architecture Node 1 -->
+                                <?php /* Architecture Node 1 */ ?>
                                 <div class="bg-surface-container-low p-space-sm relative">
                                     <div class="flex items-center justify-between">
                                         <span
@@ -343,7 +343,7 @@ $metrics = gov_getGovernanceMetrics();
                                         <span>PARALLEL STREAMS: 48</span>
                                     </div>
                                 </div>
-                                <!-- Architecture Node 2 -->
+                                <?php /* Architecture Node 2 */ ?>
                                 <div class="bg-surface-container-low p-space-sm relative">
                                     <div class="flex items-center justify-between">
                                         <span
@@ -363,7 +363,7 @@ $metrics = gov_getGovernanceMetrics();
                                         <span>BUFFER WARN: SYS-03</span>
                                     </div>
                                 </div>
-                                <!-- Architecture Node 3 -->
+                                <?php /* Architecture Node 3 */ ?>
                                 <div class="bg-surface-container-low p-space-sm relative">
                                     <div class="flex items-center justify-between">
                                         <span
@@ -386,11 +386,11 @@ $metrics = gov_getGovernanceMetrics();
                             </div>
                         </div>
                     </div>
-                    <!-- RIGHT PANE: REAL-TIME INSPECTION DRAWER (SYS-03 FOCUS) (4 COLUMNS) -->
+                    <?php /* RIGHT PANE: REAL-TIME INSPECTION DRAWER (SYS-03 FOCUS) (4 COLUMNS) */ ?>
                     <div class="xl:col-span-4 flex flex-col gap-space-md">
-                        <!-- Active Focus Card: Ust-Kamenogorsk CNC Bay -->
+                        <?php /* Active Focus Card: Ust-Kamenogorsk CNC Bay */ ?>
                         <div class="bg-surface-container-lowest p-space-md shadow-sm relative" id="inspector-panel">
-                            <!-- Classification Marker Strip Left -->
+                            <?php /* Classification Marker Strip Left */ ?>
                             <div class="absolute left-0 top-0 bottom-0 w-1 bg-error" id="inspector-strip"></div>
                             <div
                                 class="flex items-center justify-between pb-space-xs border-b border-surface-container-high mb-space-sm">
@@ -409,7 +409,7 @@ $metrics = gov_getGovernanceMetrics();
                                 id="inspector-name">Automated CNC Lathes</h3>
                             <p class="font-telemetry-micro text-telemetry-micro text-on-surface-variant mb-space-md"
                                 id="inspector-location">Ust-Kamenogorsk Heavy Fabrication Bay 04</p>
-                            <!-- Buffer Capacity Telemetry Meter -->
+                            <?php /* Buffer Capacity Telemetry Meter */ ?>
                             <div class="bg-surface-container-low p-space-sm mb-space-md">
                                 <div
                                     class="flex items-center justify-between mb-space-xs font-telemetry-micro text-telemetry-micro">
@@ -428,7 +428,7 @@ $metrics = gov_getGovernanceMetrics();
                                     <span>THRESHOLD: 80% (BREACHED)</span>
                                 </div>
                             </div>
-                            <!-- Real-Time Packet Frequency Chart (Inline SVG) -->
+                            <?php /* Real-Time Packet Frequency Chart (Inline SVG) */ ?>
                             <div class="bg-surface-container-low p-space-sm mb-space-md">
                                 <div
                                     class="flex items-center justify-between mb-space-xs font-telemetry-micro text-telemetry-micro">
@@ -438,23 +438,23 @@ $metrics = gov_getGovernanceMetrics();
                                 <div class="h-20 w-full flex items-end">
                                     <svg class="w-full h-full text-primary" preserveaspectratio="none"
                                         viewbox="0 0 300 70">
-                                        <!-- Grid lines -->
+                                        <?php /* Grid lines */ ?>
                                         <line stroke="currentColor" stroke-dasharray="2,2" stroke-opacity="0.1"
                                             stroke-width="1" x1="0" x2="300" y1="15" y2="15"></line>
                                         <line stroke="currentColor" stroke-dasharray="2,2" stroke-opacity="0.1"
                                             stroke-width="1" x1="0" x2="300" y1="35" y2="35"></line>
                                         <line stroke="currentColor" stroke-dasharray="2,2" stroke-opacity="0.1"
                                             stroke-width="1" x1="0" x2="300" y1="55" y2="55"></line>
-                                        <!-- Shaded area -->
+                                        <?php /* Shaded area */ ?>
                                         <path
                                             d="M0 65 L20 60 L40 52 L60 58 L80 40 L100 48 L120 30 L140 25 L160 38 L180 18 L200 28 L220 15 L240 20 L260 12 L280 22 L300 10 L300 70 L0 70 Z"
                                             fill="currentColor" fill-opacity="0.08"></path>
-                                        <!-- Line -->
+                                        <?php /* Line */ ?>
                                         <path
                                             d="M0 65 L20 60 L40 52 L60 58 L80 40 L100 48 L120 30 L140 25 L160 38 L180 18 L200 28 L220 15 L240 20 L260 12 L280 22 L300 10"
                                             fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="2">
                                         </path>
-                                        <!-- Warning highlight point at end -->
+                                        <?php /* Warning highlight point at end */ ?>
                                         <circle class="fill-error animate-pulse" cx="300" cy="10" r="4"></circle>
                                     </svg>
                                 </div>
@@ -465,7 +465,7 @@ $metrics = gov_getGovernanceMetrics();
                                     <span class="text-error font-bold">LIVE SPIKE</span>
                                 </div>
                             </div>
-                            <!-- Ingestion Pipeline Policy Filters -->
+                            <?php /* Ingestion Pipeline Policy Filters */ ?>
                             <div class="mb-space-md">
                                 <span
                                     class="font-label-uppercase text-label-uppercase text-on-surface-variant block mb-space-xs">APPLIED
@@ -500,7 +500,7 @@ $metrics = gov_getGovernanceMetrics();
                                     </div>
                                 </div>
                             </div>
-                            <!-- Interactive Remediation Controls -->
+                            <?php /* Interactive Remediation Controls */ ?>
                             <div class="mb-space-md">
                                 <span
                                     class="font-label-uppercase text-label-uppercase text-on-surface-variant block mb-space-xs">REMEDIATION
@@ -526,7 +526,7 @@ $metrics = gov_getGovernanceMetrics();
                                     </button>
                                 </div>
                             </div>
-                            <!-- Cryptographic Key Fingerprint -->
+                            <?php /* Cryptographic Key Fingerprint */ ?>
                             <div class="bg-surface-container-low p-space-sm font-telemetry-micro text-telemetry-micro">
                                 <div class="flex items-center justify-between mb-space-2xs text-on-surface-variant">
                                     <span class="font-bold">SIGNING AUTHORITY:</span>
@@ -542,7 +542,7 @@ $metrics = gov_getGovernanceMetrics();
                                 </div>
                             </div>
                         </div>
-                        <!-- Quick Telemetry Diagnostic Log (Live Rolling View) -->
+                        <?php /* Quick Telemetry Diagnostic Log (Live Rolling View) */ ?>
                         <div class="bg-surface-container-lowest p-space-md shadow-sm">
                             <div class="flex items-center justify-between mb-space-xs">
                                 <div class="flex items-center gap-space-xs">
@@ -575,7 +575,7 @@ $metrics = gov_getGovernanceMetrics();
                         </div>
                     </div>
                 </div>
-                <!-- TAMPER-EVIDENT CRYPTOGRAPHIC INGESTION LEDGER FOOTER -->
+                <?php /* TAMPER-EVIDENT CRYPTOGRAPHIC INGESTION LEDGER FOOTER */ ?>
                 <div
                     class="bg-primary text-on-primary p-space-md shadow-md flex flex-col lg:flex-row items-start lg:items-center justify-between gap-space-md mt-space-sm">
                     <div class="flex items-center gap-space-md">

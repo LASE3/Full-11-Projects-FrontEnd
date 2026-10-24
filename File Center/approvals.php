@@ -79,7 +79,7 @@ $currentStage = $appInfo['stage'] ?? ($isApproved ? 3 : 2);
 </head>
 
 <body>
-    <!-- TOP NAVIGATION BAR -->
+    <?php /* TOP NAVIGATION BAR */ ?>
     <header class="vk-top-navbar">
         <div class="fc-flex-center-gap-24">
             <button class="mobile-nav-toggle" id="fc-sidebar-toggle" onclick="document.body.classList.toggle('sidebar-open')" title="Toggle Menu"><span class="material-symbols-outlined">menu</span></button>
@@ -122,12 +122,12 @@ $currentStage = $appInfo['stage'] ?? ($isApproved ? 3 : 2);
                 </div>
             </div>
 
-            <!-- Top Bar Sign Out -->
+            <?php /* Top Bar Sign Out */ ?>
             <a href="../api/logout.php?system=File%20Center&redirect=../File%20Center/login.php" class="top-signout-btn" title="Sign Out of File Center" onclick="(function(){sessionStorage.clear();localStorage.clear();})()"><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
         </div>
     </header>
 
-    <!-- LEFT SIDEBAR -->
+    <?php /* LEFT SIDEBAR */ ?>
     <aside class="vk-sidebar" style="background-color: #0f2438 !important; border-right: 1px solid rgba(255, 255, 255, 0.1) !important;">
         <div class="vk-sidebar-nav">
             <div class="vk-sidebar-header">Document Vault</div>
@@ -214,9 +214,9 @@ $currentStage = $appInfo['stage'] ?? ($isApproved ? 3 : 2);
         </div>
     </aside>
 
-    <!-- MAIN CONTENT AREA -->
+    <?php /* MAIN CONTENT AREA */ ?>
     <main class="vk-main-layout">
-        <!-- HEADER BLOCK -->
+        <?php /* HEADER BLOCK */ ?>
         <div class="fc-display-flex-justify-content-f610" style="margin-bottom: 20px;">
             <div>
                 <div class="fc-display-flex-align-items-9bb7">
@@ -234,7 +234,7 @@ $currentStage = $appInfo['stage'] ?? ($isApproved ? 3 : 2);
                 </p>
             </div>
             <div style="display: flex; align-items: center; gap: 10px;">
-                <!-- Target Document Switcher Dropdown -->
+                <?php /* Target Document Switcher Dropdown */ ?>
                 <select id="select-review-doc" class="vk-btn vk-btn-outline" style="max-width: 260px;" onchange="window.location.href='approvals.php?doc_id=' + this.value;">
                     <?php foreach ($allDocs as $ad): ?>
                         <option value="<?= htmlspecialchars($ad['doc_id']) ?>" <?= $ad['doc_id'] === $reviewDoc['doc_id'] ? 'selected' : '' ?>>
@@ -248,7 +248,7 @@ $currentStage = $appInfo['stage'] ?? ($isApproved ? 3 : 2);
             </div>
         </div>
 
-        <!-- STEPPER CARD (Dynamic from Database) -->
+        <?php /* STEPPER CARD (Dynamic from Database) */ ?>
         <div class="approval-pipeline-card">
             <div class="fc-flex-between-center">
                 <div class="fc-font-family-var-font-bfb2">
@@ -264,7 +264,7 @@ $currentStage = $appInfo['stage'] ?? ($isApproved ? 3 : 2);
                     <div class="stepper-progress-fill" style="width: <?= $isApproved ? '85%' : '40%' ?>;"></div>
                 </div>
 
-                <!-- Step 1 -->
+                <?php /* Step 1 */ ?>
                 <div class="approval-step completed">
                     <div class="step-circle">
                         <span class="material-symbols-outlined text-[18px]">done</span>
@@ -274,7 +274,7 @@ $currentStage = $appInfo['stage'] ?? ($isApproved ? 3 : 2);
                     <div class="fc-font-family-var-font-49e1">2026-09-10 14:12</div>
                 </div>
 
-                <!-- Step 2 -->
+                <?php /* Step 2 */ ?>
                 <div class="approval-step <?= $isApproved ? 'completed' : 'active' ?>" id="step-pm-approval">
                     <div class="step-circle">
                         <?php if ($isApproved): ?>
@@ -290,7 +290,7 @@ $currentStage = $appInfo['stage'] ?? ($isApproved ? 3 : 2);
                     </div>
                 </div>
 
-                <!-- Step 3 -->
+                <?php /* Step 3 */ ?>
                 <div class="approval-step <?= $isApproved ? 'active' : '' ?>" id="step-gov-clearance">
                     <div class="step-circle">3</div>
                     <div class="step-label">3. Governance Clearance</div>
@@ -298,7 +298,7 @@ $currentStage = $appInfo['stage'] ?? ($isApproved ? 3 : 2);
                     <div class="fc-font-family-var-font-2ead">L4 Attestation</div>
                 </div>
 
-                <!-- Step 4 -->
+                <?php /* Step 4 */ ?>
                 <div class="approval-step" id="step-client-dispatch">
                     <div class="step-circle">4</div>
                     <div class="step-label">4. Portal Synchronization</div>
@@ -308,7 +308,7 @@ $currentStage = $appInfo['stage'] ?? ($isApproved ? 3 : 2);
             </div>
         </div>
 
-        <!-- REVIEW HERO CARD (Dynamic from Database) -->
+        <?php /* REVIEW HERO CARD (Dynamic from Database) */ ?>
         <div class="doc-review-hero">
             <div class="fc-display-flex-justify-content-fe2b">
                 <div>
@@ -341,7 +341,7 @@ $currentStage = $appInfo['stage'] ?? ($isApproved ? 3 : 2);
                 </div>
             </div>
 
-            <!-- METADATA GRID (Dynamic from Database) -->
+            <?php /* METADATA GRID (Dynamic from Database) */ ?>
             <div class="review-meta-grid">
                 <div>
                     <div class="fc-mono-muted-11">DOCUMENT OWNER</div>
@@ -361,7 +361,7 @@ $currentStage = $appInfo['stage'] ?? ($isApproved ? 3 : 2);
                 </div>
             </div>
 
-            <!-- REDACTION & SPEC PREVIEW -->
+            <?php /* REDACTION & SPEC PREVIEW */ ?>
             <div class="fc-mt-20">
                 <div class="fc-display-flex-justify-content-f209">
                     <span class="fc-font-family-var-font-6272">
@@ -385,7 +385,7 @@ $currentStage = $appInfo['stage'] ?? ($isApproved ? 3 : 2);
         </div>
     </main>
 
-    <!-- ELECTRONIC SIGNOFF MODAL -->
+    <?php /* ELECTRONIC SIGNOFF MODAL */ ?>
     <div class="signoff-modal-backdrop" id="signoff-modal-backdrop">
         <div class="signoff-modal-box">
             <div class="fc-padding-16px-20px-background-b5da">
@@ -435,7 +435,7 @@ $currentStage = $appInfo['stage'] ?? ($isApproved ? 3 : 2);
         </div>
     </div>
 
-    <!-- DOCKED ENTERPRISE STATUS BAR -->
+    <?php /* DOCKED ENTERPRISE STATUS BAR */ ?>
     <footer class="vk-status-bar">
         <div class="fc-flex-center-gap-16">
 
@@ -451,7 +451,7 @@ $currentStage = $appInfo['stage'] ?? ($isApproved ? 3 : 2);
         </div>
     </footer>
 
-    <!-- Universal Command Palette Modal (Ctrl + K) -->
+    <?php /* Universal Command Palette Modal (Ctrl + K) */ ?>
     <div class="cmd-palette-backdrop" id="cmd-palette-modal">
         <div class="cmd-palette-box">
             <div class="cmd-palette-header">
@@ -483,7 +483,7 @@ $currentStage = $appInfo['stage'] ?? ($isApproved ? 3 : 2);
         </div>
     </div>
 
-    <!-- Universal Toast Container -->
+    <?php /* Universal Toast Container */ ?>
     <div class="vk-toast-container"></div>
 
     <script src="js/fc-common.js"></script>

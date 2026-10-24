@@ -30,12 +30,12 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
 <body>
 
   <div class="app-container">
-    <!-- TOP NAVIGATION BAR -->
+    <?php /* TOP NAVIGATION BAR */ ?>
     <header class="top-nav">
       <div class="top-nav__accent-stripe"></div>
 
       <div class="top-nav__content">
-        <!-- Brand & System Identifier -->
+        <?php /* Brand & System Identifier */ ?>
         <div class="brand-section">
           <button class="mobile-nav-toggle" id="hr-sidebar-toggle" onclick="document.body.classList.toggle('sidebar-open')" title="Toggle Menu"><span class="material-symbols-outlined">menu</span></button>
           <a href="Dashboard.php" class="brand-logo-container">
@@ -56,7 +56,7 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
           </a>
         </div>
 
-        <!-- Global Omni Search -->
+        <?php /* Global Omni Search */ ?>
         <div class="top-search-bar">
           <div class="search-input-wrapper">
             <span class="search-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span>
@@ -65,7 +65,7 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
           </div>
         </div>
 
-        <!-- Right System Metrics, Red Confidential Badge & Profile -->
+        <?php /* Right System Metrics, Red Confidential Badge & Profile */ ?>
         <div class="top-nav__actions">
           <div class="confidential-system-pill" title="Restricted Personnel & Security Clearance System (GOST Class 1G)">
             <span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>
@@ -79,7 +79,7 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
             </svg>
           </button>
 
-          <!-- Dynamic Active User Profile -->
+          <?php /* Dynamic Active User Profile */ ?>
           <div class="top-user-profile" title="Active Session: <?= htmlspecialchars($currUser['full_name']) ?> (Clearance: <?= htmlspecialchars($currUser['clearance_level'] ?? 'L1') ?>)">
             <div class="hr-avatar-circle-glow" >
               <?= $initials ?>
@@ -90,7 +90,7 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
             </div>
           </div>
 
-          <!-- Sign Out -->
+          <?php /* Sign Out */ ?>
           <a href="../api/logout.php?system=HR%20System&redirect=../HR%20System/login.php" class="top-signout-btn" title="Sign Out of HR System" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" >
             <span class="material-symbols-outlined">logout</span>
             <span>Sign Out</span>
@@ -100,7 +100,7 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
     </header>
 
     <div class="main-layout">
-      <!-- LEFT SIDEBAR NAVIGATION -->
+      <?php /* LEFT SIDEBAR NAVIGATION */ ?>
       <aside class="sidebar">
         <div>
           <div class="sidebar-section-title">Human Resources</div>
@@ -243,12 +243,12 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
           </nav>
         </div>
 
-        <!-- Clearance & Security Widget -->
+        <?php /* Clearance & Security Widget */ ?>
         <div class="sidebar-footer">
           <div class="security-widget-card">
             <div class="security-widget-header">
               <span>Security Clearance Registry</span>
-              <span class="security-badge-status">● GOST 1G</span>
+              <span class="security-badge-status">● Active</span>
             </div>
             <div class="hr-text-inverse-muted-sm" >
               Executive L4 Clearances: <strong><?= $metrics['clearance_counts']['L4'] ?> Vetted</strong>
@@ -257,10 +257,10 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
         </div>
       </aside>
 
-      <!-- MAIN CONTENT AREA -->
+      <?php /* MAIN CONTENT AREA */ ?>
       <main class="content-wrapper">
         <div class="portal-container">
-          <!-- Page Header -->
+          <?php /* Page Header */ ?>
           <div class="page-header">
             <div class="page-header-info">
               <div class="breadcrumb-trail">
@@ -285,9 +285,9 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
             </div>
           </div>
 
-          <!-- Top Row 4 KPI Cards (LIVE DATABASE DRIVEN) -->
+          <?php /* Top Row 4 KPI Cards (LIVE DATABASE DRIVEN) */ ?>
           <div class="kpi-grid">
-            <!-- Card 1: Total Headcount -->
+            <?php /* Card 1: Total Headcount */ ?>
             <div class="hr-card kpi-card">
               <div class="kpi-header">
                 <span class="kpi-title">Active Headcount</span>
@@ -303,7 +303,7 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
               </div>
             </div>
 
-            <!-- Card 2: Security Clearance Tiers -->
+            <?php /* Card 2: Security Clearance Tiers */ ?>
             <div class="hr-card kpi-card">
               <div class="kpi-header">
                 <span class="kpi-title">Clearance Distribution</span>
@@ -321,7 +321,7 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
               </div>
             </div>
 
-            <!-- Card 3: Pending Onboarding -->
+            <?php /* Card 3: Pending Onboarding */ ?>
             <div class="hr-card kpi-card">
               <div class="kpi-header">
                 <span class="kpi-title">Active Onboarding</span>
@@ -339,7 +339,7 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
               </div>
             </div>
 
-            <!-- Card 4: Leave Requests -->
+            <?php /* Card 4: Leave Requests */ ?>
             <div class="hr-card kpi-card">
               <div class="kpi-header">
                 <span class="kpi-title">Leave Awaiting Approval</span>
@@ -356,7 +356,7 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
             </div>
           </div>
 
-          <!-- Horizontal Bar Chart: Headcount by Department (LIVE SQL DATA) -->
+          <?php /* Horizontal Bar Chart: Headcount by Department (LIVE SQL DATA) */ ?>
           <div class="hr-card hr-mb-6" >
             <div class="card-header-row">
               <div>
@@ -404,7 +404,7 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
             </div>
           </div>
 
-          <!-- Priority Actions & Security Compliance Queue (LIVE DATABASE DRIVEN) -->
+          <?php /* Priority Actions & Security Compliance Queue (LIVE DATABASE DRIVEN) */ ?>
           <div class="hr-card">
             <div class="card-header-row">
               <div>
@@ -419,7 +419,7 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
             </div>
 
             <div class="action-needed-list">
-              <!-- Item 1: Active Onboarding Candidate -->
+              <?php /* Item 1: Active Onboarding Candidate */ ?>
               <div class="action-item action-it">
                 <div class="action-item-left">
                   <div class="action-badge-icon hr-badge-warning" ><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
@@ -433,7 +433,7 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
                 </div>
               </div>
 
-              <!-- Item 2: Offboarding Status -->
+              <?php /* Item 2: Offboarding Status */ ?>
               <div class="action-item action-offboarding">
                 <div class="action-item-left">
                   <div class="action-badge-icon hr-badge-confidential" ><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
@@ -447,7 +447,7 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
                 </div>
               </div>
 
-              <!-- Item 3: Pending Leaves -->
+              <?php /* Item 3: Pending Leaves */ ?>
               <?php if ($metrics['pending_leaves'] > 0): ?>
                 <div class="action-item">
                   <div class="action-item-left">

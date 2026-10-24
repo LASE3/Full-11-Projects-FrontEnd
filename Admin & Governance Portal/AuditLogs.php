@@ -78,7 +78,7 @@ $sidebarBadges = gov_getSidebarBadges();
                 </div>
             </div>
 
-            <!-- Top Bar Sign Out -->
+            <?php /* Top Bar Sign Out */ ?>
             <a href="../api/logout.php?system=Admin%20%26%20Governance%20Portal&redirect=../Admin%20%26%20Governance%20Portal/login.php" class="top-signout-btn" title="Sign Out of Admin &amp; Governance Portal" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" ><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
         </div>
     </header>
@@ -86,7 +86,7 @@ $sidebarBadges = gov_getSidebarBadges();
     <div class="pl-[260px]">
         <main class="relative pt-[60px] w-full min-h-screen bg-surface px-gutter-desktop py-space-lg">
             <div class="flex flex-col w-full">
-                <!-- Top Command Ribbon / Breadcrumb Header -->
+                <?php /* Top Command Ribbon / Breadcrumb Header */ ?>
                 <div
                     class="flex flex-col xl:flex-row xl:items-center justify-between gap-space-md pb-space-md mb-space-base">
                     <div class="flex flex-col gap-space-2xs">
@@ -114,7 +114,7 @@ $sidebarBadges = gov_getSidebarBadges();
                             </div>
                         </div>
                     </div>
-                    <!-- Quick Ledger Status Counter Strip -->
+                    <?php /* Quick Ledger Status Counter Strip */ ?>
                     <div class="flex items-center gap-space-sm self-start xl:self-auto">
                         <div class="px-space-md py-space-xs bg-surface-container rounded flex flex-col items-end">
                             <span class="font-label-uppercase text-label-uppercase text-on-surface-variant">INGEST
@@ -136,10 +136,10 @@ $sidebarBadges = gov_getSidebarBadges();
                         </div>
                     </div>
                 </div>
-                <!-- Primary Query Syntax & Control Deck -->
+                <?php /* Primary Query Syntax & Control Deck */ ?>
                 <div
                     class="bg-surface-container-lowest rounded-lg shadow-sm p-space-md mb-space-base flex flex-col gap-space-md">
-                    <!-- Search Query Bar -->
+                    <?php /* Search Query Bar */ ?>
                     <div class="flex flex-col lg:flex-row items-stretch gap-space-sm">
                         <div
                             class="relative flex-1 bg-surface-container-low rounded flex items-center px-space-sm focus-within:bg-surface-container-lowest transition-all">
@@ -168,7 +168,7 @@ $sidebarBadges = gov_getSidebarBadges();
                             </button>
                         </div>
                     </div>
-                    <!-- Fine Filter Badges & Protocols -->
+                    <?php /* Fine Filter Badges & Protocols */ ?>
                     <div class="flex flex-wrap items-center justify-between gap-space-md pt-space-xs">
                         <?php
 $critLogsCount = count(array_filter($auditLogs, fn($l) => $l['result'] === 'Failed' || strpos($l['action'], 'Override') !== false || strpos($l['action'], 'Breach') !== false));
@@ -209,7 +209,7 @@ $infoLogsCount = count(array_filter($auditLogs, fn($l) => $l['result'] === 'Succ
                                 <option value="SYS-11">SYS-11 (Gov-Core Mainframe)</option>
                             </select>
                         </div>
-                        <!-- Action Utility Buttons -->
+                        <?php /* Action Utility Buttons */ ?>
                         <div class="flex items-center gap-space-xs">
                             <button id="verifyLedgerBtn"
                                 class="h-control-height-sm px-space-sm bg-secondary-container text-on-secondary-container rounded font-telemetry-micro text-telemetry-micro font-bold flex items-center gap-space-2xs hover:bg-secondary hover:text-on-secondary transition-colors cursor-pointer"
@@ -232,13 +232,13 @@ $infoLogsCount = count(array_filter($auditLogs, fn($l) => $l['result'] === 'Succ
                         </div>
                     </div>
                 </div>
-                <!-- Main Bento Grid: Live Event Stream + Operational Panels -->
+                <?php /* Main Bento Grid: Live Event Stream + Operational Panels */ ?>
                 <div class="grid grid-cols-1 xl:grid-cols-12 gap-space-base mb-space-base items-start">
-                    <!-- Left Column (8 cols): Live Event Terminal Console -->
+                    <?php /* Left Column (8 cols): Live Event Terminal Console */ ?>
                     <div class="xl:col-span-8 flex flex-col gap-space-base">
-                        <!-- Live Industrial Terminal Pane -->
+                        <?php /* Live Industrial Terminal Pane */ ?>
                         <div class="bg-primary text-on-primary rounded-lg shadow-md overflow-hidden flex flex-col">
-                            <!-- Terminal Header Bar -->
+                            <?php /* Terminal Header Bar */ ?>
                             <div
                                 class="h-[36px] bg-primary-container px-space-md flex items-center justify-between select-none">
                                 <div class="flex items-center gap-space-sm">
@@ -261,7 +261,7 @@ $infoLogsCount = count(array_filter($auditLogs, fn($l) => $l['result'] === 'Succ
                                         UTF-8 / RFC5424</span>
                                 </div>
                             </div>
-                            <!-- Terminal Body / Monospaced Stream Entries -->
+                            <?php /* Terminal Body / Monospaced Stream Entries */ ?>
                             <div class="p-space-sm overflow-x-auto flex flex-col gap-[2px] max-h-[580px] overflow-y-auto"
                                 id="terminalStreamBox">
                                 <?php foreach ($auditLogs as $idx => $al):
@@ -289,7 +289,7 @@ $infoLogsCount = count(array_filter($auditLogs, fn($l) => $l['result'] === 'Succ
                                         </span>
                                     </div>
                                 <?php endforeach; ?>
-                            </div>\n <!-- Terminal Footer Status & Command Input Simulator -->
+                            </div>\n <?php /* Terminal Footer Status & Command Input Simulator */ ?>
                             <div
                                 class="h-[32px] bg-primary-container/80 px-space-md flex items-center justify-between font-telemetry-micro text-telemetry-micro text-on-primary-container">
                                 <div class="flex items-center gap-space-xs">
@@ -303,7 +303,7 @@ $infoLogsCount = count(array_filter($auditLogs, fn($l) => $l['result'] === 'Succ
                                 </div>
                             </div>
                         </div>
-                        <!-- Historical Event Distribution Graph (SVG Vector Data) -->
+                        <?php /* Historical Event Distribution Graph (SVG Vector Data) */ ?>
                         <div
                             class="bg-surface-container-lowest rounded-lg shadow-sm p-space-md flex flex-col gap-space-sm">
                             <div class="flex items-center justify-between">
@@ -315,7 +315,7 @@ $infoLogsCount = count(array_filter($auditLogs, fn($l) => $l['result'] === 'Succ
                                 <span class="font-telemetry-micro text-telemetry-micro text-on-surface-variant">BUCKET:
                                     60 SEC INTERVALS</span>
                             </div>
-                            <!-- Inline SVG Sparkline / Bar Graph -->
+                            <?php /* Inline SVG Sparkline / Bar Graph */ ?>
                             <div class="h-28 w-full relative">
                                 <svg class="w-full h-full text-secondary" preserveaspectratio="none"
                                     viewbox="0 0 600 80">
@@ -325,23 +325,23 @@ $infoLogsCount = count(array_filter($auditLogs, fn($l) => $l['result'] === 'Succ
                                             <stop offset="100%" stop-color="#006972" stop-opacity="0.0"></stop>
                                         </lineargradient>
                                     </defs>
-                                    <!-- Grid Lines -->
+                                    <?php /* Grid Lines */ ?>
                                     <line stroke="#E5E8EE" stroke-dasharray="3,3" stroke-width="1" x1="0" x2="600"
                                         y1="20" y2="20"></line>
                                     <line stroke="#E5E8EE" stroke-dasharray="3,3" stroke-width="1" x1="0" x2="600"
                                         y1="40" y2="40"></line>
                                     <line stroke="#E5E8EE" stroke-dasharray="3,3" stroke-width="1" x1="0" x2="600"
                                         y1="60" y2="60"></line>
-                                    <!-- Area Fill -->
+                                    <?php /* Area Fill */ ?>
                                     <polygon fill="url(#gradientAudit)"
                                         points="0,65 30,62 60,60 90,55 120,68 150,50 180,48 210,54 240,40 270,30 300,32 330,22 360,45 390,50 420,28 450,15 480,24 510,38 540,18 570,22 600,12 600,80 0,80">
                                     </polygon>
-                                    <!-- Stroke Path -->
+                                    <?php /* Stroke Path */ ?>
                                     <polyline fill="none"
                                         points="0,65 30,62 60,60 90,55 120,68 150,50 180,48 210,54 240,40 270,30 300,32 330,22 360,45 390,50 420,28 450,15 480,24 510,38 540,18 570,22 600,12"
                                         stroke="#006972" stroke-linecap="round" stroke-linejoin="round"
                                         stroke-width="2.5"></polyline>
-                                    <!-- Critical Spike Anomaly Pin -->
+                                    <?php /* Critical Spike Anomaly Pin */ ?>
                                     <circle cx="450" cy="15" fill="#BA1A1A" r="4.5"></circle>
                                     <circle cx="600" cy="12" fill="#BA1A1A" r="4.5"></circle>
                                 </svg>
@@ -353,9 +353,9 @@ $infoLogsCount = count(array_filter($auditLogs, fn($l) => $l['result'] === 'Succ
                             </div>
                         </div>
                     </div>
-                    <!-- Right Column (4 cols): Privileged Sessions & Emergency Break-Glass Station -->
+                    <?php /* Right Column (4 cols): Privileged Sessions & Emergency Break-Glass Station */ ?>
                     <div class="xl:col-span-4 flex flex-col gap-space-base">
-                        <!-- Active Privileged Sessions Panel -->
+                        <?php /* Active Privileged Sessions Panel */ ?>
                         <div class="bg-surface-container-lowest rounded-lg shadow-sm overflow-hidden flex flex-col">
                             <div class="px-space-md py-space-sm bg-surface-container flex items-center justify-between">
                                 <div class="flex items-center gap-space-xs">
@@ -369,7 +369,7 @@ $infoLogsCount = count(array_filter($auditLogs, fn($l) => $l['result'] === 'Succ
                                     ACTIVE</span>
                             </div>
                             <div class="p-space-md flex flex-col gap-space-md">
-                                <!-- Session Card 1: Timur Akhmetov -->
+                                <?php /* Session Card 1: Timur Akhmetov */ ?>
                                 <div
                                     class="bg-surface-container-low rounded p-space-sm flex flex-col gap-space-xs hover:bg-surface-container transition-colors">
                                     <div class="flex items-center justify-between">
@@ -409,7 +409,7 @@ $infoLogsCount = count(array_filter($auditLogs, fn($l) => $l['result'] === 'Succ
                                         </button>
                                     </div>
                                 </div>
-                                <!-- Session Card 2: Leonid Volkov -->
+                                <?php /* Session Card 2: Leonid Volkov */ ?>
                                 <div
                                     class="bg-surface-container-low rounded p-space-sm flex flex-col gap-space-xs hover:bg-surface-container transition-colors">
                                     <div class="flex items-center justify-between">
@@ -450,7 +450,7 @@ $infoLogsCount = count(array_filter($auditLogs, fn($l) => $l['result'] === 'Succ
                                         </button>
                                     </div>
                                 </div>
-                                <!-- Session Card 3: Automated Daemon Tunnel -->
+                                <?php /* Session Card 3: Automated Daemon Tunnel */ ?>
                                 <div
                                     class="bg-surface-container-low rounded p-space-sm flex flex-col gap-space-xs hover:bg-surface-container transition-colors">
                                     <div class="flex items-center justify-between">
@@ -479,10 +479,10 @@ $infoLogsCount = count(array_filter($auditLogs, fn($l) => $l['result'] === 'Succ
                                 </div>
                             </div>
                         </div>
-                        <!-- Emergency Break-Glass Protocol Status Console -->
+                        <?php /* Emergency Break-Glass Protocol Status Console */ ?>
                         <div
                             class="bg-surface-container-lowest rounded-lg shadow-sm overflow-hidden flex flex-col relative">
-                            <!-- Visual Accent Strip -->
+                            <?php /* Visual Accent Strip */ ?>
                             <div class="h-1.5 w-full bg-error"></div>
                             <div class="p-space-md flex flex-col gap-space-md">
                                 <div class="flex items-center justify-between">
@@ -501,12 +501,12 @@ $infoLogsCount = count(array_filter($auditLogs, fn($l) => $l['result'] === 'Succ
                                     <span
                                         class="px-space-xs py-space-2xs bg-error-container text-on-error-container font-security-stamp text-security-stamp font-extrabold rounded">STANDBY</span>
                                 </div>
-                                <!-- Dual Custody Token Verification Pod -->
+                                <?php /* Dual Custody Token Verification Pod */ ?>
                                 <div class="bg-surface-container rounded p-space-sm flex flex-col gap-space-sm">
                                     <span
                                         class="font-label-uppercase text-label-uppercase text-on-surface-variant">DUAL-AUTHORIZATION
                                         PHYSICAL CUSTODIANS</span>
-                                    <!-- Custodian 1: CGO Akhmetov -->
+                                    <?php /* Custodian 1: CGO Akhmetov */ ?>
                                     <div
                                         class="flex items-center justify-between bg-surface-container-lowest p-space-xs rounded">
                                         <div class="flex items-center gap-space-xs">
@@ -524,7 +524,7 @@ $infoLogsCount = count(array_filter($auditLogs, fn($l) => $l['result'] === 'Succ
                                         <span
                                             class="material-symbols-outlined text-[18px] text-secondary">check_circle</span>
                                     </div>
-                                    <!-- Custodian 2: Lead Auditor Sadykova -->
+                                    <?php /* Custodian 2: Lead Auditor Sadykova */ ?>
                                     <div
                                         class="flex items-center justify-between bg-surface-container-lowest p-space-xs rounded">
                                         <div class="flex items-center gap-space-xs">
@@ -543,7 +543,7 @@ $infoLogsCount = count(array_filter($auditLogs, fn($l) => $l['result'] === 'Succ
                                             class="font-telemetry-micro text-telemetry-micro font-bold text-on-tertiary-container">PENDING</span>
                                     </div>
                                 </div>
-                                <!-- Emergency Action Warning & Interlock Trigger -->
+                                <?php /* Emergency Action Warning & Interlock Trigger */ ?>
                                 <div
                                     class="p-space-xs bg-error-container/40 rounded flex items-center gap-space-xs text-on-error-container">
                                     <span
@@ -555,7 +555,7 @@ $infoLogsCount = count(array_filter($auditLogs, fn($l) => $l['result'] === 'Succ
                                 </div>
                                 <button class="w-full h-control-height-md bg-error hover:bg-on-error-container text-on-error rounded font-security-stamp text-security-stamp tracking-wider uppercase transition-colors flex items-center justify-center gap-space-xs cursor-pointer" onclick="window.location.href='Break-GlassAccess.php'"><span class="material-symbols-outlined text-[18px]">lock_open</span><span>Enter Break-Glass Chamber</span></button>
                             </div>
-                            <!-- Watermark / Security Tag Footer -->
+                            <?php /* Watermark / Security Tag Footer */ ?>
                             <div
                                 class="px-space-md py-space-xs bg-surface-container-low flex items-center justify-between text-on-surface-variant font-telemetry-micro text-telemetry-micro">
                                 <span>ALMATY VAULT MERKLE ROOT: <code
@@ -565,7 +565,7 @@ $infoLogsCount = count(array_filter($auditLogs, fn($l) => $l['result'] === 'Succ
                         </div>
                     </div>
                 </div>
-                <!-- Bottom Ledger Verification & Forensic Search Drawer -->
+                <?php /* Bottom Ledger Verification & Forensic Search Drawer */ ?>
                 <div class="bg-surface-container-lowest rounded-lg shadow-sm p-space-md flex flex-col gap-space-md">
                     <div class="flex flex-col md:flex-row md:items-center justify-between gap-space-sm pb-space-xs">
                         <div class="flex items-center gap-space-sm">
@@ -588,7 +588,7 @@ $infoLogsCount = count(array_filter($auditLogs, fn($l) => $l['result'] === 'Succ
                                 4 SEC AGO</span>
                         </div>
                     </div>
-                    <!-- Forensic Table Strip -->
+                    <?php /* Forensic Table Strip */ ?>
                     <div class="overflow-x-auto">
                         <table class="w-full text-left font-body-compact text-body-compact">
                             <thead>

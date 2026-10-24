@@ -152,7 +152,7 @@ if ($isSuperAdmin || $cusId) {
                     <?= htmlspecialchars(strtoupper(substr($currUser['full_name'] ?? 'U', 0, 2))) ?>
                 </div>
             </div>
-            <!-- Top Bar Sign Out -->
+            <?php /* Top Bar Sign Out */ ?>
             <a href="./api/logout.php?redirect=../login.php" class="top-signout-btn" title="Sign Out of Customer Portal" onclick="(function(){sessionStorage.clear();localStorage.clear();})()"><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
         </div>
     </header>
@@ -263,7 +263,7 @@ if ($isSuperAdmin || $cusId) {
                     </div>
                 </div>
 
-                <!-- DYNAMIC KPI CARDS -->
+                <?php /* DYNAMIC KPI CARDS */ ?>
                 <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-unit-base">
                     <div class="bg-surface-container-lowest p-unit-base rounded shadow-sm relative overflow-hidden flex flex-col justify-between">
                         <div class="flex items-center justify-between mb-unit-xs">
@@ -351,7 +351,7 @@ if ($isSuperAdmin || $cusId) {
                     </div>
                 </div>
 
-                <!-- DYNAMIC ACTIVE ORDER BANNER -->
+                <?php /* DYNAMIC ACTIVE ORDER BANNER */ ?>
                 <div class="bg-surface-container-lowest rounded shadow-md overflow-hidden" id="active-order-banner">
                     <?php if ($activeOrder): ?>
                         <div class="bg-primary-container px-unit-lg py-unit-base text-on-primary flex flex-col lg:flex-row lg:items-center justify-between gap-unit-base">
@@ -408,7 +408,7 @@ if ($isSuperAdmin || $cusId) {
                     <?php endif; ?>
                 </div>
 
-                <!-- ORDERS LEDGER TABLE -->
+                <?php /* ORDERS LEDGER TABLE */ ?>
                 <div class="bg-surface-container-lowest rounded shadow-sm overflow-hidden flex flex-col">
                     <div class="p-unit-base bg-surface-container-low flex flex-col md:flex-row md:items-center justify-between gap-unit-base">
                         <div class="flex flex-wrap items-center gap-unit-sm flex-1">

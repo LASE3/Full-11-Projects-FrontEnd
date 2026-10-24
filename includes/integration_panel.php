@@ -69,7 +69,7 @@ function renderSystemIntegrationView($systemCode, $pageMode = 'standalone')
     <link rel="stylesheet" href="../assets/css/integration-panel.css">
     <div class="vostok-integration-container" id="vostok-integration-root" data-system-code="<?= htmlspecialchars($systemCode) ?>">
 
-        <!-- Top Header -->
+        <?php /* Top Header */ ?>
         <div class="vostok-int-header">
             <div>
                 <div class="vostok-header-badge-row">
@@ -112,7 +112,7 @@ function renderSystemIntegrationView($systemCode, $pageMode = 'standalone')
                     $cardType = $isBroadcast ? 'broadcast' : ($isOutbound ? 'outbound' : 'inbound');
                 ?>
                     <div class="vostok-card <?= $cardType ?>" id="card-<?= htmlspecialchars($int['link_code']) ?>">
-                        <!-- Header with Direction & Link Code -->
+                        <?php /* Header with Direction & Link Code */ ?>
                         <div class="vostok-card-header">
                             <div>
                                 <span class="vostok-card-link-code">
@@ -127,7 +127,7 @@ function renderSystemIntegrationView($systemCode, $pageMode = 'standalone')
                             </span>
                         </div>
 
-                        <!-- 1. API / Protocol -->
+                        <?php /* 1. API / Protocol */ ?>
                         <div class="vostok-meta-row">
                             <span class="vostok-meta-label">1. API / Protocol</span>
                             <span class="vostok-meta-value text-sky-400">
@@ -135,7 +135,7 @@ function renderSystemIntegrationView($systemCode, $pageMode = 'standalone')
                             </span>
                         </div>
 
-                        <!-- 2. Authentication -->
+                        <?php /* 2. Authentication */ ?>
                         <div class="vostok-meta-row">
                             <span class="vostok-meta-label">2. Authentication</span>
                             <span class="vostok-meta-value text-emerald-200">
@@ -143,7 +143,7 @@ function renderSystemIntegrationView($systemCode, $pageMode = 'standalone')
                             </span>
                         </div>
 
-                        <!-- 3. Data Exchanged -->
+                        <?php /* 3. Data Exchanged */ ?>
                         <div class="vostok-meta-row">
                             <span class="vostok-meta-label">3. Data Exchanged</span>
                             <span class="vostok-meta-value text-slate-200 text-xs">
@@ -151,7 +151,7 @@ function renderSystemIntegrationView($systemCode, $pageMode = 'standalone')
                             </span>
                         </div>
 
-                        <!-- 4. Direction -->
+                        <?php /* 4. Direction */ ?>
                         <div class="vostok-meta-row">
                             <span class="vostok-meta-label">4. Direction</span>
                             <span class="vostok-meta-value">
@@ -159,7 +159,7 @@ function renderSystemIntegrationView($systemCode, $pageMode = 'standalone')
                             </span>
                         </div>
 
-                        <!-- 5. Permissions -->
+                        <?php /* 5. Permissions */ ?>
                         <div class="vostok-meta-row">
                             <span class="vostok-meta-label">5. Permissions & Clearance</span>
                             <span class="vostok-meta-value flex items-center justify-between">
@@ -172,7 +172,7 @@ function renderSystemIntegrationView($systemCode, $pageMode = 'standalone')
                             </span>
                         </div>
 
-                        <!-- 6. Trigger / Action -->
+                        <?php /* 6. Trigger / Action */ ?>
                         <button type="button"
                             class="vostok-sync-btn"
                             onclick="window.triggerVostokIntegration('<?= htmlspecialchars($int['link_code']) ?>', this)">
@@ -183,7 +183,7 @@ function renderSystemIntegrationView($systemCode, $pageMode = 'standalone')
             <?php endif; ?>
         </div>
 
-        <!-- 6. Logs Section: Real-time Integration Logs from system_integration_logs -->
+        <?php /* 6. Logs Section: Real-time Integration Logs from system_integration_logs */ ?>
         <div class="vostok-logs-header">
             <h3 class="vostok-section-title">
                 <span>Integration Audit Logs (system_integration_logs)</span>
@@ -257,7 +257,7 @@ function renderSystemIntegrationView($systemCode, $pageMode = 'standalone')
         </div>
     </div>
 
-    <!-- Client-side Interactive Dispatcher -->
+    <?php /* Client-side Interactive Dispatcher */ ?>
     <script src="../assets/js/integration-panel.js" defer></script>
 
 <?php

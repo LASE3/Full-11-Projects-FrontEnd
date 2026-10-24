@@ -53,7 +53,7 @@
             global.refreshVostokLogs(sysCode);
           }
         } else {
-          alert("ERROR: " + (data.error || "Failed to dispatch integration."));
+          (window.vpToast ? window.vpToast("ERROR: " + (data.error || "Failed to dispatch integration."), "error") : alert("ERROR: " + (data.error || "Failed to dispatch integration.")));
         }
       })
       .catch((err) => {
@@ -61,7 +61,7 @@
           btnElement.disabled = false;
           btnElement.innerHTML = "<span>&#9889; Dispatch Test Exchange</span>";
         }
-        alert("Network Error: " + err.message);
+        (window.vpToast ? window.vpToast("Network Error: " + err.message, "error") : alert("Network Error: " + err.message));
       });
   };
 

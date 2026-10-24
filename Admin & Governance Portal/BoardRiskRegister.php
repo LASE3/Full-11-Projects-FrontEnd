@@ -82,7 +82,7 @@ $topRisk = $riskRegister[0] ?? null;
                 </div>
             </div>
 
-            <!-- Top Bar Sign Out -->
+            <?php /* Top Bar Sign Out */ ?>
             <a href="../api/logout.php?system=Admin%20%26%20Governance%20Portal&redirect=../Admin%20%26%20Governance%20Portal/login.php" class="top-signout-btn" title="Sign Out of Admin &amp; Governance Portal" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" ><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
         </div>
     </header>
@@ -91,7 +91,7 @@ $topRisk = $riskRegister[0] ?? null;
         <main class="relative pt-[60px] w-full min-h-screen bg-surface px-gutter-desktop py-space-lg">
             <div class="flex flex-col w-full">
 
-                <!-- BREADCRUMBS & SYSTEM CLASSIFICATION STRIP -->
+                <?php /* BREADCRUMBS & SYSTEM CLASSIFICATION STRIP */ ?>
                 <div class="flex flex-wrap items-center justify-between gap-space-sm mb-space-sm">
                     <div
                         class="flex items-center gap-space-xs font-telemetry-micro text-telemetry-micro text-on-surface-variant">
@@ -114,7 +114,7 @@ $topRisk = $riskRegister[0] ?? null;
                         </span>
                     </div>
                 </div>
-                <!-- EXECUTIVE CONSOLE HEADER -->
+                <?php /* EXECUTIVE CONSOLE HEADER */ ?>
                 <div class="bg-surface-container-lowest p-space-md mb-space-md shadow-sm border-l-4 border-[#D9822B]">
                     <div class="flex flex-col xl:flex-row xl:items-center justify-between gap-space-md">
                         <div class="flex flex-col gap-space-2xs">
@@ -153,9 +153,9 @@ $topRisk = $riskRegister[0] ?? null;
                         </div>
                     </div>
                 </div>
-                <!-- 4-TIER OPERATIONAL POSTURE METRICS -->
+                <?php /* 4-TIER OPERATIONAL POSTURE METRICS */ ?>
                 <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-space-md mb-space-md">
-                    <!-- Card 1: Composite Board Risk Index -->
+                    <?php /* Card 1: Composite Board Risk Index */ ?>
                     <div
                         class="bg-surface-container-lowest p-space-md shadow-sm border-l-4 border-[#D9822B] flex flex-col justify-between">
                         <div class="flex items-center justify-between mb-space-xs">
@@ -184,7 +184,7 @@ $topRisk = $riskRegister[0] ?? null;
                             <span class="text-secondary font-semibold">10/10 Clusters Active</span>
                         </div>
                     </div>
-                    <!-- Card 2: Active High-Severity Risks -->
+                    <?php /* Card 2: Active High-Severity Risks */ ?>
                     <div
                         class="bg-surface-container-lowest p-space-md shadow-sm border-l-4 border-[#B23A32] flex flex-col justify-between">
                         <div class="flex items-center justify-between mb-space-xs">
@@ -212,7 +212,7 @@ $topRisk = $riskRegister[0] ?? null;
                             <span>Escalated</span>
                         </div>
                     </div>
-                    <!-- Card 3: Mitigations in Flight -->
+                    <?php /* Card 3: Mitigations in Flight */ ?>
                     <div
                         class="bg-surface-container-lowest p-space-md shadow-sm border-l-4 border-[#3E7CB1] flex flex-col justify-between">
                         <div class="flex items-center justify-between mb-space-xs">
@@ -239,7 +239,7 @@ $topRisk = $riskRegister[0] ?? null;
                             <span class="text-primary font-bold">8 Scheduled</span>
                         </div>
                     </div>
-                    <!-- Card 4: Regulatory Compliance Stance -->
+                    <?php /* Card 4: Regulatory Compliance Stance */ ?>
                     <div
                         class="bg-surface-container-lowest p-space-md shadow-sm border-l-4 border-[#8A94A0] flex flex-col justify-between">
                         <div class="flex items-center justify-between mb-space-xs">
@@ -267,11 +267,11 @@ $topRisk = $riskRegister[0] ?? null;
                         </div>
                     </div>
                 </div>
-                <!-- MAIN OPERATIONAL WORKSPACE (65% MATRIX & REGISTER / 35% DEEP-DIVE DOSSIER) -->
+                <?php /* MAIN OPERATIONAL WORKSPACE (65% MATRIX & REGISTER / 35% DEEP-DIVE DOSSIER) */ ?>
                 <div class="grid grid-cols-1 xl:grid-cols-12 gap-space-md mb-space-md">
-                    <!-- LEFT PANEL: 5x5 HEATMAP & RISK REGISTER TABLE (xl:col-span-8) -->
+                    <?php /* LEFT PANEL: 5x5 HEATMAP & RISK REGISTER TABLE (xl:col-span-8) */ ?>
                     <div class="xl:col-span-8 flex flex-col gap-space-md">
-                        <!-- 5x5 INDUSTRIAL RISK APPRAISAL MATRIX (SEVERITY VS LIKELIHOOD) -->
+                        <?php /* 5x5 INDUSTRIAL RISK APPRAISAL MATRIX (SEVERITY VS LIKELIHOOD) */ ?>
                         <div class="bg-surface-container-lowest p-space-md shadow-sm">
                             <div
                                 class="flex flex-wrap items-center justify-between pb-space-sm mb-space-sm bg-surface-container-low -mx-space-md -mt-space-md px-space-md pt-space-sm">
@@ -296,20 +296,20 @@ $topRisk = $riskRegister[0] ?? null;
                                 </div>
                             </div>
                             <div class="grid grid-cols-12 gap-space-md items-center">
-                                <!-- Y-Axis Label + Matrix Grid -->
+                                <?php /* Y-Axis Label + Matrix Grid */ ?>
                                 <div class="col-span-12 lg:col-span-8">
                                     <div class="flex gap-space-xs">
-                                        <!-- Y-Axis Rotated Text -->
+                                        <?php /* Y-Axis Rotated Text */ ?>
                                         <div class="flex items-center justify-center">
                                             <span
                                                 class="font-label-uppercase text-[10px] text-on-surface-variant -rotate-90 tracking-widest whitespace-nowrap">
                                                 LIKELIHOOD →
                                             </span>
                                         </div>
-                                        <!-- 5x5 Grid Cells -->
+                                        <?php /* 5x5 Grid Cells */ ?>
                                         <div
                                             class="flex-1 grid grid-cols-5 gap-1 font-telemetry-micro text-[11px] text-center">
-                                            <!-- Row 5 (Frequent) -->
+                                            <?php /* Row 5 (Frequent) */ ?>
                                             <div
                                                 class="p-2 bg-[#D9822B]/20 text-on-surface flex flex-col justify-center items-center hover:bg-[#D9822B]/30 cursor-pointer transition-colors h-14">
                                                 <span class="text-[10px] text-on-surface-variant">L5 · S1</span>
@@ -335,7 +335,7 @@ $topRisk = $riskRegister[0] ?? null;
                                                 <span class="text-[10px] text-on-error/80">L5 · S5</span>
                                                 <span class="font-bold text-[12px]">RR-041</span>
                                             </div>
-                                            <!-- Row 4 (Probable) -->
+                                            <?php /* Row 4 (Probable) */ ?>
                                             <div
                                                 class="p-2 bg-[#3E7CB1]/20 text-on-surface flex flex-col justify-center items-center hover:bg-[#3E7CB1]/30 cursor-pointer transition-colors h-14">
                                                 <span class="text-[10px] text-on-surface-variant">L4 · S1</span>
@@ -361,7 +361,7 @@ $topRisk = $riskRegister[0] ?? null;
                                                 <span class="text-[10px] text-on-error/80">L4 · S5</span>
                                                 <span class="text-on-error/80">—</span>
                                             </div>
-                                            <!-- Row 3 (Occasional) -->
+                                            <?php /* Row 3 (Occasional) */ ?>
                                             <div
                                                 class="p-2 bg-secondary/20 text-on-surface flex flex-col justify-center items-center hover:bg-secondary/30 cursor-pointer transition-colors h-14">
                                                 <span class="text-[10px] text-on-surface-variant">L3 · S1</span>
@@ -387,7 +387,7 @@ $topRisk = $riskRegister[0] ?? null;
                                                 <span class="text-[10px] text-primary">L3 · S5</span>
                                                 <span class="font-bold text-primary">RR-112</span>
                                             </div>
-                                            <!-- Row 2 (Remote) -->
+                                            <?php /* Row 2 (Remote) */ ?>
                                             <div
                                                 class="p-2 bg-secondary/20 text-on-surface flex flex-col justify-center items-center hover:bg-secondary/30 cursor-pointer transition-colors h-14">
                                                 <span class="text-[10px] text-on-surface-variant">L2 · S1</span>
@@ -413,7 +413,7 @@ $topRisk = $riskRegister[0] ?? null;
                                                 <span class="text-[10px] text-on-surface-variant">L2 · S5</span>
                                                 <span class="font-bold text-primary">RR-067</span>
                                             </div>
-                                            <!-- Row 1 (Improbable) -->
+                                            <?php /* Row 1 (Improbable) */ ?>
                                             <div
                                                 class="p-2 bg-secondary/10 text-on-surface flex flex-col justify-center items-center hover:bg-secondary/20 cursor-pointer transition-colors h-14">
                                                 <span class="text-[10px] text-on-surface-variant">L1 · S1</span>
@@ -441,13 +441,13 @@ $topRisk = $riskRegister[0] ?? null;
                                             </div>
                                         </div>
                                     </div>
-                                    <!-- X-Axis Label -->
+                                    <?php /* X-Axis Label */ ?>
                                     <div
                                         class="text-center mt-space-xs font-label-uppercase text-[10px] text-on-surface-variant tracking-widest">
                                         SEVERITY → (1: NEGLIGIBLE | 2: MINOR | 3: MODERATE | 4: MAJOR | 5: CATASTROPHIC)
                                     </div>
                                 </div>
-                                <!-- Matrix Industrial Distribution Synopsis -->
+                                <?php /* Matrix Industrial Distribution Synopsis */ ?>
                                 <div
                                     class="col-span-12 lg:col-span-4 bg-surface-container-low p-space-sm flex flex-col justify-between h-full">
                                     <div>
@@ -488,9 +488,9 @@ $topRisk = $riskRegister[0] ?? null;
                                 </div>
                             </div>
                         </div>
-                        <!-- DETAILED RISK REGISTER DATA TABLE -->
+                        <?php /* DETAILED RISK REGISTER DATA TABLE */ ?>
                         <div class="bg-surface-container-lowest shadow-sm flex flex-col">
-                            <!-- Table Control & Filter Tabs Bar -->
+                            <?php /* Table Control & Filter Tabs Bar */ ?>
                             <div
                                 class="p-space-sm bg-surface-container-low flex flex-wrap items-center justify-between gap-space-sm">
                                 <div class="flex items-center gap-space-2xs overflow-x-auto" id="riskFilterTabs">
@@ -523,7 +523,7 @@ $topRisk = $riskRegister[0] ?? null;
                                     </div>
                                 </div>
                             </div>
-                            <!-- High-Density Industrial Table -->
+                            <?php /* High-Density Industrial Table */ ?>
                             <div class="overflow-x-auto">
                                 <table class="w-full text-left font-body-compact text-body-compact">
                                     <thead>
@@ -611,7 +611,7 @@ $topRisk = $riskRegister[0] ?? null;
                                     </tbody>
                                 </table>
                             </div>
-                            <!-- Pagination & Summary Footer -->
+                            <?php /* Pagination & Summary Footer */ ?>
                             <div
                                 class="p-space-xs px-space-sm bg-surface-container-low flex items-center justify-between font-telemetry-micro text-telemetry-micro text-on-surface-variant">
                                 <span>Displaying <?= count($riskRegister) ?> of <?= count($riskRegister) ?> Statutory Risk Records (Active Database Query)</span>
@@ -625,7 +625,7 @@ $topRisk = $riskRegister[0] ?? null;
                             </div>
                         </div>
                     </div>
-                    <!-- RIGHT PANEL: FOCUSED DOSSIER & REMEDIATION WORKFLOW (xl:col-span-4) -->
+                    <?php /* RIGHT PANEL: FOCUSED DOSSIER & REMEDIATION WORKFLOW (xl:col-span-4) */ ?>
                     <div class="xl:col-span-4 flex flex-col gap-space-md">
                         <!-- FOCUSED DOSSIER CARD (RR-2026-<?= str_pad($topRisk['risk_id'] ?? 1, 3, '0', STR_PAD_LEFT) ?>) -->
                         <div
@@ -653,7 +653,7 @@ $topRisk = $riskRegister[0] ?? null;
                                         Telemetry Ingestion Pipe: Ust-Kamenogorsk ↔ Almaty Central Line
                                     </div>
                                 </div>
-                                <!-- Threat Vector Analysis Box -->
+                                <?php /* Threat Vector Analysis Box */ ?>
                                 <div class="p-space-sm bg-surface-container-low flex flex-col gap-space-xs">
                                     <span
                                         class="font-label-uppercase text-label-uppercase text-primary flex items-center gap-1">
@@ -667,7 +667,7 @@ $topRisk = $riskRegister[0] ?? null;
                                         safety timing tolerances.
                                     </p>
                                 </div>
-                                <!-- Financial & Operational Exposure Bento -->
+                                <?php /* Financial & Operational Exposure Bento */ ?>
                                 <div class="grid grid-cols-2 gap-space-xs">
                                     <div class="p-space-xs bg-surface-container">
                                         <span
@@ -686,7 +686,7 @@ $topRisk = $riskRegister[0] ?? null;
                                             ms left</span>
                                     </div>
                                 </div>
-                                <!-- Dual Signatory Governance Requirement -->
+                                <?php /* Dual Signatory Governance Requirement */ ?>
                                 <div class="p-space-sm bg-surface-container-high/60 flex flex-col gap-space-xs">
                                     <div
                                         class="flex items-center justify-between font-label-uppercase text-label-uppercase text-primary">
@@ -694,7 +694,7 @@ $topRisk = $riskRegister[0] ?? null;
                                         <span class="font-telemetry-micro text-[10px] text-error font-bold">1/2
                                             PENDING</span>
                                     </div>
-                                    <!-- Signatory 1 -->
+                                    <?php /* Signatory 1 */ ?>
                                     <div
                                         class="flex items-center justify-between font-telemetry-micro text-telemetry-micro bg-surface-container-lowest p-space-xs">
                                         <div class="flex items-center gap-space-xs">
@@ -709,7 +709,7 @@ $topRisk = $riskRegister[0] ?? null;
                                         <span
                                             class="font-telemetry-micro text-[10px] px-1 bg-secondary text-white font-bold">CO-SIGNED</span>
                                     </div>
-                                    <!-- Signatory 2 -->
+                                    <?php /* Signatory 2 */ ?>
                                     <div
                                         class="flex items-center justify-between font-telemetry-micro text-telemetry-micro bg-surface-container-lowest p-space-xs">
                                         <div class="flex items-center gap-space-xs">
@@ -727,7 +727,7 @@ $topRisk = $riskRegister[0] ?? null;
                                         </button>
                                     </div>
                                 </div>
-                                <!-- Action Interlocks -->
+                                <?php /* Action Interlocks */ ?>
                                 <div class="flex flex-col gap-space-xs pt-space-xs">
                                     <button id="btnDispatchPatch"
                                         class="h-control-height-md w-full bg-primary hover:bg-primary-container text-on-primary font-body-compact text-body-compact font-semibold flex items-center justify-center gap-space-xs transition-colors shadow-sm cursor-pointer">
@@ -749,7 +749,7 @@ $topRisk = $riskRegister[0] ?? null;
                                 </div>
                             </div>
                         </div>
-                        <!-- SUPERVISORY BOARD MILESTONES & AUDIT ROADMAP -->
+                        <?php /* SUPERVISORY BOARD MILESTONES & AUDIT ROADMAP */ ?>
                         <div class="bg-surface-container-lowest p-space-md shadow-sm flex flex-col">
                             <div
                                 class="flex items-center justify-between pb-space-xs mb-space-sm bg-surface-container-low -mx-space-md -mt-space-md px-space-md pt-space-sm">
@@ -762,9 +762,9 @@ $topRisk = $riskRegister[0] ?? null;
                                 <span class="font-telemetry-micro text-[10px] text-on-surface-variant font-bold">2026
                                     ROADMAP</span>
                             </div>
-                            <!-- Milestones Vertical Stepper -->
+                            <?php /* Milestones Vertical Stepper */ ?>
                             <div class="flex flex-col gap-space-sm relative">
-                                <!-- Stepper Item 1 -->
+                                <?php /* Stepper Item 1 */ ?>
                                 <div class="flex items-start gap-space-sm">
                                     <div
                                         class="w-6 h-6 rounded-full bg-secondary text-white flex items-center justify-center font-telemetry-micro text-[11px] font-bold shrink-0">
@@ -782,7 +782,7 @@ $topRisk = $riskRegister[0] ?? null;
                                         </p>
                                     </div>
                                 </div>
-                                <!-- Stepper Item 2 -->
+                                <?php /* Stepper Item 2 */ ?>
                                 <div class="flex items-start gap-space-sm">
                                     <div
                                         class="w-6 h-6 rounded-full bg-primary text-white flex items-center justify-center font-telemetry-micro text-[11px] font-bold shrink-0">
@@ -800,7 +800,7 @@ $topRisk = $riskRegister[0] ?? null;
                                         </p>
                                     </div>
                                 </div>
-                                <!-- Stepper Item 3 -->
+                                <?php /* Stepper Item 3 */ ?>
                                 <div class="flex items-start gap-space-sm">
                                     <div
                                         class="w-6 h-6 rounded-full bg-surface-variant text-on-surface-variant flex items-center justify-center font-telemetry-micro text-[11px] font-bold shrink-0">
@@ -823,7 +823,7 @@ $topRisk = $riskRegister[0] ?? null;
                         </div>
                     </div>
                 </div>
-                <!-- TAMPER-EVIDENT CRYPTOGRAPHIC LEDGER ANCHOR FOOTER -->
+                <?php /* TAMPER-EVIDENT CRYPTOGRAPHIC LEDGER ANCHOR FOOTER */ ?>
                 <div
                     class="bg-primary text-on-primary p-space-md shadow-sm border-l-4 border-secondary-fixed flex flex-col md:flex-row items-start md:items-center justify-between gap-space-md">
                     <div class="flex items-center gap-space-md">
@@ -859,7 +859,7 @@ $topRisk = $riskRegister[0] ?? null;
                         </button>
                     </div>
                 </div>
-    <!-- MODAL: STATUTORY RISK FILING / AMENDMENT -->
+    <?php /* MODAL: STATUTORY RISK FILING / AMENDMENT */ ?>
     <div id="riskModal" class="fixed inset-0 bg-primary/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-surface-container-lowest border-l-4 border-[#D9822B] p-space-md max-w-lg w-full shadow-2xl flex flex-col gap-space-sm">
             <div class="flex items-center justify-between pb-space-xs border-b border-surface-container-high">

@@ -90,7 +90,6 @@
      * @param {string} empId
      */
     async requestAssignedTickets(empId) {
-      console.info(`[VostokIntranet] Inter-Module RPC -> Customer Portal (SYS03): Fetching tickets assigned to ${empId}`);
       return await bus.request("customer", "tickets", { assigned_emp_id: empId });
     },
 
@@ -99,7 +98,6 @@
      * @param {string} empId
      */
     async requestManagedAccounts(empId) {
-      console.info(`[VostokIntranet] Inter-Module RPC -> CRM (SYS05): Fetching managed accounts for ${empId}`);
       return await bus.request("crm", "customers", { manager_emp_id: empId });
     },
 
@@ -108,7 +106,6 @@
      * @param {string} empId
      */
     async requestManagedQuotes(empId) {
-      console.info(`[VostokIntranet] Inter-Module RPC -> Online Shop (SYS02): Fetching active quotes for ${empId}`);
       return await bus.request("shop", "quotes", { emp_id: empId });
     },
   };
@@ -120,5 +117,4 @@
 
   // Export isolated namespace
   global.VostokIntranet = intranetApi;
-  console.info("[VostokIntranet] Isolated Employee Intranet API module ready.");
 })(window);

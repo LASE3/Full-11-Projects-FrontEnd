@@ -1626,7 +1626,6 @@ body.sidebar-open .sidebar-backdrop {
 .fin-mb-2 { margin-bottom: 0.5rem; }
 .fin-mb-6 { margin-bottom: 1.5rem; }
 .fin-text-muted-11 { font-size: 11px; color: var(--fin-text-muted); }
-.fin-text-muted-13 { font-size: 13px; color: var(--fin-text-muted); }
 .fin-text-secondary-12 { font-size: 12px; color: var(--fin-text-secondary); }
 .fin-text-inverse-muted-sm { font-size: 11px; color: var(--fin-text-inverse-muted); margin-top: 2px; }
 .fin-panel-flush { padding: 0; overflow: hidden; }

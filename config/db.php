@@ -4,6 +4,57 @@ declare(strict_types=1);
 
 ini_set('default_charset', 'UTF-8');
 mb_internal_encoding('UTF-8');
+ini_set('expose_php', 'Off');
+
+/**
+ * Configure secure session parameters matching SSO cookie policy.
+ */
+function vp_configure_session(): void
+{
+    $isSecure = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || (isset($_SERVER['SERVER_PORT']) && (int)$_SERVER['SERVER_PORT'] === 443);
+    $currentSys = $_SESSION['vostok_current_system'] ?? '';
+    $sameSite = in_array($currentSys, ['ADM', 'FIN', 'HR'], true) ? 'Strict' : 'Lax';
+
+    if (session_status() === PHP_SESSION_NONE) {
+        ini_set('session.cookie_httponly', '1');
+        ini_set('session.cookie_samesite', $sameSite);
+        ini_set('session.cookie_secure', $isSecure ? '1' : '0');
+        ini_set('session.use_only_cookies', '1');
+
+        if (!headers_sent()) {
+            session_set_cookie_params([
+                'lifetime' => 28800, // 8 hours
+                'path'     => '/',
+                'secure'   => $isSecure,
+                'httponly' => true,
+                'samesite' => $sameSite,
+            ]);
+        }
+    }
+}
+vp_configure_session();
+
+/**
+ * Send HTTP security headers on all responses.
+ */
+function vp_send_security_headers(): void
+{
+    if (headers_sent()) {
+        return;
+    }
+    header("Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; frame-ancestors 'self'; connect-src 'self'; object-src 'none'; base-uri 'self';");
+    header("X-Frame-Options: SAMEORIGIN");
+    header("X-Content-Type-Options: nosniff");
+    header("Referrer-Policy: strict-origin-when-cross-origin");
+    header("Permissions-Policy: camera=(), microphone=(), geolocation=()");
+    $isSecure = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || (isset($_SERVER['SERVER_PORT']) && (int)$_SERVER['SERVER_PORT'] === 443);
+    if ($isSecure) {
+        header("Strict-Transport-Security: max-age=31536000; includeSubDomains");
+    }
+    header_remove("X-Powered-By");
+}
+vp_send_security_headers();
+
 if (PHP_SAPI !== 'cli' && !headers_sent()) {
     header('Content-Type: text/html; charset=UTF-8');
 }
@@ -659,44 +710,6 @@ function clearSsoCookie(): void
             'httponly' => true,
             'samesite' => 'Lax',
         ]);
-    }
-}
-
-/**
- * Legacy integration log helper - delegates to vp_emit if available or writes directly.
- */
-function logIntegrationEvent(
-    string $linkCode,
-    string $source,
-    string $target,
-    string $endpoint,
-    string $payloadSummary,
-    string $direction,
-    int $statusCode = 200,
-    string $actor = 'SYSTEM'
-): bool {
-    try {
-        $pdo = getDbConnection();
-        require_once __DIR__ . '/../includes/integration_bus.php';
-        vp_emit(
-            $pdo,
-            $linkCode,
-            $source,
-            $target,
-            'INTEGRATION_EVENT',
-            [
-                'endpoint'        => $endpoint,
-                'summary'         => $payloadSummary,
-                'direction'       => $direction,
-                'api_protocol'    => 'REST / JSON HTTPS'
-            ],
-            $actor,
-            $statusCode
-        );
-        return true;
-    } catch (Throwable $e) {
-        error_log('Failed in logIntegrationEvent: ' . $e->getMessage());
-        return false;
     }
 }
 

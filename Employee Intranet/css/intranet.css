@@ -659,21 +659,6 @@ body.sidebar-collapsed .intranet-content-wrapper {
   pointer-events: none;
 }
 
-.feed-card {
-  background-color: var(--surface);
-  border: 1px solid var(--neutral-200);
-  border-radius: var(--radius-md);
-  padding: 1.25rem;
-  box-shadow: var(--shadow-subtle);
-  transition: all var(--transition-fast);
-}
-
-.feed-card:hover {
-  border-color: var(--system-accent);
-  box-shadow: var(--shadow-card);
-  transform: translateY(-2px);
-}
-
 /* Quick Link Button */
 .quick-link-btn {
   display: flex;
@@ -1258,18 +1243,10 @@ table {
     display: none !important;
   }
 
-  .header-station-clock {
-    display: none !important;
-  }
-
   .intranet-modal-container {
     width: calc(100% - 1.5rem) !important;
     margin: 0.75rem !important;
     max-height: 94vh;
-  }
-
-  .user-job-title {
-    display: none !important;
   }
 }
 
@@ -1453,11 +1430,6 @@ table {
   align-items: center;
   gap: 0.75rem;
 }
-.intra-display-none-padding-0-3570 {
-  display: none;
-  padding: 0.4rem 0.75rem;
-  font-size: 0.75rem;
-}
 .intra-font-size-1rem-margin-6a85 {
   font-size: 1rem;
   margin-right: 0.25rem;
@@ -1492,10 +1464,6 @@ table {
   display: flex;
   align-items: center;
   justify-content: center;
-}
-.intra-width-20rem-right-0-6db6 {
-  width: 20rem;
-  right: 0;
 }
 .intra-padding-0-75rem-1rem-82b8 {
   padding: 0.75rem 1rem;
@@ -1541,11 +1509,6 @@ table {
   margin-top: 4px;
   font-family: var(--font-mono);
 }
-.intra-padding-0-75rem-1rem-beec {
-  padding: 0.75rem 1rem;
-  display: flex;
-  gap: 0.75rem;
-}
 .intra-background-rgba-255-255-57e6 {
   background: rgba(255, 255, 255, 0.06);
   border: 1px solid rgba(255, 255, 255, 0.12);
@@ -1557,10 +1520,6 @@ table {
   align-items: center;
   justify-content: center;
   cursor: pointer;
-}
-.intra-width-22rem-right-0-cbce {
-  width: 22rem;
-  right: 0;
 }
 .intra-padding-0-75rem-1rem-4249 {
   padding: 0.75rem 1rem;
@@ -1799,10 +1758,6 @@ table {
 .intra-text-base {
   font-size: 1rem;
 }
-.intra-margin-bottom-1-75rem-17a9 {
-  margin-bottom: 1.75rem;
-  padding: 2.25rem;
-}
 .intra-position-relative-z-index-4d0f {
   position: relative;
   z-index: 2;
@@ -1813,11 +1768,6 @@ table {
   align-items: center;
   gap: 0.75rem;
   margin-bottom: 0.75rem;
-}
-.intra-background-color-rgba-255-ab36 {
-  background-color: rgba(255, 255, 255, 0.15);
-  color: #ffffff;
-  border-color: rgba(255, 255, 255, 0.25);
 }
 .intra-font-family-var-font-72b4 {
   font-family: var(--font-mono);
@@ -1939,82 +1889,6 @@ table {
   font-size: 0.75rem;
   color: var(--neutral-500);
   font-family: var(--font-mono);
-}
-.intra-flex-between-mb-sm {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 0.625rem;
-}
-.intra-text-neutral-sm {
-  font-size: 0.75rem;
-  color: var(--neutral-500);
-}
-.intra-heading-h3 {
-  margin: 0 0 0.5rem;
-  font-size: 1.0625rem;
-  font-weight: 600;
-  color: var(--neutral-900);
-}
-.intra-desc-p {
-  margin: 0 0 1rem;
-  font-size: 0.8125rem;
-  color: var(--neutral-700);
-  line-height: 1.45;
-}
-.intra-card-footer-meta {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding-top: 0.75rem;
-  border-top: 1px solid var(--neutral-200);
-  font-size: 0.75rem;
-}
-.intra-background-color-1a73e8-width-a329 {
-  background-color: #1a73e8;
-  width: 28px;
-  height: 28px;
-  font-size: 0.6875rem;
-}
-.intra-font-500-neutral {
-  font-weight: 500;
-  color: var(--neutral-800);
-}
-.intra-color-neutral-400 {
-  color: var(--neutral-400);
-}
-.intra-color-neutral-500 {
-  color: var(--neutral-500);
-}
-.intra-flex-center-gap-neutral {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  color: var(--neutral-500);
-}
-.intra-flex-center-gap-xs-pointer {
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-  cursor: pointer;
-}
-.intra-background-color-137333-width-682f {
-  background-color: #137333;
-  width: 28px;
-  height: 28px;
-  font-size: 0.6875rem;
-}
-.intra-background-color-6e4c7c-width-bec3 {
-  background-color: #6e4c7c;
-  width: 28px;
-  height: 28px;
-  font-size: 0.6875rem;
-}
-.intra-background-color-00796b-width-b618 {
-  background-color: #00796b;
-  width: 28px;
-  height: 28px;
-  font-size: 0.6875rem;
 }
 .intra-display-flex-flex-direction-a81b {
   display: flex;
@@ -2322,9 +2196,6 @@ table {
   transform: translateY(-50%);
   color: var(--neutral-500);
   font-size: 1.15rem;
-}
-.intra-padding-left-2-25rem-1f5b {
-  padding-left: 2.25rem;
 }
 .intra-font-size-0-8125rem-0a07 {
   font-size: 0.8125rem;

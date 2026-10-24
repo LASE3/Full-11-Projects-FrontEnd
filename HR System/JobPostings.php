@@ -79,10 +79,10 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
     </header>
 
     <div class="main-layout">
-      <!-- SIDEBAR -->
+      <?php /* SIDEBAR */ ?>
       <?php hr_renderSidebar('careers'); ?>
 
-      <!-- MAIN CONTENT -->
+      <?php /* MAIN CONTENT */ ?>
       <main class="content-wrapper">
         <div class="portal-container">
           <div class="page-header">
@@ -102,7 +102,7 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
             </div>
           </div>
 
-          <!-- TABLE -->
+          <?php /* TABLE */ ?>
           <div class="employee-table-container">
             <table class="employee-table">
               <thead>
@@ -172,7 +172,7 @@ $initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? su
     </div>
   </div>
 
-  <!-- Modal: Create Job Posting -->
+  <?php /* Modal: Create Job Posting */ ?>
   <div id="modal-create-job" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); backdrop-filter:blur(4px); z-index:9999; align-items:center; justify-content:center; padding:20px;">
     <div style="background:#131b2e; border:1px solid #334155; border-radius:12px; max-width:500px; width:100%; padding:24px; box-shadow:0 25px 50px rgba(0,0,0,0.6);">
       <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #334155; padding-bottom:12px; margin-bottom:16px;">

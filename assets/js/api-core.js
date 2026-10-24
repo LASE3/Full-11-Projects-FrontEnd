@@ -368,8 +368,6 @@
     register(moduleName, apiInstance) {
       const name = moduleName.toLowerCase();
       _modules.set(name, apiInstance);
-      console.info(`[VostokBus] Module registered: '${name}'`);
-
       // Ensure window.VostokAPI exposes the registered module
       if (!global.VostokAPI) global.VostokAPI = {};
       global.VostokAPI[name] = apiInstance;
@@ -537,6 +535,4 @@
     BASE,
     bus: VostokBus,
   });
-
-  console.info("[VostokCore] Core Transport & Inter-Module Bus Initialized. Endpoint:", BASE);
 })(window);

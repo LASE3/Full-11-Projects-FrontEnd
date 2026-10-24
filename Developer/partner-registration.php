@@ -30,7 +30,7 @@ try {
 </head>
 
 <body>
-    <!-- TOP NAVIGATION BAR (System 10 Cyan 4px stripe) -->
+    <?php /* TOP NAVIGATION BAR (System 10 Cyan 4px stripe) */ ?>
     <header class="vk-top-navbar">
         <div class="dev-flex-center-gap-24" >
             <button class="mobile-nav-toggle" id="dev-sidebar-toggle" onclick="document.body.classList.toggle('sidebar-open')" title="Toggle Menu"><span class="material-symbols-outlined">menu</span></button>
@@ -72,12 +72,12 @@ try {
                 </div>
             </div>
 
-            <!-- Top Bar Sign Out -->
+            <?php /* Top Bar Sign Out */ ?>
             <a href="../api/logout.php?system=Developer&redirect=../Developer/login.php" class="top-signout-btn" title="Sign Out of Developer" onclick="(function(){sessionStorage.clear();localStorage.clear();})()"><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
         </div>
     </header>
 
-    <!-- LEFT SIDEBAR -->
+    <?php /* LEFT SIDEBAR */ ?>
     <aside class="vk-sidebar" style="background-color: #0f2438 !important; border-right: 1px solid rgba(255, 255, 255, 0.1) !important; scrollbar-width: none !important; -ms-overflow-style: none !important;">
         <div class="vk-sidebar-nav">
             <div class="vk-sidebar-header">Core Documentation</div>
@@ -169,10 +169,10 @@ try {
         </div>
     </aside>
 
-    <!-- MAIN CONTENT AREA -->
+    <?php /* MAIN CONTENT AREA */ ?>
     <main class="vk-main-layout">
         <div class="reg-form-container">
-            <!-- HEADER BLOCK -->
+            <?php /* HEADER BLOCK */ ?>
             <div class="dev-display-flex-justify-content-f610" >
                 <div>
                     <div class="dev-display-flex-align-items-9bb7" >
@@ -194,7 +194,7 @@ try {
                 </div>
             </div>
 
-            <!-- REGISTRATION FORM -->
+            <?php /* REGISTRATION FORM */ ?>
             <form id="partner-registration-form" class="vk-card dev-margin-bottom-30px-9550">
                 <div class="vk-card-header">
                     <div>
@@ -207,7 +207,7 @@ try {
                 </div>
 
                 <div class="vk-card-body">
-                    <!-- SECTION 1: ORGANIZATION & CONTACT -->
+                    <?php /* SECTION 1: ORGANIZATION & CONTACT */ ?>
                     <div class="dev-mb-20" >
                         <h3 class="dev-font-size-14px-font-5262" >
                             <span class="material-symbols-outlined text-[18px] dev-color-accent">corporate_fare</span>
@@ -256,7 +256,7 @@ try {
 
                     <div class="dev-border-top-1px-solid-dae1" ></div>
 
-                    <!-- SECTION 2: ACCESS SCOPE & ENCLAVE -->
+                    <?php /* SECTION 2: ACCESS SCOPE & ENCLAVE */ ?>
                     <div class="dev-mb-20" >
                         <h3 class="dev-font-size-14px-font-5262" >
                             <span class="material-symbols-outlined text-[18px] dev-color-accent">tune</span>
@@ -324,7 +324,7 @@ try {
 
                     <div class="dev-border-top-1px-solid-dae1" ></div>
 
-                    <!-- SECTION 3: PUBLIC KEY / MTLS IDENTITY -->
+                    <?php /* SECTION 3: PUBLIC KEY / MTLS IDENTITY */ ?>
                     <div class="dev-mb-20" >
                         <h3 class="dev-font-size-14px-font-5262" >
                             <span class="material-symbols-outlined text-[18px] dev-color-accent">key</span>
@@ -341,7 +341,7 @@ try {
 
                     <div class="dev-border-top-1px-solid-dae1" ></div>
 
-                    <!-- SECTION 4: COMPLIANCE & ATTESTATION -->
+                    <?php /* SECTION 4: COMPLIANCE & ATTESTATION */ ?>
                     <div class="dev-margin-bottom-24px-dc2c" >
                         <h3 class="dev-font-size-14px-font-5262" >
                             <span class="material-symbols-outlined text-[18px] dev-color-accent">gavel</span>
@@ -372,7 +372,7 @@ try {
                         </div>
                     </div>
 
-                    <!-- SUBMIT BUTTON -->
+                    <?php /* SUBMIT BUTTON */ ?>
                     <div class="dev-display-flex-justify-content-ef47" >
                         <button class="vk-btn vk-btn-outline" type="reset">Reset Form</button>
                         <button class="vk-btn vk-btn-primary" type="submit" id="btnSubmitRegistration">
@@ -383,7 +383,7 @@ try {
                 </div>
             </form>
 
-            <!-- REGISTRATION SUCCESS CONTAINER (Shown on submit) -->
+            <?php /* REGISTRATION SUCCESS CONTAINER (Shown on submit) */ ?>
             <div id="reg-success-container" class="vk-card dev-display-none-margin-bottom-366d">
                 <div class="vk-card-header dev-background-rgba-14-124-0a52">
                     <div class="dev-display-flex-align-items-1c20" >
@@ -434,7 +434,7 @@ try {
                 </div>
             </div>
 
-            <!-- ENCLAVE CLEARANCE APPLICATIONS MANAGEMENT LEDGER (Full Database CRUD) -->
+            <?php /* ENCLAVE CLEARANCE APPLICATIONS MANAGEMENT LEDGER (Full Database CRUD) */ ?>
             <div class="vk-card dev-margin-bottom-30px-9550">
                 <div class="vk-card-header" style="display: flex; justify-content: space-between; align-items: center;">
                     <div>
@@ -534,7 +534,7 @@ try {
         </div>
     </main>
 
-    <!-- EDIT APPLICATION MODAL -->
+    <?php /* EDIT APPLICATION MODAL */ ?>
     <div class="vk-modal-overlay" id="editAppModal">
         <div class="vk-modal-dialog" style="max-width: 580px;">
             <div class="vk-modal-header">
@@ -609,7 +609,7 @@ try {
         </div>
     </div>
 
-    <!-- PUBLIC-FACING / DEVELOPER FOOTER -->
+    <?php /* PUBLIC-FACING / DEVELOPER FOOTER */ ?>
     <footer class="vk-footer">
         <div class="vk-footer-grid">
             <div>
@@ -661,7 +661,7 @@ try {
         </div>
     </footer>
 
-    <!-- Universal Command Palette Modal -->
+    <?php /* Universal Command Palette Modal */ ?>
     <div class="cmd-palette-backdrop" id="cmd-palette-modal">
         <div class="cmd-palette-box">
             <div class="cmd-palette-header">
@@ -697,7 +697,7 @@ try {
         </div>
     </div>
 
-    <!-- Universal Toast Container -->
+    <?php /* Universal Toast Container */ ?>
     <div class="vk-toast-container"></div>
 
     <script src="js/dev-common.js"></script>

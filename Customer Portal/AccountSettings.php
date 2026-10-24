@@ -73,7 +73,7 @@ require_once __DIR__ . '/customer_context.php';
                 </div>
             </div>
 
-            <!-- Top Bar Sign Out -->
+            <?php /* Top Bar Sign Out */ ?>
             <a href="./api/logout.php?redirect=../login.php" class="top-signout-btn" title="Sign Out of Customer Portal" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" ><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
         </div>
     </header>
@@ -182,7 +182,7 @@ require_once __DIR__ . '/customer_context.php';
     <div id="portal-main-wrapper" class="portal-content-wrapper pl-64">
         <main class="w-full min-h-screen pt-16 bg-surface px-4 sm:px-6 lg:px-8 py-6">
             <div class="portal-container flex flex-col gap-6">
-                <!-- Top Breadcrumb & Executive Header Bar -->
+                <?php /* Top Breadcrumb & Executive Header Bar */ ?>
                 <div
                     class="flex flex-col md:flex-row md:items-center justify-between gap-unit-md pb-4 border-b border-outline-variant/30">
                     <div class="flex flex-col gap-unit-xs">
@@ -204,7 +204,7 @@ require_once __DIR__ . '/customer_context.php';
                                 </span>.
                         </p>
                     </div>
-                    <!-- Global Actions -->
+                    <?php /* Global Actions */ ?>
                     <div class="flex items-center gap-unit-sm self-start md:self-auto shrink-0">
                         <div
                             class="hidden xl:flex items-center gap-unit-xs px-unit-sm py-1.5 rounded bg-surface-container font-technical-tag text-technical-tag text-on-surface-variant">
@@ -220,7 +220,7 @@ require_once __DIR__ . '/customer_context.php';
                         </button>
                     </div>
                 </div>
-                <!-- Settings Horizontal Segmented Navigation -->
+                <?php /* Settings Horizontal Segmented Navigation */ ?>
                 <div class="w-full overflow-x-auto">
                     <div
                         class="inline-flex min-w-full md:min-w-0 p-1 rounded-lg bg-surface-container gap-1 font-headline-sm text-body-sm text-on-surface-variant">
@@ -266,11 +266,11 @@ require_once __DIR__ . '/customer_context.php';
                         </button>
                     </div>
                 </div>
-                <!-- Primary Configuration Content Grid -->
+                <?php /* Primary Configuration Content Grid */ ?>
                 <div class="grid grid-cols-12 gap-unit-lg items-start">
-                    <!-- Left Pillar: Master Controls & Context (8 Columns) -->
+                    <?php /* Left Pillar: Master Controls & Context (8 Columns) */ ?>
                     <div class="col-span-12 lg:col-span-8 flex flex-col gap-unit-lg">
-                        <!-- SECTION 1: Organization Profile -->
+                        <?php /* SECTION 1: Organization Profile */ ?>
                         <section class="rounded-lg bg-surface-container-lowest p-unit-lg shadow-sm" id="panel-org">
                             <div
                                 class="flex items-start justify-between pb-unit-md mb-unit-md border-b border-surface-container">
@@ -342,7 +342,7 @@ require_once __DIR__ . '/customer_context.php';
                                         BY VOSTOKPRIBOR CADASTRE</span>
                                 </div>
                             </div>
-                            <!-- Assigned Account Engineer micro-bar -->
+                            <?php /* Assigned Account Engineer micro-bar */ ?>
                             <div
                                 class="mt-unit-md pt-unit-md border-t border-surface-container flex flex-col md:flex-row items-start md:items-center justify-between gap-unit-sm bg-surface-container-low/50 p-unit-sm rounded">
                                 <div class="flex items-center gap-unit-sm">
@@ -365,7 +365,7 @@ require_once __DIR__ . '/customer_context.php';
                                 </span>
                             </div>
                         </section>
-                        <!-- SECTION 2: SCADA Telemetry & API Keys -->
+                        <?php /* SECTION 2: SCADA Telemetry & API Keys */ ?>
                         <section class="rounded-lg bg-surface-container-lowest p-unit-lg shadow-sm" id="panel-scada">
                             <div
                                 class="flex items-center justify-between pb-unit-md mb-unit-md border-b border-surface-container">
@@ -419,7 +419,7 @@ require_once __DIR__ . '/customer_context.php';
                                         over dedicated plant fiber optic ring</span>
                                 </div>
                             </div>
-                            <!-- Token Management Row -->
+                            <?php /* Token Management Row */ ?>
                             <div class="flex flex-col gap-unit-sm mb-unit-base">
                                 <div class="flex items-center justify-between">
                                     <label
@@ -447,7 +447,7 @@ require_once __DIR__ . '/customer_context.php';
                                     </button>
                                 </div>
                             </div>
-                            <!-- Webhook Endpoint -->
+                            <?php /* Webhook Endpoint */ ?>
                             <div class="flex flex-col gap-unit-sm">
                                 <div class="flex items-center justify-between">
                                     <label
@@ -467,7 +467,7 @@ require_once __DIR__ . '/customer_context.php';
                                     </div>
                                 </div>
                         </section>
-                        <!-- SECTION 3: Escalation & Notification Protocols -->
+                        <?php /* SECTION 3: Escalation & Notification Protocols */ ?>
                         <section class="rounded-lg bg-surface-container-lowest p-unit-lg shadow-sm"
                             id="panel-notifications">
                             <div
@@ -489,7 +489,7 @@ require_once __DIR__ . '/customer_context.php';
                                     DISPATCH MATRIX</span>
                             </div>
                             <div class="flex flex-col gap-unit-md">
-                                <!-- Rule 1: Sev 1 (Locked) -->
+                                <?php /* Rule 1: Sev 1 (Locked) */ ?>
                                 <div
                                     class="flex items-start justify-between p-unit-md rounded bg-surface-container-low gap-unit-md">
                                     <div class="flex gap-unit-sm items-start">
@@ -523,7 +523,7 @@ require_once __DIR__ . '/customer_context.php';
                                         </span>
                                     </div>
                                 </div>
-                                <!-- Rule 2: Calibration Reminders -->
+                                <?php /* Rule 2: Calibration Reminders */ ?>
                                 <div
                                     class="flex items-start justify-between p-unit-md rounded bg-surface-container-low gap-unit-md">
                                     <div class="flex gap-unit-sm items-start">
@@ -554,7 +554,7 @@ require_once __DIR__ . '/customer_context.php';
                                         </button>
                                     </div>
                                 </div>
-                                <!-- Rule 3: Commercial & Billing Invoicing -->
+                                <?php /* Rule 3: Commercial & Billing Invoicing */ ?>
                                 <div
                                     class="flex items-start justify-between p-unit-md rounded bg-surface-container-low gap-unit-md">
                                     <div class="flex gap-unit-sm items-start">
@@ -586,7 +586,7 @@ require_once __DIR__ . '/customer_context.php';
                                 </div>
                             </div>
                         </section>
-                        <!-- SECTION 4: Active Industrial Sessions & Audit Trail -->
+                        <?php /* SECTION 4: Active Industrial Sessions & Audit Trail */ ?>
                         <section class="rounded-lg bg-surface-container-lowest p-unit-lg shadow-sm" id="panel-audit">
                             <div
                                 class="flex items-center justify-between pb-unit-md mb-unit-md border-b border-surface-container">
@@ -684,9 +684,9 @@ require_once __DIR__ . '/customer_context.php';
                             </div>
                         </section>
                     </div>
-                    <!-- Right Pillar: Operator Dossier & Security Credentials (4 Columns) -->
+                    <?php /* Right Pillar: Operator Dossier & Security Credentials (4 Columns) */ ?>
                     <div class="col-span-12 lg:col-span-4 flex flex-col gap-unit-lg">
-                        <!-- SECTION 5: Authenticated User Profile  -->
+                        <?php /* SECTION 5: Authenticated User Profile  */ ?>
                         <div class="rounded-lg bg-surface-container-lowest p-unit-lg shadow-sm flex flex-col gap-unit-base"
                             id="panel-user">
                             <div class="flex items-center justify-between pb-unit-sm border-b border-surface-container">
@@ -696,7 +696,7 @@ require_once __DIR__ . '/customer_context.php';
                                 <span
                                     class="w-2.5 h-2.5 rounded-full bg-on-tertiary-container ring-4 ring-on-tertiary-container/20"></span>
                             </div>
-                            <!-- Avatar & Core Identity -->
+                            <?php /* Avatar & Core Identity */ ?>
                             <div class="flex items-center gap-unit-base">
                                 <div class="relative shrink-0">
                                     <div class="w-20 h-20 rounded-lg bg-primary-container text-tertiary-fixed font-bold text-2xl flex items-center justify-center border-2 border-tertiary-fixed/40 shadow-sm">
@@ -716,7 +716,7 @@ require_once __DIR__ . '/customer_context.php';
                                         <?= htmlspecialchars($currUser['id'] ?? 'VSTK-USR-1001') ?></span>
                                 </div>
                             </div>
-                            <!-- Clearance Badges -->
+                            <?php /* Clearance Badges */ ?>
                             <div class="flex flex-col gap-unit-xs p-unit-sm rounded bg-surface-container-low">
                                 <div class="flex items-center justify-between">
                                     <span class="font-label-caps text-technical-tag uppercase text-outline">Industrial
@@ -728,7 +728,7 @@ require_once __DIR__ . '/customer_context.php';
                                     Operational parameter modification rights, procurement authorization, and telemetry access.
                                 </p>
                             </div>
-                            <!-- User Specific Attributes List -->
+                            <?php /* User Specific Attributes List */ ?>
                             <div class="flex flex-col gap-unit-sm text-body-sm">
                                 <div class="flex flex-col gap-0.5">
                                     <span
@@ -775,7 +775,7 @@ require_once __DIR__ . '/customer_context.php';
                                 <span class="">Request Clearance Elevation</span>
                             </button>
                         </div>
-                        <!-- Quick Telemetry & Health Mini-Card -->
+                        <?php /* Quick Telemetry & Health Mini-Card */ ?>
                         <div
                             class="rounded-lg bg-surface-container-lowest p-unit-lg shadow-sm flex flex-col gap-unit-sm">
                             <div class="flex items-center justify-between">
@@ -798,7 +798,7 @@ require_once __DIR__ . '/customer_context.php';
                                 <span class="">Errors: 0.0002%</span>
                             </div>
                         </div>
-                        <!-- Quick Support Link Card -->
+                        <?php /* Quick Support Link Card */ ?>
                         <div
                             class="rounded-lg bg-primary text-on-primary p-unit-lg shadow-sm flex flex-col gap-unit-sm">
                             <div class="flex items-center gap-unit-xs text-tertiary-fixed">

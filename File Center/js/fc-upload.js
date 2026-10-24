@@ -253,10 +253,10 @@
             }
           } catch (ne) {}
         } else {
-          alert("Ingestion error: " + (res.message || "Failed to ingest document"));
+          (window.vpToast ? window.vpToast("Ingestion error: " + (res.message || "Failed to ingest document"), "error") : alert("Ingestion error: " + (res.message || "Failed to ingest document")));
         }
       } catch (err) {
-        alert("Network or database error: " + err.message);
+        (window.vpToast ? window.vpToast("Network or database error: " + err.message, "error") : alert("Network or database error: " + err.message));
       } finally {
         submitBtn.disabled = false;
         submitBtn.innerHTML =

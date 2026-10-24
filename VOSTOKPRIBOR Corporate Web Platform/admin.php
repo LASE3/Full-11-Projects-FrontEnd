@@ -37,7 +37,7 @@ $csrfToken = getCsrfToken();
     </style>
 </head>
 <body class="min-h-screen">
-    <!-- Header -->
+    <?php /* Header */ ?>
     <header class="bg-[#0f1d30] border-b border-white/10 px-6 py-4 flex items-center justify-between">
         <div class="flex items-center gap-3">
             <span class="text-xl font-bold tracking-wide text-white">VOSTOKPRIBOR</span>
@@ -52,7 +52,7 @@ $csrfToken = getCsrfToken();
     </header>
 
     <main class="max-w-7xl mx-auto px-4 py-8">
-        <!-- Tab Navigation -->
+        <?php /* Tab Navigation */ ?>
         <div class="flex gap-2 border-b border-white/10 pb-4 mb-6">
             <button onclick="switchTab('announcements')" id="tab-announcements" class="tab-btn active px-4 py-2 rounded text-sm font-semibold border border-transparent transition">
                 News & Announcements
@@ -65,7 +65,7 @@ $csrfToken = getCsrfToken();
             </button>
         </div>
 
-        <!-- Section: Announcements -->
+        <?php /* Section: Announcements */ ?>
         <section id="sec-announcements" class="glass-panel p-6 mb-8">
             <div class="flex justify-between items-center mb-6">
                 <div>
@@ -95,7 +95,7 @@ $csrfToken = getCsrfToken();
             </div>
         </section>
 
-        <!-- Section: Products -->
+        <?php /* Section: Products */ ?>
         <section id="sec-products" class="glass-panel p-6 mb-8 hidden">
             <div class="flex justify-between items-center mb-6">
                 <div>
@@ -125,7 +125,7 @@ $csrfToken = getCsrfToken();
             </div>
         </section>
 
-        <!-- Section: Jobs -->
+        <?php /* Section: Jobs */ ?>
         <section id="sec-jobs" class="glass-panel p-6 mb-8 hidden">
             <div class="flex justify-between items-center mb-6">
                 <div>
@@ -156,7 +156,7 @@ $csrfToken = getCsrfToken();
         </section>
     </main>
 
-    <!-- Modals (Simple JavaScript-driven) -->
+    <?php /* Modals (Simple JavaScript-driven) */ ?>
     <div id="modal-container" class="fixed inset-0 bg-black/70 flex items-center justify-center p-4 hidden z-50">
         <div class="glass-panel bg-[#15233b] max-w-lg w-full p-6 shadow-2xl">
             <h3 id="modal-title" class="text-base font-bold text-white mb-4">Edit Item</h3>

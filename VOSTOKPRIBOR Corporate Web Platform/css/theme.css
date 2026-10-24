@@ -326,21 +326,3 @@ a {
   box-shadow: var(--shadow-hover);
   border-color: var(--neutral-300);
 }
-
-/* ==========================================================================
-   Per-System Accent Stripe Utility
-   ========================================================================== */
-.system-accent-stripe-top {
-  position: relative;
-}
-
-.system-accent-stripe-top::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 4px;
-  background-color: var(--system-accent);
-  z-index: 60;
-}

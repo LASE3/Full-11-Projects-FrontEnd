@@ -82,8 +82,11 @@ function shop_getProducts(?string $cusId = null, array $filters = []): array
     $params = [':cid' => $cusId];
 
     if (!empty($filters['search'])) {
-        $where[] = "(p.product_name LIKE :s OR p.prod_id LIKE :s OR p.description LIKE :s)";
-        $params[':s'] = '%' . $filters['search'] . '%';
+        $where[] = "(p.product_name LIKE :s1 OR p.prod_id LIKE :s2 OR p.description LIKE :s3)";
+        $sTerm = '%' . $filters['search'] . '%';
+        $params[':s1'] = $sTerm;
+        $params[':s2'] = $sTerm;
+        $params[':s3'] = $sTerm;
     }
 
     if (!empty($filters['model']) && $filters['model'] !== 'all') {
@@ -150,58 +153,6 @@ function shop_getProduct(string $prodId, ?string $cusId = null): ?array
     $prod['in_stock'] = (int)$prod['in_stock'];
     $prod['effective_price'] = (float)$prod['effective_price'];
     return $prod;
-}
-
-function shop_createProduct(array $data): string
-{
-    $pdo = getDbConnection();
-    $prodId = trim($data['prod_id'] ?? '');
-    if (empty($prodId)) {
-        $count = (int)$pdo->query("SELECT COUNT(*) FROM products")->fetchColumn();
-        $prodId = sprintf("PROD-%04d", $count + 1);
-    }
-
-    $stmt = $pdo->prepare("
-        INSERT INTO products (prod_id, product_name, billing_model, description)
-        VALUES (:id, :name, :model, :desc)
-    ");
-    $stmt->execute([
-        ':id'    => $prodId,
-        ':name'  => trim($data['product_name'] ?? 'Industrial Device'),
-        ':model' => trim($data['billing_model'] ?? 'PerUnit'),
-        ':desc'  => trim($data['description'] ?? '')
-    ]);
-
-    // Initialize inventory
-    $invStmt = $pdo->prepare("
-        INSERT INTO product_inventory (prod_id, warehouse_location, quantity_on_hand, reorder_level)
-        VALUES (:id, :wh, :qty, :reorder)
-        ON DUPLICATE KEY UPDATE quantity_on_hand = :qty
-    ");
-    $invStmt->execute([
-        ':id'      => $prodId,
-        ':wh'      => trim($data['warehouse_location'] ?? 'Main Depot Shymkent'),
-        ':qty'     => (int)($data['quantity_on_hand'] ?? 25),
-        ':reorder' => (int)($data['reorder_level'] ?? 10)
-    ]);
-
-    return $prodId;
-}
-
-function shop_updateInventory(string $prodId, int $qty, string $mode = 'set'): bool
-{
-    $pdo = getDbConnection();
-    if ($mode === 'adjust') {
-        $stmt = $pdo->prepare("
-            UPDATE product_inventory 
-            SET quantity_on_hand = GREATEST(0, quantity_on_hand + :qty)
-            WHERE prod_id = :id
-        ");
-        return $stmt->execute([':qty' => $qty, ':id' => $prodId]);
-    }
-
-    $stmt = $pdo->prepare("UPDATE product_inventory SET quantity_on_hand = :qty WHERE prod_id = :id");
-    return $stmt->execute([':qty' => max(0, $qty), ':id' => $prodId]);
 }
 
 // ============================================================================

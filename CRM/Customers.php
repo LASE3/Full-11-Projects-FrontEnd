@@ -50,7 +50,7 @@ $firstCusName = !empty($customers) ? $customers[0]['company_name'] : 'Aral Geoma
 <body>
 
   <div class="app-container">
-    <!-- Top Navigation Bar -->
+    <?php /* Top Navigation Bar */ ?>
     <header class="top-nav">
       <div class="top-nav__accent-stripe"></div>
       <div class="top-nav__content">
@@ -105,13 +105,13 @@ $firstCusName = !empty($customers) ? $customers[0]['company_name'] : 'Aral Geoma
           </div>
         </div>
 
-        <!-- Top Bar Sign Out -->
+        <?php /* Top Bar Sign Out */ ?>
         <a href="./api/logout.php?redirect=../login.php" class="top-signout-btn" title="Sign Out of CRM" onclick="(function(){sessionStorage.clear();localStorage.clear();})()" ><span class="material-symbols-outlined">logout</span><span>Sign Out</span></a>
       </div>
     </header>
 
     <div class="main-layout">
-      <!-- Sidebar Navigation -->
+      <?php /* Sidebar Navigation */ ?>
       <aside class="sidebar">
         <div>
           <div class="sidebar-section-title">Sales Management</div>
@@ -145,7 +145,7 @@ $firstCusName = !empty($customers) ? $customers[0]['company_name'] : 'Aral Geoma
               <span class="sidebar-badge">28</span>
             </a>
 
-            <!-- Customers (Active) -->
+            <?php /* Customers (Active) */ ?>
             <a href="Customers.php" class="sidebar-nav-item active">
               <div class="sidebar-item-left">
                 <span class="sidebar-icon">
@@ -219,7 +219,7 @@ $firstCusName = !empty($customers) ? $customers[0]['company_name'] : 'Aral Geoma
               <span class="sidebar-badge badge-green">+14%</span>
             </a>
           
-            <!-- Inter-System Integrations (SYS02) -->
+            <?php /* Inter-System Integrations (SYS02) */ ?>
             <a href="Integrations.php" class="sidebar-nav-item">
               <div class="sidebar-item-left">
                 <span class="sidebar-icon">
@@ -266,7 +266,7 @@ $firstCusName = !empty($customers) ? $customers[0]['company_name'] : 'Aral Geoma
             <span class="sidebar-badge crm-text-xs" >SYS 04</span>
           </a>
         </nav>
-        <!-- Log Out -->
+        <?php /* Log Out */ ?>
 
         <div class="sidebar-footer">
           <div class="quota-widget-card">
@@ -285,10 +285,10 @@ $firstCusName = !empty($customers) ? $customers[0]['company_name'] : 'Aral Geoma
         </div>
       </aside>
 
-      <!-- Main Content Area -->
+      <?php /* Main Content Area */ ?>
       <main class="content-wrapper">
         <div class="portal-container">
-          <!-- Page Header -->
+          <?php /* Page Header */ ?>
           <div class="page-header">
             <div class="page-header-info">
               <div class="breadcrumb-trail">
@@ -311,7 +311,7 @@ $firstCusName = !empty($customers) ? $customers[0]['company_name'] : 'Aral Geoma
             </div>
           </div>
 
-          <!-- KPI Strip -->
+          <?php /* KPI Strip */ ?>
           <div class="kpi-grid">
             <div class="crm-card kpi-card">
               <div class="kpi-header">
@@ -374,7 +374,7 @@ $firstCusName = !empty($customers) ? $customers[0]['company_name'] : 'Aral Geoma
             </div>
           </div>
 
-          <!-- Customer Filter Toolbar -->
+          <?php /* Customer Filter Toolbar */ ?>
           <div class="page-filter-bar">
             <div class="filter-pills-group">
               <button class="filter-pill-btn active" data-sector="all">All Sectors (<?= $custCount ?>)</button>
@@ -391,7 +391,7 @@ $firstCusName = !empty($customers) ? $customers[0]['company_name'] : 'Aral Geoma
             </div>
           </div>
 
-          <!-- Customer Directory Table -->
+          <?php /* Customer Directory Table */ ?>
           <div class="crm-card">
             <table class="accounts-table">
               <thead>

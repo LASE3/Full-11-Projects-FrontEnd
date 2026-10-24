@@ -189,6 +189,109 @@ final class Validator
         return $value;
     }
 
+    public const MAX_LENGTHS = [
+        'emp_id'           => 10,
+        'cus_id'           => 10,
+        'reviewer_emp_id'  => 10,
+        'manager_emp_id'   => 10,
+        'actor_emp_id'     => 10,
+        'sales_emp_id'     => 10,
+        'assigned_emp_id'  => 10,
+        'owner_emp_id'     => 10,
+        'target_entity_id' => 20,
+        'doc_id'           => 20,
+        'prod_id'          => 20,
+        'order_id'         => 20,
+        'inv_id'           => 20,
+        'asset_id'         => 20,
+        'ticket_id'        => 20,
+        'quote_id'         => 20,
+        'opp_id'           => 20,
+        'contract_id'      => 20,
+        'prj_id'           => 20,
+        'dept_code'        => 10,
+        'department_code'  => 10,
+        'system_id'        => 10,
+        'role_code'        => 20,
+    ];
+
+    /**
+     * Validates input values against maximum length limits.
+     * Returns an associative array of errors [field => message].
+     *
+     * @param array<string, mixed> $inputs
+     * @param array<string, int>   $customLimits
+     * @return array<string, string>
+     */
+    public static function validateLengths(array $inputs, array $customLimits = []): array
+    {
+        $limits = array_merge(self::MAX_LENGTHS, $customLimits);
+        $errors = [];
+
+        foreach ($inputs as $key => $val) {
+            if ($val === null || is_array($val)) {
+                continue;
+            }
+            $strVal = (string)$val;
+            $len = mb_strlen($strVal);
+
+            // Check known specific fields
+            if (isset($limits[$key]) && $len > $limits[$key]) {
+                $errors[$key] = "Field '{$key}' exceeds maximum length of {$limits[$key]} characters (received {$len}).";
+                continue;
+            }
+
+            // General rule for id/code parameters: max 64 characters
+            if ((str_ends_with($key, '_id') || str_ends_with($key, '_code')) && $len > 64) {
+                $errors[$key] = "Identifier '{$key}' exceeds maximum length of 64 characters (received {$len}).";
+            }
+        }
+
+        return $errors;
+    }
+
+    /**
+     * Validates input lengths and immediately responds with 422 JSON if any field is invalid.
+     *
+     * @param array<string, mixed> $inputs
+     * @param array<string, int>   $customLimits
+     */
+    public static function validateLengthsOrExit(array $inputs, array $customLimits = []): void
+    {
+        $errors = self::validateLengths($inputs, $customLimits);
+        if (!empty($errors)) {
+            $firstField = array_key_first($errors);
+            self::respond422((string)$firstField, $errors[$firstField], $errors);
+        }
+    }
+
+    /**
+     * Terminate request with 422 Unprocessable Entity JSON.
+     *
+     * @param string                $field
+     * @param string                $message
+     * @param array<string, string> $errors
+     */
+    public static function respond422(string $field, string $message, array $errors = []): void
+    {
+        http_response_code(422);
+        if (!headers_sent()) {
+            header('Content-Type: application/json; charset=utf-8');
+        }
+        if (empty($errors)) {
+            $errors = [$field => $message];
+        }
+        echo json_encode([
+            'success'     => false,
+            'status_code' => 422,
+            'error'       => 'Unprocessable Entity',
+            'field'       => $field,
+            'message'     => $message,
+            'errors'      => $errors
+        ], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+
     public function fails(): bool
     {
         return $this->errors !== [];
